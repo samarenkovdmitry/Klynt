@@ -86,35 +86,35 @@ export default function Analyze() {
     setUploadedImage(file);
   }
 
-  async function handleAnalyze() {
-    try {
-      setLoading(true);
-      setData(null);
-
-      if (!url || url.trim() === "") {
-        console.error("URL is empty");
-        return;
-      }
-
-      const res = await fetch("https://klynt-three.vercel.app/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-
-      if (!res.ok) {
-        console.error("API error:", res.status);
-        return;
-      }
-
-      const json = await res.json();
-      setData(json.result);
-    } catch (err) {
-      console.error("Request failed:", err);
-    } finally {
-      setLoading(false);
+async function handleAnalyze() {
+  try {
+    if (!url || url.trim() === "") {
+      console.error("URL is empty");
+      return;
     }
+
+    setLoading(true);
+    setData(null);
+
+    const res = await fetch("https://klynt-three.vercel.app/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+
+    if (!res.ok) {
+      console.error("API error:", res.status);
+      return;
+    }
+
+    const json = await res.json();
+    setData(json.result);
+  } catch (err) {
+    console.error("Request failed:", err);
+  } finally {
+    setLoading(false);
   }
+}
 
   function normalizeRisk(risk: string) {
     if (!risk) return "—";
