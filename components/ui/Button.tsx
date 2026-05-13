@@ -6,6 +6,7 @@ export function Button({
 }: any) {
   return (
     <button
+    {...props}
       disabled={disabled}
       className={`
         w-full h-13 rounded-[8px] px-4
@@ -19,7 +20,6 @@ export function Button({
 
         ${className}
       `}
-      {...props}
     >
       {children}
     </button>
