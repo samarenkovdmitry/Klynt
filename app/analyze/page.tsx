@@ -96,7 +96,7 @@ export default function Analyze() {
         return;
       }
 
-      const res = await fetch("/api/analyze", {
+      const res = await fetch("https://klynt-three.vercel.app/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),

@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
@@ -26,19 +28,35 @@ export async function POST(req: Request) {
       input: `Analyze UX of this website: ${url}`,
     });
 
-    const result = response.output_text;
+    console.log("RAW RESPONSE:", JSON.stringify(response, null, 2));
 
-    return new NextResponse(
-      JSON.stringify({ result }),
-      {
-        status: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
+    // --- Безопасный парсинг результата ---
+    let result: string | undefined = response.output_text;
+
+    if (!result && Array.isArray(response.output)) {
+      for (const item of response.output) {
+        // Ищем только элементы с текстовым контентом
+        if (
+          "content" in item &&
+          Array.isArray((item as any).content) &&
+          (item as any).content[0]?.text
+        ) {
+          result = (item as any).content[0].text;
+          break;
+        }
       }
-    );
+    }
+
+    if (!result) result = "No output";
+
+    return new NextResponse(JSON.stringify({ result }), {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
   } catch (error) {
     console.error("FULL ERROR:", error);
 
