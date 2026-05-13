@@ -42,7 +42,7 @@ export default function Analyze() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isButtonDisabled = loading || (!url && !uploadedImage);
+ const isButtonDisabled = !url && !uploadedImage;
 
   const styles = {
     outerCard: "rounded-xl bg-white border border-[#DCE2E7]",
