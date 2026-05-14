@@ -39,6 +39,7 @@ JSON FORMAT:
   "risk": "low" | "medium" | "high",
   "issues": [
     {
+      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "severity": "low" | "medium" | "high",
       "description": "string",
       "impact": { "clarity": number, "cta": number },
@@ -47,6 +48,7 @@ JSON FORMAT:
   ],
   "suggestions": [
     {
+      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "section": "string",
       "before": "string",
       "after": "string",
@@ -57,19 +59,23 @@ JSON FORMAT:
     "clarity": number,
     "navigation": number,
     "visuals": number,
-    "trust": number
+    "trust": number,
+    "conversion": number
   }
 }
 
 Rules:
 - Generate between 5 and 10 UX issues.
 - Generate between 5 and 10 improvement suggestions.
+- Every issue MUST include a category.
+- Every suggestion MUST include a category.
 - Issues must be deep, specific, and tied to screenshot + URL.
 - Each issue must include 2–4 bullet points with concrete observations.
 - All numbers must be integers.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
 `;
+
 
 
     // Build input array for Responses API

@@ -87,7 +87,6 @@ export default function Analyze() {
     setTimeout(() => setCopiedIndex(null), 1500);
   }
 
-
   // -------------------------------
   // SCREENSHOT CAPTURE (html2canvas)
   // -------------------------------
@@ -110,33 +109,32 @@ export default function Analyze() {
   // ANALYZE HANDLER (with screenshot)
   // -------------------------------
   async function handleAnalyze() {
-  try {
-    if (!url && !uploadedImage) return;
+    try {
+      if (!url && !uploadedImage) return;
 
-    setLoading(true);
-    setData(null);
+      setLoading(true);
+      setData(null);
 
-    const form = new FormData();
-    form.append("url", url);
+      const form = new FormData();
+      form.append("url", url);
 
-    if (uploadedImage) {
-      form.append("screenshot", uploadedImage);
+      if (uploadedImage) {
+        form.append("screenshot", uploadedImage);
+      }
+
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        body: form,
+      });
+
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      console.error("Request failed:", err);
+    } finally {
+      setLoading(false);
     }
-
-    const res = await fetch("/api/analyze", {
-      method: "POST",
-      body: form,
-    });
-
-    const json = await res.json();
-    setData(json);
-  } catch (err) {
-    console.error("Request failed:", err);
-  } finally {
-    setLoading(false);
   }
-}
-
 
   function normalizeRisk(risk: string) {
     if (!risk) return "—";
@@ -167,12 +165,9 @@ export default function Analyze() {
     return "Other";
   }
 
-  function getBreakdownMeta(value: number) {
-    if (value >= 8) return { bar: "bg-green-500", label: "Healthy", labelColor: "text-green-600" };
-    if (value >= 5) return { bar: "bg-amber-500", label: "At risk", labelColor: "text-amber-600" };
-    return { bar: "bg-red-500", label: "Failing", labelColor: "text-red-600" };
-  }
-
+  // -------------------------------
+  // IMPACT LOGIC (used in Issues)
+  // -------------------------------
   function generateImpact(severity: string) {
     if (severity === "high") return { clarity: 12, cta: 8 };
     if (severity === "medium") return { clarity: 6, cta: 4 };
@@ -183,6 +178,35 @@ export default function Analyze() {
     if (severity === "high") return "#FF383C";
     if (severity === "medium") return "#EA7B03";
     return "#6B7280";
+  }
+
+  // -------------------------------
+  // UX Breakdown color logic (0–10 → 0–100%)
+  // -------------------------------
+  function getBreakdownMeta(value: number) {
+    const percent = value * 10;
+
+    if (percent >= 70) {
+      return {
+        bar: "bg-green-500",
+        label: "Healthy",
+        labelColor: "text-green-600"
+      };
+    }
+
+    if (percent >= 50) {
+      return {
+        bar: "bg-amber-500",
+        label: "At risk",
+        labelColor: "text-amber-600"
+      };
+    }
+
+    return {
+      bar: "bg-red-500",
+      label: "Failing",
+      labelColor: "text-red-600"
+    };
   }
 
   return (
