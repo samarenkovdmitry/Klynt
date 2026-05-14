@@ -10,7 +10,7 @@ import {
   ShareNetwork,
   ArrowClockwise,
   UploadSimple
-} from "@phosphor-icons/react/dist/ssr";
+} from "@phosphor-icons/react";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { Button } from "@/components/ui/Button";
 
@@ -108,7 +108,9 @@ async function handleAnalyze() {
     }
 
     const json = await res.json();
-    setData(json.result);
+
+    // ВАЖНО: используем output_text
+    setData(json.output_text);
   } catch (err) {
     console.error("Request failed:", err);
   } finally {
