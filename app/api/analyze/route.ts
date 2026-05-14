@@ -7,7 +7,6 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-// очень простой, но рабочий "очиститель" HTML → текста
 function stripHtml(html: string): string {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, "")
@@ -20,7 +19,6 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-// вытаскиваем ключевые куски: title, meta description, h1–h3, кнопки
 function extractKeySnippets(html: string) {
   const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
   const title = titleMatch ? titleMatch[1].trim() : null;
@@ -56,63 +54,74 @@ export async function POST(req: Request) {
   try {
     const { url } = await req.json();
 
-    if (!url || typeof url !== "string") {
-      return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
-    }
-
-    // 1) Фетчим HTML
     let html = "";
     try {
       const res = await fetch(url, {
-        method: "GET",
         headers: {
-          "User-Agent":
-            "Mozilla/5.0 (compatible; KlyntUXBot/1.0; +https://klynt-three.vercel.app)",
-        },
+          "User-Agent": "Mozilla/5.0 (KlyntUXBot/2.0)"
+        }
       });
-
       html = await res.text();
     } catch (e) {
       console.error("HTML FETCH ERROR:", e);
     }
 
-    const MAX_HTML_LENGTH = 40000;
-    if (html.length > MAX_HTML_LENGTH) {
-      html = html.slice(0, MAX_HTML_LENGTH);
-    }
-
+    html = html.slice(0, 40000);
     const key = extractKeySnippets(html);
-    const plainText = stripHtml(html).slice(0, 12000);
+    const plainText = stripHtml(html).slice(0, 15000);
 
-    const prompt = `
-You are a senior UX auditor for marketing and product websites.
+    // -------------------------------
+    // STEP 1 — STRUCTURAL ANALYSIS
+    // -------------------------------
+    const step1Prompt = `
+You are a senior UX architect.
 
-You are given:
-- The website URL
-- Key extracted content (title, meta description, headings, buttons)
-- A truncated plain-text version of the page
+Analyze the structure of this webpage.
 
-Your job:
-- Understand what this page is trying to do.
-- Evaluate clarity, hierarchy, trust, and CTA strength.
-- Identify concrete UX issues.
-- Propose specific, copy-ready improvements.
+URL: ${url}
 
-WEBSITE URL:
-${url}
+TITLE: ${key.title}
+META: ${key.metaDescription}
+HEADINGS: ${key.headings.join(" | ")}
+BUTTONS: ${key.buttons.join(" | ")}
 
-KEY CONTENT (parsed from HTML):
-- Title: ${key.title ?? "N/A"}
-- Meta description: ${key.metaDescription ?? "N/A"}
-- Headings: ${key.headings.join(" | ") || "N/A"}
-- Buttons / CTAs: ${key.buttons.join(" | ") || "N/A"}
-
-PLAIN TEXT (truncated):
+PLAIN TEXT:
 """
 ${plainText}
 """
 
-Return ONLY valid JSON in this exact format:
+Return ONLY JSON:
+
+{
+  "page_goal": "string",
+  "sections": ["string"],
+  "headlines": ["string"],
+  "ctas": ["string"],
+  "problems": ["string"]
+}
+`;
+
+    const step1 = await client.responses.create({
+      model: "gpt-4o-mini",
+      input: step1Prompt,
+      temperature: 0.2
+    });
+
+    const structure = JSON.parse(step1.output_text);
+
+    // -------------------------------
+    // STEP 2 — UX REPORT BASED ON STRUCTURE
+    // -------------------------------
+    const step2Prompt = `
+You are a senior UX auditor.
+
+Using this structural analysis:
+
+${JSON.stringify(structure, null, 2)}
+
+Generate a UX report.
+
+Return ONLY JSON:
 
 {
   "url": "string",
@@ -142,48 +151,25 @@ Return ONLY valid JSON in this exact format:
   ]
 }
 
-STRICT RULES:
-
+Rules:
+- Use ONLY real text from structure.headlines, structure.ctas, or inferred copy.
+- Suggestions must be specific and copy-ready.
+- No generic advice.
 - All numbers must be integers.
-- Always include at least 3 issues.
-- Always include at least 2 suggestions.
-- "section" should refer to a real area (e.g. "Hero headline", "Primary CTA", "Pricing section").
-- "before" MUST be based on real or very plausible text from the headings, buttons, or plain text.
-- "after" MUST be a concrete, improved version of that text, optimized for clarity, hierarchy, or conversion.
-- "impact" MUST be realistic and tied to UX principles (e.g. "Improves scannability of hero", "Reduces friction in signup CTA").
-- Avoid generic advice like "make it clearer" without specifying HOW.
-- Do NOT invent new fields.
-- Do NOT wrap JSON in quotes.
-- Do NOT add trailing commas.
-- Do NOT add comments.
-- Do NOT output anything outside the JSON.
 `;
 
-    const response = await client.responses.create({
+    const step2 = await client.responses.create({
       model: "gpt-4o-mini",
-      input: prompt,
-      temperature: 0.25,
+      input: step2Prompt,
+      temperature: 0.25
     });
 
-    const raw = response.output_text;
-    if (!raw) {
-      return NextResponse.json({ error: "No output from model" }, { status: 500 });
-    }
+    const report = JSON.parse(step2.output_text);
 
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch (e) {
-      console.error("JSON PARSE ERROR:", raw);
-      return NextResponse.json(
-        { error: "Model returned invalid JSON", raw },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json(report, { status: 200 });
 
-    return NextResponse.json(parsed, { status: 200 });
   } catch (error) {
-    console.error("FULL ERROR:", error);
+    console.error(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
