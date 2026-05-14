@@ -7,7 +7,9 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+// -------------------------------
 // JSON REPAIR
+// -------------------------------
 function extractJson(text: string): string {
   if (!text) throw new Error("Empty model output");
 
@@ -23,7 +25,9 @@ function extractJson(text: string): string {
   return text.slice(start, end + 1);
 }
 
+// -------------------------------
 // HTML CLEANING
+// -------------------------------
 function stripHtml(html: string): string {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, "")
@@ -67,6 +71,9 @@ function extractKeySnippets(html: string) {
   };
 }
 
+// -------------------------------
+// MAIN HANDLER
+// -------------------------------
 export async function POST(req: Request) {
   try {
     const { url } = await req.json();
@@ -84,7 +91,9 @@ export async function POST(req: Request) {
       normalizedUrl = "https://" + normalizedUrl;
     }
 
+    // -------------------------------
     // FETCH HTML
+    // -------------------------------
     let html = "";
     try {
       const res = await fetch(normalizedUrl, {
@@ -102,23 +111,22 @@ export async function POST(req: Request) {
     const key = extractKeySnippets(html);
     const plainText = stripHtml(html).slice(0, 15000);
 
+    // -------------------------------
     // STEP 1 — STRUCTURAL ANALYSIS
+    // -------------------------------
     const step1Prompt = `
 You are a senior UX architect.
 
 Analyze the structure of this webpage.
 
-URL: ${normalizedUrl}
-
-TITLE: ${key.title}
-META: ${key.metaDescription}
-HEADINGS: ${key.headings.join(" | ")}
-BUTTONS: ${key.buttons.join(" | ")}
-
-PLAIN TEXT:
-"""
-${plainText}
-"""
+INPUT_DATA = {
+  "page_url": "${normalizedUrl}",
+  "title": "${key.title}",
+  "meta": "${key.metaDescription}",
+  "headlines": ${JSON.stringify(key.headings, null, 2)},
+  "ctas": ${JSON.stringify(key.buttons, null, 2)},
+  "plain_text_excerpt": "${plainText.slice(0, 5000)}"
+}
 
 Return ONLY JSON:
 
@@ -129,6 +137,11 @@ Return ONLY JSON:
   "ctas": ["string"],
   "problems": ["string"]
 }
+
+Rules:
+- Use ONLY the provided headlines/ctas/plain text.
+- Do NOT invent new headlines or CTAs.
+- If unsure, leave arrays empty.
 `;
 
     const step1 = await client.responses.create({
@@ -139,23 +152,18 @@ Return ONLY JSON:
 
     const structure = JSON.parse(extractJson(step1.output_text));
 
+    // -------------------------------
     // STEP 2 — UX REPORT
-const step2Prompt = `
+    // -------------------------------
+    const step2Prompt = `
 You are a senior UX auditor.
 
-You are given:
-- The website URL
-- A structural analysis of the page
-- A list of REAL extracted headlines and CTAs from the HTML
-
-STRUCTURAL ANALYSIS (for context):
-${JSON.stringify(structure, null, 2)}
-
-AVAILABLE_HEADLINES (exact strings from the page):
-${key.headings.map((h) => `- ${h}`).join("\n") || "- (none)"}
-
-AVAILABLE_CTAS (exact strings from the page):
-${key.buttons.map((b) => `- ${b}`).join("\n") || "- (none)"}
+INPUT_DATA = {
+  "page_url": "${normalizedUrl}",
+  "structure": ${JSON.stringify(structure, null, 2)},
+  "available_headlines": ${JSON.stringify(key.headings, null, 2)},
+  "available_ctas": ${JSON.stringify(key.buttons, null, 2)}
+}
 
 Your job:
 - Evaluate the UX.
@@ -192,16 +200,15 @@ Return ONLY JSON:
   ]
 }
 
-STRICT RULES FOR SUGGESTIONS:
+STRICT RULES:
 
-- "section" must refer to a real area (e.g. "Hero headline", "Primary CTA", "Pricing section").
-- "before" MUST be EXACTLY one of the strings from AVAILABLE_HEADLINES or AVAILABLE_CTAS.
-- Do NOT invent new "before" text. If you can't find a good candidate, reuse the closest real string.
-- "after" must be a direct, improved version of that exact "before" line (more specific, clearer, more action‑oriented).
-- Do NOT shorten or paraphrase "before". It must match the original exactly.
-- If there are no good candidates, return an empty "suggestions" array instead of inventing.
-- Suggestions must be specific and copy-ready.
+- "url" MUST be exactly INPUT_DATA.page_url.
+- "before" MUST be EXACTLY one of INPUT_DATA.available_headlines or INPUT_DATA.available_ctas.
+- Do NOT invent new "before" text.
+- If no valid before exists, return an empty suggestions array.
+- "after" must be a direct improvement of that exact "before".
 - All numbers must be integers.
+- No text outside JSON.
 `;
 
     const step2 = await client.responses.create({
