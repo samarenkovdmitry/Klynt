@@ -140,14 +140,27 @@ Return ONLY JSON:
     const structure = JSON.parse(extractJson(step1.output_text));
 
     // STEP 2 — UX REPORT
-    const step2Prompt = `
+const step2Prompt = `
 You are a senior UX auditor.
 
-Using this structural analysis:
+You are given:
+- The website URL
+- A structural analysis of the page
+- A list of REAL extracted headlines and CTAs from the HTML
 
+STRUCTURAL ANALYSIS (for context):
 ${JSON.stringify(structure, null, 2)}
 
-Generate a UX report.
+AVAILABLE_HEADLINES (exact strings from the page):
+${key.headings.map((h) => `- ${h}`).join("\n") || "- (none)"}
+
+AVAILABLE_CTAS (exact strings from the page):
+${key.buttons.map((b) => `- ${b}`).join("\n") || "- (none)"}
+
+Your job:
+- Evaluate the UX.
+- Generate issues and a breakdown.
+- Generate suggestions that improve REAL copy from the page.
 
 Return ONLY JSON:
 
@@ -179,10 +192,15 @@ Return ONLY JSON:
   ]
 }
 
-Rules:
-- Use ONLY real text from structure.headlines, structure.ctas, or inferred copy.
+STRICT RULES FOR SUGGESTIONS:
+
+- "section" must refer to a real area (e.g. "Hero headline", "Primary CTA", "Pricing section").
+- "before" MUST be EXACTLY one of the strings from AVAILABLE_HEADLINES or AVAILABLE_CTAS.
+- Do NOT invent new "before" text. If you can't find a good candidate, reuse the closest real string.
+- "after" must be a direct, improved version of that exact "before" line (more specific, clearer, more action‑oriented).
+- Do NOT shorten or paraphrase "before". It must match the original exactly.
+- If there are no good candidates, return an empty "suggestions" array instead of inventing.
 - Suggestions must be specific and copy-ready.
-- No generic advice.
 - All numbers must be integers.
 `;
 
