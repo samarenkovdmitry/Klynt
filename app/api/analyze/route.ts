@@ -57,7 +57,9 @@ function extractKeySnippets(html: string) {
     .slice(0, 10);
 
   const buttons = Array.from(
-    html.matchAll(/<(button|a)[^>]*(role=["']button["'][^>]*)?[^>]*>([\s\S]*?)<\/(button|a)>/gi)
+    html.matchAll(
+      /<(button|a)[^>]*(role=["']button["'][^>]*)?[^>]*>([\s\S]*?)<\/(button|a)>/gi
+    )
   )
     .map((m) => stripHtml(m[3]))
     .filter((t) => t && t.length <= 80)
@@ -99,7 +101,7 @@ function fallbackCTAs(plain: string): string[] {
 // -------------------------------
 export async function POST(req: Request) {
   try {
-    const { url } = await req.json();
+    const { url, screenshot } = await req.json();
 
     if (!url || typeof url !== "string") {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
@@ -151,16 +153,23 @@ export async function POST(req: Request) {
     const step1Prompt = `
 You are a senior UX architect.
 
-Analyze the structure of this webpage.
+You are given:
+- The website URL
+- A screenshot of the page (base64 PNG)
+- Extracted HTML text
+- Extracted headlines and CTAs
 
 INPUT_DATA = {
   "page_url": "${normalizedUrl}",
+  "screenshot_base64": "${screenshot ?? ""}",
   "title": "${key.title}",
   "meta": "${key.metaDescription}",
   "headlines": ${JSON.stringify(key.headings, null, 2)},
   "ctas": ${JSON.stringify(key.buttons, null, 2)},
   "plain_text_excerpt": "${plainText.slice(0, 5000)}"
 }
+
+Analyze the structure and visual hierarchy of this page.
 
 Return ONLY JSON:
 
@@ -173,8 +182,9 @@ Return ONLY JSON:
 }
 
 Rules:
-- Use ONLY the provided headlines/ctas/plain text.
-- Do NOT invent new headlines or CTAs.
+- Prefer text and hierarchy that can be inferred from the screenshot.
+- Use the provided headlines/ctas/plain text as hints.
+- Do NOT invent completely new marketing claims.
 - If unsure, leave arrays empty.
 `;
 
@@ -192,15 +202,22 @@ Rules:
     const step2Prompt = `
 You are a senior UX auditor.
 
+You are given:
+- The website URL
+- A screenshot of the page
+- Structural analysis
+- Real extracted headlines and CTAs
+
 INPUT_DATA = {
   "page_url": "${normalizedUrl}",
+  "screenshot_base64": "${screenshot ?? ""}",
   "structure": ${JSON.stringify(structure, null, 2)},
   "available_headlines": ${JSON.stringify(key.headings, null, 2)},
   "available_ctas": ${JSON.stringify(key.buttons, null, 2)}
 }
 
 Your job:
-- Evaluate the UX.
+- Evaluate the UX visually and structurally.
 - Generate issues and a breakdown.
 - Generate suggestions that improve REAL copy from the page.
 
@@ -237,10 +254,12 @@ Return ONLY JSON:
 STRICT RULES:
 
 - "url" MUST be exactly INPUT_DATA.page_url.
-- "before" MUST be EXACTLY one of INPUT_DATA.available_headlines or INPUT_DATA.available_ctas.
+- "before" MUST be EXACT text from either:
+  - INPUT_DATA.available_headlines
+  - INPUT_DATA.available_ctas
 - Do NOT invent new "before" text.
 - If no valid before exists, return an empty suggestions array.
-- "after" must be a direct improvement of that exact "before".
+- "after" must be a direct improvement of that exact "before" (clearer, more specific, more action-oriented).
 - All numbers must be integers.
 - No text outside JSON.
 `;

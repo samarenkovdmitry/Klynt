@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import html2canvas from "html2canvas";
 import {
   DownloadSimple,
   ChatCircleText,
@@ -42,7 +43,7 @@ export default function Analyze() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
- const isButtonDisabled = !url && !uploadedImage;
+  const isButtonDisabled = !url && !uploadedImage;
 
   const styles = {
     outerCard: "rounded-xl bg-white border border-[#DCE2E7]",
@@ -86,37 +87,63 @@ export default function Analyze() {
     setUploadedImage(file);
   }
 
-async function handleAnalyze() {
-  try {
-    if (!url || url.trim() === "") {
-      console.error("URL is empty");
-      return;
+  // -------------------------------
+  // SCREENSHOT CAPTURE (html2canvas)
+  // -------------------------------
+  async function captureScreenshot() {
+    try {
+      const canvas = await html2canvas(document.body, {
+        scale: 1.5,
+        useCORS: true,
+        logging: false,
+      });
+
+      return canvas.toDataURL("image/png");
+    } catch (err) {
+      console.error("Screenshot failed:", err);
+      return null;
     }
-
-    setLoading(true);
-    setData(null);
-
-    const res = await fetch("https://klynt-three.vercel.app/api/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url }),
-    });
-
-    if (!res.ok) {
-      console.error("API error:", res.status);
-      return;
-    }
-
-    const json = await res.json();
-
-    // ВАЖНО: используем output_text
-    setData(json);
-  } catch (err) {
-    console.error("Request failed:", err);
-  } finally {
-    setLoading(false);
   }
-}
+
+  // -------------------------------
+  // ANALYZE HANDLER (with screenshot)
+  // -------------------------------
+  async function handleAnalyze() {
+    try {
+      if (!url || url.trim() === "") {
+        console.error("URL is empty");
+        return;
+      }
+
+      setLoading(true);
+      setData(null);
+
+      // 1) Capture screenshot
+      const screenshot = await captureScreenshot();
+
+      // 2) Send to backend
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url,
+          screenshot, // <— добавили
+        }),
+      });
+
+      if (!res.ok) {
+        console.error("API error:", res.status);
+        return;
+      }
+
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      console.error("Request failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function normalizeRisk(risk: string) {
     if (!risk) return "—";
@@ -164,6 +191,7 @@ async function handleAnalyze() {
     if (severity === "medium") return "#EA7B03";
     return "#6B7280";
   }
+  
   return (
     <>
       {/* TOP NAVBAR */}
