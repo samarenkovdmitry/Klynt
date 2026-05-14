@@ -7,26 +7,25 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+// Convert File → base64
+async function fileToBase64(file: File) {
+  const buffer = await file.arrayBuffer();
+  return Buffer.from(buffer).toString("base64");
+}
+
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
 
     const url = (formData.get("url") as string) ?? "";
-    const screenshot = (formData.get("screenshot") as string) ?? "";
+    const screenshot = formData.get("screenshot") as File | null;
 
-    const prompt = `
-You are a strict JSON generator.
+    const basePrompt = `
+You are a senior UX auditor. Analyze the website using BOTH the URL and the screenshot if provided.
 
-Analyze the website: ${url}
+Return ONLY valid JSON. No markdown. No commentary.
 
-Return ONLY valid JSON.  
-No commentary.  
-No markdown.  
-No backticks.  
-No explanations.  
-No text outside JSON.
-
-JSON FORMAT (MANDATORY):
+JSON FORMAT:
 
 {
   "url": "string",
@@ -57,19 +56,37 @@ JSON FORMAT (MANDATORY):
 }
 
 Rules:
-- All numbers must be integers.
-- Always include at least 3 issues.
 - Always include all fields.
-- Do NOT invent new fields.
+- Always include at least 3 issues.
+- All numbers must be integers.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
-- Do NOT add comments.
 `;
+
+    // Build input array for Responses API
+    const inputContent: any[] = [
+      { type: "input_text", text: basePrompt },
+      { type: "input_text", text: `Website URL: ${url}` }
+    ];
+
+    // If screenshot exists → attach as Vision input
+    if (screenshot) {
+      const base64 = await fileToBase64(screenshot);
+      inputContent.push({
+        type: "input_image",
+        image_url: `data:${screenshot.type};base64,${base64}`
+      });
+    }
 
     const response = await client.responses.create({
       model: "gpt-4.1",
-      input: prompt,
-      temperature: 0.2,
+      input: [
+        {
+          role: "user",
+          content: inputContent
+        }
+      ],
+      temperature: 0.2
     });
 
     const raw = response.output_text;
