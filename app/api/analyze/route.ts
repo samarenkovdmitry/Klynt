@@ -23,6 +23,12 @@ export async function POST(req: Request) {
     const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the URL and the screenshot if provided.
 
+Your goal:
+- Perform a deep UX audit.
+- Detect structural, visual, interaction, clarity, trust, and conversion issues.
+- Use screenshot for layout, spacing, hierarchy, visual density, readability, contrast, CTA prominence, and trust signals.
+- Use URL for content, messaging, semantics, navigation, and intent.
+
 Return ONLY valid JSON. No markdown. No commentary.
 
 JSON FORMAT:
@@ -56,12 +62,15 @@ JSON FORMAT:
 }
 
 Rules:
-- Always include all fields.
-- Always include at least 3 issues.
+- Generate between 5 and 10 UX issues.
+- Generate between 5 and 10 improvement suggestions.
+- Issues must be deep, specific, and tied to screenshot + URL.
+- Each issue must include 2–4 bullet points with concrete observations.
 - All numbers must be integers.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
 `;
+
 
     // Build input array for Responses API
     const inputContent: any[] = [
