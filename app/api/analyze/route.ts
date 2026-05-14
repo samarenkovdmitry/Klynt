@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   try {
     const { url } = await req.json();
 
-    const prompt = `
+const prompt = `
 You are a strict JSON generator.
 
 Analyze the website: ${url}
@@ -21,8 +21,7 @@ No commentary.
 No markdown.  
 No backticks.  
 No explanations.  
-No text outside JSON.  
-If you add anything outside JSON — you FAIL.
+No text outside JSON.
 
 JSON FORMAT (MANDATORY):
 
@@ -43,18 +42,28 @@ JSON FORMAT (MANDATORY):
     "hierarchy": number,
     "trust": number,
     "cta": number
-  }
+  },
+  "suggestions": [
+    {
+      "section": "string",
+      "before": "string",
+      "after": "string",
+      "impact": "string"
+    }
+  ]
 }
 
 Rules:
 - All numbers must be integers.
 - Always include at least 3 issues.
+- Always include at least 2 suggestions.
 - Always include all fields.
 - Do NOT invent new fields.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
 - Do NOT add comments.
 `;
+
 
 
     const response = await client.responses.create({

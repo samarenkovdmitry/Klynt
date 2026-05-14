@@ -444,107 +444,97 @@ async function handleAnalyze() {
                   </div>
                 </div>
 
-                {/* SUGGESTED IMPROVEMENTS */}
-                <div className="mt-6">
-                  <h3 className={styles.titleSection}>Suggested Improvements</h3>
+{/* SUGGESTED IMPROVEMENTS */}
+{data?.suggestions && data.suggestions.length > 0 && (
+  <div className="mt-6">
+    <h3 className={styles.titleSection}>Suggested Improvements</h3>
 
-                  <div className="space-y-4 mt-4">
-                    {[
-                      {
-                        section: "Headline",
-                        before: "Discover and play music",
-                        after: "Stream and share music instantly with zero friction",
-                        impact: "+18% conversion",
-                      },
-                      {
-                        section: "CTA",
-                        before: "Sign up",
-                        after: "Start listening free in 10 seconds",
-                        impact: "+12% CTR",
-                      },
-                    ].map((item, index) => (
-                      <div
-                        key={index}
-                        className="relative rounded-xl border border-[var(--stroke-light)] p-4 grid grid-cols-[14px_1fr] gap-4"
+    <div className="space-y-4 mt-4">
+      {data.suggestions.map((item: any, index: number) => (
+        <div
+          key={index}
+          className="relative rounded-xl border border-[var(--stroke-light)] p-4 grid grid-cols-[14px_1fr] gap-4"
+        >
+          {/* LEFT NUMBER */}
+          <div className="w-4 flex items-start justify-center">
+            <span className="text-base font-regular text-[var(--ink-secondary)]">
+              {index + 1}
+            </span>
+          </div>
+
+          {/* CENTER */}
+          <div className="relative">
+
+            {/* IMPACT BADGE */}
+            <div className="absolute right-0 top-0">
+              <div className="rounded-md border border-green-600 bg-green-600 px-2.5 py-1 text-sm font-medium text-white">
+                {item.impact}
+              </div>
+            </div>
+
+            {/* SECTION TITLE */}
+            <p className="text-base font-medium text-[var(--ink-primary)] pr-20">
+              {item.section}
+            </p>
+
+            {/* BEFORE / AFTER */}
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+
+              {/* BEFORE */}
+              <div className="flex flex-col h-full">
+                <p className="text-xs font-medium text-[var(--ink-secondary)] mb-1">Before</p>
+                <div className="rounded-lg bg-soft p-3 flex-1">
+                  <p className="text-sm leading-6 text-[var(--ink-primary)]">
+                    {item.before}
+                  </p>
+                </div>
+              </div>
+
+              {/* AFTER */}
+              <div className="flex flex-col h-full">
+                <p className="text-xs font-medium text-[var(--ink-secondary)] mb-1">Improved</p>
+
+                <div className="rounded-lg bg-blue-100 px-3 py-[9px] flex-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-medium leading-5 text-[var(--ink-primary)]">
+                      {item.after}
+                    </p>
+
+                    <div className="relative">
+                      <button
+                        onClick={() => handleCopy(item.after, index)}
+                        className="flex items-center gap-1 rounded-md p-1 text-[var(--ink-primary)] hover:opacity-70 transition -mr-1"
                       >
-                        {/* LEFT NUMBER */}
-                        <div className="w-4 flex items-start justify-center">
-                          <span className="text-base font-regular text-[var(--ink-secondary)]">
-                            {index + 1}
-                          </span>
+                        {copiedIndex === index ? (
+                          <Check size={18} weight="regular" />
+                        ) : (
+                          <CopySimple size={18} weight="regular" />
+                        )}
+                      </button>
+
+                      {copiedIndex === index && (
+                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs text-[var(--ink-primary)] bg-white px-2 py-0.5 rounded-md border border-[rgba(0,0,0,0.06)] shadow-[0_1px_3px_rgba(0,0,0,0.05)] animate-fade-in">
+                          Copied
                         </div>
-
-                        {/* CENTER */}
-                        <div className="relative">
-
-                          {/* IMPACT BADGE */}
-                          <div className="absolute right-0 top-0">
-                            <div className="rounded-md border border-green-600 bg-green-600 px-2.5 py-1 text-sm font-medium text-white">
-                              {item.impact}
-                            </div>
-                          </div>
-
-                          {/* SECTION TITLE */}
-                          <p className="text-base font-medium text-[var(--ink-primary)] pr-20">
-                            {item.section}
-                          </p>
-
-                          {/* BEFORE / AFTER */}
-                          <div className="mt-4 grid gap-4 md:grid-cols-2">
-
-                            {/* BEFORE */}
-                            <div className="flex flex-col h-full">
-                              <p className="text-xs font-medium text-[var(--ink-secondary)] mb-1">Before</p>
-                              <div className="rounded-lg bg-soft p-3 flex-1">
-                                <p className="text-sm leading-6 text-[var(--ink-primary)]">
-                                  {item.before}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* AFTER */}
-                            <div className="flex flex-col h-full">
-                              <p className="text-xs font-medium text-[var(--ink-secondary)] mb-1">Improved</p>
-
-                              <div className="rounded-lg bg-blue-100 px-3 py-[9px] flex-1">
-                                <div className="flex items-center justify-between gap-3">
-                                  <p className="text-sm font-medium leading-5 text-[var(--ink-primary)]">
-                                    {item.after}
-                                  </p>
-
-                                  <div className="relative">
-                                    <button
-                                      onClick={() => handleCopy(item.after, index)}
-                                      className="flex items-center gap-1 rounded-md p-1 text-[var(--ink-primary)] hover:opacity-70 transition -mr-1"
-                                    >
-                                      {copiedIndex === index ? (
-                                        <Check size={18} weight="regular" />
-                                      ) : (
-                                        <CopySimple size={18} weight="regular" />
-                                      )}
-                                    </button>
-
-                                    {copiedIndex === index && (
-                                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs text-[var(--ink-primary)] bg-white px-2 py-0.5 rounded-md border border-[rgba(0,0,0,0.06)] shadow-[0_1px_3px_rgba(0,0,0,0.05)] animate-fade-in">
-                                        Copied
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                          </div>
-
-                          <p className="mt-4 text-sm text-[var(--ink-secondary)]">
-                            Why it works: It makes the message clearer and reduces cognitive load for the user.
-                          </p>
-
-                        </div>
-                      </div>
-                    ))}
+                      )}
+                    </div>
                   </div>
                 </div>
+              </div>
+
+            </div>
+
+            <p className="mt-4 text-sm text-[var(--ink-secondary)]">
+              Why it works: It makes the message clearer and reduces cognitive load for the user.
+            </p>
+
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
 
                 {/* UX BREAKDOWN */}
                 <div className="mt-10">
