@@ -48,7 +48,7 @@ export default function Analyze() {
     if (!file) return;
     setUploadedImage(file);
   }
-  
+
   const isButtonDisabled = !url && !uploadedImage;
 
   const styles = {
@@ -110,42 +110,33 @@ export default function Analyze() {
   // ANALYZE HANDLER (with screenshot)
   // -------------------------------
   async function handleAnalyze() {
-    try {
-      if (!url || url.trim() === "") {
-        console.error("URL is empty");
-        return;
-      }
+  try {
+    if (!url && !uploadedImage) return;
 
-      setLoading(true);
-      setData(null);
+    setLoading(true);
+    setData(null);
 
-      // 1) Capture screenshot
-      const screenshot = "";
+    const form = new FormData();
+    form.append("url", url);
 
-      // 2) Build FormData
-      const form = new FormData();
-      form.append("url", url);
-      form.append("screenshot", screenshot);
-
-      // 3) Send to backend
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        body: form,
-      });
-
-      if (!res.ok) {
-        console.error("API error:", res.status);
-        return;
-      }
-
-      const json = await res.json();
-      setData(json);
-    } catch (err) {
-      console.error("Request failed:", err);
-    } finally {
-      setLoading(false);
+    if (uploadedImage) {
+      form.append("screenshot", uploadedImage);
     }
+
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      body: form,
+    });
+
+    const json = await res.json();
+    setData(json);
+  } catch (err) {
+    console.error("Request failed:", err);
+  } finally {
+    setLoading(false);
   }
+}
+
 
   function normalizeRisk(risk: string) {
     if (!risk) return "—";
