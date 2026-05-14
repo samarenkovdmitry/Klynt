@@ -101,7 +101,7 @@ export default function Analyze() {
       return canvas.toDataURL("image/png");
     } catch (err) {
       console.error("Screenshot failed:", err);
-      return null;
+      return "";
     }
   }
 
@@ -121,15 +121,16 @@ export default function Analyze() {
       // 1) Capture screenshot
       const screenshot = await captureScreenshot();
 
-      // 2) Send to backend
+      // 2) Build FormData
       const form = new FormData();
-form.append("url", url);
-form.append("screenshot", screenshot ?? "");
+      form.append("url", url);
+      form.append("screenshot", screenshot);
 
-const res = await fetch("/api/analyze", {
-  method: "POST",
-  body: form,
-});
+      // 3) Send to backend
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        body: form,
+      });
 
       if (!res.ok) {
         console.error("API error:", res.status);
@@ -192,7 +193,7 @@ const res = await fetch("/api/analyze", {
     return "#6B7280";
   }
 
-  return (
+return (
     <>
       {/* TOP NAVBAR */}
       <header className="w-full border-b border-[#CDD7DF] bg-[#EBEFF3]">

@@ -101,9 +101,12 @@ function fallbackCTAs(plain: string): string[] {
 // -------------------------------
 export async function POST(req: Request) {
   try {
+    // -------------------------------
+    // READ FORMDATA (IMPORTANT!)
+    // -------------------------------
     const form = await req.formData();
-const url = form.get("url") as string;
-const screenshot = form.get("screenshot") as string;
+    const url = form.get("url") as string;
+    const screenshot = form.get("screenshot") as string;
 
     if (!url || typeof url !== "string") {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
@@ -184,9 +187,9 @@ Return ONLY JSON:
 }
 
 Rules:
-- Prefer text and hierarchy that can be inferred from the screenshot.
-- Use the provided headlines/ctas/plain text as hints.
-- Do NOT invent completely new marketing claims.
+- Prefer text and hierarchy inferred from the screenshot.
+- Use provided headlines/ctas/plain text as hints.
+- Do NOT invent new marketing claims.
 - If unsure, leave arrays empty.
 `;
 
@@ -229,39 +232,17 @@ Return ONLY JSON:
   "url": "string",
   "score": number,
   "risk": "low" | "medium" | "high",
-  "issues": [
-    {
-      "title": "string",
-      "severity": "low" | "medium" | "high",
-      "description": "string",
-      "bullets": ["string"]
-    }
-  ],
-  "breakdown": {
-    "clarity": number,
-    "hierarchy": number,
-    "trust": number,
-    "cta": number
-  },
-  "suggestions": [
-    {
-      "section": "string",
-      "before": "string",
-      "after": "string",
-      "impact": "string"
-    }
-  ]
+  "issues": [...],
+  "breakdown": {...},
+  "suggestions": [...]
 }
 
 STRICT RULES:
-
 - "url" MUST be exactly INPUT_DATA.page_url.
-- "before" MUST be EXACT text from either:
-  - INPUT_DATA.available_headlines
-  - INPUT_DATA.available_ctas
-- Do NOT invent new "before" text.
-- If no valid before exists, return an empty suggestions array.
-- "after" must be a direct improvement of that exact "before" (clearer, more specific, more action-oriented).
+- "before" MUST be EXACT text from available_headlines or available_ctas.
+- Do NOT invent new "before".
+- If no valid before exists → suggestions = [].
+- "after" must be a direct improvement of that exact before.
 - All numbers must be integers.
 - No text outside JSON.
 `;
