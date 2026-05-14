@@ -579,45 +579,50 @@ export default function Analyze() {
               )}
               {/* UX BREAKDOWN */}
               <div className="mt-10">
-                <h3 className={styles.titleSection}>UX Breakdown</h3>
+  <h3 className={styles.titleSection}>UX Breakdown</h3>
 
-                <div className="rounded-xl bg-white border border-[var(--stroke-light)] p-5 space-y-5 mt-4">
-                  {data.breakdown && Object.entries(data.breakdown).map(([key, value]) => {
-                    const numericValue = Number(value ?? 0);
-                    const meta = getBreakdownMeta(numericValue);
+  <div className="rounded-xl bg-white border border-[var(--stroke-light)] p-5 space-y-5 mt-4">
+    {data.breakdown &&
+      Object.entries(data.breakdown).map(([key, value]) => {
+        const numericValue = Number(value ?? 0); // 0–10
+        const percent = numericValue * 10;       // 0–100
+        const meta = getBreakdownMeta(numericValue);
 
-                    return (
-                      <div key={key}>
-                        <div className="mb-1 flex justify-between">
-                          <span className="capitalize text-sm font-medium text-[var(--ink-primary)]">
-                            {key}
-                          </span>
+        return (
+          <div key={key}>
+            {/* LABEL + VALUE + STATUS */}
+            <div className="mb-1 flex justify-between">
+              <span className="capitalize text-sm font-medium text-[var(--ink-primary)]">
+                {key}
+              </span>
 
-                          <div className="flex items-center gap-1">
-                            <span className="text-sm font-semibold text-[var(--ink-primary)]">
-                              {numericValue}/10
-                            </span>
+              <div className="flex items-center gap-1">
+                {/* VALUE AS PERCENT */}
+                <span className="text-sm font-semibold text-[var(--ink-primary)]">
+                  {percent}%
+                </span>
 
-                            <span className="text-[var(--stroke-light)]">•</span>
+                <span className="text-[var(--stroke-light)]">•</span>
 
-                            <span className={`text-sm font-medium ${meta.labelColor}`}>
-                              {meta.label}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* BAR */}
-                        <div className="h-1.5 w-full rounded-full bg-[var(--stroke-light)] overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all ${meta.bar}`}
-                            style={{ width: `${numericValue * 10}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                {/* STATUS LABEL */}
+                <span className={`text-sm font-medium ${meta.labelColor}`}>
+                  {meta.label}
+                </span>
               </div>
+            </div>
+
+            {/* PROGRESS BAR */}
+            <div className="h-1.5 w-full rounded-full bg-[var(--stroke-light)] overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${meta.bar}`}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+          </div>
+        );
+      })}
+  </div>
+</div>
 
               {/* NEXT ACTIONS */}
               <div className="mt-10 flex flex-col items-center gap-6">
