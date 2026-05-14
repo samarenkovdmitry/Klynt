@@ -1,9 +1,13 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+import OpenAI from "openai";
+
 export const config = {
+  api: {
+    bodyParser: false, // важно — мы сами парсим multipart
+  },
   runtime: "nodejs",
   maxDuration: 60,
 };
-
-import OpenAI from "openai";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -94,39 +98,57 @@ function fallbackCTAs(plain: string): string[] {
 }
 
 // -------------------------------
+// MULTIPART PARSER
+// -------------------------------
+async function parseMultipart(req: NextApiRequest) {
+  return new Promise<{ url: string; screenshot: string }>((resolve, reject) => {
+    const chunks: Uint8Array[] = [];
+
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => {
+      const buffer = Buffer.concat(chunks);
+      const contentType = req.headers["content-type"] || "";
+      const boundary = contentType.split("boundary=")[1];
+
+      if (!boundary) return reject("Missing boundary");
+
+      const parts = buffer.toString().split(`--${boundary}`);
+
+      let url = "";
+      let screenshot = "";
+
+      for (const part of parts) {
+        if (part.includes('name="url"')) {
+          url = part.split("\r\n\r\n")[1]?.trim();
+        }
+        if (part.includes('name="screenshot"')) {
+          screenshot = part.split("\r\n\r\n")[1]?.trim();
+        }
+      }
+
+      resolve({ url, screenshot });
+    });
+
+    req.on("error", reject);
+  });
+}
+
+// -------------------------------
 // MAIN HANDLER
 // -------------------------------
-export default async function handler(req: Request): Promise<Response> {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
-    // Parse multipart/form-data manually
-    const contentType = req.headers.get("content-type") || "";
-    const boundary = contentType.split("boundary=")[1];
-
-    if (!boundary) {
-      return new Response(JSON.stringify({ error: "Missing boundary" }), {
-        status: 400,
-      });
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const buffer = Buffer.from(await req.arrayBuffer());
-    const parts = buffer.toString().split(`--${boundary}`);
-
-    let url = "";
-    let screenshot = "";
-
-    for (const part of parts) {
-      if (part.includes('name="url"')) {
-        url = part.split("\r\n\r\n")[1]?.trim();
-      }
-      if (part.includes('name="screenshot"')) {
-        screenshot = part.split("\r\n\r\n")[1]?.trim();
-      }
-    }
+    const { url, screenshot } = await parseMultipart(req);
 
     if (!url) {
-      return new Response(JSON.stringify({ error: "URL missing" }), {
-        status: 400,
-      });
+      return res.status(400).json({ error: "URL missing" });
     }
 
     let normalizedUrl = url.trim();
@@ -221,15 +243,11 @@ Return ONLY JSON:
 
     const report = JSON.parse(extractJson(step2.output_text));
 
-    return new Response(JSON.stringify(report), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return res.status(200).json(report);
   } catch (error) {
     console.error("FULL ERROR:", error);
-    return new Response(
-      JSON.stringify({ error: "Internal Server Error", details: String(error) }),
-      { status: 500 }
-    );
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", details: String(error) });
   }
 }

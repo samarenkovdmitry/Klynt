@@ -98,7 +98,7 @@ export default function Analyze() {
         logging: false,
       });
 
-      return canvas.toDataURL("image/png");
+      return canvas.toDataURL("image/png").split(",")[1];
     } catch (err) {
       console.error("Screenshot failed:", err);
       return "";
