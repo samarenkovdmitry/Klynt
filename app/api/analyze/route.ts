@@ -101,7 +101,9 @@ function fallbackCTAs(plain: string): string[] {
 // -------------------------------
 export async function POST(req: Request) {
   try {
-    const { url, screenshot } = await req.json();
+    const form = await req.formData();
+const url = form.get("url") as string;
+const screenshot = form.get("screenshot") as string;
 
     if (!url || typeof url !== "string") {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 });

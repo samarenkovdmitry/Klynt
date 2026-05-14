@@ -122,14 +122,14 @@ export default function Analyze() {
       const screenshot = await captureScreenshot();
 
       // 2) Send to backend
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url,
-          screenshot, // <— добавили
-        }),
-      });
+      const form = new FormData();
+form.append("url", url);
+form.append("screenshot", screenshot ?? "");
+
+const res = await fetch("/api/analyze", {
+  method: "POST",
+  body: form,
+});
 
       if (!res.ok) {
         console.error("API error:", res.status);
@@ -191,7 +191,7 @@ export default function Analyze() {
     if (severity === "medium") return "#EA7B03";
     return "#6B7280";
   }
-  
+
   return (
     <>
       {/* TOP NAVBAR */}
