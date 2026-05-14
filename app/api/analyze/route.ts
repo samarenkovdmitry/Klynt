@@ -7,6 +7,23 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+// JSON REPAIR
+function extractJson(text: string): string {
+  if (!text) throw new Error("Empty model output");
+
+  text = text.replace(/```json/gi, "").replace(/```/g, "");
+
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+
+  if (start === -1 || end === -1) {
+    throw new Error("No JSON object found in model output");
+  }
+
+  return text.slice(start, end + 1);
+}
+
+// HTML CLEANING
 function stripHtml(html: string): string {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, "")
@@ -54,31 +71,44 @@ export async function POST(req: Request) {
   try {
     const { url } = await req.json();
 
+    if (!url || typeof url !== "string") {
+      return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
+    }
+
+    // Normalize URL
+    let normalizedUrl = url.trim();
+    if (
+      !normalizedUrl.startsWith("http://") &&
+      !normalizedUrl.startsWith("https://")
+    ) {
+      normalizedUrl = "https://" + normalizedUrl;
+    }
+
+    // FETCH HTML
     let html = "";
     try {
-      const res = await fetch(url, {
+      const res = await fetch(normalizedUrl, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (KlyntUXBot/2.0)"
-        }
+          "User-Agent": "Mozilla/5.0 (KlyntUXBot/2.0)",
+        },
       });
       html = await res.text();
     } catch (e) {
       console.error("HTML FETCH ERROR:", e);
+      html = "";
     }
 
     html = html.slice(0, 40000);
     const key = extractKeySnippets(html);
     const plainText = stripHtml(html).slice(0, 15000);
 
-    // -------------------------------
     // STEP 1 — STRUCTURAL ANALYSIS
-    // -------------------------------
     const step1Prompt = `
 You are a senior UX architect.
 
 Analyze the structure of this webpage.
 
-URL: ${url}
+URL: ${normalizedUrl}
 
 TITLE: ${key.title}
 META: ${key.metaDescription}
@@ -104,14 +134,12 @@ Return ONLY JSON:
     const step1 = await client.responses.create({
       model: "gpt-4o-mini",
       input: step1Prompt,
-      temperature: 0.2
+      temperature: 0.2,
     });
 
-    const structure = JSON.parse(step1.output_text);
+    const structure = JSON.parse(extractJson(step1.output_text));
 
-    // -------------------------------
-    // STEP 2 — UX REPORT BASED ON STRUCTURE
-    // -------------------------------
+    // STEP 2 — UX REPORT
     const step2Prompt = `
 You are a senior UX auditor.
 
@@ -161,15 +189,14 @@ Rules:
     const step2 = await client.responses.create({
       model: "gpt-4o-mini",
       input: step2Prompt,
-      temperature: 0.25
+      temperature: 0.25,
     });
 
-    const report = JSON.parse(step2.output_text);
+    const report = JSON.parse(extractJson(step2.output_text));
 
     return NextResponse.json(report, { status: 200 });
-
   } catch (error) {
-    console.error(error);
+    console.error("FULL ERROR:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
