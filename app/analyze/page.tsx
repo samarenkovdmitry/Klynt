@@ -119,7 +119,7 @@ export default function Analyze() {
       setData(null);
 
       // 1) Capture screenshot
-      const screenshot = await captureScreenshot();
+      const screenshot = "";
 
       // 2) Build FormData
       const form = new FormData();
