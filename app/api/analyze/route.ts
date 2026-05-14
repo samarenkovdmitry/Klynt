@@ -72,6 +72,29 @@ function extractKeySnippets(html: string) {
 }
 
 // -------------------------------
+// FALLBACKS (for sites like Throxy)
+// -------------------------------
+function fallbackHeadlines(plain: string): string[] {
+  const lines = plain
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 20 && l.length < 120);
+
+  return lines.slice(0, 2);
+}
+
+function fallbackCTAs(plain: string): string[] {
+  const candidates = plain
+    .split(/[\.\n]/)
+    .map((l) => l.trim())
+    .filter((l) =>
+      /(start|book|try|get|schedule|contact|sign|join|learn)/i.test(l)
+    );
+
+  return candidates.slice(0, 3);
+}
+
+// -------------------------------
 // MAIN HANDLER
 // -------------------------------
 export async function POST(req: Request) {
@@ -110,6 +133,17 @@ export async function POST(req: Request) {
     html = html.slice(0, 40000);
     const key = extractKeySnippets(html);
     const plainText = stripHtml(html).slice(0, 15000);
+
+    // -------------------------------
+    // APPLY FALLBACKS
+    // -------------------------------
+    if (key.headings.length === 0) {
+      key.headings = fallbackHeadlines(plainText);
+    }
+
+    if (key.buttons.length === 0) {
+      key.buttons = fallbackCTAs(plainText);
+    }
 
     // -------------------------------
     // STEP 1 — STRUCTURAL ANALYSIS
