@@ -7,6 +7,51 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+// очень простой, но рабочий "очиститель" HTML → текста
+function stripHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<\/(div|section|article|main|header|footer)>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// вытаскиваем ключевые куски: title, meta description, h1–h3, кнопки
+function extractKeySnippets(html: string) {
+  const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+  const title = titleMatch ? titleMatch[1].trim() : null;
+
+  const metaDescMatch = html.match(
+    /<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["'][^>]*>/i
+  );
+  const metaDescription = metaDescMatch ? metaDescMatch[1].trim() : null;
+
+  const headings = Array.from(
+    html.matchAll(/<(h1|h2|h3)[^>]*>([\s\S]*?)<\/\1>/gi)
+  )
+    .map((m) => stripHtml(m[2]))
+    .filter(Boolean)
+    .slice(0, 10);
+
+  const buttons = Array.from(
+    html.matchAll(/<(button|a)[^>]*(role=["']button["'][^>]*)?[^>]*>([\s\S]*?)<\/(button|a)>/gi)
+  )
+    .map((m) => stripHtml(m[3]))
+    .filter((t) => t && t.length <= 80)
+    .slice(0, 15);
+
+  return {
+    title,
+    metaDescription,
+    headings,
+    buttons,
+  };
+}
+
 export async function POST(req: Request) {
   try {
     const { url } = await req.json();
@@ -15,7 +60,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
     }
 
-    // 1) Фетчим HTML страницы
+    // 1) Фетчим HTML
     let html = "";
     try {
       const res = await fetch(url, {
@@ -31,34 +76,40 @@ export async function POST(req: Request) {
       console.error("HTML FETCH ERROR:", e);
     }
 
-    // 2) Ограничиваем размер HTML, чтобы не взорвать контекст
-    const MAX_HTML_LENGTH = 15000;
+    const MAX_HTML_LENGTH = 40000;
     if (html.length > MAX_HTML_LENGTH) {
       html = html.slice(0, MAX_HTML_LENGTH);
     }
 
+    const key = extractKeySnippets(html);
+    const plainText = stripHtml(html).slice(0, 12000);
+
     const prompt = `
-You are a senior UX auditor.
+You are a senior UX auditor for marketing and product websites.
 
 You are given:
 - The website URL
-- The raw HTML of the page (possibly truncated)
+- Key extracted content (title, meta description, headings, buttons)
+- A truncated plain-text version of the page
 
 Your job:
-- Analyze the UX of the page based on structure, copy, hierarchy, clarity, trust, and calls to action.
-- Use BOTH the URL and the HTML to infer what the page is about and how it behaves.
-
-IMPORTANT:
-- Focus on concrete, actionable UX insights.
-- Avoid generic advice like "improve clarity" or "make it more modern".
-- Use real text from the HTML when suggesting improvements.
+- Understand what this page is trying to do.
+- Evaluate clarity, hierarchy, trust, and CTA strength.
+- Identify concrete UX issues.
+- Propose specific, copy-ready improvements.
 
 WEBSITE URL:
 ${url}
 
-PAGE HTML (may be truncated):
+KEY CONTENT (parsed from HTML):
+- Title: ${key.title ?? "N/A"}
+- Meta description: ${key.metaDescription ?? "N/A"}
+- Headings: ${key.headings.join(" | ") || "N/A"}
+- Buttons / CTAs: ${key.buttons.join(" | ") || "N/A"}
+
+PLAIN TEXT (truncated):
 """
-${html}
+${plainText}
 """
 
 Return ONLY valid JSON in this exact format:
@@ -91,13 +142,16 @@ Return ONLY valid JSON in this exact format:
   ]
 }
 
-Rules:
+STRICT RULES:
+
 - All numbers must be integers.
 - Always include at least 3 issues.
 - Always include at least 2 suggestions.
-- "before" MUST use real or very plausible text from the HTML or inferred copy.
-- "after" MUST be a concrete, improved version of that text.
-- "impact" MUST be realistic and tied to UX principles (clarity, hierarchy, trust, CTA strength).
+- "section" should refer to a real area (e.g. "Hero headline", "Primary CTA", "Pricing section").
+- "before" MUST be based on real or very plausible text from the headings, buttons, or plain text.
+- "after" MUST be a concrete, improved version of that text, optimized for clarity, hierarchy, or conversion.
+- "impact" MUST be realistic and tied to UX principles (e.g. "Improves scannability of hero", "Reduces friction in signup CTA").
+- Avoid generic advice like "make it clearer" without specifying HOW.
 - Do NOT invent new fields.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
@@ -108,7 +162,7 @@ Rules:
     const response = await client.responses.create({
       model: "gpt-4o-mini",
       input: prompt,
-      temperature: 0.2,
+      temperature: 0.25,
     });
 
     const raw = response.output_text;
