@@ -74,7 +74,7 @@ function extractKeySnippets(html: string) {
 }
 
 // -------------------------------
-// FALLBACKS (for sites like Throxy)
+// FALLBACKS
 // -------------------------------
 function fallbackHeadlines(plain: string): string[] {
   const lines = plain
@@ -102,17 +102,16 @@ function fallbackCTAs(plain: string): string[] {
 export async function POST(req: Request) {
   try {
     // -------------------------------
-    // READ FORMDATA (IMPORTANT!)
+    // READ FORMDATA
     // -------------------------------
     const form = await req.formData();
     const url = form.get("url") as string;
     const screenshot = form.get("screenshot") as string;
 
-    if (!url || typeof url !== "string") {
-      return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
+    if (!url) {
+      return NextResponse.json({ error: "URL missing" }, { status: 400 });
     }
 
-    // Normalize URL
     let normalizedUrl = url.trim();
     if (
       !normalizedUrl.startsWith("http://") &&
@@ -127,57 +126,37 @@ export async function POST(req: Request) {
     let html = "";
     try {
       const res = await fetch(normalizedUrl, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (KlyntUXBot/2.0)",
-        },
+        headers: { "User-Agent": "Mozilla/5.0 (KlyntUXBot/2.0)" },
       });
       html = await res.text();
     } catch (e) {
       console.error("HTML FETCH ERROR:", e);
-      html = "";
     }
 
     html = html.slice(0, 40000);
     const key = extractKeySnippets(html);
     const plainText = stripHtml(html).slice(0, 15000);
 
-    // -------------------------------
-    // APPLY FALLBACKS
-    // -------------------------------
-    if (key.headings.length === 0) {
-      key.headings = fallbackHeadlines(plainText);
-    }
-
-    if (key.buttons.length === 0) {
-      key.buttons = fallbackCTAs(plainText);
-    }
+    if (key.headings.length === 0) key.headings = fallbackHeadlines(plainText);
+    if (key.buttons.length === 0) key.buttons = fallbackCTAs(plainText);
 
     // -------------------------------
-    // STEP 1 — STRUCTURAL ANALYSIS
+    // STEP 1
     // -------------------------------
     const step1Prompt = `
 You are a senior UX architect.
-
-You are given:
-- The website URL
-- A screenshot of the page (base64 PNG)
-- Extracted HTML text
-- Extracted headlines and CTAs
 
 INPUT_DATA = {
   "page_url": "${normalizedUrl}",
   "screenshot_base64": "${screenshot ?? ""}",
   "title": "${key.title}",
   "meta": "${key.metaDescription}",
-  "headlines": ${JSON.stringify(key.headings, null, 2)},
-  "ctas": ${JSON.stringify(key.buttons, null, 2)},
+  "headlines": ${JSON.stringify(key.headings)},
+  "ctas": ${JSON.stringify(key.buttons)},
   "plain_text_excerpt": "${plainText.slice(0, 5000)}"
 }
 
-Analyze the structure and visual hierarchy of this page.
-
 Return ONLY JSON:
-
 {
   "page_goal": "string",
   "sections": ["string"],
@@ -185,12 +164,6 @@ Return ONLY JSON:
   "ctas": ["string"],
   "problems": ["string"]
 }
-
-Rules:
-- Prefer text and hierarchy inferred from the screenshot.
-- Use provided headlines/ctas/plain text as hints.
-- Do NOT invent new marketing claims.
-- If unsure, leave arrays empty.
 `;
 
     const step1 = await client.responses.create({
@@ -202,32 +175,20 @@ Rules:
     const structure = JSON.parse(extractJson(step1.output_text));
 
     // -------------------------------
-    // STEP 2 — UX REPORT
+    // STEP 2
     // -------------------------------
     const step2Prompt = `
 You are a senior UX auditor.
 
-You are given:
-- The website URL
-- A screenshot of the page
-- Structural analysis
-- Real extracted headlines and CTAs
-
 INPUT_DATA = {
   "page_url": "${normalizedUrl}",
   "screenshot_base64": "${screenshot ?? ""}",
-  "structure": ${JSON.stringify(structure, null, 2)},
-  "available_headlines": ${JSON.stringify(key.headings, null, 2)},
-  "available_ctas": ${JSON.stringify(key.buttons, null, 2)}
+  "structure": ${JSON.stringify(structure)},
+  "available_headlines": ${JSON.stringify(key.headings)},
+  "available_ctas": ${JSON.stringify(key.buttons)}
 }
 
-Your job:
-- Evaluate the UX visually and structurally.
-- Generate issues and a breakdown.
-- Generate suggestions that improve REAL copy from the page.
-
 Return ONLY JSON:
-
 {
   "url": "string",
   "score": number,
@@ -238,13 +199,9 @@ Return ONLY JSON:
 }
 
 STRICT RULES:
-- "url" MUST be exactly INPUT_DATA.page_url.
+- "url" MUST equal INPUT_DATA.page_url.
 - "before" MUST be EXACT text from available_headlines or available_ctas.
-- Do NOT invent new "before".
 - If no valid before exists → suggestions = [].
-- "after" must be a direct improvement of that exact before.
-- All numbers must be integers.
-- No text outside JSON.
 `;
 
     const step2 = await client.responses.create({
@@ -258,6 +215,9 @@ STRICT RULES:
     return NextResponse.json(report, { status: 200 });
   } catch (error) {
     console.error("FULL ERROR:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error", details: String(error) },
+      { status: 500 }
+    );
   }
 }
