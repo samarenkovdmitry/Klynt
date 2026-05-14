@@ -110,7 +110,7 @@ async function handleAnalyze() {
     const json = await res.json();
 
     // ВАЖНО: используем output_text
-    setData(json.output_text);
+    setData(json);
   } catch (err) {
     console.error("Request failed:", err);
   } finally {

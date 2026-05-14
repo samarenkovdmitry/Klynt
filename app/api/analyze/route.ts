@@ -7,67 +7,81 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-// CORS for OPTIONS (preflight)
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
-}
-
 export async function POST(req: Request) {
   try {
     const { url } = await req.json();
 
+    const prompt = `
+You are a strict JSON generator.
+
+Analyze the website: ${url}
+
+Return ONLY valid JSON.  
+No commentary.  
+No markdown.  
+No backticks.  
+No explanations.  
+No text outside JSON.  
+If you add anything outside JSON — you FAIL.
+
+JSON FORMAT (MANDATORY):
+
+{
+  "url": "string",
+  "score": number,
+  "risk": "low" | "medium" | "high",
+  "issues": [
+    {
+      "title": "string",
+      "severity": "low" | "medium" | "high",
+      "description": "string",
+      "bullets": ["string"]
+    }
+  ],
+  "breakdown": {
+    "clarity": number,
+    "hierarchy": number,
+    "trust": number,
+    "cta": number
+  }
+}
+
+Rules:
+- All numbers must be integers.
+- Always include at least 3 issues.
+- Always include all fields.
+- Do NOT invent new fields.
+- Do NOT wrap JSON in quotes.
+- Do NOT add trailing commas.
+- Do NOT add comments.
+`;
+
+
     const response = await client.responses.create({
       model: "gpt-4o-mini",
-      input: `Analyze UX of this website: ${url}`,
+      input: prompt,
+      temperature: 0.2,
     });
 
-    console.log("RAW RESPONSE:", JSON.stringify(response, null, 2));
-
-    // --- Безопасный парсинг результата ---
-    let result: string | undefined = response.output_text;
-
-    if (!result && Array.isArray(response.output)) {
-      for (const item of response.output) {
-        // Ищем только элементы с текстовым контентом
-        if (
-          "content" in item &&
-          Array.isArray((item as any).content) &&
-          (item as any).content[0]?.text
-        ) {
-          result = (item as any).content[0].text;
-          break;
-        }
-      }
+    const raw = response.output_text;
+    if (!raw) {
+      return NextResponse.json({ error: "No output from model" }, { status: 500 });
     }
 
-    if (!result) result = "No output";
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      console.error("JSON PARSE ERROR:", raw);
+      return NextResponse.json(
+        { error: "Model returned invalid JSON", raw },
+        { status: 500 }
+      );
+    }
 
-    return new NextResponse(JSON.stringify({ result }), {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-    });
+    return NextResponse.json(parsed, { status: 200 });
   } catch (error) {
     console.error("FULL ERROR:", error);
-
-    return new NextResponse(
-      JSON.stringify({ error: "Internal Server Error" }),
-      {
-        status: 500,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-      }
-    );
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
