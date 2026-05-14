@@ -1,4 +1,4 @@
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
