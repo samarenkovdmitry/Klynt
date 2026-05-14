@@ -43,6 +43,12 @@ export default function Analyze() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  function handleImageUpload(e: any) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadedImage(file);
+  }
+  
   const isButtonDisabled = !url && !uploadedImage;
 
   const styles = {
@@ -81,11 +87,6 @@ export default function Analyze() {
     setTimeout(() => setCopiedIndex(null), 1500);
   }
 
-  function handleImageUpload(e: any) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadedImage(file);
-  }
 
   // -------------------------------
   // SCREENSHOT CAPTURE (html2canvas)
