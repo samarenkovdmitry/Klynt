@@ -7,11 +7,16 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+// -----------------------------
+// TYPES
+// -----------------------------
 type ImpactMetrics = {
-  clarity: number;
+  clarity?: number;
   cta?: number;
   trust?: number;
   navigation?: number;
+  visuals?: number;
+  conversion?: number;
 };
 
 type UXIssue = {
@@ -27,10 +32,7 @@ type Suggestion = {
   category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
   section: string;
   recommendation: string;
-  impact: {
-    trust: number;
-    clarity: number;
-  };
+  impact: ImpactMetrics;
   why: string;
 };
 
@@ -38,10 +40,7 @@ type CopyRefinement = {
   section: string;
   before: string;
   after: string;
-  impact: {
-    conversion: number;
-    clarity: number;
-  };
+  impact: ImpactMetrics;
   why: string;
 };
 
@@ -67,6 +66,27 @@ async function fileToBase64(file: File) {
   return Buffer.from(buffer).toString("base64");
 }
 
+// -----------------------------
+// NORMALIZATION HELPERS
+// -----------------------------
+function normalizeImpact(
+  obj: ImpactMetrics | undefined,
+  allowed: (keyof ImpactMetrics)[]
+): ImpactMetrics {
+  const entries = Object.entries(obj ?? {})
+    .filter(([k, v]) => allowed.includes(k as keyof ImpactMetrics) && typeof v === "number")
+    .slice(0, 2);
+
+  const out: ImpactMetrics = {};
+  for (const [k, v] of entries) {
+    (out as any)[k] = v;
+  }
+  return out;
+}
+
+// -----------------------------
+// ROUTE HANDLER
+// -----------------------------
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
@@ -97,7 +117,7 @@ JSON FORMAT:
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "title": "string",
       "severity": "low" | "medium" | "high",
-      "impact": { "clarity": number, "cta"?: number, "trust"?: number, "navigation"?: number },
+      "impact": { "clarity"?: number, "cta"?: number, "trust"?: number, "navigation"?: number },
       "bullets": ["string"],
       "why": "string"
     }
@@ -108,10 +128,7 @@ JSON FORMAT:
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "section": "string",
       "recommendation": "string",
-      "impact": {
-        "trust": number,
-        "clarity": number
-      },
+      "impact": { "clarity"?: number, "trust"?: number, "navigation"?: number, "visuals"?: number, "conversion"?: number },
       "why": "string"
     }
   ],
@@ -121,10 +138,7 @@ JSON FORMAT:
       "section": "string",
       "before": "string",
       "after": "string",
-      "impact": {
-        "conversion": number,
-        "clarity": number
-      },
+      "impact": { "clarity"?: number, "conversion"?: number, "trust"?: number },
       "why": "string"
     }
   ],
@@ -147,38 +161,20 @@ Rules:
 - Do NOT add trailing commas.
 
 Rules for issues:
-- Use "title" instead of "description".
-- "title" must be a single concise sentence describing the UX problem.
-- Do NOT generate any body text above the bullets.
-
-- "impact" must include 1–2 numeric metrics chosen from:
-    - "clarity" (almost always required)
-    - "cta" (only if the issue affects user action or conversion)
-    - "trust" (only if the issue affects credibility or reliability)
-    - "navigation" (only if the issue affects findability or structure)
-
-- Do NOT include more than 2 metrics in "impact".
-- All impact numbers must be negative integers (representing loss), e.g. -12.
-
-- "bullets" must be 2–4 short UX signals (2–4 words each), not full sentences.
-  Examples: "Low contrast", "Weak hierarchy", "Overloaded layout".
-
-- Must include a "why" explanation (1 short sentence).
-- Do NOT include "expected result" or predicted improvements.
-
+- "impact" must include 1–2 metrics chosen from: clarity, cta, trust, navigation.
+- All impact numbers must be negative integers.
+- "bullets" must be 2–4 short UX signals.
+- Must include a "why" explanation.
 
 Rules for suggestions:
-- Suggestions must NOT include before/after text.
-- Suggestions must contain only UX recommendations (structure, clarity, navigation, trust, visuals).
-- Must include a "why" explanation (1 short sentence).
-- Impact must include numeric "trust" and "clarity" improvements.
+- Must include a "why" explanation.
+- "impact" must include 1–2 metrics chosen from: clarity, trust, navigation, visuals, conversion.
+- All impact numbers must be negative integers.
 
 Rules for copy_refinement:
-- Only include textual improvements (before/after).
-- "before" must be the original text from the page.
-- "after" must be a clearer, more persuasive rewrite.
-- Impact must include numeric "conversion" and "clarity" improvements.
-- Must include a "why" explanation (1 short sentence).
+- Must include a "why" explanation.
+- "impact" must include 1–2 metrics chosen from: clarity, conversion, trust.
+- All impact numbers must be negative integers.
 `;
 
     const inputContent: any[] = [
@@ -217,27 +213,21 @@ Rules for copy_refinement:
       );
     }
 
-    // лёгкая страховка: обрезаем impact до максимум 2 метрик на всякий случай
-    json.issues = json.issues.map((issue) => {
-      const entries = Object.entries(issue.impact)
-        .filter(([, v]) => typeof v === "number")
-        .slice(0, 2);
+    // NORMALIZE IMPACTS
+    json.issues = json.issues.map((issue) => ({
+      ...issue,
+      impact: normalizeImpact(issue.impact, ["clarity", "cta", "trust", "navigation"])
+    }));
 
-      const safeImpact: ImpactMetrics = { clarity: issue.impact.clarity };
+    json.suggestions = json.suggestions.map((s) => ({
+      ...s,
+      impact: normalizeImpact(s.impact, ["clarity", "trust", "navigation", "visuals", "conversion"])
+    }));
 
-      for (const [k, v] of entries) {
-        if (k === "clarity") {
-          safeImpact.clarity = v as number;
-        } else if (k === "cta" || k === "trust" || k === "navigation") {
-          (safeImpact as any)[k] = v;
-        }
-      }
-
-      return {
-        ...issue,
-        impact: safeImpact,
-      };
-    });
+    json.copy_refinement = json.copy_refinement.map((c) => ({
+      ...c,
+      impact: normalizeImpact(c.impact, ["clarity", "conversion", "trust"])
+    }));
 
     return NextResponse.json(json);
   } catch (error: any) {
