@@ -534,12 +534,18 @@ export default function Analyze() {
               {item.section}
             </p>
 
-            {/* RECOMMENDATION TEXT */}
+            {/* RECOMMENDATION */}
             <div className="mt-4">
               <p className="text-sm leading-6 text-[var(--ink-secondary)]">
                 {item.recommendation}
               </p>
             </div>
+
+            {/* WHY IT WORKS */}
+            <p className="mt-4 text-sm text-[var(--ink-secondary)]">
+              <span className="font-medium text-[var(--ink-primary)]">Why it works:</span>
+              &nbsp;{item.why}
+            </p>
 
           </div>
         </div>
@@ -547,6 +553,7 @@ export default function Analyze() {
     </div>
   </div>
 )}
+
 
 {/* COPY REFINEMENT */}
 {data?.copy_refinement && data.copy_refinement.length > 0 && (
@@ -569,7 +576,7 @@ export default function Analyze() {
           {/* CENTER */}
           <div className="relative">
 
-            {/* IMPACT BADGE */}
+            {/* IMPACT BADGES */}
             <div className="absolute right-0 top-0 flex gap-2">
               <div className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white">
                 +{item.impact.conversion}% conv
@@ -631,6 +638,12 @@ export default function Analyze() {
               </div>
 
             </div>
+
+            {/* WHY IT WORKS */}
+            <p className="mt-4 text-sm text-[var(--ink-secondary)]">
+              <span className="font-medium text-[var(--ink-primary)]">Why it works:</span>
+              &nbsp;{item.why}
+            </p>
 
           </div>
         </div>
