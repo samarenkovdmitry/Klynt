@@ -70,8 +70,79 @@ export async function POST(req: Request) {
     console.log("[analyze] screenshot from upload:", !!screenshot);
     console.log("[analyze] screenshot from puppeteer:", screenshot ? "skip" : screenshotBase64 ? "OK" : "NULL");
 
+    // -----------------------------
+    // PROMPT (ВОТ ОН)
+    // -----------------------------
+    const prompt = `
+You are an expert UX auditor. Analyze the website screenshot and URL.
+Return ONLY valid JSON with the following structure:
+
+{
+  "url": string,
+  "score": number (0-100),
+  "risk": "low" | "medium" | "high",
+  "issues": [
+    {
+      "title": string,
+      "severity": "low" | "medium" | "high",
+      "bullets": string[],
+      "why": string,
+      "impact": {
+        "clarity": number,
+        "cta": number,
+        "trust": number,
+        "navigation": number
+      }
+    }
+  ],
+  "suggestions": [
+    {
+      "section": string,
+      "recommendation": string,
+      "why": string,
+      "impact": {
+        "clarity": number,
+        "cta": number,
+        "trust": number,
+        "navigation": number
+      }
+    }
+  ],
+  "copy_refinement": [
+    {
+      "section": string,
+      "before": string,
+      "after": string,
+      "why": string,
+      "impact": {
+        "clarity": number,
+        "cta": number,
+        "trust": number,
+        "navigation": number
+      }
+    }
+  ],
+  "breakdown": {
+    "clarity": number,
+    "trust": number,
+    "hierarchy": number,
+    "conversion": number
+  }
+}
+
+Rules:
+- Output MUST be valid JSON.
+- No markdown.
+- No commentary.
+- No explanations.
+- If unsure, make reasonable assumptions.
+`;
+
+    // -----------------------------
+    // BUILD INPUT FOR MODEL
+    // -----------------------------
     const inputContent: any[] = [
-      { type: "input_text", text: "Perform a UX audit and return JSON only." },
+      { type: "input_text", text: prompt },
       { type: "input_text", text: `Website URL: ${url}` }
     ];
 
@@ -82,6 +153,9 @@ export async function POST(req: Request) {
       });
     }
 
+    // -----------------------------
+    // CALL OPENAI
+    // -----------------------------
     const response = await client.responses.create({
       model: "gpt-4.1",
       input: [{ role: "user", content: inputContent }],
@@ -94,6 +168,7 @@ export async function POST(req: Request) {
     try {
       json = JSON.parse(raw);
     } catch (err) {
+      console.error("❌ JSON parse error:", raw);
       return NextResponse.json(
         { error: "Invalid JSON from model", raw },
         { status: 500 }
@@ -102,6 +177,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(json);
   } catch (error: any) {
+    console.error("❌ SERVER ERROR:", error);
     return NextResponse.json(
       { error: error.message || "Unknown server error" },
       { status: 500 }
