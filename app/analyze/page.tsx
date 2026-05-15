@@ -15,6 +15,13 @@ import {
 import { FormLabel } from "@/components/ui/FormLabel";
 import { Button } from "@/components/ui/Button";
 
+type ImpactMetrics = {
+  clarity: number;
+  cta?: number;
+  trust?: number;
+  navigation?: number;
+};
+
 function SeverityBadge({ level }: { level: string }) {
   const normalized = level.toLowerCase() as "high" | "medium" | "low";
 
@@ -168,10 +175,26 @@ export default function Analyze() {
   // -------------------------------
   // IMPACT LOGIC (used in Issues)
   // -------------------------------
-  function generateImpact(severity: string) {
-    if (severity === "high") return { clarity: 12, cta: 8 };
-    if (severity === "medium") return { clarity: 6, cta: 4 };
-    return { clarity: 2, cta: 1 };
+  function generateImpact(severity: string): ImpactMetrics {
+    const s = severity.toLowerCase();
+    const base =
+      s === "high" ? -18 :
+      s === "medium" ? -12 :
+      -6;
+
+    const impact: ImpactMetrics = {
+      clarity: base,
+    };
+
+    const candidates: Array<keyof Omit<ImpactMetrics, "clarity">> = [
+      "cta",
+      "trust",
+      "navigation",
+    ];
+    const pick = candidates[Math.floor(Math.random() * candidates.length)];
+    impact[pick] = base + (Math.floor(Math.random() * 5) - 2); // небольшая вариация
+
+    return impact;
   }
 
   function getImpactColor(severity: string) {
@@ -184,30 +207,30 @@ export default function Analyze() {
   // UX Breakdown color logic (0–10 → 0–100%)
   // -------------------------------
   function getBreakdownMeta(value: number) {
-  const percent = value; // уже 0–100
+    const percent = value; // уже 0–100
 
-  if (percent >= 70) {
+    if (percent >= 70) {
+      return {
+        bar: "bg-green-500",
+        label: "Healthy",
+        labelColor: "text-green-600",
+      };
+    }
+
+    if (percent >= 50) {
+      return {
+        bar: "bg-amber-500",
+        label: "At risk",
+        labelColor: "text-amber-600",
+      };
+    }
+
     return {
-      bar: "bg-green-500",
-      label: "Healthy",
-      labelColor: "text-green-600",
+      bar: "bg-red-500",
+      label: "Failing",
+      labelColor: "text-red-600",
     };
   }
-
-  if (percent >= 50) {
-    return {
-      bar: "bg-amber-500",
-      label: "At risk",
-      labelColor: "text-amber-600",
-    };
-  }
-
-  return {
-    bar: "bg-red-500",
-    label: "Failing",
-    labelColor: "text-red-600",
-  };
-}
 
 
  return (

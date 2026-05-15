@@ -7,6 +7,60 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+type ImpactMetrics = {
+  clarity: number;
+  cta?: number;
+  trust?: number;
+  navigation?: number;
+};
+
+type UXIssue = {
+  category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
+  title: string;
+  severity: "low" | "medium" | "high";
+  impact: ImpactMetrics;
+  bullets: string[];
+  why: string;
+};
+
+type Suggestion = {
+  category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
+  section: string;
+  recommendation: string;
+  impact: {
+    trust: number;
+    clarity: number;
+  };
+  why: string;
+};
+
+type CopyRefinement = {
+  section: string;
+  before: string;
+  after: string;
+  impact: {
+    conversion: number;
+    clarity: number;
+  };
+  why: string;
+};
+
+type AuditResponse = {
+  url: string;
+  score: number;
+  risk: "low" | "medium" | "high";
+  issues: UXIssue[];
+  suggestions: Suggestion[];
+  copy_refinement: CopyRefinement[];
+  breakdown: {
+    clarity: number;
+    navigation: number;
+    visuals: number;
+    trust: number;
+    conversion: number;
+  };
+};
+
 // Convert File → base64
 async function fileToBase64(file: File) {
   const buffer = await file.arrayBuffer();
@@ -153,15 +207,37 @@ Rules for copy_refinement:
 
     const raw = response.output_text;
 
-    let json;
+    let json: AuditResponse;
     try {
-      json = JSON.parse(raw);
+      json = JSON.parse(raw) as AuditResponse;
     } catch (err) {
       return NextResponse.json(
         { error: "Invalid JSON from model", raw },
         { status: 500 }
       );
     }
+
+    // лёгкая страховка: обрезаем impact до максимум 2 метрик на всякий случай
+    json.issues = json.issues.map((issue) => {
+      const entries = Object.entries(issue.impact)
+        .filter(([, v]) => typeof v === "number")
+        .slice(0, 2);
+
+      const safeImpact: ImpactMetrics = { clarity: issue.impact.clarity };
+
+      for (const [k, v] of entries) {
+        if (k === "clarity") {
+          safeImpact.clarity = v as number;
+        } else if (k === "cta" || k === "trust" || k === "navigation") {
+          (safeImpact as any)[k] = v;
+        }
+      }
+
+      return {
+        ...issue,
+        impact: safeImpact,
+      };
+    });
 
     return NextResponse.json(json);
   } catch (error: any) {
