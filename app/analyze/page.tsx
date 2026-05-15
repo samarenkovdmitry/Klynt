@@ -620,7 +620,6 @@ export default function Analyze() {
   </div>
 </div>
 
-
               {/* NEXT ACTIONS */}
               <div className="mt-10 flex flex-col items-center gap-6">
                 <div className="flex items-center gap-1">
