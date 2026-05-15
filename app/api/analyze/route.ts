@@ -37,15 +37,17 @@ JSON FORMAT:
   "url": "string",
   "score": number,
   "risk": "low" | "medium" | "high",
+
   "issues": [
     {
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
+      "title": "string",
       "severity": "low" | "medium" | "high",
-      "description": "string",
       "impact": { "clarity": number, "cta": number },
       "bullets": ["string"]
     }
   ],
+
   "suggestions": [
     {
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
@@ -55,6 +57,7 @@ JSON FORMAT:
       "impact": "Low" | "Medium" | "High"
     }
   ],
+
   "breakdown": {
     "clarity": number,
     "navigation": number,
@@ -65,19 +68,30 @@ JSON FORMAT:
 }
 
 Rules:
-- Generate between 5 and 10 UX issues.
-- Generate between 5 and 10 improvement suggestions.
+- Generate between 3 and 7 UX issues.
+- Generate between 3 and 7 improvement suggestions.
 - Every issue MUST include a category.
 - Every suggestion MUST include a category.
 - Issues must be deep, specific, and tied to screenshot + URL.
-- Each issue must include 2–4 bullet points with concrete observations.
 - All numbers must be integers.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
+
+Rules for issues:
+- Use "title" instead of "description".
+- "title" must be a single concise sentence describing the UX problem.
+- Do NOT generate any body text above the bullets.
+- "impact" numbers must be negative (representing loss), e.g. -12.
+- "bullets" must be 2–4 short, concrete observations.
+- Do NOT include "expected result" or any predicted improvements.
+- Do NOT include any text except title → impact → bullets.
+
+Rules for suggestions:
+- Keep the existing structure.
+- Suggestions may include positive impact (Low/Medium/High).
 `;
 
-
-const inputContent: any[] = [
+    const inputContent: any[] = [
       { type: "input_text", text: basePrompt },
       { type: "input_text", text: `Website URL: ${url}` }
     ];

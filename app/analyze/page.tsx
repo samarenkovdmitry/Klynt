@@ -423,71 +423,83 @@ export default function Analyze() {
                 </div>
 
               </div>
-              {/* UX ISSUES */}
-              <div className="mb-8 space-y-4 mt-6">
-                <h3 className={styles.titleSection}>UX Issues</h3>
+{/* UX ISSUES */}
+<div className="mb-8 space-y-4 mt-6">
+  <h3 className={styles.titleSection}>UX Issues</h3>
 
-                <div className="space-y-4">
-                  {data.issues?.map((issue: any, index: number) => {
-                    const impact = issue.impact ?? generateImpact(issue.severity);
-                    const color = getImpactColor(issue.severity);
+  <div className="space-y-4">
+    {data.issues?.map((issue: any, index: number) => {
+      const impact = issue.impact ?? generateImpact(issue.severity);
+      const color = getImpactColor(issue.severity);
 
-                    return (
-                      <div
-                        key={index}
-                        className="rounded-xl border border-[var(--stroke-light)] bg-white p-5 flex gap-4"
-                      >
-                        {/* LEFT NUMBER */}
-                        <div className="w-2 flex items-start justify-center">
-                          <span className="text-base font-regular text-[var(--ink-secondary)]">
-                            {index + 1}
-                          </span>
-                        </div>
+      return (
+        <div
+          key={index}
+          className="rounded-xl border border-[var(--stroke-light)] bg-white p-5 flex gap-4"
+        >
+          {/* LEFT NUMBER */}
+          <div className="w-2 flex items-start justify-center">
+            <span className="text-base font-regular text-[var(--ink-secondary)]">
+              {index + 1}
+            </span>
+          </div>
 
-                        {/* CENTER */}
-                        <div className="flex-1">
-                          <p className="text-base font-medium text-[var(--ink-primary)]">
-                            {issue.description}
-                          </p>
+          {/* CENTER */}
+          <div className="flex-1">
 
-                          <p className="mt-1 text-sm font-medium text-[var(--ink-primary)]">
-                            <span style={{ color }} className="inline-flex">-{impact.clarity}%</span>
-                            <span className="inline-flex">&nbsp;clarity</span>
+            {/* TITLE */}
+            <p className="text-base font-medium text-[var(--ink-primary)]">
+              {issue.title}
+            </p>
 
-                            <span className="inline-flex">&nbsp;&nbsp;&nbsp;</span>
+            {/* IMPACT */}
+            <p className="mt-1 text-sm font-medium text-[var(--ink-primary)]">
+              {issue.impact?.clarity !== undefined && (
+                <>
+                  <span style={{ color }} className="inline-flex">
+                    {issue.impact.clarity}%
+                  </span>
+                  <span className="inline-flex">&nbsp;clarity</span>
+                </>
+              )}
 
-                            <span style={{ color }} className="inline-flex">-{impact.cta}%</span>
-                            <span className="inline-flex">&nbsp;CTA engagement</span>
-                          </p>
+              <span className="inline-flex">&nbsp;&nbsp;&nbsp;</span>
 
-                          <p className="text-sm text-[var(--ink-primary)] mt-3">
-                            {issue.description}
-                          </p>
+              {issue.impact?.cta !== undefined && (
+                <>
+                  <span style={{ color }} className="inline-flex">
+                    {issue.impact.cta}%
+                  </span>
+                  <span className="inline-flex">&nbsp;CTA engagement</span>
+                </>
+              )}
+            </p>
 
-                          {issue.bullets?.length > 0 && (
-                            <ul className="mt-3 space-y-1">
-                              {issue.bullets.map((b: string, i: number) => (
-                                <li
-                                  key={i}
-                                  className="flex items-start gap-2 text-sm text-[var(--ink-secondary)]"
-                                >
-                                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[var(--ink-secondary)]"></span>
-                                  {b}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
+            {/* BULLETS */}
+            {issue.bullets?.length > 0 && (
+              <ul className="mt-3 space-y-1">
+                {issue.bullets.map((b: string, i: number) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-sm text-[var(--ink-secondary)]"
+                  >
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[var(--ink-secondary)]"></span>
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-                        {/* RIGHT — SEVERITY */}
-                        <div className="w-20 flex justify-end items-start">
-                          <SeverityBadge level={issue.severity} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+          {/* RIGHT — SEVERITY */}
+          <div className="w-20 flex justify-end items-start">
+            <SeverityBadge level={issue.severity} />
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
 
               {/* SUGGESTED IMPROVEMENTS */}
               {data?.suggestions && data.suggestions.length > 0 && (
