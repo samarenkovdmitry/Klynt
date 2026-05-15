@@ -5,11 +5,10 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: ["*"],
     },
-
-    // КЛЮЧЕВОЕ: отключает Edge runtime
-    // и заставляет App Router использовать Node.js
-    serverMinification: false,
   },
+
+  // Критично: отключаем Edge полностью
+  output: "standalone",
 };
 
 export default nextConfig;

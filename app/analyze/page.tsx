@@ -76,9 +76,6 @@ export default function Analyze() {
     softBorder: "border-[#D5DDE5]",
   };
 
-  // -------------------------------
-  // LOADING STEPS
-  // -------------------------------
   const steps = [
     { threshold: 10, label: "Scanning layout…" },
     { threshold: 30, label: "Analyzing hierarchy…" },
@@ -105,9 +102,6 @@ export default function Analyze() {
     setTimeout(() => setCopiedIndex(null), 1500);
   }
 
-  // -------------------------------
-  // SCREENSHOT CAPTURE (html2canvas)
-  // -------------------------------
   async function captureScreenshot() {
     try {
       const canvas = await html2canvas(document.body, {
@@ -123,9 +117,6 @@ export default function Analyze() {
     }
   }
 
-  // -------------------------------
-  // ANALYZE HANDLER (with smooth progress)
-  // -------------------------------
   async function handleAnalyze() {
     try {
       if (!url && !uploadedImage) return;
@@ -134,7 +125,6 @@ export default function Analyze() {
       setData(null);
       setProgress(0);
 
-      // Smooth fake progress
       const interval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 95) return prev;
@@ -157,7 +147,6 @@ export default function Analyze() {
       const json = await res.json();
       setData(json);
 
-      // Finish progress
       setProgress(100);
       clearInterval(interval);
 
@@ -197,9 +186,6 @@ export default function Analyze() {
     return "Other";
   }
 
-  // -------------------------------
-  // IMPACT LOGIC (used in Issues)
-  // -------------------------------
   function generateImpact(severity: string): ImpactMetrics {
     const s = severity.toLowerCase();
     const base =
@@ -228,9 +214,6 @@ export default function Analyze() {
     return "#6B7280";
   }
 
-  // -------------------------------
-  // UX Breakdown color logic
-  // -------------------------------
   function getBreakdownMeta(value: number) {
     const percent = value;
 
@@ -256,6 +239,7 @@ export default function Analyze() {
       labelColor: "text-red-600",
     };
   }
+
 
  return (
   <>
@@ -353,40 +337,39 @@ export default function Analyze() {
             </div>
 
             {/* BUTTON / PROGRESS */}
-<div className="mt-8 w-full">
-  {!loading ? (
-    <Button
-      type="button"
-      disabled={isButtonDisabled}
-      onClick={handleAnalyze}
-    >
-      Analyze UX
-    </Button>
-  ) : (
-    <div className="space-y-3">
+            <div className="mt-8 w-full">
+              {!loading ? (
+                <Button
+                  type="button"
+                  disabled={isButtonDisabled}
+                  onClick={handleAnalyze}
+                >
+                  Analyze UX
+                </Button>
+              ) : (
+                <div className="space-y-3">
 
-      {/* PROGRESS BAR */}
-      <div className="w-full h-2 rounded-lg bg-gray-200 overflow-hidden">
-        <div
-          className="h-full bg-blue-600 transition-all duration-300 ease-out"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+                  {/* PROGRESS BAR */}
+                  <div className="w-full h-2 rounded-lg bg-gray-200 overflow-hidden">
+                    <div
+                      className="h-full bg-blue-600 transition-all duration-300 ease-out"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
 
-      {/* PERCENT + LABEL */}
-      <div className="flex items-center justify-between text-xs text-[var(--ink-secondary)]">
-        <span>{Math.floor(progress)}%</span>
-        <span>{getLoadingLabel(progress)}</span>
-      </div>
+                  {/* PERCENT + LABEL */}
+                  <div className="flex items-center justify-between text-xs text-[var(--ink-secondary)]">
+                    <span>{Math.floor(progress)}%</span>
+                    <span>{getLoadingLabel(progress)}</span>
+                  </div>
 
-    </div>
-  )}
-</div>
-
+                </div>
+              )}
+            </div>
 
           </div>
         )}
-        
+
         {/* REPORT SCREEN */}
         {data && (
           <div className="space-y-6 animate-fade-in transition-all duration-500 opacity-100">
@@ -435,8 +418,7 @@ export default function Analyze() {
 
               {/* SUMMARY GRID */}
               <div className="grid grid-cols-3 gap-4">
-
-                {/* UX SCORE */}
+                                {/* UX SCORE */}
                 <div className={styles.card}>
                   <p className={styles.label}>UX Score</p>
 
@@ -460,7 +442,7 @@ export default function Analyze() {
                   <p className={styles.label}>Primary Issue</p>
 
                   <p className={`mt-2 ${styles.value} text-[var(--ink-primary)]`}>
-                    {getPrimaryIssueCategory(data.issues?.[0]?.description)}
+                    {getPrimaryIssueCategory(data.issues?.[0]?.title)}
                   </p>
 
                   <p className={`${styles.caption} mt-auto`}>Most impactful UX problem</p>
@@ -479,334 +461,145 @@ export default function Analyze() {
 
               </div>
 
-{/* UX ISSUES */}
-<div className="mb-8 space-y-4 mt-6">
-  <h3 className={styles.titleSection}>UX Issues</h3>
+              {/* UX ISSUES */}
+              <div className="mb-8 space-y-4 mt-6">
+                <h3 className={styles.titleSection}>UX Issues</h3>
 
-  <div className="space-y-4">
-    {data.issues?.map((issue: any, index: number) => {
-      // ЖЁСТКАЯ ТИПИЗАЦИЯ → ключ к тому, чтобы TS не подчёркивал impactEntries
-      const impact: Record<string, number> = issue.impact ?? generateImpact(issue.severity);
+                <div className="space-y-4">
+                  {data.issues?.map((issue: any, index: number) => {
+                    const impact: Record<string, number> =
+                      issue.impact ?? generateImpact(issue.severity);
 
-      const impactEntries: [string, number][] = Object.entries(impact)
-        .filter(([_, value]) => typeof value === "number")
-        .slice(0, 2);
+                    const impactEntries: [string, number][] = Object.entries(impact)
+                      .filter(([_, value]) => typeof value === "number")
+                      .slice(0, 2);
 
-      return (
-        <div
-          key={index}
-          className="rounded-xl border border-[var(--stroke-light)] bg-white p-5 flex gap-4"
-        >
-          {/* LEFT NUMBER */}
-          <div className="w-2 flex items-start justify-center">
-            <span className="text-base font-medium text-[var(--ink-secondary)]">
-              {index + 1}
-            </span>
-          </div>
+                    return (
+                      <div
+                        key={index}
+                        className="rounded-xl border border-[var(--stroke-light)] bg-white p-5 flex gap-4"
+                      >
+                        {/* LEFT NUMBER */}
+                        <div className="w-2 flex items-start justify-center">
+                          <span className="text-base font-medium text-[var(--ink-secondary)]">
+                            {index + 1}
+                          </span>
+                        </div>
 
-          {/* CENTER */}
-          <div className="flex-1 relative">
+                        {/* CENTER */}
+                        <div className="flex-1 relative">
 
-            {/* IMPACT BADGES */}
-            <div className="absolute right-0 top-0 flex gap-2">
-              {impactEntries.map(([key, value]) => (
-                <div
-                  key={key}
-                  className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700"
-                >
-                  {value}% {key}
-                </div>
-              ))}
-            </div>
-
-            {/* TITLE */}
-            <p className="text-base font-semibold text-[var(--ink-primary)] pr-40">
-              {issue.title}
-            </p>
-
-            {/* SIGNALS LABEL */}
-            <p className="text-xs font-medium text-[var(--ink-secondary)] mt-2 mb-1">
-              Signals:
-            </p>
-
-            {/* SIGNAL TAGS */}
-            <div className="flex flex-wrap gap-2">
-              {issue.bullets?.map((b: string, i: number) => (
-                <span
-                  key={i}
-                  className="px-2 py-[3px] rounded-md bg-[#F3F5F7] text-xs font-medium text-[var(--ink-secondary)]"
-                >
-                  {b}
-                </span>
-              ))}
-            </div>
-
-            {/* WHY IT MATTERS */}
-            {issue.why && (
-              <p className="mt-3 text-sm leading-6 text-[var(--ink-secondary)]">
-                <span className="font-medium text-[var(--ink-primary)]">
-                  Why it matters:
-                </span>
-                &nbsp;{issue.why}
-              </p>
-            )}
-          </div>
-        </div>
-      );
-    })}
-  </div>
-</div>
-
-
-{/* SUGGESTED IMPROVEMENTS */}
-{data?.suggestions && data.suggestions.length > 0 && (
-  <div className="mt-6">
-    <h3 className={styles.titleSection}>Suggested Improvements</h3>
-
-    <div className="space-y-4 mt-4">
-      {data.suggestions.map((item: any, index: number) => {
-        const impactEntries = Object.entries(item.impact || {})
-          .filter(([_, v]) => typeof v === "number")
-          .slice(0, 2) as [string, number][]; // 👈 ключевая строка
-
-        return (
-          <div
-            key={index}
-            className="relative rounded-xl border border-[var(--stroke-light)] p-4 grid grid-cols-[14px_1fr] gap-4"
-          >
-            {/* LEFT NUMBER */}
-            <div className="w-4 flex items-start justify-center">
-              <span className="text-base font-regular text-[var(--ink-secondary)]">
-                {index + 1}
-              </span>
-            </div>
-
-            {/* CENTER */}
-            <div className="relative">
-
-              {/* IMPACT BADGES */}
-              <div className="absolute right-0 top-0 flex gap-2">
-                {impactEntries.map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white"
-                  >
-                    +{Math.abs(value)}% {key}
-                  </div>
-                ))}
-              </div>
-
-              {/* SECTION TITLE */}
-              <p className="text-base font-medium text-[var(--ink-primary)] pr-32">
-                {item.section}
-              </p>
-
-              {/* RECOMMENDATION */}
-              <div className="mt-4">
-                <p className="text-sm leading-6 text-[var(--ink-secondary)]">
-                  {item.recommendation}
-                </p>
-              </div>
-
-              {/* WHY IT WORKS */}
-              <p className="mt-4 text-sm text-[var(--ink-secondary)]">
-                <span className="font-medium text-[var(--ink-primary)]">Why it works:</span>
-                &nbsp;{item.why}
-              </p>
-
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
-
-
-{/* COPY REFINEMENT */}
-{data?.copy_refinement && data.copy_refinement.length > 0 && (
-  <div className="mt-10">
-    <h3 className={styles.titleSection}>Copy Refinement</h3>
-
-    <div className="space-y-4 mt-4">
-      {data.copy_refinement.map((item: any, index: number) => {
-        const impactEntries = Object.entries(item.impact || {})
-          .filter(([_, v]) => typeof v === "number")
-          .slice(0, 2) as [string, number][]; // 👈 ключевая строка
-
-        return (
-          <div
-            key={index}
-            className="relative rounded-xl border border-[var(--stroke-light)] p-4 grid grid-cols-[14px_1fr] gap-4"
-          >
-            {/* LEFT NUMBER */}
-            <div className="w-4 flex items-start justify-center">
-              <span className="text-base font-regular text-[var(--ink-secondary)]">
-                {index + 1}
-              </span>
-            </div>
-
-            {/* CENTER */}
-            <div className="relative">
-
-              {/* IMPACT BADGES */}
-              <div className="absolute right-0 top-0 flex gap-2">
-                {impactEntries.map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white"
-                  >
-                    +{Math.abs(value)}% {key}
-                  </div>
-                ))}
-              </div>
-
-              {/* SECTION TITLE */}
-              <p className="text-base font-medium text-[var(--ink-primary)] pr-32">
-                {item.section}
-              </p>
-
-              {/* BEFORE / AFTER */}
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                {/* BEFORE */}
-                <div className="flex flex-col h-full">
-                  <p className="text-xs font-medium text-[var(--ink-secondary)] mb-1">Before</p>
-                  <div className="rounded-lg bg-soft p-3 flex-1">
-                    <p className="text-sm leading-6 text-[var(--ink-primary)]">
-                      {item.before}
-                    </p>
-                  </div>
-                </div>
-
-                {/* AFTER */}
-                <div className="flex flex-col h-full">
-                  <p className="text-xs font-medium text-[var(--ink-secondary)] mb-1">Improved</p>
-
-                  <div className="rounded-lg bg-blue-100 px-3 py-[9px] flex-1">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-sm font-medium leading-5 text-[var(--ink-primary)]">
-                        {item.after}
-                      </p>
-
-                      {/* COPY BUTTON */}
-                      <div className="relative">
-                        <button
-                          onClick={() => handleCopy(item.after, index)}
-                          className="flex items-center gap-1 rounded-md p-1 text-[var(--ink-primary)] hover:opacity-70 transition -mr-1"
-                        >
-                          {copiedIndex === index ? (
-                            <Check size={18} weight="regular" />
-                          ) : (
-                            <CopySimple size={18} weight="regular" />
-                          )}
-                        </button>
-
-                        {copiedIndex === index && (
-                          <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs text-[var(--ink-primary)] bg-white px-2 py-0.5 rounded-md border border-[rgba(0,0,0,0.06)] shadow-[0_1px_3px_rgba(0,0,0,0.05)] animate-fade-in">
-                            Copied
+                          {/* IMPACT BADGES */}
+                          <div className="absolute right-0 top-0 flex gap-2">
+                            {impactEntries.map(([key, value]) => (
+                              <div
+                                key={key}
+                                className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700"
+                              >
+                                {value}% {key}
+                              </div>
+                            ))}
                           </div>
-                        )}
+
+                          {/* TITLE */}
+                          <p className="text-base font-semibold text-[var(--ink-primary)] pr-40">
+                            {issue.title}
+                          </p>
+
+                          {/* SIGNALS LABEL */}
+                          <p className="text-xs font-medium text-[var(--ink-secondary)] mt-2 mb-1">
+                            Signals:
+                          </p>
+
+                          {/* SIGNAL TAGS */}
+                          <div className="flex flex-wrap gap-2">
+                            {issue.bullets?.map((b: string, i: number) => (
+                              <span
+                                key={i}
+                                className="px-2 py-[3px] rounded-md bg-[#F3F5F7] text-xs font-medium text-[var(--ink-secondary)]"
+                              >
+                                {b}
+                              </span>
+                            ))}
+                          </div>
+
+                          {/* WHY IT MATTERS */}
+                          {issue.why && (
+                            <p className="mt-3 text-sm leading-6 text-[var(--ink-secondary)]">
+                              <span className="font-medium text-[var(--ink-primary)]">
+                                Why it matters:
+                              </span>
+                              &nbsp;{issue.why}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* SUGGESTED IMPROVEMENTS */}
+              {data?.suggestions && data.suggestions.length > 0 && (
+                <div className="mt-6">
+                  <h3 className={styles.titleSection}>Suggested Improvements</h3>
+
+                  <div className="space-y-4 mt-4">
+                    {data.suggestions.map((item: any, index: number) => {
+                      const impactEntries = Object.entries(item.impact || {})
+                        .filter(([_, v]) => typeof v === "number")
+                        .slice(0, 2) as [string, number][];
+
+                      return (
+                        <div
+                          key={index}
+                          className="relative rounded-xl border border-[var(--stroke-light)] p-4 grid grid-cols-[14px_1fr] gap-4"
+                        >
+                          {/* LEFT NUMBER */}
+                          <div className="w-4 flex items-start justify-center">
+                            <span className="text-base font-regular text-[var(--ink-secondary)]">
+                              {index + 1}
+                            </span>
+                          </div>
+
+                          {/* CENTER */}
+                          <div className="relative">
+
+                            {/* IMPACT BADGES */}
+                            <div className="absolute right-0 top-0 flex gap-2">
+                              {impactEntries.map(([key, value]) => (
+                                <div
+                                  key={key}
+                                  className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white"
+                                >
+                                  +{Math.abs(value)}% {key}
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* SECTION TITLE */}
+                            <p className="text-base font-medium text-[var(--ink-primary)] pr-32">
+                              {item.section}
+                            </p>
+
+                            {/* RECOMMENDATION */}
+                            <div className="mt-4">
+                              <p className="text-sm leading-6 text-[var(--ink-secondary)]">
+                                {item.recommendation}
+                              </p>
+                            </div>
+
+                            {/* WHY IT WORKS */}
+                            <p className="mt-4 text-sm text-[var(--ink-secondary)]">
+                              <span className="font-medium text-[var(--ink-primary)]">Why it works:</span>
+                              &nbsp;{item.why}
+                            </p>
+
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* WHY IT WORKS */}
-              <p className="mt-4 text-sm text-[var(--ink-secondary)]">
-                <span className="font-medium text-[var(--ink-primary)]">Why it works:</span>
-                &nbsp;{item.why}
-              </p>
-
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
-
-
-              {/* UX BREAKDOWN */}
-<div className="mt-10">
-  <h3 className={styles.titleSection}>UX Breakdown</h3>
-
-  <div className="rounded-xl bg-white border border-[var(--stroke-light)] p-5 space-y-5 mt-4">
-    {data.breakdown &&
-      Object.entries(data.breakdown).map(([key, value]) => {
-        const numericValue = Number(value ?? 0); // 0–100
-        const percent = Math.max(0, Math.min(100, numericValue)); // safety
-        const meta = getBreakdownMeta(percent);
-
-        return (
-          <div key={key}>
-            <div className="mb-1 flex justify-between">
-              <span className="capitalize text-sm font-medium text-[var(--ink-primary)]">
-                {key}
-              </span>
-
-              <div className="flex items-center gap-1">
-                <span className="text-sm font-semibold text-[var(--ink-primary)]">
-                  {percent}%
-                </span>
-
-                <span className="text-[var(--stroke-light)]">•</span>
-
-                <span className={`text-sm font-medium ${meta.labelColor}`}>
-                  {meta.label}
-                </span>
-              </div>
-            </div>
-
-            <div className="h-1.5 w-full rounded-full bg-[var(--stroke-light)] overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${meta.bar}`}
-                style={{ width: `${percent}%` }}
-              />
-            </div>
-          </div>
-        );
-      })}
-  </div>
-</div>
-
-              {/* NEXT ACTIONS */}
-              <div className="mt-10 flex flex-col items-center gap-6">
-                <div className="flex items-center gap-1">
-
-                  {/* Download report */}
-                  <button
-                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
-                  >
-                    <DownloadSimple size={18} weight="regular" />
-                    <span>Download report</span>
-                  </button>
-
-                  {/* Share */}
-                  <button
-                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
-                  >
-                    <ShareNetwork size={18} weight="regular" />
-                    <span>Share</span>
-                  </button>
-
-                  {/* Re-run analysis */}
-                  <button
-                    onClick={handleReset}
-                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
-                  >
-                    <ArrowClockwise size={18} weight="regular" />
-                    <span>Re-run analysis</span>
-                  </button>
-
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
-      </div>
-    </main>
-  </>
-);
-}
