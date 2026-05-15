@@ -69,14 +69,14 @@ async function fileToBase64(file: File) {
 }
 
 // -----------------------------
-// SERVER-SIDE SCREENSHOT (PUPPETEER)
+// SERVER-SIDE SCREENSHOT
 // -----------------------------
 async function captureUrlScreenshot(url: string): Promise<string | null> {
   try {
     const puppeteer = await import("puppeteer");
 
     const browser = await puppeteer.launch({
-      headless: true, // ← исправлено
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
@@ -95,13 +95,12 @@ async function captureUrlScreenshot(url: string): Promise<string | null> {
 
     await browser.close();
 
-    return Buffer.from(screenshotBuffer).toString("base64"); // ← исправлено
+    return Buffer.from(screenshotBuffer).toString("base64");
   } catch (err) {
     console.error("Puppeteer screenshot failed:", err);
     return null;
   }
 }
-
 
 // -----------------------------
 // NORMALIZATION HELPERS
@@ -131,9 +130,6 @@ export async function POST(req: Request) {
     const url = (formData.get("url") as string) ?? "";
     const screenshot = formData.get("screenshot") as File | null;
 
-    // -----------------------------
-    // Decide which screenshot to use
-    // -----------------------------
     let screenshotBase64: string | null = null;
 
     if (screenshot) {
@@ -144,8 +140,22 @@ export async function POST(req: Request) {
       screenshotBase64 = await captureUrlScreenshot(url);
     }
 
+    // ⭐ screenshot-first logic — добавлено
+    const screenshotPriorityBlock = `
+PRIMARY SOURCE OF TRUTH:
+- The screenshot is the main input.
+- All layout, spacing, hierarchy, visual density, readability, contrast, CTA prominence, trust signals, and conversion cues MUST be derived from the screenshot.
+
+SECONDARY SOURCE:
+- The URL is only for understanding intent, product category, and messaging context.
+
+You MUST prioritize the screenshot over the URL in all evaluations.
+`;
+
     const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the URL and the screenshot if provided.
+
+${screenshotPriorityBlock}
 
 Your goal:
 - Perform a deep UX audit.
@@ -214,20 +224,16 @@ Rules for issues:
 - "impact" must include 1–2 metrics chosen from: clarity, cta, trust, navigation.
 - Impact numbers must be negative integers between -20 and -4.
 - "bullets" must be 2–4 short UX signals (2–4 words each), not full sentences.
-  Examples: "Low contrast", "Weak hierarchy", "Overloaded layout".
-- Bullets must NEVER contain verbs ("is", "are", "has", "should", "needs").
-- Bullets must be noun‑phrases only.
+- Bullets must NEVER contain verbs.
 - Must include a "why" explanation.
 
 Rules for suggestions:
 - Must include a "why" explanation.
 - "impact" must include 1–2 positive integer metrics between 4 and 20.
-- Allowed metrics: clarity, trust, navigation, visuals, conversion.
 
 Rules for copy_refinement:
 - Must include a "why" explanation.
 - "impact" must include 1–2 positive integer metrics between 4 and 20.
-- Allowed metrics: clarity, conversion, trust.
 `;
 
     const inputContent: any[] = [
@@ -265,7 +271,6 @@ Rules for copy_refinement:
       );
     }
 
-    // NORMALIZE IMPACTS
     json.issues = json.issues.map((issue) => ({
       ...issue,
       impact: normalizeImpact(issue.impact, ["clarity", "cta", "trust", "navigation"])
