@@ -88,7 +88,7 @@ export default function Analyze() {
   }
 
   // -------------------------------
-  // SCREENSHOT CAPTURE
+  // SCREENSHOT CAPTURE (html2canvas)
   // -------------------------------
   async function captureScreenshot() {
     try {
@@ -106,7 +106,7 @@ export default function Analyze() {
   }
 
   // -------------------------------
-  // ANALYZE HANDLER
+  // ANALYZE HANDLER (with screenshot)
   // -------------------------------
   async function handleAnalyze() {
     try {
@@ -166,7 +166,7 @@ export default function Analyze() {
   }
 
   // -------------------------------
-  // IMPACT LOGIC
+  // IMPACT LOGIC (used in Issues)
   // -------------------------------
   function generateImpact(severity: string) {
     if (severity === "high") return { clarity: 12, cta: 8 };
@@ -181,33 +181,33 @@ export default function Analyze() {
   }
 
   // -------------------------------
-  // UX BREAKDOWN META
+  // UX Breakdown color logic (0–10 → 0–100%)
   // -------------------------------
   function getBreakdownMeta(value: number) {
-    const percent = value;
+  const percent = value; // уже 0–100
 
-    if (percent >= 70) {
-      return {
-        bar: "bg-green-500",
-        label: "Healthy",
-        labelColor: "text-green-600",
-      };
-    }
-
-    if (percent >= 50) {
-      return {
-        bar: "bg-amber-500",
-        label: "At risk",
-        labelColor: "text-amber-600",
-      };
-    }
-
+  if (percent >= 70) {
     return {
-      bar: "bg-red-500",
-      label: "Failing",
-      labelColor: "text-red-600",
+      bar: "bg-green-500",
+      label: "Healthy",
+      labelColor: "text-green-600",
     };
   }
+
+  if (percent >= 50) {
+    return {
+      bar: "bg-amber-500",
+      label: "At risk",
+      labelColor: "text-amber-600",
+    };
+  }
+
+  return {
+    bar: "bg-red-500",
+    label: "Failing",
+    labelColor: "text-red-600",
+  };
+}
 
   return (
   <>
@@ -619,6 +619,7 @@ export default function Analyze() {
       })}
   </div>
 </div>
+
 
               {/* NEXT ACTIONS */}
               <div className="mt-10 flex flex-col items-center gap-6">
