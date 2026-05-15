@@ -163,8 +163,12 @@ Rules:
 Rules for issues:
 - "impact" must include 1–2 metrics chosen from: clarity, cta, trust, navigation.
 - Impact numbers must be negative integers between -20 and -4.
-- "bullets" must be 2–4 short UX signals.
+- "bullets" must be 2–4 short UX signals (2–4 words each), not full sentences.
+  Examples: "Low contrast", "Weak hierarchy", "Overloaded layout".
+- Bullets must NEVER contain verbs ("is", "are", "has", "should", "needs").
+- Bullets must be noun‑phrases only.
 - Must include a "why" explanation.
+
 
 Rules for suggestions:
 - Must include a "why" explanation.
