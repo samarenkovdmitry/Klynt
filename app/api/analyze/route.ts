@@ -125,6 +125,8 @@ function normalizeImpact(
 // ROUTE HANDLER
 // -----------------------------
 export async function POST(req: Request) {
+  console.log("🔥 POST /api/analyze — handler STARTED");
+
   try {
     const formData = await req.formData();
 
