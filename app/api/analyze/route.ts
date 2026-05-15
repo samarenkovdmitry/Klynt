@@ -23,11 +23,12 @@ export async function POST(req: Request) {
     const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the URL and the screenshot if provided.
 
-Your goal:
+Your goals:
 - Perform a deep UX audit.
-- Detect structural, visual, interaction, clarity, trust, and conversion issues.
+- Detect issues in clarity, navigation, visuals, trust, and conversion.
 - Use screenshot for layout, spacing, hierarchy, visual density, readability, contrast, CTA prominence, and trust signals.
 - Use URL for content, messaging, semantics, navigation, and intent.
+- Provide clean, structured, actionable output.
 
 Return ONLY valid JSON. No markdown. No commentary.
 
@@ -37,46 +38,71 @@ JSON FORMAT:
   "url": "string",
   "score": number,
   "risk": "low" | "medium" | "high",
-  "issues": [
+
+  "breakdown": {
+    "clarity": number,      // 0–100
+    "navigation": number,   // 0–100
+    "visuals": number,      // 0–100
+    "trust": number,        // 0–100
+    "conversion": number    // 0–100
+  },
+
+  "issues_by_category": {
+    "Clarity": {
+      "score": number, // 0–100
+      "issues": [
+        {
+          "description": "string",
+          "bullets": ["string"],
+          "expected_result": number // 0–100
+        }
+      ]
+    },
+    "Navigation": { ... },
+    "Visuals": { ... },
+    "Trust": { ... },
+    "Conversion": { ... }
+  },
+
+  "copywriting": [
     {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "severity": "low" | "medium" | "high",
-      "description": "string",
-      "impact": { "clarity": number, "cta": number },
-      "bullets": ["string"]
-    }
-  ],
-  "suggestions": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "section": "string",
+      "element": "Title" | "Subtitle" | "CTA" | "Value Proposition" | "Section Header",
       "before": "string",
       "after": "string",
-      "impact": "Low" | "Medium" | "High"
+      "expected_gain": {
+        "clarity": number,     // integer
+        "conversion": number   // integer
+      },
+      "reasoning": ["string"]
     }
-  ],
-  "breakdown": {
-    "clarity": number,
-    "navigation": number,
-    "visuals": number,
-    "trust": number,
-    "conversion": number
-  }
+  ]
 }
 
-Rules:
-- Generate between 5 and 10 UX issues.
-- Generate between 5 and 10 improvement suggestions.
-- Every issue MUST include a category.
-- Every suggestion MUST include a category.
-- Issues must be deep, specific, and tied to screenshot + URL.
-- Each issue must include 2–4 bullet points with concrete observations.
+RULES:
+
+- Do NOT mix UX issues with copywriting.
+- Do NOT include copywriting inside issues.
+- Do NOT include UX analysis inside copywriting.
+
+- For issues_by_category:
+  - Generate 1–3 issues per category.
+  - Issues must be deep, specific, tied to screenshot + URL.
+  - Each issue must include 2–4 concrete bullets.
+  - expected_result must be an integer 0–100.
+
+- For copywriting:
+  - Provide 3–7 items.
+  - Only include elements that exist on the page.
+  - before must be the exact text from the page.
+  - after must be a significantly improved version.
+  - expected_gain values must be integers.
+  - reasoning must contain 1–2 short bullets explaining why the new text is better.
+
 - All numbers must be integers.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
+
 `;
-
-
 
     // Build input array for Responses API
     const inputContent: any[] = [
