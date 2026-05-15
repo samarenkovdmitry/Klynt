@@ -77,7 +77,6 @@ Rules:
 `;
 
 
-
     // Build input array for Responses API
     const inputContent: any[] = [
       { type: "input_text", text: basePrompt },
