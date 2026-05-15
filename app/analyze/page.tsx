@@ -557,7 +557,7 @@ export default function Analyze() {
                 {impactEntries.map(([key, value]) => (
                   <div
                     key={key}
-                    className="rounded-md bg-blue-600 px-2.5 py-1 text-sm font-medium text-white"
+                    className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white"
                   >
                     +{Math.abs(value)}% {key}
                   </div>
