@@ -423,7 +423,7 @@ export default function Analyze() {
                 </div>
 
               </div>
-              
+
 {/* UX ISSUES */}
 <div className="mb-8 space-y-4 mt-6">
   <h3 className={styles.titleSection}>UX Issues</h3>
@@ -447,7 +447,7 @@ export default function Analyze() {
           {/* CENTER */}
           <div className="flex-1 relative">
 
-            {/* IMPACT BADGE (calm-tech) */}
+            {/* IMPACT BADGE */}
             <div className="absolute right-0 top-0">
               <div className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700">
                 {impact.clarity}% clarity
@@ -486,16 +486,12 @@ export default function Analyze() {
               </p>
             )}
           </div>
-
-          {/* RIGHT — SEVERITY (оставляем как есть) */}
-          <div className="w-20 flex justify-end items-start">
-            <SeverityBadge level={issue.severity} />
-          </div>
         </div>
       );
     })}
   </div>
 </div>
+
 
 
 {/* SUGGESTED IMPROVEMENTS */}
