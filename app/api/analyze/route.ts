@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-export const runtime = "edge";
+export const runtime = "nodejs"; // ← обязательно
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -77,13 +77,11 @@ Rules:
 `;
 
 
-    // Build input array for Responses API
-    const inputContent: any[] = [
+const inputContent: any[] = [
       { type: "input_text", text: basePrompt },
       { type: "input_text", text: `Website URL: ${url}` }
     ];
 
-    // If screenshot exists → attach as Vision input
     if (screenshot) {
       const base64 = await fileToBase64(screenshot);
       inputContent.push({
