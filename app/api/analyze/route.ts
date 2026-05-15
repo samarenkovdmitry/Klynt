@@ -52,9 +52,20 @@ JSON FORMAT:
     {
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "section": "string",
+      "recommendation": "string",
+      "impact": "Low" | "Medium" | "High"
+    }
+  ],
+
+  "copy_refinement": [
+    {
+      "section": "string",
       "before": "string",
       "after": "string",
-      "impact": "Low" | "Medium" | "High"
+      "impact": {
+        "conversion": number,
+        "clarity": number
+      }
     }
   ],
 
@@ -70,9 +81,9 @@ JSON FORMAT:
 Rules:
 - Generate between 3 and 7 UX issues.
 - Generate between 3 and 7 improvement suggestions.
+- Generate between 2 and 6 copy refinement items.
 - Every issue MUST include a category.
 - Every suggestion MUST include a category.
-- Issues must be deep, specific, and tied to screenshot + URL.
 - All numbers must be integers.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
@@ -83,12 +94,18 @@ Rules for issues:
 - Do NOT generate any body text above the bullets.
 - "impact" numbers must be negative (representing loss), e.g. -12.
 - "bullets" must be 2–4 short, concrete observations.
-- Do NOT include "expected result" or any predicted improvements.
-- Do NOT include any text except title → impact → bullets.
+- Do NOT include "expected result" or predicted improvements.
 
 Rules for suggestions:
-- Keep the existing structure.
-- Suggestions may include positive impact (Low/Medium/High).
+- Suggestions must NOT include before/after text.
+- Suggestions must contain only UX recommendations (structure, clarity, navigation, trust, visuals).
+- Use "recommendation" instead of "before/after".
+
+Rules for copy_refinement:
+- Only include textual improvements (before/after).
+- "before" must be the original text from the page.
+- "after" must be a clearer, more persuasive rewrite.
+- Impact must include numeric "conversion" and "clarity" improvements.
 `;
 
     const inputContent: any[] = [
