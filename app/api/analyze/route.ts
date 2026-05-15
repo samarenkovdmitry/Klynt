@@ -144,6 +144,11 @@ export async function POST(req: Request) {
       screenshotBase64 = await captureUrlScreenshot(url);
     }
 
+// 👇 добавь это
+console.log("[analyze] url:", url);
+console.log("[analyze] screenshot from upload:", !!screenshot);
+console.log("[analyze] screenshot from puppeteer:", screenshot ? "skip (file)" : (screenshotBase64 ? "OK" : "NULL"));
+
     const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the URL and the screenshot if provided.
 
