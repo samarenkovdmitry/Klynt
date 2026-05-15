@@ -60,11 +60,48 @@ type AuditResponse = {
   };
 };
 
-// Convert File → base64
+// -----------------------------
+// HELPERS
+// -----------------------------
 async function fileToBase64(file: File) {
   const buffer = await file.arrayBuffer();
   return Buffer.from(buffer).toString("base64");
 }
+
+// -----------------------------
+// SERVER-SIDE SCREENSHOT (PUPPETEER)
+// -----------------------------
+async function captureUrlScreenshot(url: string): Promise<string | null> {
+  try {
+    const puppeteer = await import("puppeteer");
+
+    const browser = await puppeteer.launch({
+      headless: true, // ← исправлено
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1440, height: 900 });
+
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+      timeout: 30000,
+    });
+
+    const screenshotBuffer = await page.screenshot({
+      type: "png",
+      fullPage: true,
+    });
+
+    await browser.close();
+
+    return Buffer.from(screenshotBuffer).toString("base64"); // ← исправлено
+  } catch (err) {
+    console.error("Puppeteer screenshot failed:", err);
+    return null;
+  }
+}
+
 
 // -----------------------------
 // NORMALIZATION HELPERS
@@ -93,6 +130,19 @@ export async function POST(req: Request) {
 
     const url = (formData.get("url") as string) ?? "";
     const screenshot = formData.get("screenshot") as File | null;
+
+    // -----------------------------
+    // Decide which screenshot to use
+    // -----------------------------
+    let screenshotBase64: string | null = null;
+
+    if (screenshot) {
+      screenshotBase64 = await fileToBase64(screenshot);
+    }
+
+    if (!screenshot && url) {
+      screenshotBase64 = await captureUrlScreenshot(url);
+    }
 
     const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the URL and the screenshot if provided.
@@ -169,7 +219,6 @@ Rules for issues:
 - Bullets must be noun‑phrases only.
 - Must include a "why" explanation.
 
-
 Rules for suggestions:
 - Must include a "why" explanation.
 - "impact" must include 1–2 positive integer metrics between 4 and 20.
@@ -186,11 +235,10 @@ Rules for copy_refinement:
       { type: "input_text", text: `Website URL: ${url}` }
     ];
 
-    if (screenshot) {
-      const base64 = await fileToBase64(screenshot);
+    if (screenshotBase64) {
       inputContent.push({
         type: "input_image",
-        image_url: `data:${screenshot.type};base64,${base64}`
+        image_url: `data:image/png;base64,${screenshotBase64}`
       });
     }
 
