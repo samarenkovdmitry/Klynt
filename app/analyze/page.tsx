@@ -44,13 +44,10 @@ export default function Analyze() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleImageUpload(e: any) {
-  console.log("UPLOAD FIRED");
-  const file = e.target.files?.[0];
-  console.log("FILE:", file);
-  if (!file) return;
-  setUploadedImage(file);
-}
-
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadedImage(file);
+  }
 
   const isButtonDisabled = !url && !uploadedImage;
 
