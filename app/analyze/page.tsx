@@ -184,33 +184,33 @@ export default function Analyze() {
   // UX Breakdown color logic (0–10 → 0–100%)
   // -------------------------------
   function getBreakdownMeta(value: number) {
-    const percent = value * 10;
+  const percent = value; // уже 0–100
 
-    if (percent >= 70) {
-      return {
-        bar: "bg-green-500",
-        label: "Healthy",
-        labelColor: "text-green-600"
-      };
-    }
-
-    if (percent >= 50) {
-      return {
-        bar: "bg-amber-500",
-        label: "At risk",
-        labelColor: "text-amber-600"
-      };
-    }
-
+  if (percent >= 70) {
     return {
-      bar: "bg-red-500",
-      label: "Failing",
-      labelColor: "text-red-600"
+      bar: "bg-green-500",
+      label: "Healthy",
+      labelColor: "text-green-600",
     };
   }
 
+  if (percent >= 50) {
+    return {
+      bar: "bg-amber-500",
+      label: "At risk",
+      labelColor: "text-amber-600",
+    };
+  }
 
-  return (
+  return {
+    bar: "bg-red-500",
+    label: "Failing",
+    labelColor: "text-red-600",
+  };
+}
+
+
+ return (
   <>
     {/* TOP NAVBAR */}
     <header className="w-full border-b border-[#CDD7DF] bg-[#EBEFF3]">
@@ -331,6 +331,7 @@ export default function Analyze() {
 
           </div>
         )}
+        
         {/* REPORT SCREEN */}
         {data && (
           <div className="space-y-6 animate-fade-in transition-all duration-500 opacity-100">
@@ -579,46 +580,47 @@ export default function Analyze() {
                 </div>
               )}
               {/* UX BREAKDOWN */}
-              <div className="mt-10">
-                <h3 className={styles.titleSection}>UX Breakdown</h3>
+<div className="mt-10">
+  <h3 className={styles.titleSection}>UX Breakdown</h3>
 
-                <div className="rounded-xl bg-white border border-[var(--stroke-light)] p-5 space-y-5 mt-4">
-                  {data.breakdown && Object.entries(data.breakdown).map(([key, value]) => {
-                    const numericValue = Number(value ?? 0);
-                    const meta = getBreakdownMeta(numericValue);
+  <div className="rounded-xl bg-white border border-[var(--stroke-light)] p-5 space-y-5 mt-4">
+    {data.breakdown &&
+      Object.entries(data.breakdown).map(([key, value]) => {
+        const numericValue = Number(value ?? 0); // 0–100
+        const percent = Math.max(0, Math.min(100, numericValue)); // safety
+        const meta = getBreakdownMeta(percent);
 
-                    return (
-                      <div key={key}>
-                        <div className="mb-1 flex justify-between">
-                          <span className="capitalize text-sm font-medium text-[var(--ink-primary)]">
-                            {key}
-                          </span>
+        return (
+          <div key={key}>
+            <div className="mb-1 flex justify-between">
+              <span className="capitalize text-sm font-medium text-[var(--ink-primary)]">
+                {key}
+              </span>
 
-                          <div className="flex items-center gap-1">
-                            <span className="text-sm font-semibold text-[var(--ink-primary)]">
-                              {numericValue}/10
-                            </span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-semibold text-[var(--ink-primary)]">
+                  {percent}%
+                </span>
 
-                            <span className="text-[var(--stroke-light)]">•</span>
+                <span className="text-[var(--stroke-light)]">•</span>
 
-                            <span className={`text-sm font-medium ${meta.labelColor}`}>
-                              {meta.label}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* BAR */}
-                        <div className="h-1.5 w-full rounded-full bg-[var(--stroke-light)] overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all ${meta.bar}`}
-                            style={{ width: `${numericValue * 10}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <span className={`text-sm font-medium ${meta.labelColor}`}>
+                  {meta.label}
+                </span>
               </div>
+            </div>
+
+            <div className="h-1.5 w-full rounded-full bg-[var(--stroke-light)] overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${meta.bar}`}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+          </div>
+        );
+      })}
+  </div>
+</div>
 
               {/* NEXT ACTIONS */}
               <div className="mt-10 flex flex-col items-center gap-6">
