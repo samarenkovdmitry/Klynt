@@ -53,7 +53,8 @@ JSON FORMAT:
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "section": "string",
       "recommendation": "string",
-      "impact": "Low" | "Medium" | "High"
+      "impact": "Low" | "Medium" | "High",
+      "why": "string"
     }
   ],
 
@@ -65,7 +66,8 @@ JSON FORMAT:
       "impact": {
         "conversion": number,
         "clarity": number
-      }
+      },
+      "why": "string"
     }
   ],
 
@@ -82,8 +84,6 @@ Rules:
 - Generate between 3 and 7 UX issues.
 - Generate between 3 and 7 improvement suggestions.
 - Generate between 2 and 6 copy refinement items.
-- Every issue MUST include a category.
-- Every suggestion MUST include a category.
 - All numbers must be integers.
 - Do NOT wrap JSON in quotes.
 - Do NOT add trailing commas.
@@ -99,6 +99,7 @@ Rules for issues:
 Rules for suggestions:
 - Suggestions must NOT include before/after text.
 - Suggestions must contain only UX recommendations (structure, clarity, navigation, trust, visuals).
+- Must include a "why" explanation (1 short sentence).
 - Use "recommendation" instead of "before/after".
 
 Rules for copy_refinement:
@@ -106,6 +107,7 @@ Rules for copy_refinement:
 - "before" must be the original text from the page.
 - "after" must be a clearer, more persuasive rewrite.
 - Impact must include numeric "conversion" and "clarity" improvements.
+- Must include a "why" explanation (1 short sentence).
 `;
 
     const inputContent: any[] = [
