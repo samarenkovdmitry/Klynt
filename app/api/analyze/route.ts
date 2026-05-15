@@ -53,7 +53,10 @@ JSON FORMAT:
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "section": "string",
       "recommendation": "string",
-      "impact": "Low" | "Medium" | "High",
+      "impact": {
+        "trust": number,
+        "clarity": number
+      },
       "why": "string"
     }
   ],
@@ -100,7 +103,7 @@ Rules for suggestions:
 - Suggestions must NOT include before/after text.
 - Suggestions must contain only UX recommendations (structure, clarity, navigation, trust, visuals).
 - Must include a "why" explanation (1 short sentence).
-- Use "recommendation" instead of "before/after".
+- Impact must include numeric "trust" and "clarity" improvements.
 
 Rules for copy_refinement:
 - Only include textual improvements (before/after).

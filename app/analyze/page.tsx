@@ -522,15 +522,18 @@ export default function Analyze() {
           {/* CENTER */}
           <div className="relative">
 
-            {/* IMPACT BADGE */}
-            <div className="absolute right-0 top-0">
-              <div className="rounded-md border border-green-600 bg-green-600 px-2.5 py-1 text-sm font-medium text-white">
-                {item.impact}
+            {/* IMPACT BADGES */}
+            <div className="absolute right-0 top-0 flex gap-2">
+              <div className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white">
+                +{item.impact.trust}% trust
+              </div>
+              <div className="rounded-md bg-blue-600 px-2.5 py-1 text-sm font-medium text-white">
+                +{item.impact.clarity}% clarity
               </div>
             </div>
 
             {/* SECTION TITLE */}
-            <p className="text-base font-medium text-[var(--ink-primary)] pr-20">
+            <p className="text-base font-medium text-[var(--ink-primary)] pr-32">
               {item.section}
             </p>
 
