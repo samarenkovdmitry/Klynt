@@ -559,7 +559,7 @@ export default function Analyze() {
                     key={key}
                     className="rounded-md bg-blue-600 px-2.5 py-1 text-sm font-medium text-white"
                   >
-                    {value}% {key}
+                    +{Math.abs(value)}% {key}
                   </div>
                 ))}
               </div>
@@ -624,7 +624,7 @@ export default function Analyze() {
                     key={key}
                     className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white"
                   >
-                    {value}% {key}
+                    +{Math.abs(value)}% {key}
                   </div>
                 ))}
               </div>

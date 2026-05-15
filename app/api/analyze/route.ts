@@ -162,19 +162,19 @@ Rules:
 
 Rules for issues:
 - "impact" must include 1–2 metrics chosen from: clarity, cta, trust, navigation.
-- All impact numbers must be negative integers.
+- Impact numbers must be negative integers between -20 and -4.
 - "bullets" must be 2–4 short UX signals.
 - Must include a "why" explanation.
 
 Rules for suggestions:
 - Must include a "why" explanation.
-- "impact" must include 1–2 metrics chosen from: clarity, trust, navigation, visuals, conversion.
-- All impact numbers must be negative integers.
+- "impact" must include 1–2 positive integer metrics between 4 and 20.
+- Allowed metrics: clarity, trust, navigation, visuals, conversion.
 
 Rules for copy_refinement:
 - Must include a "why" explanation.
-- "impact" must include 1–2 metrics chosen from: clarity, conversion, trust.
-- All impact numbers must be negative integers.
+- "impact" must include 1–2 positive integer metrics between 4 and 20.
+- Allowed metrics: clarity, conversion, trust.
 `;
 
     const inputContent: any[] = [
