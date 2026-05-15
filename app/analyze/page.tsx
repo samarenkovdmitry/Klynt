@@ -76,10 +76,21 @@ export default function Analyze() {
     softBorder: "border-[#D5DDE5]",
   };
 
-  function getProgressText(progress: number) {
-    if (progress < 30) return "Scanning layout...";
-    if (progress < 70) return "Analyzing hierarchy...";
-    return "Checking conversion flow...";
+  // -------------------------------
+  // LOADING STEPS
+  // -------------------------------
+  const steps = [
+    { threshold: 10, label: "Scanning layout…" },
+    { threshold: 30, label: "Analyzing hierarchy…" },
+    { threshold: 55, label: "Checking clarity…" },
+    { threshold: 75, label: "Evaluating trust signals…" },
+    { threshold: 90, label: "Reviewing conversion flow…" },
+    { threshold: 100, label: "Finalizing report…" }
+  ];
+
+  function getLoadingLabel(progress: number) {
+    const step = steps.find(s => progress <= s.threshold);
+    return step ? step.label : "Analyzing…";
   }
 
   function handleReset() {
@@ -113,7 +124,7 @@ export default function Analyze() {
   }
 
   // -------------------------------
-  // ANALYZE HANDLER (with screenshot)
+  // ANALYZE HANDLER (with smooth progress)
   // -------------------------------
   async function handleAnalyze() {
     try {
@@ -121,6 +132,15 @@ export default function Analyze() {
 
       setLoading(true);
       setData(null);
+      setProgress(0);
+
+      // Smooth fake progress
+      const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 95) return prev;
+          return prev + Math.random() * 8;
+        });
+      }, 250);
 
       const form = new FormData();
       form.append("url", url);
@@ -136,10 +156,15 @@ export default function Analyze() {
 
       const json = await res.json();
       setData(json);
+
+      // Finish progress
+      setProgress(100);
+      clearInterval(interval);
+
     } catch (err) {
       console.error("Request failed:", err);
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 400);
     }
   }
 
@@ -192,7 +217,7 @@ export default function Analyze() {
       "navigation",
     ];
     const pick = candidates[Math.floor(Math.random() * candidates.length)];
-    impact[pick] = base + (Math.floor(Math.random() * 5) - 2); // небольшая вариация
+    impact[pick] = base + (Math.floor(Math.random() * 5) - 2);
 
     return impact;
   }
@@ -204,10 +229,10 @@ export default function Analyze() {
   }
 
   // -------------------------------
-  // UX Breakdown color logic (0–10 → 0–100%)
+  // UX Breakdown color logic
   // -------------------------------
   function getBreakdownMeta(value: number) {
-    const percent = value; // уже 0–100
+    const percent = value;
 
     if (percent >= 70) {
       return {
@@ -231,7 +256,6 @@ export default function Analyze() {
       labelColor: "text-red-600",
     };
   }
-
 
  return (
   <>
@@ -329,28 +353,36 @@ export default function Analyze() {
             </div>
 
             {/* BUTTON / PROGRESS */}
-            <div className="mt-8 w-full">
-              {!loading ? (
-                <Button type="button" disabled={isButtonDisabled} onClick={handleAnalyze}>
-                  Analyze UX
-                </Button>
-              ) : (
-                <div className="space-y-2">
-                  <div className="w-full h-6 flex items-center rounded-lg bg-transparent">
-                    <div className="w-full h-1.5 rounded-full bg-transparent overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-200"
-                        style={{ width: `${progress}%`, backgroundColor: "#14A8E8" }}
-                      />
-                    </div>
-                  </div>
+<div className="mt-8 w-full">
+  {!loading ? (
+    <Button
+      type="button"
+      disabled={isButtonDisabled}
+      onClick={handleAnalyze}
+    >
+      Analyze UX
+    </Button>
+  ) : (
+    <div className="space-y-3">
 
-                  <p className="mt-2 text-xs text-[var(--ink-secondary)] text-center">
-                    {getProgressText(progress)}
-                  </p>
-                </div>
-              )}
-            </div>
+      {/* PROGRESS BAR */}
+      <div className="w-full h-2 rounded-lg bg-gray-200 overflow-hidden">
+        <div
+          className="h-full bg-blue-600 transition-all duration-300 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* PERCENT + LABEL */}
+      <div className="flex items-center justify-between text-xs text-[var(--ink-secondary)]">
+        <span>{Math.floor(progress)}%</span>
+        <span>{getLoadingLabel(progress)}</span>
+      </div>
+
+    </div>
+  )}
+</div>
+
 
           </div>
         )}
