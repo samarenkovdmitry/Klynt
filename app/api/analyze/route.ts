@@ -44,7 +44,8 @@ JSON FORMAT:
       "title": "string",
       "severity": "low" | "medium" | "high",
       "impact": { "clarity": number, "cta": number },
-      "bullets": ["string"]
+      "bullets": ["string"],
+      "why": "string"
     }
   ],
 
@@ -97,6 +98,7 @@ Rules for issues:
 - Do NOT generate any body text above the bullets.
 - "impact" numbers must be negative (representing loss), e.g. -12.
 - "bullets" must be 2–4 short, concrete observations.
+- Must include a "why" explanation (1 short sentence).
 - Do NOT include "expected result" or predicted improvements.
 
 Rules for suggestions:

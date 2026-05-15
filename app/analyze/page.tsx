@@ -423,6 +423,7 @@ export default function Analyze() {
                 </div>
 
               </div>
+              
 {/* UX ISSUES */}
 <div className="mb-8 space-y-4 mt-6">
   <h3 className={styles.titleSection}>UX Issues</h3>
@@ -430,7 +431,6 @@ export default function Analyze() {
   <div className="space-y-4">
     {data.issues?.map((issue: any, index: number) => {
       const impact = issue.impact ?? generateImpact(issue.severity);
-      const color = getImpactColor(issue.severity);
 
       return (
         <div
@@ -439,59 +439,55 @@ export default function Analyze() {
         >
           {/* LEFT NUMBER */}
           <div className="w-2 flex items-start justify-center">
-            <span className="text-base font-regular text-[var(--ink-secondary)]">
+            <span className="text-base font-medium text-[var(--ink-secondary)]">
               {index + 1}
             </span>
           </div>
 
           {/* CENTER */}
-          <div className="flex-1">
+          <div className="flex-1 relative">
+
+            {/* IMPACT BADGE (calm-tech) */}
+            <div className="absolute right-0 top-0">
+              <div className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700">
+                {impact.clarity}% clarity
+              </div>
+            </div>
 
             {/* TITLE */}
-            <p className="text-base font-medium text-[var(--ink-primary)]">
+            <p className="text-base font-semibold text-[var(--ink-primary)] pr-28">
               {issue.title}
             </p>
 
-            {/* IMPACT */}
-            <p className="mt-1 text-sm font-medium text-[var(--ink-primary)]">
-              {issue.impact?.clarity !== undefined && (
-                <>
-                  <span style={{ color }} className="inline-flex">
-                    {issue.impact.clarity}%
-                  </span>
-                  <span className="inline-flex">&nbsp;clarity</span>
-                </>
-              )}
-
-              <span className="inline-flex">&nbsp;&nbsp;&nbsp;</span>
-
-              {issue.impact?.cta !== undefined && (
-                <>
-                  <span style={{ color }} className="inline-flex">
-                    {issue.impact.cta}%
-                  </span>
-                  <span className="inline-flex">&nbsp;CTA engagement</span>
-                </>
-              )}
+            {/* SIGNALS LABEL */}
+            <p className="text-xs font-medium text-[var(--ink-secondary)] mt-2 mb-1">
+              Signals:
             </p>
 
-            {/* BULLETS */}
-            {issue.bullets?.length > 0 && (
-              <ul className="mt-3 space-y-1">
-                {issue.bullets.map((b: string, i: number) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2 text-sm text-[var(--ink-secondary)]"
-                  >
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[var(--ink-secondary)]"></span>
-                    {b}
-                  </li>
-                ))}
-              </ul>
+            {/* SIGNAL TAGS */}
+            <div className="flex flex-wrap gap-2">
+              {issue.bullets?.map((b: string, i: number) => (
+                <span
+                  key={i}
+                  className="px-2 py-[3px] rounded-md bg-[var(--soft)] text-xs font-medium text-[var(--ink-secondary)]"
+                >
+                  {b}
+                </span>
+              ))}
+            </div>
+
+            {/* WHY IT MATTERS */}
+            {issue.why && (
+              <p className="mt-3 text-sm leading-6 text-[var(--ink-secondary)]">
+                <span className="font-medium text-[var(--ink-primary)]">
+                  Why it matters:
+                </span>
+                &nbsp;{issue.why}
+              </p>
             )}
           </div>
 
-          {/* RIGHT — SEVERITY */}
+          {/* RIGHT — SEVERITY (оставляем как есть) */}
           <div className="w-20 flex justify-end items-start">
             <SeverityBadge level={issue.severity} />
           </div>
@@ -500,6 +496,7 @@ export default function Analyze() {
     })}
   </div>
 </div>
+
 
 {/* SUGGESTED IMPROVEMENTS */}
 {data?.suggestions && data.suggestions.length > 0 && (
