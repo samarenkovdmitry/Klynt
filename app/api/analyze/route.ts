@@ -43,7 +43,7 @@ JSON FORMAT:
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "title": "string",
       "severity": "low" | "medium" | "high",
-      "impact": { "clarity": number, "cta": number },
+      "impact": { "clarity": number, "cta"?: number, "trust"?: number, "navigation"?: number },
       "bullets": ["string"],
       "why": "string"
     }
@@ -96,10 +96,22 @@ Rules for issues:
 - Use "title" instead of "description".
 - "title" must be a single concise sentence describing the UX problem.
 - Do NOT generate any body text above the bullets.
-- "impact" numbers must be negative (representing loss), e.g. -12.
-- "bullets" must be 2–4 short UX signals (2–4 words each), not full sentences. Example: "Low contrast", "Weak hierarchy", "Overloaded layout".
+
+- "impact" must include 1–2 numeric metrics chosen from:
+    - "clarity" (almost always required)
+    - "cta" (only if the issue affects user action or conversion)
+    - "trust" (only if the issue affects credibility or reliability)
+    - "navigation" (only if the issue affects findability or structure)
+
+- Do NOT include more than 2 metrics in "impact".
+- All impact numbers must be negative integers (representing loss), e.g. -12.
+
+- "bullets" must be 2–4 short UX signals (2–4 words each), not full sentences.
+  Examples: "Low contrast", "Weak hierarchy", "Overloaded layout".
+
 - Must include a "why" explanation (1 short sentence).
 - Do NOT include "expected result" or predicted improvements.
+
 
 Rules for suggestions:
 - Suggestions must NOT include before/after text.

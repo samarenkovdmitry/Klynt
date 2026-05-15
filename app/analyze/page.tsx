@@ -430,7 +430,12 @@ export default function Analyze() {
 
   <div className="space-y-4">
     {data.issues?.map((issue: any, index: number) => {
-      const impact = issue.impact ?? generateImpact(issue.severity);
+      // ЖЁСТКАЯ ТИПИЗАЦИЯ → ключ к тому, чтобы TS не подчёркивал impactEntries
+      const impact: Record<string, number> = issue.impact ?? generateImpact(issue.severity);
+
+      const impactEntries: [string, number][] = Object.entries(impact)
+        .filter(([_, value]) => typeof value === "number")
+        .slice(0, 2);
 
       return (
         <div
@@ -447,15 +452,20 @@ export default function Analyze() {
           {/* CENTER */}
           <div className="flex-1 relative">
 
-            {/* IMPACT BADGE */}
-            <div className="absolute right-0 top-0">
-              <div className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700">
-                {impact.clarity}% clarity
-              </div>
+            {/* IMPACT BADGES */}
+            <div className="absolute right-0 top-0 flex gap-2">
+              {impactEntries.map(([key, value]) => (
+                <div
+                  key={key}
+                  className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700"
+                >
+                  {value}% {key}
+                </div>
+              ))}
             </div>
 
             {/* TITLE */}
-            <p className="text-base font-semibold text-[var(--ink-primary)] pr-28">
+            <p className="text-base font-semibold text-[var(--ink-primary)] pr-40">
               {issue.title}
             </p>
 
@@ -469,7 +479,7 @@ export default function Analyze() {
               {issue.bullets?.map((b: string, i: number) => (
                 <span
                   key={i}
-                  className="px-2 py-[3px] rounded-md bg-[var(--soft)] text-xs font-medium text-[var(--ink-secondary)]"
+                  className="px-2 py-[3px] rounded-md bg-[#F3F5F7] text-xs font-medium text-[var(--ink-secondary)]"
                 >
                   {b}
                 </span>
@@ -491,7 +501,6 @@ export default function Analyze() {
     })}
   </div>
 </div>
-
 
 
 {/* SUGGESTED IMPROVEMENTS */}
