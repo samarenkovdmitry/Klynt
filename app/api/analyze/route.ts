@@ -15,8 +15,14 @@ async function blobToBase64(blob: Blob) {
   return Buffer.from(arrayBuffer).toString("base64");
 }
 
+function clampPercent(n: any) {
+  const v = Number(n ?? 0);
+  if (Number.isNaN(v)) return 0;
+  return Math.max(0, Math.min(100, v));
+}
+
 // -----------------------------
-// IMPACT MAPPING (old logic restored)
+// IMPACT MAPPING (1 main + optional 2nd, >=15%)
 // -----------------------------
 function mapImpact(impactObj: Record<string, number>) {
   if (!impactObj || typeof impactObj !== "object") {
@@ -41,16 +47,13 @@ function mapImpact(impactObj: Record<string, number>) {
     };
   }
 
-  // Always show strongest metric
   const [m1, v1] = entries[0];
 
   let m2 = "";
   let v2 = 0;
 
-  // Show second only if strong enough (>= 15% of first)
   if (entries.length > 1) {
     const [candM2, candV2] = entries[1];
-
     if (Math.abs(candV2) >= Math.abs(v1) * 0.15) {
       m2 = candM2;
       v2 = candV2;
@@ -84,10 +87,7 @@ export async function POST(req: Request) {
 
     const screenshotBase64 = await blobToBase64(screenshot);
 
-    // -----------------------------
-    // PROMPT v7 (Copy Refinement restored)
-    // -----------------------------
-const basePrompt = `
+    const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the screenshot (primary) and the URL (secondary).
 
 Return ONLY valid JSON. No markdown. No comments.
@@ -173,7 +173,6 @@ RULES:
 - Breakdown MUST be percentages (0–100).
 `;
 
-
     const response = await client.responses.create(
       {
         model: "gpt-4.1",
@@ -210,37 +209,34 @@ RULES:
     }
 
     const json = JSON.parse(match[0]);
-    function clampPercent(n: any) {
-  const v = Number(n ?? 0);
-  if (Number.isNaN(v)) return 0;
-  return Math.max(0, Math.min(100, v));
-}
 
-if (json.breakdown) {
-  json.breakdown = {
-    clarity: clampPercent(json.breakdown.clarity),
-    navigation: clampPercent(json.breakdown.navigation),
-    visuals: clampPercent(json.breakdown.visuals),
-    trust: clampPercent(json.breakdown.trust),
-    conversion: clampPercent(json.breakdown.conversion),
-  };
-}
-
+    // -----------------------------
+    // BREAKDOWN: clamp to 0–100
+    // -----------------------------
+    if (json.breakdown) {
+      json.breakdown = {
+        clarity: clampPercent(json.breakdown.clarity),
+        navigation: clampPercent(json.breakdown.navigation),
+        visuals: clampPercent(json.breakdown.visuals),
+        trust: clampPercent(json.breakdown.trust),
+        conversion: clampPercent(json.breakdown.conversion),
+      };
+    }
 
     // -----------------------------
     // MAP IMPACTS FOR FRONTEND
     // -----------------------------
-    json.issues = json.issues?.map((item: any) => ({
+    json.issues = (json.issues || []).map((item: any) => ({
       ...item,
       ...mapImpact(item.impact || {}),
     }));
 
-    json.suggestions = json.suggestions?.map((item: any) => ({
+    json.suggestions = (json.suggestions || []).map((item: any) => ({
       ...item,
       ...mapImpact(item.impact || {}),
     }));
 
-    json.copy = json.copy?.map((item: any) => ({
+    json.copy = (json.copy || []).map((item: any) => ({
       ...item,
       ...mapImpact(item.impact || {}),
     }));
