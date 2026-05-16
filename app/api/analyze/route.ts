@@ -15,6 +15,24 @@ async function blobToBase64(blob: Blob) {
   return Buffer.from(arrayBuffer).toString("base64");
 }
 
+// Safe JSON extractor — finds the FIRST valid JSON object in text
+function extractJSON(text: string) {
+  let start = text.indexOf("{");
+  while (start !== -1) {
+    let end = text.lastIndexOf("}");
+    while (end !== -1 && end > start) {
+      const candidate = text.slice(start, end + 1);
+      try {
+        return JSON.parse(candidate);
+      } catch (e) {
+        end = text.lastIndexOf("}", end - 1);
+      }
+    }
+    start = text.indexOf("{", start + 1);
+  }
+  throw new Error("Valid JSON not found");
+}
+
 function clampPercent(n: any) {
   const v = Number(n ?? 0);
   if (Number.isNaN(v)) return 0;
@@ -198,18 +216,7 @@ RULES:
     // -----------------------------
     // SAFE JSON PARSING
     // -----------------------------
-    const firstBrace = raw.indexOf("{");
-    const lastBrace = raw.lastIndexOf("}");
-
-    if (firstBrace === -1 || lastBrace === -1) {
-      return NextResponse.json(
-        { error: "Model did not return JSON", raw },
-        { status: 500 }
-      );
-    }
-
-    const jsonString = raw.slice(firstBrace, lastBrace + 1);
-    const json = JSON.parse(jsonString);
+    const json = extractJSON(raw);
 
     // -----------------------------
     // BREAKDOWN: always valid
