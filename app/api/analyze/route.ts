@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 
 export const runtime = "nodejs";
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
 
 // -----------------------------
 // HELPERS
 // -----------------------------
-async function blobToBase64(blob: Blob) {
+async function blobToBase64(blob: Blob): Promise<string> {
   const arrayBuffer = await blob.arrayBuffer();
-  return Buffer.from(arrayBuffer).toString("base64");
+  const buffer = Buffer.from(new Uint8Array(arrayBuffer));
+  return buffer.toString("base64");
 }
 
-// Safe JSON extractor — finds the FIRST valid JSON object in text
+
 function extractJSON(text: string) {
   let start = text.indexOf("{");
   while (start !== -1) {
@@ -39,9 +38,6 @@ function clampPercent(n: any) {
   return Math.max(0, Math.min(100, v));
 }
 
-// -----------------------------
-// IMPACT MAPPING (1 main + optional 2nd, >=15%)
-// -----------------------------
 function mapImpact(impactObj: Record<string, number>) {
   if (!impactObj || typeof impactObj !== "object") {
     return {
@@ -87,6 +83,27 @@ function mapImpact(impactObj: Record<string, number>) {
 }
 
 // -----------------------------
+// SERVER-SIDE SCREENSHOT
+// -----------------------------
+async function captureUrlScreenshot(url: string): Promise<string> {
+  const executablePath = await chromium.executablePath;
+
+  const browser = await puppeteer.launch({
+    args: chromium.args || [],
+    defaultViewport: chromium.defaultViewport,
+    executablePath: executablePath || "/usr/bin/google-chrome",
+    headless: chromium.headless !== false,
+    ignoreHTTPSErrors: true,
+  });
+
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
+
+  const screenshotBuffer = (await page.screenshot({ type: "png", fullPage: true })) as Buffer;
+  return screenshotBuffer.toString("base64");
+}
+
+// -----------------------------
 // ROUTE HANDLER
 // -----------------------------
 export async function POST(req: Request) {
@@ -94,19 +111,30 @@ export async function POST(req: Request) {
     const formData = await req.formData();
 
     const url = (formData.get("url") as string) ?? "";
-    const screenshot = formData.get("screenshot") as Blob | null;
+    const uploadedScreenshot = formData.get("screenshot") as Blob | null;
 
-    if (!screenshot) {
+    let screenshotBase64 = "";
+
+    // 1) If user uploaded screenshot → use it
+    if (uploadedScreenshot) {
+      screenshotBase64 = await blobToBase64(uploadedScreenshot);
+    }
+
+    // 2) If no screenshot but URL exists → capture server screenshot
+    else if (url) {
+      screenshotBase64 = await captureUrlScreenshot(url);
+    }
+
+    // 3) If neither provided → error
+    else {
       return NextResponse.json(
-        { error: "Upload screenshot is required" },
+        { error: "Provide either URL or screenshot" },
         { status: 400 }
       );
     }
 
-    const screenshotBase64 = await blobToBase64(screenshot);
-
-    const basePrompt = `
-You are a senior UX auditor. Analyze the website using BOTH the screenshot (primary) and the URL (secondary).
+    const prompt = `
+You are a senior UX auditor. Analyze the website using the screenshot (primary) and the URL (secondary).
 
 Return ONLY valid JSON. No markdown. No comments.
 
@@ -116,58 +144,9 @@ JSON FORMAT:
   "score": number,
   "risk": "low" | "medium" | "high",
 
-  "issues": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "title": "string",
-      "description": "string",
-      "impact": {
-        "clarity"?: number,
-        "navigation"?: number,
-        "visuals"?: number,
-        "trust"?: number,
-        "conversion"?: number,
-        "cta"?: number
-      },
-      "bullets": ["string"],
-      "why": "string"
-    }
-  ],
-
-  "suggestions": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "section": "string",
-      "recommendation": "string",
-      "impact": {
-        "clarity"?: number,
-        "navigation"?: number,
-        "visuals"?: number,
-        "trust"?: number,
-        "conversion"?: number,
-        "cta"?: number
-      },
-      "bullets": ["string"],
-      "why": "string"
-    }
-  ],
-
-  "copy": [
-    {
-      "section": "string",
-      "before": "string",
-      "after": "string",
-      "impact": {
-        "clarity"?: number,
-        "navigation"?: number,
-        "visuals"?: number,
-        "trust"?: number,
-        "conversion"?: number,
-        "cta"?: number
-      },
-      "why": "string"
-    }
-  ],
+  "issues": [...],
+  "suggestions": [...],
+  "copy": [...],
 
   "breakdown": {
     "clarity": number,
@@ -180,88 +159,57 @@ JSON FORMAT:
 
 RULES:
 - 3–7 issues, 3–7 suggestions.
-- Copy: 2–6 sections chosen from:
-  Hero Section, Subheading, Feature Section, Product Description, Benefits Section,
-  Pricing Section, CTA Block, Navigation, Footer, Changelog, About Section,
-  Testimonials, Value Proposition, Feature Highlights, Onboarding Section.
+- Copy: 2–6 sections.
 - All numbers must be integers.
-- Issues: negative impact values (-20 to -4).
-- Suggestions & copy: positive impact values (4 to 20).
-- Bullets: 2–4 items, 2–4 words each, no verbs.
+- Issues: negative impact (-20 to -4).
+- Suggestions & copy: positive impact (4 to 20).
 - Breakdown MUST be percentages (0–100).
 `;
 
-    const response = await client.responses.create(
-      {
-        model: "gpt-4.1",
-        temperature: 0.2,
-        input: [
-          {
-            role: "user",
-            content: [
-              { type: "input_text", text: basePrompt },
-              { type: "input_text", text: `Website URL: ${url}` },
-              {
-                type: "input_image",
-                image_url: `data:image/jpeg;base64,${screenshotBase64}`,
-              },
-            ],
-          },
-        ],
-      } as any
-    );
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+
+    const response = await client.responses.create({
+      model: "gpt-4.1",
+      temperature: 0.2,
+      input: [
+        {
+          role: "user",
+          content: [
+            { type: "input_text", text: prompt },
+            { type: "input_text", text: `Website URL: ${url}` },
+            {
+              type: "input_image",
+              image_url: `data:image/png;base64,${screenshotBase64}`,
+            },
+          ],
+        },
+      ],
+    } as any);
 
     const raw = response.output_text;
-
-    // -----------------------------
-    // SAFE JSON PARSING
-    // -----------------------------
     const json = extractJSON(raw);
 
-    // -----------------------------
-    // BREAKDOWN: always valid
-    // -----------------------------
-    if (!json.breakdown || typeof json.breakdown !== "object") {
-      json.breakdown = {
-        clarity: 0,
-        navigation: 0,
-        visuals: 0,
-        trust: 0,
-        conversion: 0,
-      };
-    }
-
     json.breakdown = {
-      clarity: clampPercent(json.breakdown.clarity),
-      navigation: clampPercent(json.breakdown.navigation),
-      visuals: clampPercent(json.breakdown.visuals),
-      trust: clampPercent(json.breakdown.trust),
-      conversion: clampPercent(json.breakdown.conversion),
+      clarity: clampPercent(json.breakdown?.clarity),
+      navigation: clampPercent(json.breakdown?.navigation),
+      visuals: clampPercent(json.breakdown?.visuals),
+      trust: clampPercent(json.breakdown?.trust),
+      conversion: clampPercent(json.breakdown?.conversion),
     };
 
-    // -----------------------------
-    // ARRAYS ALWAYS VALID
-    // -----------------------------
-    json.issues = Array.isArray(json.issues) ? json.issues : [];
-    json.suggestions = Array.isArray(json.suggestions) ? json.suggestions : [];
-    json.copy = Array.isArray(json.copy) ? json.copy : [];
-
-    // -----------------------------
-    // MAP IMPACTS
-    // -----------------------------
-    json.issues = json.issues.map((item: any) => ({
-      ...item,
-      ...mapImpact(item.impact || {}),
+    json.issues = (json.issues || []).map((i: any) => ({
+      ...i,
+      ...mapImpact(i.impact || {}),
     }));
 
-    json.suggestions = json.suggestions.map((item: any) => ({
-      ...item,
-      ...mapImpact(item.impact || {}),
+    json.suggestions = (json.suggestions || []).map((i: any) => ({
+      ...i,
+      ...mapImpact(i.impact || {}),
     }));
 
-    json.copy = json.copy.map((item: any) => ({
-      ...item,
-      ...mapImpact(item.impact || {}),
+    json.copy = (json.copy || []).map((i: any) => ({
+      ...i,
+      ...mapImpact(i.impact || {}),
     }));
 
     return NextResponse.json(json);
