@@ -6,8 +6,12 @@ const nextConfig = {
     },
   },
 
-  // Отключает Edge, включает Node.js runtime
   output: "standalone",
+
+  webpack: (config) => {
+    config.externals.push("@sparticuz/chromium");
+    return config;
+  },
 };
 
 export default nextConfig;
