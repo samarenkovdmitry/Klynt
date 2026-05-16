@@ -23,7 +23,7 @@ function extractJSON(text: string) {
       const candidate = text.slice(start, end + 1);
       try {
         return JSON.parse(candidate);
-      } catch (e) {
+      } catch {
         end = text.lastIndexOf("}", end - 1);
       }
     }
@@ -196,17 +196,17 @@ RULES:
       conversion: clampPercent(json.breakdown?.conversion),
     };
 
-    json.issues = (json.issues || []).map((i: any) => ({
+    json.issues = (json.issues ?? []).map((i: any) => ({
       ...i,
       ...mapImpact(i.impact || {}),
     }));
 
-    json.suggestions = (json.suggestions || []).map((i: any) => ({
+    json.suggestions = (json.suggestions ?? []).map((i: any) => ({
       ...i,
       ...mapImpact(i.impact || {}),
     }));
 
-    json.copy = (json.copy || []).map((i: any) => ({
+    json.copy = (json.copy ?? []).map((i: any) => ({
       ...i,
       ...mapImpact(i.impact || {}),
     }));
