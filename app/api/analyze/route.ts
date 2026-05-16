@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     // -----------------------------
     // PROMPT v7 (Copy Refinement restored)
     // -----------------------------
-    const basePrompt = `
+const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the screenshot (primary) and the URL (secondary).
 
 Return ONLY valid JSON. No markdown. No comments.
@@ -98,8 +98,41 @@ JSON FORMAT:
   "score": number,
   "risk": "low" | "medium" | "high",
 
-  "issues": [...],
-  "suggestions": [...],
+  "issues": [
+    {
+      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
+      "title": "string",
+      "description": "string",
+      "impact": {
+        "clarity"?: number,
+        "navigation"?: number,
+        "visuals"?: number,
+        "trust"?: number,
+        "conversion"?: number,
+        "cta"?: number
+      },
+      "bullets": ["string"],
+      "why": "string"
+    }
+  ],
+
+  "suggestions": [
+    {
+      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
+      "section": "string",
+      "recommendation": "string",
+      "impact": {
+        "clarity"?: number,
+        "navigation"?: number,
+        "visuals"?: number,
+        "trust"?: number,
+        "conversion"?: number,
+        "cta"?: number
+      },
+      "bullets": ["string"],
+      "why": "string"
+    }
+  ],
 
   "copy": [
     {
@@ -129,7 +162,7 @@ JSON FORMAT:
 
 RULES:
 - 3–7 issues, 3–7 suggestions.
-- Copy Refinement: 2–6 sections chosen from:
+- Copy: 2–6 sections chosen from:
   Hero Section, Subheading, Feature Section, Product Description, Benefits Section,
   Pricing Section, CTA Block, Navigation, Footer, Changelog, About Section,
   Testimonials, Value Proposition, Feature Highlights, Onboarding Section.
@@ -139,6 +172,7 @@ RULES:
 - Bullets: 2–4 items, 2–4 words each, no verbs.
 - Breakdown MUST be percentages (0–100).
 `;
+
 
     const response = await client.responses.create(
       {
@@ -176,6 +210,22 @@ RULES:
     }
 
     const json = JSON.parse(match[0]);
+    function clampPercent(n: any) {
+  const v = Number(n ?? 0);
+  if (Number.isNaN(v)) return 0;
+  return Math.max(0, Math.min(100, v));
+}
+
+if (json.breakdown) {
+  json.breakdown = {
+    clarity: clampPercent(json.breakdown.clarity),
+    navigation: clampPercent(json.breakdown.navigation),
+    visuals: clampPercent(json.breakdown.visuals),
+    trust: clampPercent(json.breakdown.trust),
+    conversion: clampPercent(json.breakdown.conversion),
+  };
+}
+
 
     // -----------------------------
     // MAP IMPACTS FOR FRONTEND
