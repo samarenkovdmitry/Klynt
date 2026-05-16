@@ -1,3 +1,4 @@
+import fs from "fs";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
@@ -10,54 +11,52 @@ const client = new OpenAI({
 // -----------------------------
 // TYPES
 // -----------------------------
-type ImpactMetrics = {
-  clarity?: number;
-  cta?: number;
-  trust?: number;
-  navigation?: number;
-  visuals?: number;
-  conversion?: number;
-};
-
-type UXIssue = {
+type FlatIssue = {
   category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
   title: string;
   severity: "low" | "medium" | "high";
-  impact: ImpactMetrics;
+  impact_metric_1: string;
+  impact_value_1: number;
+  impact_metric_2: string;
+  impact_value_2: number;
   bullets: string[];
   why: string;
 };
 
-type Suggestion = {
+type FlatSuggestion = {
   category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
   section: string;
   recommendation: string;
-  impact: ImpactMetrics;
+  impact_metric_1: string;
+  impact_value_1: number;
+  impact_metric_2: string;
+  impact_value_2: number;
   why: string;
 };
 
-type CopyRefinement = {
+type FlatCopy = {
   section: string;
   before: string;
   after: string;
-  impact: ImpactMetrics;
+  impact_metric_1: string;
+  impact_value_1: number;
+  impact_metric_2: string;
+  impact_value_2: number;
   why: string;
 };
 
-type AuditResponse = {
+type AuditResponseFlat = {
   url: string;
   score: number;
   risk: "low" | "medium" | "high";
-  issues: UXIssue[];
-  suggestions: Suggestion[];
-  copy_refinement: CopyRefinement[];
-  breakdown: {
-    clarity: number;
-    navigation: number;
-    visuals: number;
-    trust: number;
-    conversion: number;
-  };
+  issues: FlatIssue[];
+  suggestions: FlatSuggestion[];
+  copy: FlatCopy[];
+  clarity: number;
+  navigation: number;
+  visuals: number;
+  trust: number;
+  conversion: number;
 };
 
 // -----------------------------
@@ -75,22 +74,49 @@ async function captureUrlScreenshot(url: string): Promise<string | null> {
   try {
     const puppeteer = await import("puppeteer");
 
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = "https://" + url;
+    }
+
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--disable-web-security",
+        "--disable-features=IsolateOrigins,site-per-process",
+      ],
     });
 
     const page = await browser.newPage();
-    await page.setViewport({ width: 1440, height: 900 });
 
-    await page.goto(url, {
-      waitUntil: "networkidle2",
-      timeout: 30000,
-    });
+    await page.setUserAgent(
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+    );
+
+    await page.setViewport({ width: 1280, height: 720 });
+
+    console.log("⚡ Trying domcontentloaded navigation...");
+    try {
+      await page.goto(url, {
+        waitUntil: "domcontentloaded",
+        timeout: 20000,
+      });
+    } catch (err) {
+      console.log("⚠️ domcontentloaded failed, using partial load");
+      try {
+        await page.waitForSelector("body", { timeout: 3000 });
+      } catch (_) {
+        console.log("⚠️ body not detected, continuing anyway");
+      }
+    }
 
     const screenshotBuffer = await page.screenshot({
-      type: "png",
-      fullPage: true,
+      type: "jpeg",
+      quality: 80,
+      fullPage: false,
     });
 
     await browser.close();
@@ -100,24 +126,6 @@ async function captureUrlScreenshot(url: string): Promise<string | null> {
     console.error("Puppeteer screenshot failed:", err);
     return null;
   }
-}
-
-// -----------------------------
-// NORMALIZATION HELPERS
-// -----------------------------
-function normalizeImpact(
-  obj: ImpactMetrics | undefined,
-  allowed: (keyof ImpactMetrics)[]
-): ImpactMetrics {
-  const entries = Object.entries(obj ?? {})
-    .filter(([k, v]) => allowed.includes(k as keyof ImpactMetrics) && typeof v === "number")
-    .slice(0, 2);
-
-  const out: ImpactMetrics = {};
-  for (const [k, v] of entries) {
-    (out as any)[k] = v;
-  }
-  return out;
 }
 
 // -----------------------------
@@ -140,32 +148,26 @@ export async function POST(req: Request) {
       screenshotBase64 = await captureUrlScreenshot(url);
     }
 
-    // ⭐ screenshot-first logic — добавлено
-    const screenshotPriorityBlock = `
-PRIMARY SOURCE OF TRUTH:
-- The screenshot is the main input.
-- All layout, spacing, hierarchy, visual density, readability, contrast, CTA prominence, trust signals, and conversion cues MUST be derived from the screenshot.
+    console.log("🔥 DEBUG — screenshotBase64 exists:", !!screenshotBase64);
 
-SECONDARY SOURCE:
-- The URL is only for understanding intent, product category, and messaging context.
+    if (screenshotBase64) {
+      console.log("🔥 DEBUG — screenshotBase64 length:", screenshotBase64.length);
 
-You MUST prioritize the screenshot over the URL in all evaluations.
-`;
+      fs.writeFileSync(
+        "debug_screenshot.jpeg",
+        Buffer.from(screenshotBase64, "base64")
+      );
+
+      console.log("🔥 Saved debug_screenshot.jpeg");
+    }
 
     const basePrompt = `
-You are a senior UX auditor. Analyze the website using BOTH the URL and the screenshot if provided.
+You are a senior UX auditor. Use the screenshot as the primary source of truth.
+Use the URL only for context and semantics.
 
-${screenshotPriorityBlock}
+Return ONLY valid JSON. No markdown, no comments, no extra text.
 
-Your goal:
-- Perform a deep UX audit.
-- Detect structural, visual, interaction, clarity, trust, and conversion issues.
-- Use screenshot for layout, spacing, hierarchy, visual density, readability, contrast, CTA prominence, and trust signals.
-- Use URL for content, messaging, semantics, navigation, and intent.
-
-Return ONLY valid JSON. No markdown. No commentary.
-
-JSON FORMAT:
+You MUST return JSON in the following flat structure:
 
 {
   "url": "string",
@@ -177,7 +179,10 @@ JSON FORMAT:
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "title": "string",
       "severity": "low" | "medium" | "high",
-      "impact": { "clarity"?: number, "cta"?: number, "trust"?: number, "navigation"?: number },
+      "impact_metric_1": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
+      "impact_value_1": number,
+      "impact_metric_2": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
+      "impact_value_2": number,
       "bullets": ["string"],
       "why": "string"
     }
@@ -188,63 +193,51 @@ JSON FORMAT:
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "section": "string",
       "recommendation": "string",
-      "impact": { "clarity"?: number, "trust"?: number, "navigation"?: number, "visuals"?: number, "conversion"?: number },
+      "impact_metric_1": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
+      "impact_value_1": number,
+      "impact_metric_2": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
+      "impact_value_2": number,
       "why": "string"
     }
   ],
 
-  "copy_refinement": [
+  "copy": [
     {
       "section": "string",
       "before": "string",
       "after": "string",
-      "impact": { "clarity"?: number, "conversion"?: number, "trust"?: number },
+      "impact_metric_1": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
+      "impact_value_1": number,
+      "impact_metric_2": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
+      "impact_value_2": number,
       "why": "string"
     }
   ],
 
-  "breakdown": {
-    "clarity": number,
-    "navigation": number,
-    "visuals": number,
-    "trust": number,
-    "conversion": number
-  }
+  "clarity": number,
+  "navigation": number,
+  "visuals": number,
+  "trust": number,
+  "conversion": number
 }
 
 Rules:
-- Generate between 3 and 7 UX issues.
-- Generate between 3 and 7 improvement suggestions.
-- Generate between 2 and 6 copy refinement items.
-- All numbers must be integers.
-- Do NOT wrap JSON in quotes.
-- Do NOT add trailing commas.
-
-Rules for issues:
-- "impact" must include 1–2 metrics chosen from: clarity, cta, trust, navigation.
-- Impact numbers must be negative integers between -20 and -4.
-- "bullets" must be 2–4 short UX signals (2–4 words each), not full sentences.
-- Bullets must NEVER contain verbs.
-- Must include a "why" explanation.
-
-Rules for suggestions:
-- Must include a "why" explanation.
-- "impact" must include 1–2 positive integer metrics between 4 and 20.
-
-Rules for copy_refinement:
-- Must include a "why" explanation.
-- "impact" must include 1–2 positive integer metrics between 4 and 20.
+- 3–7 issues, 3–7 suggestions, 2–6 copy items.
+- Impact values: negative integers (-20 to -4) for issues, positive (4 to 20) for suggestions and copy.
+- If you only have one impact metric, set the second metric to "" and value to 0.
+- Bullets: 2–4 items, 2–4 words each, no verbs.
+- No markdown. No commentary. Only JSON.
 `;
 
     const inputContent: any[] = [
       { type: "input_text", text: basePrompt },
-      { type: "input_text", text: `Website URL: ${url}` }
+      { type: "input_text", text: `Website URL: ${url}` },
     ];
 
     if (screenshotBase64) {
       inputContent.push({
         type: "input_image",
-        image_url: `data:image/png;base64,${screenshotBase64}`
+        image_url: `data:image/jpeg;base64,${screenshotBase64}`,
       });
     }
 
@@ -253,38 +246,46 @@ Rules for copy_refinement:
       input: [
         {
           role: "user",
-          content: inputContent
-        }
+          content: inputContent,
+        },
       ],
-      temperature: 0.2
+      temperature: 0.2,
     });
 
     const raw = response.output_text;
 
-    let json: AuditResponse;
-    try {
-      json = JSON.parse(raw) as AuditResponse;
-    } catch (err) {
+    // -----------------------------
+    // JSON STABILIZER
+    // -----------------------------
+    const cleaned = raw
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (!match) {
       return NextResponse.json(
-        { error: "Invalid JSON from model", raw },
+        { error: "Model did not return JSON", raw },
         { status: 500 }
       );
     }
 
-    json.issues = json.issues.map((issue) => ({
-      ...issue,
-      impact: normalizeImpact(issue.impact, ["clarity", "cta", "trust", "navigation"])
-    }));
+    const jsonString = match[0];
 
-    json.suggestions = json.suggestions.map((s) => ({
-      ...s,
-      impact: normalizeImpact(s.impact, ["clarity", "trust", "navigation", "visuals", "conversion"])
-    }));
+    let json: AuditResponseFlat;
+    try {
+      json = JSON.parse(jsonString) as AuditResponseFlat;
+    } catch (err) {
+      return NextResponse.json(
+        { error: "Invalid JSON from model", raw: jsonString },
+        { status: 500 }
+      );
+    }
 
-    json.copy_refinement = json.copy_refinement.map((c) => ({
-      ...c,
-      impact: normalizeImpact(c.impact, ["clarity", "conversion", "trust"])
-    }));
+    // Лёгкая страховка: массивы по умолчанию
+    json.issues = Array.isArray(json.issues) ? json.issues : [];
+    json.suggestions = Array.isArray(json.suggestions) ? json.suggestions : [];
+    json.copy = Array.isArray(json.copy) ? json.copy : [];
 
     return NextResponse.json(json);
   } catch (error: any) {
