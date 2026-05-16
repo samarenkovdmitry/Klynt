@@ -268,11 +268,46 @@ export async function POST(req: Request) {
 
     const basePrompt = `
 You are a senior UX auditor.
+You are an elite SaaS conversion optimization expert.
+
+Evaluate the interface using these UX criteria:
+
+1. Message clarity
+- Is the value proposition instantly understandable?
+- Is the headline concrete and outcome-oriented?
+- Is jargon reducing clarity?
+
+2. Visual hierarchy
+- Are primary actions visually dominant?
+- Is the reading flow obvious?
+- Is spacing helping comprehension?
+
+3. Conversion optimization
+- Are CTAs specific and confidence-building?
+- Are trust signals placed near decision points?
+- Is friction minimized?
+
+4. Information architecture
+- Are sections logically ordered?
+- Is content chunked correctly?
+- Are feature explanations scannable?
+
+5. SaaS landing page effectiveness
+- Does the page communicate:
+  - who it's for
+  - what problem it solves
+  - why it's better
+  - why users should trust it
+  - what action to take next
+
+Avoid generic UX advice.
+Every issue and recommendation must reference specific visible interface elements.
 
 Analyze the FULL webpage screenshot very carefully.
 
-The screenshot is the PRIMARY source of truth.
-The URL is secondary context only.
+Analyze the interface ONLY from the provided screenshots.
+Do not invent elements that are not visible.
+Base every issue and recommendation on observable UI evidence.
 
 Return ONLY valid JSON.
 No markdown.
@@ -361,7 +396,85 @@ RULES:
 - Issues use NEGATIVE impacts.
 - Suggestions use POSITIVE impacts.
 - Breakdown values must be 0–100.
+
+Copy requirements:
+- Generate EXACTLY 6 copy improvements.
+- Each improvement MUST target a DIFFERENT section.
+- Never repeat the same section twice.
+- Prioritize the most conversion-critical sections first.
+
+Allowed sections:
+Hero Headline,
+Hero Subheadline,
+Primary CTA,
+Feature Section,
+Feature Highlights,
+Benefits Section,
+Trust Section,
+Testimonials,
+Social Proof,
+Pricing Section,
+Navigation,
+Footer CTA,
+About Section,
+Onboarding Section,
+Value Proposition,
+Integration Section.
+
+If a section is already strong, do not invent weak UX problems.
+
+Prioritize:
+- high-confidence issues
+- conversion-critical weaknesses
+- specific friction points
+
+Avoid filler recommendations.
+
 `;
+
+const screenshotContent: any[] = [];
+
+// HERO
+if (screenshotsBase64[0]) {
+  screenshotContent.push(
+    {
+      type: "input_text",
+      text: "Screenshot 1 — Hero section and above-the-fold experience",
+    },
+    {
+      type: "input_image",
+      image_url: `data:image/jpeg;base64,${screenshotsBase64[0]}`,
+    }
+  );
+}
+
+// MID
+if (screenshotsBase64[1]) {
+  screenshotContent.push(
+    {
+      type: "input_text",
+      text: "Screenshot 2 — Mid-page features, product explanation and content hierarchy",
+    },
+    {
+      type: "input_image",
+      image_url: `data:image/jpeg;base64,${screenshotsBase64[1]}`,
+    }
+  );
+}
+
+// FOOTER
+if (screenshotsBase64[2]) {
+  screenshotContent.push(
+    {
+      type: "input_text",
+      text: "Screenshot 3 — Bottom sections, trust signals, CTA repetition and footer",
+    },
+    {
+      type: "input_image",
+      image_url: `data:image/jpeg;base64,${screenshotsBase64[2]}`,
+    }
+  );
+}
 
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
@@ -369,24 +482,24 @@ RULES:
       input: [
         {
           role: "user",
+
           content: [
-            {
-              type: "input_text",
-              text: basePrompt,
-            },
-            {
-              type: "input_text",
-              text: `Website URL: ${url}`,
-            },
-            
-            ...screenshotsBase64.map((img) => ({
-              type: "input_image",
-              image_url: `data:image/jpeg;base64,${img}`,
-            })),
-          ],
+        {
+          type: "input_text",
+          text: basePrompt,
         },
+
+        {
+          type: "input_text",
+          text: `Website URL: ${url}`,
+        },
+
+        ...screenshotContent,
       ],
-    } as any);
+    },
+  ],
+} as any);
+
 
     const raw = response.output_text;
 
