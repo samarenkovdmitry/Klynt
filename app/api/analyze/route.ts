@@ -92,31 +92,19 @@ async function captureUrlScreenshot(url: string): Promise<string | null> {
 
     const page = await browser.newPage();
 
-    await page.setUserAgent(
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
-    );
+    await page.setViewport({ width: 1440, height: 1200 });
 
-    await page.setViewport({ width: 1280, height: 720 });
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+      timeout: 30000,
+    });
 
-    console.log("⚡ Trying domcontentloaded navigation...");
-    try {
-      await page.goto(url, {
-        waitUntil: "domcontentloaded",
-        timeout: 20000,
-      });
-    } catch (err) {
-      console.log("⚠️ domcontentloaded failed, using partial load");
-      try {
-        await page.waitForSelector("body", { timeout: 3000 });
-      } catch (_) {
-        console.log("⚠️ body not detected, continuing anyway");
-      }
-    }
+    await new Promise(res => setTimeout(res, 1500));
 
     const screenshotBuffer = await page.screenshot({
       type: "jpeg",
       quality: 80,
-      fullPage: false,
+      fullPage: true,
     });
 
     await browser.close();
@@ -148,18 +136,7 @@ export async function POST(req: Request) {
       screenshotBase64 = await captureUrlScreenshot(url);
     }
 
-    console.log("🔥 DEBUG — screenshotBase64 exists:", !!screenshotBase64);
-
-    if (screenshotBase64) {
-      console.log("🔥 DEBUG — screenshotBase64 length:", screenshotBase64.length);
-
-      fs.writeFileSync(
-        "debug_screenshot.jpeg",
-        Buffer.from(screenshotBase64, "base64")
-      );
-
-      console.log("🔥 Saved debug_screenshot.jpeg");
-    }
+    console.log("🔥 screenshotBase64 exists:", !!screenshotBase64);
 
     const basePrompt = `
 You are a senior UX auditor. Use the screenshot as the primary source of truth.
@@ -237,7 +214,9 @@ Rules:
     if (screenshotBase64) {
       inputContent.push({
         type: "input_image",
-        image_url: `data:image/jpeg;base64,${screenshotBase64}`,
+        image: {
+          base64: screenshotBase64,
+        },
       });
     }
 
@@ -254,9 +233,6 @@ Rules:
 
     const raw = response.output_text;
 
-    // -----------------------------
-    // JSON STABILIZER
-    // -----------------------------
     const cleaned = raw
       .replace(/```json/g, "")
       .replace(/```/g, "")
@@ -282,7 +258,6 @@ Rules:
       );
     }
 
-    // Лёгкая страховка: массивы по умолчанию
     json.issues = Array.isArray(json.issues) ? json.issues : [];
     json.suggestions = Array.isArray(json.suggestions) ? json.suggestions : [];
     json.copy = Array.isArray(json.copy) ? json.copy : [];
