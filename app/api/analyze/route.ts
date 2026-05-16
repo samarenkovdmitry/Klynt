@@ -41,7 +41,7 @@ function mapImpact(impactObj: Record<string, number>) {
     };
   }
 
-  // Always show the strongest metric
+  // Always show strongest metric
   const [m1, v1] = entries[0];
 
   let m2 = "";
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
     const screenshotBase64 = await blobToBase64(screenshot);
 
     // -----------------------------
-    // PROMPT v6 (UI-COMPATIBLE)
+    // PROMPT v7 (Copy Refinement restored)
     // -----------------------------
     const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the screenshot (primary) and the URL (secondary).
@@ -98,41 +98,8 @@ JSON FORMAT:
   "score": number,
   "risk": "low" | "medium" | "high",
 
-  "issues": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "title": "string",
-      "description": "string",
-      "impact": {
-        "clarity"?: number,
-        "navigation"?: number,
-        "visuals"?: number,
-        "trust"?: number,
-        "conversion"?: number,
-        "cta"?: number
-      },
-      "bullets": ["string"],
-      "why": "string"
-    }
-  ],
-
-  "suggestions": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "section": "string",
-      "recommendation": "string",
-      "impact": {
-        "clarity"?: number,
-        "navigation"?: number,
-        "visuals"?: number,
-        "trust"?: number,
-        "conversion"?: number,
-        "cta"?: number
-      },
-      "bullets": ["string"],
-      "why": "string"
-    }
-  ],
+  "issues": [...],
+  "suggestions": [...],
 
   "copy": [
     {
@@ -161,11 +128,16 @@ JSON FORMAT:
 }
 
 RULES:
-- 3–7 issues, 3–7 suggestions, 2–6 copy items.
+- 3–7 issues, 3–7 suggestions.
+- Copy Refinement: 2–6 sections chosen from:
+  Hero Section, Subheading, Feature Section, Product Description, Benefits Section,
+  Pricing Section, CTA Block, Navigation, Footer, Changelog, About Section,
+  Testimonials, Value Proposition, Feature Highlights, Onboarding Section.
 - All numbers must be integers.
 - Issues: negative impact values (-20 to -4).
 - Suggestions & copy: positive impact values (4 to 20).
 - Bullets: 2–4 items, 2–4 words each, no verbs.
+- Breakdown MUST be percentages (0–100).
 `;
 
     const response = await client.responses.create(
