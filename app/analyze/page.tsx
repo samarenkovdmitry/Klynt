@@ -321,13 +321,15 @@ export default function Analyze() {
             <h2 className="text-xl font-semibold mb-4">Issues</h2>
 
             <div className="space-y-6">
-              {data.issues.map((issue, index) => (
+              {(data.issues ?? []).map((issue, index) => (
                 <div key={index} className="border-b pb-4">
                   <div className="font-semibold text-lg">{issue.title}</div>
                   <div className="text-sm text-gray-600 mt-1">{issue.why}</div>
 
                   <ul className="list-disc ml-5 mt-2 text-sm">
-                    {issue.bullets.map((b, i) => (
+                    {(issue.bullets ?? []).map((b, i) => (
+                    
+
                       <li key={i}>{b}</li>
                     ))}
                   </ul>
