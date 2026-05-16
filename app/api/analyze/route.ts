@@ -108,6 +108,7 @@ function normalizeUrl(input: string) {
   return url;
 }
 
+
 // -----------------------------
 // FULL PAGE SCREENSHOT
 // -----------------------------
@@ -116,7 +117,7 @@ async function captureWebsiteScreenshot(url: string) {
     args: chromium.args,
     defaultViewport: {
       width: 1440,
-      height: 2200,
+      height: 1400,
       deviceScaleFactor: 1,
     },
     executablePath: await chromium.executablePath(),
@@ -131,41 +132,43 @@ async function captureWebsiteScreenshot(url: string) {
     );
 
     await page.goto(url, {
-      waitUntil: "networkidle2",
-      timeout: 45000,
+      waitUntil: "domcontentloaded",
+      timeout: 20000,
     });
 
-    // allow lazy sections to render
-    await page.evaluate(async () => {
-      await new Promise<void>((resolve) => {
-        let totalHeight = 0;
-        const distance = 500;
-
-        const timer = setInterval(() => {
-          const scrollHeight = document.body.scrollHeight;
-
-          window.scrollBy(0, distance);
-          totalHeight += distance;
-
-          if (totalHeight >= scrollHeight) {
-            clearInterval(timer);
-            resolve();
-          }
-        }, 120);
-      });
-    });
+    await new Promise((resolve) => setTimeout(resolve, 1800));
 
     // back to top
     await page.evaluate(() => {
-      window.scrollTo(0, 0);
+     window.scrollTo(0, 0);
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    const screenshot = await page.screenshot({
-      type: "png",
-      fullPage: true,
-    });
+    const bodyHandle = await page.$("body");
+
+const boundingBox = await bodyHandle?.boundingBox();
+
+// fallback height
+const rawHeight = Math.floor(boundingBox?.height || 3000);
+
+// safe max height
+const pageHeight = Math.min(rawHeight, 6000);
+
+// IMPORTANT:
+// clip height cannot exceed Chrome limits
+const safeHeight = Math.max(1000, pageHeight);
+
+const screenshot = await page.screenshot({
+  type: "jpeg",
+  quality: 55,
+  clip: {
+    x: 0,
+    y: 0,
+    width: 1440,
+    height: safeHeight,
+  },
+});
 
     return Buffer.from(screenshot).toString("base64");
   } finally {
@@ -306,7 +309,7 @@ RULES:
 `;
 
     const response = await client.responses.create({
-      model: "gpt-4.1",
+      model: "gpt-4.1-mini",
       temperature: 0.2,
       input: [
         {
