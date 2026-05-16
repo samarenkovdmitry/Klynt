@@ -8,57 +8,6 @@ const client = new OpenAI({
 });
 
 // -----------------------------
-// TYPES
-// -----------------------------
-type FlatIssue = {
-  category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
-  title: string;
-  severity: "low" | "medium" | "high";
-  impact_metric_1: string;
-  impact_value_1: number;
-  impact_metric_2: string;
-  impact_value_2: number;
-  bullets: string[];
-  why: string;
-};
-
-type FlatSuggestion = {
-  category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
-  section: string;
-  recommendation: string;
-  impact_metric_1: string;
-  impact_value_1: number;
-  impact_metric_2: string;
-  impact_value_2: number;
-  why: string;
-};
-
-type FlatCopy = {
-  section: string;
-  before: string;
-  after: string;
-  impact_metric_1: string;
-  impact_value_1: number;
-  impact_metric_2: string;
-  impact_value_2: number;
-  why: string;
-};
-
-type AuditResponseFlat = {
-  url: string;
-  score: number;
-  risk: "low" | "medium" | "high";
-  issues: FlatIssue[];
-  suggestions: FlatSuggestion[];
-  copy: FlatCopy[];
-  clarity: number;
-  navigation: number;
-  visuals: number;
-  trust: number;
-  conversion: number;
-};
-
-// -----------------------------
 // HELPERS
 // -----------------------------
 async function blobToBase64(blob: Blob) {
@@ -129,7 +78,6 @@ export async function POST(req: Request) {
     // Uploaded screenshot
     if (screenshot) {
       screenshotBase64 = await blobToBase64(screenshot);
-
       if (!screenshotBase64) {
         console.error("❌ Uploaded screenshot produced empty base64");
       }
@@ -154,11 +102,9 @@ You MUST return JSON in the following flat structure:
   "url": "string",
   "score": number,
   "risk": "low" | "medium" | "high",
-
   "issues": [...],
   "suggestions": [...],
   "copy": [...],
-
   "clarity": number,
   "navigation": number,
   "visuals": number,
@@ -182,20 +128,16 @@ Rules:
     if (screenshotBase64) {
       inputContent.push({
         type: "input_image",
-        image: {
-          base64: screenshotBase64,
-        },
+        image: { base64: screenshotBase64 },
       });
     }
 
+    // -----------------------------
+    // CORRECT RESPONSES API FORMAT
+    // -----------------------------
     const response = await client.responses.create({
       model: "gpt-4.1",
-      input: [
-        {
-          role: "user",
-          content: inputContent,
-        },
-      ],
+      input: inputContent,
       temperature: 0.2,
     });
 
@@ -216,19 +158,15 @@ Rules:
 
     const jsonString = match[0];
 
-    let json: AuditResponseFlat;
+    let json;
     try {
-      json = JSON.parse(jsonString) as AuditResponseFlat;
+      json = JSON.parse(jsonString);
     } catch (err) {
       return NextResponse.json(
         { error: "Invalid JSON from model", raw: jsonString },
         { status: 500 }
       );
     }
-
-    json.issues = Array.isArray(json.issues) ? json.issues : [];
-    json.suggestions = Array.isArray(json.suggestions) ? json.suggestions : [];
-    json.copy = Array.isArray(json.copy) ? json.copy : [];
 
     return NextResponse.json(json);
   } catch (error: any) {
