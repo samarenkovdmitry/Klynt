@@ -1,9 +1,9 @@
 {
   "functions": {
     "app/api/analyze/route.ts": {
+      "runtime": "nodejs22.x",
       "memory": 1024,
-      "maxDuration": 30,
-      "runtime": "nodejs20.x"
+      "maxDuration": 30
     }
   }
 }
