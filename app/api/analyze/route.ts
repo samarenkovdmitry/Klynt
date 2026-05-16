@@ -3,6 +3,14 @@ import OpenAI from "openai";
 
 export const runtime = "nodejs";
 
+process.on("uncaughtException", (err) => {
+  console.error("🔥 UNCAUGHT EXCEPTION:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("🔥 UNHANDLED REJECTION:", reason);
+});
+
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
@@ -82,24 +90,33 @@ async function captureUrlScreenshot(url: string): Promise<string | null> {
 // -----------------------------
 export async function POST(req: Request) {
   try {
+    console.log("📥 Incoming request to /api/analyze");
+
     const formData = await req.formData();
 
     const url = (formData.get("url") as string) ?? "";
     const screenshot = formData.get("screenshot") as Blob | null;
 
+    console.log("📌 URL:", url);
+    console.log("📌 Screenshot uploaded:", !!screenshot);
+
     let screenshotBase64: string | null = null;
 
     if (screenshot) {
       screenshotBase64 = await blobToBase64(screenshot);
+      console.log("📸 Uploaded screenshot size:", screenshotBase64.length);
     }
 
     if (!screenshot && url) {
+      console.log("🌐 Capturing screenshot from URL...");
       screenshotBase64 = await captureUrlScreenshot(url);
+      console.log("📸 URL screenshot size:", screenshotBase64?.length);
     }
 
     console.log("🔥 screenshotBase64 exists:", !!screenshotBase64);
 
     if (!screenshotBase64) {
+      console.error("❌ No screenshot available");
       return NextResponse.json(
         { error: "Failed to capture screenshot" },
         { status: 500 }
@@ -108,14 +125,18 @@ export async function POST(req: Request) {
 
     const basePrompt = `
 You are a senior UX auditor. Use the screenshot as the primary source of truth.
-Use the URL only for context and semantics.
-
-Return ONLY valid JSON. No markdown, no comments, no extra text.
+Return ONLY valid JSON.
 `;
 
-    // -----------------------------
-    // VISION CHAT COMPLETIONS (рабочий мультимодальный API)
-    // -----------------------------
+    console.log("🧠 Prompt length:", basePrompt.length);
+
+    console.log("📤 Sending to OpenAI...");
+    console.log("📤 Payload:", {
+      hasImage: !!screenshotBase64,
+      imageLength: screenshotBase64.length,
+      url,
+    });
+
     const response = await client.chat.completions.create(
       {
         model: "gpt-4o-mini",
@@ -139,12 +160,17 @@ Return ONLY valid JSON. No markdown, no comments, no extra text.
             ],
           },
         ],
-      } as any // <‑‑ обязательно
+      } as any
     );
+
+    console.log("📥 Raw OpenAI response:", response);
 
     const raw = response.choices[0].message.content;
 
+    console.log("📥 Raw content:", raw);
+
     if (!raw) {
+      console.error("❌ Model returned empty content");
       return NextResponse.json(
         { error: "Model returned empty response" },
         { status: 500 }
@@ -156,8 +182,12 @@ Return ONLY valid JSON. No markdown, no comments, no extra text.
       .replace(/```/g, "")
       .trim();
 
+    console.log("🧹 Cleaned content:", cleaned);
+
     const match = cleaned.match(/\{[\s\S]*\}/);
+
     if (!match) {
+      console.error("❌ JSON not found in model output");
       return NextResponse.json(
         { error: "Model did not return JSON", raw },
         { status: 500 }
@@ -166,18 +196,24 @@ Return ONLY valid JSON. No markdown, no comments, no extra text.
 
     const jsonString = match[0];
 
+    console.log("📦 JSON string:", jsonString);
+
     let json;
     try {
       json = JSON.parse(jsonString);
     } catch (err) {
+      console.error("❌ JSON parse error:", err);
       return NextResponse.json(
         { error: "Invalid JSON from model", raw: jsonString },
         { status: 500 }
       );
     }
 
+    console.log("✅ Final JSON:", json);
+
     return NextResponse.json(json);
   } catch (error: any) {
+    console.error("🔥 ROUTE ERROR:", error);
     return NextResponse.json(
       { error: error.message || "Unknown server error" },
       { status: 500 }
