@@ -99,9 +99,16 @@ async function captureUrlScreenshot(url: string): Promise<string> {
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
 
-  const screenshotBuffer = (await page.screenshot({ type: "png", fullPage: true })) as Buffer;
+  const screenshotBuffer = (await page.screenshot({
+    type: "png",
+    fullPage: true,
+  })) as Buffer;
+
+  await browser.close(); // ← ЭТО ОБЯЗАТЕЛЬНО
+
   return screenshotBuffer.toString("base64");
 }
+
 
 // -----------------------------
 // ROUTE HANDLER
