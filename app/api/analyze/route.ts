@@ -19,13 +19,13 @@ async function blobToBase64(blob: Blob) {
 // SERVER-SIDE SCREENSHOT
 // -----------------------------
 async function captureUrlScreenshot(url: string): Promise<string | null> {
-  try {
-    const puppeteer = await import("puppeteer");
+  const puppeteer = await import("puppeteer");
 
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      url = "https://" + url;
-    }
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    url = "https://" + url;
+  }
 
+  async function attemptScreenshot() {
     const browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -38,29 +38,50 @@ async function captureUrlScreenshot(url: string): Promise<string | null> {
       ],
     });
 
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1440, height: 1200 });
+    try {
+      const page = await browser.newPage();
 
-    await page.goto(url, {
-      waitUntil: "networkidle2",
-      timeout: 30000,
-    });
+      // Modern user-agent to bypass bot protection
+      await page.setUserAgent(
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+      );
 
-    await new Promise(res => setTimeout(res, 1500));
+      await page.setViewport({ width: 1440, height: 1200 });
 
-    const screenshotBuffer = await page.screenshot({
-      type: "jpeg",
-      quality: 80,
-      fullPage: true,
-    });
+      // More stable loading strategy
+      await page.goto(url, {
+        waitUntil: "domcontentloaded",
+        timeout: 60000,
+      });
 
-    await browser.close();
+      // Give page time to render
+      await new Promise(res => setTimeout(res, 2000));
 
-    return Buffer.from(screenshotBuffer).toString("base64");
-  } catch (err) {
-    console.error("Puppeteer screenshot failed:", err);
-    return null;
+      const screenshotBuffer = await page.screenshot({
+        type: "jpeg",
+        quality: 80,
+        fullPage: true,
+      });
+
+      return Buffer.from(screenshotBuffer).toString("base64");
+    } catch (err) {
+      console.error("Screenshot attempt failed:", err);
+      return null;
+    } finally {
+      await browser.close();
+    }
   }
+
+  // Try twice
+  let result = await attemptScreenshot();
+  if (result) return result;
+
+  console.log("Retrying screenshot...");
+  result = await attemptScreenshot();
+  if (result) return result;
+
+  console.error("❌ Both screenshot attempts failed");
+  return null;
 }
 
 // -----------------------------
@@ -121,14 +142,20 @@ Rules:
 `;
 
     const inputContent: any[] = [
-      { type: "input_text", text: basePrompt },
-      { type: "input_text", text: `Website URL: ${url}` },
+      {
+        type: "text",
+        text: basePrompt
+      },
+      {
+        type: "text",
+        text: 'Website URL: ${url}'
+      }
     ];
 
     if (screenshotBase64) {
       inputContent.push({
         type: "input_image",
-        image: { base64: screenshotBase64 },
+        image_url: `data:image/jpeg;base64,${screenshotBase64}`
       });
     }
 
