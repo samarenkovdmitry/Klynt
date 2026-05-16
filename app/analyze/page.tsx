@@ -139,6 +139,9 @@ export default function Analyze() {
     }
   }
 
+  // ------------------------------------------------------
+  // 🔥 ОБНОВЛЁННЫЙ handleAnalyze (главный фикс)
+  // ------------------------------------------------------
   async function handleAnalyze() {
     try {
       if (!url && !uploadedImage) return;
@@ -154,20 +157,56 @@ export default function Analyze() {
         });
       }, 250);
 
+      // 1. Prepare screenshot (fallback if none uploaded)
+      let screenshotToSend: File | null = uploadedImage;
+
+      if (!uploadedImage) {
+        const base64 = await captureScreenshot();
+        if (base64) {
+          const blob = await (await fetch(`data:image/png;base64,${base64}`)).blob();
+          screenshotToSend = new File([blob], "screenshot.png", { type: "image/png" });
+        }
+      }
+
+      // 2. Build form data
       const form = new FormData();
       form.append("url", url);
 
-      if (uploadedImage) {
-        form.append("screenshot", uploadedImage);
+      if (screenshotToSend) {
+        form.append("screenshot", screenshotToSend);
       }
 
+      // 3. Send request
       const res = await fetch("/api/analyze", {
         method: "POST",
         body: form,
       });
 
+      if (!res.ok) {
+        console.error("Backend error:", await res.text());
+        clearInterval(interval);
+        setLoading(false);
+        return;
+      }
+
       const json = await res.json();
-      setData(json as AuditResponseFlat);
+
+      // 4. Flatten breakdown for UI
+      const flat: AuditResponseFlat = {
+        url: json.url ?? "",
+        score: json.score ?? 0,
+        risk: json.risk ?? "low",
+        issues: json.issues ?? [],
+        suggestions: json.suggestions ?? [],
+        copy: json.copy ?? [],
+        clarity: json.breakdown?.clarity ?? 0,
+        navigation: json.breakdown?.navigation ?? 0,
+        visuals: json.breakdown?.visuals ?? 0,
+        trust: json.breakdown?.trust ?? 0,
+        conversion: json.breakdown?.conversion ?? 0,
+      };
+
+      setData(flat);
 
       setProgress(100);
       clearInterval(interval);
@@ -244,6 +283,7 @@ export default function Analyze() {
           { key: "conversion", label: "Conversion", value: data.conversion },
         ]
       : [];
+
 
   return (
     <>
