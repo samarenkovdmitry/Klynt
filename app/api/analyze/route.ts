@@ -27,29 +27,20 @@ export async function POST(req: Request) {
     const url = (formData.get("url") as string) ?? "";
     const screenshot = formData.get("screenshot") as Blob | null;
 
-    console.log("📌 URL:", url);
-    console.log("📌 Screenshot uploaded:", !!screenshot);
-
     if (!screenshot) {
       return NextResponse.json(
-        { error: "Upload screenshot is required (URL screenshots disabled on Vercel)" },
+        { error: "Upload screenshot is required" },
         { status: 400 }
       );
     }
 
     const screenshotBase64 = await blobToBase64(screenshot);
-    console.log("📸 Uploaded screenshot size:", screenshotBase64.length);
 
     // -----------------------------
-    // 🔥 OPTIMIZED PROMPT (shorter, cleaner, full structure)
+    // 🔥 OPTIMIZED PROMPT v4 (UI‑compatible)
     // -----------------------------
     const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the screenshot (primary) and the URL (secondary).
-
-Your goals:
-- Identify clarity, navigation, visuals, trust, and conversion issues.
-- Use screenshot for layout, spacing, hierarchy, contrast, readability, CTA prominence, trust signals.
-- Use URL for messaging, semantics, structure, navigation intent.
 
 Return ONLY valid JSON. No markdown. No comments. No explanations.
 
@@ -63,9 +54,10 @@ JSON FORMAT:
     {
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "title": "string",
-      "severity": "low" | "medium" | "high",
-      "impact": { "clarity"?: number, "cta"?: number, "trust"?: number, "navigation"?: number },
-      "bullets": ["string"],
+      "description": "string",
+      "impact_primary": number,
+      "impact_secondary": number,
+      "bullets": ["string", "string"],
       "why": "string"
     }
   ],
@@ -75,7 +67,9 @@ JSON FORMAT:
       "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "section": "string",
       "recommendation": "string",
-      "impact": { "clarity"?: number, "trust"?: number, "navigation"?: number, "visuals"?: number, "conversion"?: number },
+      "impact_primary": number,
+      "impact_secondary": number,
+      "bullets": ["string", "string"],
       "why": "string"
     }
   ],
@@ -85,7 +79,8 @@ JSON FORMAT:
       "section": "string",
       "before": "string",
       "after": "string",
-      "impact": { "clarity"?: number, "conversion"?: number, "trust"?: number },
+      "impact_primary": number,
+      "impact_secondary": number,
       "why": "string"
     }
   ],
@@ -103,16 +98,17 @@ RULES:
 - 3–7 issues, 3–7 suggestions, 2–6 copy_refinement items.
 - All numbers must be integers.
 - No trailing commas.
-- Issues: impact values = negative integers (-20 to -4).
-- Suggestions & copy_refinement: impact values = positive integers (4 to 20).
-- Impact must include 1–2 metrics.
-- Bullets: 2–4 items, 2–4 words each, no verbs.
-- Each item must include a "why" explanation.
+
+Impact rules:
+- issues: impact_primary & impact_secondary = negative integers (-20 to -4)
+- suggestions: impact_primary & impact_secondary = positive integers (4 to 20)
+- copy_refinement: impact_primary & impact_secondary = positive integers (4 to 20)
+
+Bullets:
+- 2–4 items
+- 2–4 words each
+- no verbs
 `;
-
-    console.log("🧠 Prompt length:", basePrompt.length);
-
-    console.log("📤 Sending to OpenAI (Responses API)...");
 
     const response = await client.responses.create(
       {
@@ -134,11 +130,7 @@ RULES:
       } as any
     );
 
-    console.log("📥 Raw OpenAI response:", response);
-
     const raw = response.output_text;
-
-    console.log("📥 Raw content:", raw);
 
     if (!raw) {
       return NextResponse.json(
@@ -152,8 +144,6 @@ RULES:
       .replace(/```/g, "")
       .trim();
 
-    console.log("🧹 Cleaned content:", cleaned);
-
     const match = cleaned.match(/\{[\s\S]*\}/);
 
     if (!match) {
@@ -165,24 +155,18 @@ RULES:
 
     const jsonString = match[0];
 
-    console.log("📦 JSON string:", jsonString);
-
     let json;
     try {
       json = JSON.parse(jsonString);
     } catch (err) {
-      console.error("❌ JSON parse error:", err);
       return NextResponse.json(
         { error: "Invalid JSON from model", raw: jsonString },
         { status: 500 }
       );
     }
 
-    console.log("✅ Final JSON:", json);
-
     return NextResponse.json(json);
   } catch (error: any) {
-    console.error("🔥 ROUTE ERROR:", error);
     return NextResponse.json(
       { error: error.message || "Unknown server error" },
       { status: 500 }
