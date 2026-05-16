@@ -520,7 +520,7 @@ const screenshotToSend = uploadedImage;
                               {impactEntries.map((entry, i) => (
                                 <div
                                   key={i}
-                                  className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700"
+                                  className="rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs font-medium text-red-700"
                                 >
                                   {entry.value}% {entry.key}
                                 </div>
@@ -605,7 +605,7 @@ const screenshotToSend = uploadedImage;
                                 {impactEntries.map((entry, i) => (
                                   <div
                                     key={i}
-                                    className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white"
+                                    className="rounded-md bg-green-600 px-2 py-1 text-xs font-medium text-white"
                                   >
                                     +{Math.abs(entry.value)}% {entry.key}
                                   </div>
@@ -678,7 +678,7 @@ const screenshotToSend = uploadedImage;
                                 {impactEntries.map((entry, i) => (
                                   <div
                                     key={i}
-                                    className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-medium text-white"
+                                    className="rounded-md bg-green-600 px-2 py-1 text-xs font-medium text-white"
                                   >
                                     +{Math.abs(entry.value)}% {entry.key}
                                   </div>
