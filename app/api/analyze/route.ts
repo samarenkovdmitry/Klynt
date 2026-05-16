@@ -1,4 +1,3 @@
-import fs from "fs";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
@@ -62,9 +61,9 @@ type AuditResponseFlat = {
 // -----------------------------
 // HELPERS
 // -----------------------------
-async function fileToBase64(file: File) {
-  const buffer = await file.arrayBuffer();
-  return Buffer.from(buffer).toString("base64");
+async function blobToBase64(blob: Blob) {
+  const arrayBuffer = await blob.arrayBuffer();
+  return Buffer.from(arrayBuffer).toString("base64");
 }
 
 // -----------------------------
@@ -91,7 +90,6 @@ async function captureUrlScreenshot(url: string): Promise<string | null> {
     });
 
     const page = await browser.newPage();
-
     await page.setViewport({ width: 1440, height: 1200 });
 
     await page.goto(url, {
@@ -124,14 +122,20 @@ export async function POST(req: Request) {
     const formData = await req.formData();
 
     const url = (formData.get("url") as string) ?? "";
-    const screenshot = formData.get("screenshot") as File | null;
+    const screenshot = formData.get("screenshot") as Blob | null;
 
     let screenshotBase64: string | null = null;
 
+    // Uploaded screenshot
     if (screenshot) {
-      screenshotBase64 = await fileToBase64(screenshot);
+      screenshotBase64 = await blobToBase64(screenshot);
+
+      if (!screenshotBase64) {
+        console.error("❌ Uploaded screenshot produced empty base64");
+      }
     }
 
+    // URL screenshot
     if (!screenshot && url) {
       screenshotBase64 = await captureUrlScreenshot(url);
     }
@@ -151,45 +155,9 @@ You MUST return JSON in the following flat structure:
   "score": number,
   "risk": "low" | "medium" | "high",
 
-  "issues": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "title": "string",
-      "severity": "low" | "medium" | "high",
-      "impact_metric_1": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
-      "impact_value_1": number,
-      "impact_metric_2": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
-      "impact_value_2": number,
-      "bullets": ["string"],
-      "why": "string"
-    }
-  ],
-
-  "suggestions": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "section": "string",
-      "recommendation": "string",
-      "impact_metric_1": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
-      "impact_value_1": number,
-      "impact_metric_2": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
-      "impact_value_2": number,
-      "why": "string"
-    }
-  ],
-
-  "copy": [
-    {
-      "section": "string",
-      "before": "string",
-      "after": "string",
-      "impact_metric_1": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
-      "impact_value_1": number,
-      "impact_metric_2": "clarity" | "cta" | "trust" | "navigation" | "visuals" | "conversion" | "",
-      "impact_value_2": number,
-      "why": "string"
-    }
-  ],
+  "issues": [...],
+  "suggestions": [...],
+  "copy": [...],
 
   "clarity": number,
   "navigation": number,

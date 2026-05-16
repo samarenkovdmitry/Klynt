@@ -41,7 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 debug_*
-*.bin
 *.jpeg
 *.jpg
 *.png
+*.bin
+*.webp
+*.heic
+
