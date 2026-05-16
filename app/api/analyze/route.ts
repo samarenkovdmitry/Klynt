@@ -112,7 +112,7 @@ function normalizeUrl(input: string) {
 // -----------------------------
 // FULL PAGE SCREENSHOT
 // -----------------------------
-async function captureWebsiteScreenshot(url: string) {
+async function captureWebsiteScreenshots(url: string) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
@@ -133,44 +133,97 @@ async function captureWebsiteScreenshot(url: string) {
 
     await page.goto(url, {
       waitUntil: "domcontentloaded",
-      timeout: 20000,
+      timeout: 15000,
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 1800));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // back to top
+    const screenshots: string[] = [];
+
+    // HERO
+    await page.screenshot({
+      path: "/tmp/hero.jpg",
+      type: "jpeg",
+      quality: 55,
+      clip: {
+        x: 0,
+        y: 0,
+        width: 1440,
+        height: 1400,
+      },
+    });
+
+    // MID PAGE
     await page.evaluate(() => {
-     window.scrollTo(0, 0);
+      window.scrollTo(0, 1200);
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
-    const bodyHandle = await page.$("body");
+    await page.screenshot({
+      path: "/tmp/mid.jpg",
+      type: "jpeg",
+      quality: 55,
+      clip: {
+        x: 0,
+        y: 1200,
+        width: 1440,
+        height: 1400,
+      },
+    });
 
-const boundingBox = await bodyHandle?.boundingBox();
+    // FOOTER
+    const bodyHeight = await page.evaluate(() => {
+      return document.body.scrollHeight;
+    });
 
-// fallback height
-const rawHeight = Math.floor(boundingBox?.height || 3000);
+    const footerY = Math.max(bodyHeight - 1600, 0);
 
-// safe max height
-const pageHeight = Math.min(rawHeight, 6000);
+    await page.evaluate((y) => {
+      window.scrollTo(0, y);
+    }, footerY);
 
-// IMPORTANT:
-// clip height cannot exceed Chrome limits
-const safeHeight = Math.max(1000, pageHeight);
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
-const screenshot = await page.screenshot({
-  type: "jpeg",
-  quality: 55,
-  clip: {
-    x: 0,
-    y: 0,
-    width: 1440,
-    height: safeHeight,
-  },
-});
+    const hero = await page.screenshot({
+     type: "jpeg",
+     quality: 55,
+     clip: {
+       x: 0,
+       y: 0,
+       width: 1440,
+       height: 1400,
+      },
+    });
 
-    return Buffer.from(screenshot).toString("base64");
+     screenshots.push(Buffer.from(hero).toString("base64"));
+
+    const mid = await page.screenshot({
+     type: "jpeg",
+     quality: 55,
+     clip: {
+       x: 0,
+       y: 1200,
+       width: 1440,
+       height: 1400,
+      },
+    });
+
+    const footer = await page.screenshot({
+     type: "jpeg",
+     quality: 55,
+     clip: {
+       x: 0,
+       y: footerY,
+       width: 1440,
+       height: 1400,
+      },
+    });
+
+screenshots.push(Buffer.from(footer).toString("base64"));
+screenshots.push(Buffer.from(mid).toString("base64"));
+
+    return screenshots;
   } finally {
     await browser.close();
   }
@@ -188,19 +241,21 @@ export async function POST(req: Request) {
 
     const uploadedScreenshot = formData.get("screenshot") as Blob | null;
 
-    let screenshotBase64 = "";
+    let screenshotsBase64: string[] = [];
 
     // PRIORITY #1 — uploaded screenshot
     if (uploadedScreenshot) {
-      screenshotBase64 = await blobToBase64(uploadedScreenshot);
+     const uploadedBase64 = await blobToBase64(uploadedScreenshot);
+
+     screenshotsBase64 = [uploadedBase64];
     }
 
     // PRIORITY #2 — auto capture from URL
     else if (url) {
-      screenshotBase64 = await captureWebsiteScreenshot(url);
+      screenshotsBase64 = await captureWebsiteScreenshots(url);
     }
 
-    if (!screenshotBase64) {
+    if (screenshotsBase64.length === 0) {
       return NextResponse.json(
         {
           error: "Either URL or screenshot is required",
@@ -323,10 +378,11 @@ RULES:
               type: "input_text",
               text: `Website URL: ${url}`,
             },
-            {
+            
+            ...screenshotsBase64.map((img) => ({
               type: "input_image",
-              image_url: `data:image/png;base64,${screenshotBase64}`,
-            },
+              image_url: `data:image/jpeg;base64,${img}`,
+            })),
           ],
         },
       ],
