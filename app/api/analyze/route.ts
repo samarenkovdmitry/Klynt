@@ -16,7 +16,7 @@ async function blobToBase64(blob: Blob) {
 }
 
 // -----------------------------
-// IMPACT MAPPING (20% RULE)
+// IMPACT MAPPING (old logic restored)
 // -----------------------------
 function mapImpact(impactObj: Record<string, number>) {
   if (!impactObj || typeof impactObj !== "object") {
@@ -41,15 +41,17 @@ function mapImpact(impactObj: Record<string, number>) {
     };
   }
 
+  // Always show the strongest metric
   const [m1, v1] = entries[0];
 
   let m2 = "";
   let v2 = 0;
 
+  // Show second only if strong enough (>= 15% of first)
   if (entries.length > 1) {
     const [candM2, candV2] = entries[1];
 
-    if (Math.abs(candV2) >= Math.abs(v1) * 0.2) {
+    if (Math.abs(candV2) >= Math.abs(v1) * 0.15) {
       m2 = candM2;
       v2 = candV2;
     }
@@ -83,7 +85,7 @@ export async function POST(req: Request) {
     const screenshotBase64 = await blobToBase64(screenshot);
 
     // -----------------------------
-    // PROMPT v5 (UI-COMPATIBLE)
+    // PROMPT v6 (UI-COMPATIBLE)
     // -----------------------------
     const basePrompt = `
 You are a senior UX auditor. Analyze the website using BOTH the screenshot (primary) and the URL (secondary).
@@ -132,7 +134,7 @@ JSON FORMAT:
     }
   ],
 
-  "copy_refinement": [
+  "copy": [
     {
       "section": "string",
       "before": "string",
@@ -159,10 +161,10 @@ JSON FORMAT:
 }
 
 RULES:
-- 3–7 issues, 3–7 suggestions, 2–6 copy_refinement items.
+- 3–7 issues, 3–7 suggestions, 2–6 copy items.
 - All numbers must be integers.
 - Issues: negative impact values (-20 to -4).
-- Suggestions & copy_refinement: positive impact values (4 to 20).
+- Suggestions & copy: positive impact values (4 to 20).
 - Bullets: 2–4 items, 2–4 words each, no verbs.
 `;
 
@@ -216,7 +218,7 @@ RULES:
       ...mapImpact(item.impact || {}),
     }));
 
-    json.copy_refinement = json.copy_refinement?.map((item: any) => ({
+    json.copy = json.copy?.map((item: any) => ({
       ...item,
       ...mapImpact(item.impact || {}),
     }));
