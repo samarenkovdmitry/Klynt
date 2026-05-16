@@ -195,48 +195,64 @@ RULES:
 
     const raw = response.output_text;
 
-    const cleaned = raw
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
+    // -----------------------------
+    // SAFE JSON PARSING
+    // -----------------------------
+    const firstBrace = raw.indexOf("{");
+    const lastBrace = raw.lastIndexOf("}");
 
-    const match = cleaned.match(/\{[\s\S]*\}/);
-    if (!match) {
+    if (firstBrace === -1 || lastBrace === -1) {
       return NextResponse.json(
         { error: "Model did not return JSON", raw },
         { status: 500 }
       );
     }
 
-    const json = JSON.parse(match[0]);
+    const jsonString = raw.slice(firstBrace, lastBrace + 1);
+    const json = JSON.parse(jsonString);
 
     // -----------------------------
-    // BREAKDOWN: clamp to 0–100
+    // BREAKDOWN: always valid
     // -----------------------------
-    if (json.breakdown) {
+    if (!json.breakdown || typeof json.breakdown !== "object") {
       json.breakdown = {
-        clarity: clampPercent(json.breakdown.clarity),
-        navigation: clampPercent(json.breakdown.navigation),
-        visuals: clampPercent(json.breakdown.visuals),
-        trust: clampPercent(json.breakdown.trust),
-        conversion: clampPercent(json.breakdown.conversion),
+        clarity: 0,
+        navigation: 0,
+        visuals: 0,
+        trust: 0,
+        conversion: 0,
       };
     }
 
+    json.breakdown = {
+      clarity: clampPercent(json.breakdown.clarity),
+      navigation: clampPercent(json.breakdown.navigation),
+      visuals: clampPercent(json.breakdown.visuals),
+      trust: clampPercent(json.breakdown.trust),
+      conversion: clampPercent(json.breakdown.conversion),
+    };
+
     // -----------------------------
-    // MAP IMPACTS FOR FRONTEND
+    // ARRAYS ALWAYS VALID
     // -----------------------------
-    json.issues = (json.issues || []).map((item: any) => ({
+    json.issues = Array.isArray(json.issues) ? json.issues : [];
+    json.suggestions = Array.isArray(json.suggestions) ? json.suggestions : [];
+    json.copy = Array.isArray(json.copy) ? json.copy : [];
+
+    // -----------------------------
+    // MAP IMPACTS
+    // -----------------------------
+    json.issues = json.issues.map((item: any) => ({
       ...item,
       ...mapImpact(item.impact || {}),
     }));
 
-    json.suggestions = (json.suggestions || []).map((item: any) => ({
+    json.suggestions = json.suggestions.map((item: any) => ({
       ...item,
       ...mapImpact(item.impact || {}),
     }));
 
-    json.copy = (json.copy || []).map((item: any) => ({
+    json.copy = json.copy.map((item: any) => ({
       ...item,
       ...mapImpact(item.impact || {}),
     }));
