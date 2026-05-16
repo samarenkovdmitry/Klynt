@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import chromium from "chrome-aws-lambda";
+import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 
 export const runtime = "nodejs";
+export const maxDuration = 30;
 
 // -----------------------------
 // HELPERS
@@ -13,7 +14,6 @@ async function blobToBase64(blob: Blob): Promise<string> {
   const buffer = Buffer.from(new Uint8Array(arrayBuffer));
   return buffer.toString("base64");
 }
-
 
 function extractJSON(text: string) {
   let start = text.indexOf("{");
@@ -86,17 +86,17 @@ function mapImpact(impactObj: Record<string, number>) {
 // SERVER-SIDE SCREENSHOT
 // -----------------------------
 async function captureUrlScreenshot(url: string): Promise<string> {
-  const executablePath = await chromium.executablePath;
+  const executablePath = await chromium.executablePath();
 
   const browser = await puppeteer.launch({
-    args: chromium.args || [],
-    defaultViewport: chromium.defaultViewport,
-    executablePath: executablePath || "/usr/bin/google-chrome",
-    headless: chromium.headless !== false,
-    ignoreHTTPSErrors: true,
+    args: chromium.args,
+    executablePath,
+    headless: true,
   });
 
   const page = await browser.newPage();
+  await page.setViewport({ width: 1440, height: 900 });
+
   await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
 
   const screenshotBuffer = (await page.screenshot({
@@ -104,11 +104,10 @@ async function captureUrlScreenshot(url: string): Promise<string> {
     fullPage: true,
   })) as Buffer;
 
-  await browser.close(); // ← ЭТО ОБЯЗАТЕЛЬНО
+  await browser.close();
 
   return screenshotBuffer.toString("base64");
 }
-
 
 // -----------------------------
 // ROUTE HANDLER
@@ -122,18 +121,11 @@ export async function POST(req: Request) {
 
     let screenshotBase64 = "";
 
-    // 1) If user uploaded screenshot → use it
     if (uploadedScreenshot) {
       screenshotBase64 = await blobToBase64(uploadedScreenshot);
-    }
-
-    // 2) If no screenshot but URL exists → capture server screenshot
-    else if (url) {
+    } else if (url) {
       screenshotBase64 = await captureUrlScreenshot(url);
-    }
-
-    // 3) If neither provided → error
-    else {
+    } else {
       return NextResponse.json(
         { error: "Provide either URL or screenshot" },
         { status: 400 }
