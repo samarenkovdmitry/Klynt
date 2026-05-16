@@ -41,64 +41,73 @@ export async function POST(req: Request) {
     console.log("📸 Uploaded screenshot size:", screenshotBase64.length);
 
     // -----------------------------
-    // 🔥 FULL FINAL PROMPT v3
+    // 🔥 OPTIMIZED PROMPT (shorter, cleaner, full structure)
     // -----------------------------
     const basePrompt = `
-You are a senior UX auditor. Use the screenshot as the primary source of truth. Use the URL only for context and semantics.
+You are a senior UX auditor. Analyze the website using BOTH the screenshot (primary) and the URL (secondary).
 
-Your task is to produce a structured UX audit in strict JSON format.
+Your goals:
+- Identify clarity, navigation, visuals, trust, and conversion issues.
+- Use screenshot for layout, spacing, hierarchy, contrast, readability, CTA prominence, trust signals.
+- Use URL for messaging, semantics, structure, navigation intent.
 
-Return ONLY valid JSON. No markdown, no comments, no explanations, no extra text.
+Return ONLY valid JSON. No markdown. No comments. No explanations.
 
-You MUST return JSON in the following flat structure:
-
+JSON FORMAT:
 {
   "url": "string",
   "score": number,
   "risk": "low" | "medium" | "high",
+
   "issues": [
     {
+      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
       "title": "string",
-      "description": "string",
-      "impact_primary": number,
-      "impact_secondary": number,
-      "bullets": ["...", "..."]
+      "severity": "low" | "medium" | "high",
+      "impact": { "clarity"?: number, "cta"?: number, "trust"?: number, "navigation"?: number },
+      "bullets": ["string"],
+      "why": "string"
     }
   ],
+
   "suggestions": [
     {
-      "title": "string",
-      "description": "string",
-      "impact_primary": number,
-      "impact_secondary": number,
-      "bullets": ["...", "..."]
+      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
+      "section": "string",
+      "recommendation": "string",
+      "impact": { "clarity"?: number, "trust"?: number, "navigation"?: number, "visuals"?: number, "conversion"?: number },
+      "why": "string"
     }
   ],
-  "copy": [
+
+  "copy_refinement": [
     {
-      "title": "string",
-      "description": "string",
-      "impact_primary": number,
-      "impact_secondary": number,
-      "bullets": ["...", "..."]
+      "section": "string",
+      "before": "string",
+      "after": "string",
+      "impact": { "clarity"?: number, "conversion"?: number, "trust"?: number },
+      "why": "string"
     }
   ],
-  "clarity": number,
-  "navigation": number,
-  "visuals": number,
-  "trust": number,
-  "conversion": number
+
+  "breakdown": {
+    "clarity": number,
+    "navigation": number,
+    "visuals": number,
+    "trust": number,
+    "conversion": number
+  }
 }
 
-Rules:
-- 3–7 issues, 3–7 suggestions, 2–6 copy items.
-- Impact values:
-  - issues: negative integers (-20 to -4)
-  - suggestions: positive integers (4 to 20)
-  - copy: positive integers (4 to 20)
-- If only one impact metric is relevant, set the second to "" and value to 0.
+RULES:
+- 3–7 issues, 3–7 suggestions, 2–6 copy_refinement items.
+- All numbers must be integers.
+- No trailing commas.
+- Issues: impact values = negative integers (-20 to -4).
+- Suggestions & copy_refinement: impact values = positive integers (4 to 20).
+- Impact must include 1–2 metrics.
 - Bullets: 2–4 items, 2–4 words each, no verbs.
-- No markdown. No commentary. Only JSON.
+- Each item must include a "why" explanation.
 `;
 
     console.log("🧠 Prompt length:", basePrompt.length);
