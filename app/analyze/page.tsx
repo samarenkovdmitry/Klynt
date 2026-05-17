@@ -84,13 +84,13 @@ export default function Analyze() {
     card: "rounded-xl border border-[#DCE2E7] bg-white p-4 flex flex-col",
     label: "text-sm font-medium text-[var(--ink-primary)]",
     caption: "text-sm font-normal text-[#8E99A2]",
-    value: "text-[20px] font-medium leading-tight text-[#061C2F]",
-    title: "text-lg font-semibold text-[#061C2F]",
+    value: "text-[24px] font-medium leading-tight text-[#061C2F]",
+    title: "text-[20px] font-semibold text-[#061C2F]",
     primary: "text-[#375BE7]",
     primaryBg: "bg-[#EEF2FF]",
     scoreColor: "text-[#FF8D28]",
     link: "text-[var(--ink-primary)] text-sm font-medium hover:opacity-70 transition",
-    titleSection: "text-[18px] font-semibold text-[#061C2F]",
+    titleSection: "text-lg font-semibold text-[#061C2F]",
     headingPage: "text-[28px] font-semibold tracking-tight text-[var(--ink-primary)]",
     softBg: "bg-[var(--gray-soft)]",
     section: "mt-6",
@@ -613,13 +613,13 @@ const screenshotToSend = uploadedImage;
                               </div>
 
                               {/* SECTION TITLE */}
-                              <p className="text-base font-medium text-[var(--ink-primary)] pr-32">
+                              <p className="text-lg font-medium text-[var(--ink-primary)] pr-32">
                                 {item.section}
                               </p>
 
                               {/* RECOMMENDATION */}
-                              <div className="mt-4">
-                                <p className="text-sm leading-6 text-[var(--ink-secondary)]">
+                              <div className="mt-2">
+                                <p className="text-base leading-6 text-[var(--ink-primary)]">
                                   {item.recommendation}
                                 </p>
                               </div>
@@ -694,9 +694,9 @@ const screenshotToSend = uploadedImage;
                               <div className="mt-4 grid gap-4 md:grid-cols-2">
                                 {/* BEFORE */}
                                 <div className="flex flex-col h-full">
-                                  <p className="text-xs font-medium text-[var(--ink-secondary)] mb-1">Before</p>
+                                  <p className="text-sm font-medium text-[var(--ink-secondary)] mb-1">Before</p>
                                   <div className="rounded-lg bg-soft p-3 flex-1">
-                                    <p className="text-sm leading-6 text-[var(--ink-primary)]">
+                                    <p className="text-base leading-6 text-[var(--ink-primary)]">
                                       {item.before}
                                     </p>
                                   </div>
@@ -704,11 +704,11 @@ const screenshotToSend = uploadedImage;
 
                                 {/* AFTER */}
                                 <div className="flex flex-col h-full">
-                                  <p className="text-xs font-medium text-[var(--ink-secondary)] mb-1">Improved</p>
+                                  <p className="text-sm font-medium text-[var(--ink-secondary)] mb-1">Improved</p>
 
                                   <div className="rounded-lg bg-blue-100 px-3 py-[9px] flex-1">
                                     <div className="flex items-center justify-between gap-3">
-                                      <p className="text-sm font-medium leading-5 text-[var(--ink-primary)]">
+                                      <p className="text-base font-medium leading-5 text-[var(--ink-primary)]">
                                         {item.after}
                                       </p>
 
