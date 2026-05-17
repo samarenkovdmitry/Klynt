@@ -297,7 +297,6 @@ async function captureWebsiteScreenshots(url: string) {
       },
     });
 
-screenshots.push(Buffer.from(footer).toString("base64"));
 screenshots.push(Buffer.from(mid).toString("base64"));
 
     return screenshots;
