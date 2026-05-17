@@ -4,7 +4,7 @@ import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -231,40 +231,31 @@ async function captureWebsiteScreenshots(url: string) {
     });
 
     // MID PAGE
-    await page.evaluate(() => {
-      window.scrollTo(0, 1200);
+    await page.evaluate(async () => {
+      await new Promise<void>((resolve) => {
+        let totalHeight = 0;
+        const distance = 1200;
+
+        const timer = setInterval(() => {
+          window.scrollBy(0, distance);
+
+          totalHeight += distance;
+
+          if (totalHeight > 5000) {
+            clearInterval(timer);
+            resolve();
+          }
+       }, 60);
+     });
     });
 
     await new Promise((resolve) => setTimeout(resolve, 600));
 
-    await page.screenshot({
-      path: "/tmp/mid.jpg",
-      type: "jpeg",
-      quality: 55,
-      clip: {
-        x: 0,
-        y: 1200,
-        width: 1440,
-        height: 1400,
-      },
-    });
 
-    // FOOTER
-    const bodyHeight = await page.evaluate(() => {
-      return document.body.scrollHeight;
-    });
-
-    const footerY = Math.max(bodyHeight - 1600, 0);
-
-    await page.evaluate((y) => {
-      window.scrollTo(0, y);
-    }, footerY);
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
 
     const hero = await page.screenshot({
      type: "jpeg",
-     quality: 55,
+     quality: 35,
      clip: {
        x: 0,
        y: 0,
@@ -277,21 +268,10 @@ async function captureWebsiteScreenshots(url: string) {
 
     const mid = await page.screenshot({
      type: "jpeg",
-     quality: 55,
+     quality: 35,
      clip: {
        x: 0,
        y: 1200,
-       width: 1440,
-       height: 1400,
-      },
-    });
-
-    const footer = await page.screenshot({
-     type: "jpeg",
-     quality: 55,
-     clip: {
-       x: 0,
-       y: footerY,
        width: 1440,
        height: 1400,
       },
@@ -555,6 +535,7 @@ if (screenshotsBase64[2]) {
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
       temperature: 0.2,
+      max_output_tokens: 1800,
       input: [
         {
           role: "user",
