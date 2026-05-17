@@ -507,14 +507,16 @@ const screenshotToSend = uploadedImage;
                           rounded-[28px]
                           border
                           border-[var(--stroke-light)]
+                          border-l-[4px]
+                          border-l-red-400
                           bg-white
                           px-8
                           py-7
                           flex
-                          gap-5
+                          gap-6
                           transition-all
-                          duration-200
-                          hover:shadow-md
+                          hover:-translate-y-[1px]
+                          hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)]
                           "
                         >
                           {/* LEFT NUMBER */}
@@ -525,34 +527,49 @@ const screenshotToSend = uploadedImage;
                           </div>
 
                           {/* CENTER */}
-                          <div className="flex-1 relative">
+                          <div className="flex-1">
 
-                            {/* IMPACT BADGES */}
-                            <div className="absolute right-0 top-0 flex gap-2">
-                              {impactEntries.map((entry, i) => (
-                                <div
-                                  key={i}
-                                  className="
-                                    rounded-full
-                                    border
-                                    border-red-200
-                                    bg-red-50
-                                    px-4
-                                    py-2
-                                    text-[13px]
-                                    font-semibold
-                                    text-red-500
-                                  "
-                                >
-                                  {entry.value}% {entry.key}
+                            {/* TOP ROW */}
+                            <div className="flex items-start justify-between gap-6">
+
+                              {/* TITLE */}
+                              <p
+                                className="
+                                flex-1
+                                min-w-0
+                                text-[21px]
+                                font-semibold
+                                leading-[1.25]
+                                tracking-[-0.02em]
+                                text-[var(--ink-primary)]
+                                "
+                              >
+                                {issue.title}
+                              </p>
+
+                              {/* IMPACT BADGES */}
+                              <div className="flex shrink-0 flex-wrap justify-end gap-2 max-w-[220px]">
+                                {impactEntries.map((entry, i) => (
+                                  <div
+                                   key={i}
+                                   className="
+                                     rounded-full
+                                     border
+                                     border-red-200
+                                     bg-red-50
+                                     px-4
+                                     py-2
+                                     text-[13px]
+                                     font-semibold
+                                     text-red-500
+                                     whitespace-nowrap
+                                    "
+                                  >
+                                    {entry.value}% {entry.key}
                                 </div>
                               ))}
-                            </div>
-
-                            {/* TITLE */}
-                            <p className="pr-40 text-[21px] font-semibold leading-[1.25] tracking-[-0.02em] text-[var(--ink-primary)]">
-                              {issue.title}
-                            </p>
+                              </div>
+                           </div>
 
                             {/* SIGNAL TAGS */}
                             <div className="mt-4 flex flex-wrap gap-2">
@@ -631,8 +648,8 @@ const screenshotToSend = uploadedImage;
                             {/* CENTER */}
                             <div className="relative">
 
-                              {/* IMPACT BADGES */}
-                              <div className="absolute right-0 top-0 flex gap-2">
+                              {/* HEADER */}
+                              <div className="flex items-start justify-between gap-5">
                                 {impactEntries.map((entry, i) => (
                                   <div
                                     key={i}
