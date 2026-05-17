@@ -90,7 +90,7 @@ export default function Analyze() {
     primaryBg: "bg-[#EEF2FF]",
     scoreColor: "text-[#FF8D28]",
     link: "text-[var(--ink-primary)] text-sm font-medium hover:opacity-70 transition",
-    titleSection: "text-lg font-semibold text-[#061C2F]",
+    titleSection: "text-[24px] font-semibold text-[#061C2F]",
     headingPage: "text-[28px] font-semibold tracking-tight text-[var(--ink-primary)]",
     softBg: "bg-[var(--gray-soft)]",
     section: "mt-6",
@@ -638,8 +638,6 @@ const screenshotToSend = uploadedImage;
                               rounded-[28px]
                               border
                               border-[var(--stroke-light)]
-                              border-l-[4px]
-                              border-l-emerald-400
                               bg-white
                               px-8
                               py-7
@@ -670,7 +668,7 @@ const screenshotToSend = uploadedImage;
                                   {/* TITLE */}
                                   <p
                                     className="
-                                      text-[22px]
+                                      text-[21px]
                                       leading-[1.2]
                                       font-semibold
                                       tracking-[-0.02em]
@@ -685,9 +683,9 @@ const screenshotToSend = uploadedImage;
                                       className="
                                         mt-3
                                         max-w-[760px]
-                                        text-[15px]
-                                        leading-7
-                                        text-[var(--ink-secondary)]
+                                        text-[18px]
+                                        leading-4
+                                        text-[var(--ink-primary)]
                                       "
                                     >
                                       {item.recommendation}
@@ -728,7 +726,7 @@ const screenshotToSend = uploadedImage;
                                      Why it works
                                    </p>
 
-                                   <p className="mt-2 max-w-[920px] text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                   <p className="max-w-[920px] text-[15px] leading-7 text-[var(--ink-secondary)]">
                                      {item.why}
                                    </p>
                                 </div>
