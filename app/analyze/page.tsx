@@ -1083,90 +1083,243 @@ duration-200
 
                         return (
                           <div
-                            key={index}
-                            className="relative rounded-xl border border-[var(--stroke-light)] p-4 grid grid-cols-[14px_1fr] gap-4"
-                          >
-                            {/* LEFT NUMBER */}
-                            <div className="w-4 flex items-start justify-center">
-                              <span className="text-base font-regular text-[var(--ink-secondary)]">
-                                {index + 1}
-                              </span>
-                            </div>
+  key={index}
+  className="
+    rounded-[28px]
+    border
+    border-[var(--stroke-light)]
+    border-l-[4px]
+    border-l-sky-400
+    bg-white
+    px-8
+    py-7
+    flex
+    gap-6
+    transition-all
+    duration-200
+    hover:-translate-y-[1px]
+    hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)]
+  "
+>
+  {/* LEFT NUMBER */}
+  <div className="flex items-start justify-center pt-1">
+    <span className="text-[38px] leading-none font-medium text-neutral-300">
+      {index + 1}
+    </span>
+  </div>
 
-                            {/* CENTER */}
-                            <div className="relative">
+  {/* RIGHT CONTENT */}
+  <div className="flex-1">
 
-                              {/* IMPACT BADGES */}
-                              <div className="absolute right-0 top-0 flex gap-2">
-                                {impactEntries.map((entry, i) => (
-                                  <div
-                                    key={i}
-                                    className="rounded-md bg-green-600 px-2 py-1 text-xs font-medium text-white"
-                                  >
-                                    +{Math.abs(entry.value)}% {entry.key}
-                                  </div>
-                                ))}
-                              </div>
+    {/* TOP ROW */}
+    <div className="flex items-start justify-between gap-6">
 
-                              {/* SECTION TITLE */}
-                              <p className="text-base font-medium text-[var(--ink-primary)] pr-32">
-                                {item.section}
-                              </p>
+      {/* LEFT */}
+      <div className="flex-1 min-w-0">
 
-                              {/* BEFORE / AFTER */}
-                              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                                {/* BEFORE */}
-                                <div className="flex flex-col h-full">
-                                  <p className="text-sm font-medium text-[var(--ink-secondary)] mb-1">Before</p>
-                                  <div className="rounded-lg bg-soft p-3 flex-1">
-                                    <p className="text-base leading-6 text-[var(--ink-primary)]">
-                                      {item.before}
-                                    </p>
-                                  </div>
-                                </div>
+        {/* SECTION */}
+        <p className="text-[13px] font-medium uppercase tracking-[0.08em] text-neutral-400">
+          {item.section}
+        </p>
 
-                                {/* AFTER */}
-                                <div className="flex flex-col h-full">
-                                  <p className="text-sm font-medium text-[var(--ink-secondary)] mb-1">Improved</p>
+        {/* TITLE */}
+        <p
+          className="
+            mt-2
+            text-[22px]
+            leading-[1.2]
+            font-semibold
+            tracking-[-0.02em]
+            text-[var(--ink-primary)]
+            max-w-[760px]
+          "
+        >
+          Improve copy clarity and conversion intent
+        </p>
 
-                                  <div className="rounded-lg bg-blue-100 px-3 py-[9px] flex-1">
-                                    <div className="flex items-center justify-between gap-3">
-                                      <p className="text-base font-medium leading-5 text-[var(--ink-primary)]">
-                                        {item.after}
-                                      </p>
+      </div>
 
-                                      {/* COPY BUTTON */}
-                                      <div className="relative">
-                                        <button
-                                          onClick={() => handleCopy(item.after, index)}
-                                          className="flex items-center gap-1 rounded-md p-1 text-[var(--ink-primary)] hover:opacity-70 transition -mr-1"
-                                        >
-                                          {copiedIndex === index ? (
-                                            <RiCheckLine size={18} className="shrink-0"/>
-                                          ) : (
-                                            <RiFileCopyLine size={18} className="shrink-0"/>
-                                          )}
-                                        </button>
+      {/* IMPACT BADGES */}
+      <div className="flex shrink-0 flex-wrap justify-end gap-2 max-w-[240px]">
+        {impactEntries.map((entry, i) => (
+          <div
+            key={i}
+            className="
+              rounded-full
+              border
+              border-sky-200
+              bg-sky-50
+              px-4
+              py-2
+              text-[13px]
+              font-semibold
+              text-sky-700
+              whitespace-nowrap
+            "
+          >
+            +{Math.abs(entry.value)}% {entry.key}
+          </div>
+        ))}
+      </div>
 
-                                        {copiedIndex === index && (
-                                          <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs text-[var(--ink-primary)] bg-white px-2 py-0.5 rounded-md border border-[rgba(0,0,0,0.06)] shadow-[0_1px_3px_rgba(0,0,0,0.05)] animate-fade-in">
-                                            Copied
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+    </div>
 
-                              {/* WHY IT WORKS */}
-                              <p className="mt-4 text-sm text-[var(--ink-secondary)]">
-                                <span className="font-medium text-[var(--ink-primary)]">Why it works:</span>
-                                &nbsp;{item.why}
-                              </p>
+    {/* BEFORE / AFTER */}
+    <div className="mt-6 grid gap-4 lg:grid-cols-2">
 
-                            </div>
-                          </div>
+      {/* BEFORE */}
+      <div
+        className="
+          rounded-2xl
+          border
+          border-neutral-200
+          bg-neutral-50
+          p-5
+        "
+      >
+        <div className="mb-3 flex items-center justify-between">
+
+          <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
+            Before
+          </p>
+
+          <div
+            className="
+              rounded-full
+              bg-white
+              border
+              border-neutral-200
+              px-2.5
+              py-1
+              text-[11px]
+              font-medium
+              text-neutral-500
+            "
+          >
+            Original
+          </div>
+
+        </div>
+
+        <p className="text-[16px] leading-7 text-neutral-600">
+          {item.before}
+        </p>
+      </div>
+
+      {/* AFTER */}
+      <div
+        className="
+          rounded-2xl
+          border
+          border-sky-200
+          bg-sky-50/70
+          p-5
+          relative
+        "
+      >
+        <div className="mb-3 flex items-center justify-between gap-3">
+
+          <div className="flex items-center gap-2">
+
+            <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-sky-700">
+              Improved
+            </p>
+
+            <div
+              className="
+                rounded-full
+                bg-white
+                border
+                border-sky-200
+                px-2.5
+                py-1
+                text-[11px]
+                font-medium
+                text-sky-700
+              "
+            >
+              AI Suggestion
+            </div>
+
+          </div>
+
+          {/* COPY BUTTON */}
+          <div className="relative">
+            <button
+              onClick={() => handleCopy(item.after, index)}
+              className="
+                flex
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-sky-200
+                bg-white
+                h-9
+                w-9
+                text-sky-700
+                hover:bg-sky-100
+                transition
+              "
+            >
+              {copiedIndex === index ? (
+                <RiCheckLine size={18} className="shrink-0"/>
+              ) : (
+                <RiFileCopyLine size={18} className="shrink-0"/>
+              )}
+            </button>
+
+            {copiedIndex === index && (
+              <div
+                className="
+                  absolute
+                  -top-8
+                  left-1/2
+                  -translate-x-1/2
+                  whitespace-nowrap
+                  rounded-full
+                  border
+                  border-sky-200
+                  bg-white
+                  px-3
+                  py-1
+                  text-[11px]
+                  font-medium
+                  text-sky-700
+                  shadow-sm
+                "
+              >
+                Copied
+              </div>
+            )}
+          </div>
+
+        </div>
+
+        <p className="text-[17px] font-medium leading-7 text-[var(--ink-primary)]">
+          {item.after}
+        </p>
+      </div>
+
+    </div>
+
+    {/* WHY IT WORKS */}
+    {item.why && (
+      <div className="mt-6 border-t border-neutral-100 pt-5">
+
+        <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
+          Why it works
+        </p>
+
+        <p className="mt-2 max-w-[920px] text-[15px] leading-7 text-[var(--ink-secondary)]">
+          {item.why}
+        </p>
+
+      </div>
+    )}
+
+  </div>
+</div>
                         );
                       })}
                     </div>
