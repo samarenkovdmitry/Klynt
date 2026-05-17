@@ -231,27 +231,36 @@ async function captureWebsiteScreenshots(url: string) {
     });
 
     // MID PAGE
-    await page.evaluate(async () => {
-      await new Promise<void>((resolve) => {
-        let totalHeight = 0;
-        const distance = 1200;
-
-        const timer = setInterval(() => {
-          window.scrollBy(0, distance);
-
-          totalHeight += distance;
-
-          if (totalHeight > 5000) {
-            clearInterval(timer);
-            resolve();
-          }
-       }, 60);
-     });
+    await page.evaluate(() => {
+      window.scrollTo(0, 1200);
     });
 
     await new Promise((resolve) => setTimeout(resolve, 600));
 
+    await page.screenshot({
+      path: "/tmp/mid.jpg",
+      type: "jpeg",
+      quality: 35,
+      clip: {
+        x: 0,
+        y: 1200,
+        width: 1440,
+        height: 1400,
+      },
+    });
 
+    // FOOTER
+    const bodyHeight = await page.evaluate(() => {
+      return document.body.scrollHeight;
+    });
+
+    const footerY = Math.max(bodyHeight - 1600, 0);
+
+    await page.evaluate((y) => {
+      window.scrollTo(0, y);
+    }, footerY);
+
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
     const hero = await page.screenshot({
      type: "jpeg",
@@ -272,6 +281,17 @@ async function captureWebsiteScreenshots(url: string) {
      clip: {
        x: 0,
        y: 1200,
+       width: 1440,
+       height: 1400,
+      },
+    });
+
+    const footer = await page.screenshot({
+     type: "jpeg",
+     quality: 35,
+     clip: {
+       x: 0,
+       y: footerY,
        width: 1440,
        height: 1400,
       },
