@@ -109,6 +109,83 @@ function normalizeUrl(input: string) {
 }
 
 
+
+// -----------------------------
+// SIGNALS -> COMPACT CHIPS
+// -----------------------------
+function normalizeSignals(signals: string[] = []) {
+  const tags = new Set<string>();
+
+  const joined = signals.join(" ").toLowerCase();
+
+  // hierarchy
+  if (
+    joined.includes("hierarchy") ||
+    joined.includes("visual priority")
+  ) {
+    tags.add("Weak hierarchy");
+  }
+
+  // contrast
+  if (
+    joined.includes("contrast") ||
+    joined.includes("hard to see") ||
+    joined.includes("visibility")
+  ) {
+    tags.add("Low contrast");
+  }
+
+  // layout
+  if (
+    joined.includes("crowded") ||
+    joined.includes("spacing") ||
+    joined.includes("layout") ||
+    joined.includes("dense")
+  ) {
+    tags.add("Overloaded layout");
+  }
+
+  // CTA
+  if (
+    joined.includes("cta") ||
+    joined.includes("button")
+  ) {
+    tags.add("Weak CTA");
+  }
+
+  // trust
+  if (
+    joined.includes("trust") ||
+    joined.includes("testimonial") ||
+    joined.includes("social proof")
+  ) {
+    tags.add("Missing trust signals");
+  }
+
+  // navigation
+  if (
+    joined.includes("navigation") ||
+    joined.includes("menu")
+  ) {
+    tags.add("Navigation friction");
+  }
+
+  // clarity
+  if (
+    joined.includes("clarity") ||
+    joined.includes("unclear") ||
+    joined.includes("generic")
+  ) {
+    tags.add("Low clarity");
+  }
+
+  return Array.from(tags).slice(0, 3);
+}
+
+
+
+
+
 // -----------------------------
 // FULL PAGE SCREENSHOT
 // -----------------------------
@@ -530,8 +607,9 @@ if (screenshotsBase64[2]) {
     json.copy = Array.isArray(json.copy) ? json.copy : [];
 
     json.issues = json.issues.map((item: any) => ({
-      ...item,
-      ...mapImpact(item.impact || {}),
+     ...item,
+     bullets: normalizeSignals(item.bullets || []),
+     ...mapImpact(item.impact || {}),
     }));
 
     json.suggestions = json.suggestions.map((item: any) => ({
