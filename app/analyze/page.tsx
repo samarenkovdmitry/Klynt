@@ -684,7 +684,7 @@ const screenshotToSend = uploadedImage;
                                         mt-3
                                         max-w-[760px]
                                         text-[18px]
-                                        leading-4
+                                        leading-7
                                         text-[var(--ink-primary)]
                                       "
                                     >
@@ -726,7 +726,7 @@ const screenshotToSend = uploadedImage;
                                      Why it works
                                    </p>
 
-                                   <p className="max-w-[920px] text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                   <p className="max-w-[920px] text-[16px] leading-7 text-[var(--ink-secondary)]">
                                      {item.why}
                                    </p>
                                 </div>
