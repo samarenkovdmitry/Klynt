@@ -265,19 +265,20 @@ const screenshotToSend = uploadedImage;
     <>
       {/* TOP NAVBAR */}
       <header
-        className="
-        sticky
-        top-0
-        z-50
-        w-full
-        border-b
-        border-[rgba(6,28,47,0.06)]
-        bg-[rgba(235,239,243,0.82)]
-        backdrop-blur-xl
-        "
-      >
+  className="
+    sticky
+    top-0
+    z-50
+    w-full
+    border-b
+    border-[rgba(6,28,47,0.06)]
+    bg-[#F3F5F7]/95
+    backdrop-blur-xl
+    supports-[backdrop-filter]:bg-[#F3F5F7]/80
+  "
+>
 
-        <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between px-8">
+        <div className="mx-auto flex h-[72px] max-w-[1180px] items-center justify-between px-8">
 
           {/* LEFT — LOGO */}
           <div className="flex items-center gap-3">
@@ -302,49 +303,30 @@ const screenshotToSend = uploadedImage;
           </div>
 
           {/* RIGHT — ACTIONS */}
-          <div className="flex items-center gap-1">
-            <button className="
-  flex
-  items-center
-  gap-2
-  rounded-full
-  border
-  border-transparent
-  px-4
-  py-2
-  text-[14px]
-  font-medium
-  text-[var(--ink-primary)]
-  transition-all
-  duration-200
-  hover:border-[rgba(6,28,47,0.06)]
-  hover:bg-white
-">
-              <ChatCircleText size={18} weight="regular" />
-              <span>Feedback</span>
-            </button>
-
-            <button className="
-  flex
-  items-center
-  gap-2
-  rounded-full
-  border
-  border-transparent
-  px-4
-  py-2
-  text-[14px]
-  font-medium
-  text-[var(--ink-primary)]
-  transition-all
-  duration-200
-  hover:border-[rgba(6,28,47,0.06)]
-  hover:bg-white
-">
-              <Gear size={18} weight="regular" />
-              <span>Settings</span>
-            </button>
-          </div>
+<div className="flex items-center">
+  <button
+    className="
+      flex
+      items-center
+      gap-2
+      rounded-full
+      border
+      border-transparent
+      px-4
+      py-2
+      text-[14px]
+      font-medium
+      text-[var(--ink-primary)]
+      transition-all
+      duration-200
+      hover:border-[rgba(6,28,47,0.06)]
+      hover:bg-white
+    "
+  >
+    <Gear size={18} weight="regular" />
+    <span>Settings</span>
+  </button>
+</div>
 
         </div>
       </header>
@@ -494,12 +476,6 @@ duration-200
               <div className="mt-10 w-full">
                 {!loading ? (
                   <Button
-                  className="
-  h-[56px]
-  rounded-2xl
-  text-[15px]
-  font-semibold
-"
                     type="button"
                     disabled={isButtonDisabled}
                     onClick={handleAnalyze}

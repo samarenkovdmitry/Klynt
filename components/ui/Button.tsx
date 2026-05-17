@@ -9,8 +9,10 @@ export function Button({
     {...props}
       disabled={disabled}
       className={`
-        w-full h-13 rounded-[8px] px-4
-        text-base font-semibold leading-6
+        h-[56px]
+  rounded-2xl
+  text-[15px]
+  font-semibold
         text-white transition
 
         ${disabled
