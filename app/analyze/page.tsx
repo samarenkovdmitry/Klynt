@@ -270,10 +270,9 @@ const screenshotToSend = uploadedImage;
     z-50
     w-full
     border-b
-    border-[rgba(6,28,47,0.06)]
-    bg-[#F3F5F7]/95
+    border-[rgba(0,0,0,0.06)]
+    bg-white/80
     backdrop-blur-xl
-    supports-[backdrop-filter]:bg-[#F3F5F7]/80
   "
 >
 
@@ -322,7 +321,7 @@ const screenshotToSend = uploadedImage;
       hover:bg-white
     "
   >
-    <RiSettings3Line size={18} />
+    <RiSettings3Line size={18} className="shrink-0" />
     <span>Settings</span>
   </button>
 </div>
@@ -334,7 +333,7 @@ const screenshotToSend = uploadedImage;
       <main
   className="
     min-h-[calc(100dvh-72px)]
-    bg-[#F3F5F7]
+    bg-[#F5F7FA]
     px-6
     py-10
     text-[var(--ink-primary)]
@@ -455,7 +454,7 @@ duration-200
                   `}
                   onClick={() => !loading && fileInputRef.current?.click()}
                 >
-                  <RiUpload2Line size={24} color="#8E99A2" />
+                  <RiUpload2Line size={24} color="#8E99A2" className="shrink-0"/>
 
                   <p className="text-sm text-[var(--ink-secondary)]">Click to upload or drag and drop</p>
                   <p className="text-xs text-[var(--ink-secondary)]">Max 20 MB. Use full-page screenshot for best results.</p>
@@ -601,7 +600,7 @@ duration-200
         hover:bg-neutral-50
       "
     >
-      <RiDownload2Line size={18} />
+      <RiDownload2Line size={18} className="shrink-0" />
       <span>Download</span>
     </button>
 
@@ -620,7 +619,7 @@ duration-200
         hover:bg-neutral-100
       "
     >
-      <RiShareForwardLine size={18} />
+      <RiShareForwardLine size={18} className="shrink-0"/>
       <span>Re-run</span>
     </button>
 
@@ -1143,9 +1142,9 @@ duration-200
                                           className="flex items-center gap-1 rounded-md p-1 text-[var(--ink-primary)] hover:opacity-70 transition -mr-1"
                                         >
                                           {copiedIndex === index ? (
-                                            <RiCheckLine size={18} />
+                                            <RiCheckLine size={18} className="shrink-0"/>
                                           ) : (
-                                            <RiFileCopyLine size={18} />
+                                            <RiFileCopyLine size={18} className="shrink-0"/>
                                           )}
                                         </button>
 
@@ -1224,7 +1223,7 @@ duration-200
                     <button
                       className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
                     >
-                      <RiDownload2Line size={18} />
+                      <RiDownload2Line size={18} className="shrink-0"/>
                       <span>Download report</span>
                     </button>
 
@@ -1232,7 +1231,7 @@ duration-200
                     <button
                       className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
                     >
-                      <RiShareForwardLine size={18} />
+                      <RiShareForwardLine size={18} className="shrink-0"/>
                       <span>Share</span>
                     </button>
 
@@ -1241,7 +1240,7 @@ duration-200
                       onClick={handleReset}
                       className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
                     >
-                      <RiRefreshLine size={18} />
+                      <RiRefreshLine size={18} className="shrink-0"/>
                       <span>Re-run analysis</span>
                     </button>
 
