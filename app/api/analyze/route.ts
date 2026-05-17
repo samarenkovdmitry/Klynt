@@ -256,9 +256,9 @@ async function captureWebsiteScreenshots(url: string) {
 
     const footerY = Math.max(bodyHeight - 1600, 0);
 
-    await page.evaluate((y) => {
-      window.scrollTo(0, y);
-    }, footerY);
+    await page.evaluate((y: number) => {
+  window.scrollTo(0, y);
+   }, footerY);
 
     await new Promise((resolve) => setTimeout(resolve, 600));
 

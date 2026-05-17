@@ -2,15 +2,14 @@
 
 import { useState, useRef } from "react";
 import {
-  DownloadSimple,
-  ChatCircleText,
-  Gear,
-  CopySimple,
-  Check,
-  ShareNetwork,
-  ArrowClockwise,
-  UploadSimple
-} from "@phosphor-icons/react";
+  RiSettings3Line,
+  RiUpload2Line,
+  RiDownload2Line,
+  RiShareForwardLine,
+  RiRefreshLine,
+  RiFileCopyLine,
+  RiCheckLine,
+} from "@remixicon/react";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { Button } from "@/components/ui/Button";
 
@@ -323,7 +322,7 @@ const screenshotToSend = uploadedImage;
       hover:bg-white
     "
   >
-    <Gear size={18} weight="regular" />
+    <RiSettings3Line size={18} />
     <span>Settings</span>
   </button>
 </div>
@@ -456,7 +455,7 @@ duration-200
                   `}
                   onClick={() => !loading && fileInputRef.current?.click()}
                 >
-                  <UploadSimple size={24} weight="regular" color="#8E99A2" />
+                  <RiUpload2Line size={24} color="#8E99A2" />
 
                   <p className="text-sm text-[var(--ink-secondary)]">Click to upload or drag and drop</p>
                   <p className="text-xs text-[var(--ink-secondary)]">Max 20 MB. Use full-page screenshot for best results.</p>
@@ -602,7 +601,7 @@ duration-200
         hover:bg-neutral-50
       "
     >
-      <DownloadSimple size={18} weight="regular" />
+      <RiDownload2Line size={18} />
       <span>Download</span>
     </button>
 
@@ -621,7 +620,7 @@ duration-200
         hover:bg-neutral-100
       "
     >
-      <ArrowClockwise size={18} weight="regular" />
+      <RiShareForwardLine size={18} />
       <span>Re-run</span>
     </button>
 
@@ -1144,9 +1143,9 @@ duration-200
                                           className="flex items-center gap-1 rounded-md p-1 text-[var(--ink-primary)] hover:opacity-70 transition -mr-1"
                                         >
                                           {copiedIndex === index ? (
-                                            <Check size={18} weight="regular" />
+                                            <RiCheckLine size={18} />
                                           ) : (
-                                            <CopySimple size={18} weight="regular" />
+                                            <RiFileCopyLine size={18} />
                                           )}
                                         </button>
 
@@ -1225,7 +1224,7 @@ duration-200
                     <button
                       className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
                     >
-                      <DownloadSimple size={18} weight="regular" />
+                      <RiDownload2Line size={18} />
                       <span>Download report</span>
                     </button>
 
@@ -1233,7 +1232,7 @@ duration-200
                     <button
                       className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
                     >
-                      <ShareNetwork size={18} weight="regular" />
+                      <RiShareForwardLine size={18} />
                       <span>Share</span>
                     </button>
 
@@ -1242,7 +1241,7 @@ duration-200
                       onClick={handleReset}
                       className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
                     >
-                      <ArrowClockwise size={18} weight="regular" />
+                      <RiRefreshLine size={18} />
                       <span>Re-run analysis</span>
                     </button>
 
