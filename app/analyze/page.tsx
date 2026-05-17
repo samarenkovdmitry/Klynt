@@ -503,11 +503,23 @@ const screenshotToSend = uploadedImage;
                       return (
                         <div
                           key={index}
-                          className="rounded-xl border border-[var(--stroke-light)] bg-white p-5 flex gap-4"
+                          className="
+                          rounded-[28px]
+                          border
+                          border-[var(--stroke-light)]
+                          bg-white
+                          px-8
+                          py-7
+                          flex
+                          gap-5
+                          transition-all
+                          duration-200
+                          hover:shadow-md
+                          "
                         >
                           {/* LEFT NUMBER */}
-                          <div className="w-2 flex items-start justify-center">
-                            <span className="text-base font-medium text-[var(--ink-secondary)]">
+                          <div className="flex items-start justify-center pt-1">
+                            <span className="text-[38px] leading-none font-medium text-neutral-300">
                               {index + 1}
                             </span>
                           </div>
@@ -520,7 +532,17 @@ const screenshotToSend = uploadedImage;
                               {impactEntries.map((entry, i) => (
                                 <div
                                   key={i}
-                                  className="rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs font-medium text-red-700"
+                                  className="
+                                    rounded-full
+                                    border
+                                    border-red-200
+                                    bg-red-50
+                                    px-4
+                                    py-2
+                                    text-[13px]
+                                    font-semibold
+                                    text-red-500
+                                  "
                                 >
                                   {entry.value}% {entry.key}
                                 </div>
@@ -528,21 +550,26 @@ const screenshotToSend = uploadedImage;
                             </div>
 
                             {/* TITLE */}
-                            <p className="text-base font-semibold text-[var(--ink-primary)] pr-40">
+                            <p className="pr-40 text-[21px] font-semibold leading-[1.25] tracking-[-0.02em] text-[var(--ink-primary)]">
                               {issue.title}
                             </p>
 
-                            {/* SIGNALS LABEL */}
-                            <p className="text-xs font-medium text-[var(--ink-secondary)] mt-2 mb-1">
-                              Signals:
-                            </p>
-
                             {/* SIGNAL TAGS */}
-                            <div className="flex flex-wrap gap-2">
-                              {issue.bullets?.map((b, i) => (
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              {issue.bullets?.slice(0, 3).map((b, i) => (
                                 <span
                                   key={i}
-                                  className="px-2 py-[3px] rounded-md bg-[#F3F5F7] text-xs font-medium text-[var(--ink-secondary)]"
+                                  className="
+                                    rounded-full
+                                    border
+                                    border-neutral-200
+                                    bg-neutral-50
+                                    px-3.5
+                                    py-1.5
+                                    text-[13px]
+                                    font-medium
+                                    text-neutral-600
+                                  "
                                 >
                                   {b}
                                 </span>
@@ -551,12 +578,16 @@ const screenshotToSend = uploadedImage;
 
                             {/* WHY IT MATTERS */}
                             {issue.why && (
-                              <p className="mt-3 text-sm leading-6 text-[var(--ink-secondary)]">
-                                <span className="font-medium text-[var(--ink-primary)]">
-                                  Why it matters:
-                                </span>
-                                &nbsp;{issue.why}
-                              </p>
+                              <div className="mt-6 border-t border-neutral-100 pt-5">
+    
+                                <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
+                                   Why it matters
+                                </p>
+
+                                <p className="mt-2 max-w-[920px] text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                   {issue.why}
+                                </p>
+                              </div>
                             )}
                           </div>
                         </div>
