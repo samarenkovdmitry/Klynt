@@ -296,7 +296,7 @@ const screenshotToSend = uploadedImage;
 
       {/* MAIN */}
       <main className="min-h-[calc(100dvh-64px)] bg-[#EBEFF3] p-6 text-[var(--ink-primary)]">
-        <div className={`mx-auto max-w-[800px] ${styles.outerCard}`}>
+        <div className={`mx-auto max-w-[960px] ${styles.outerCard}`}>
 
           {/* START SCREEN */}
           {!data && (
@@ -549,23 +549,23 @@ const screenshotToSend = uploadedImage;
                               <div className="flex shrink-0 flex-wrap justify-end gap-2 max-w-[220px]">
                                 {impactEntries.map((entry, i) => (
                                   <div
-                                   key={i}
-                                   className="
-                                     rounded-full
-                                     border
-                                     border-red-200
-                                     bg-red-50
-                                     px-4
-                                     py-2
-                                     text-[13px]
-                                     font-semibold
-                                     text-red-500
-                                     whitespace-nowrap
-                                    "
-                                  >
+                                     key={i}
+                                     className="
+                                       rounded-full
+                                       border
+                                       border-red-200
+                                       bg-red-50
+                                       px-4
+                                       py-2
+                                       text-[13px]
+                                       font-semibold
+                                       text-red-500
+                                       whitespace-nowrap
+                                      "
+                                    >
                                     {entry.value}% {entry.key}
                                 </div>
-                              ))}
+                               ))}
                               </div>
                            </div>
 
@@ -634,55 +634,112 @@ const screenshotToSend = uploadedImage;
                         return (
                           <div
                             key={index}
-                            className="relative rounded-xl border border-[var(--stroke-light)] p-4 grid grid-cols-[14px_1fr] gap-4"
+                            className="
+                              rounded-[28px]
+                              border
+                              border-[var(--stroke-light)]
+                              border-l-[4px]
+                              border-l-emerald-400
+                              bg-white
+                              px-8
+                              py-7
+                              flex
+                              gap-6
+                              transition-all
+                              duration-200
+                              hover:-translate-y-[1px]
+                              hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)]
+                            "
                           >
                             {/* LEFT NUMBER */}
-                            <div className="w-4 flex items-start justify-center">
-                              <span className="text-base font-regular text-[var(--ink-secondary)]">
+                            <div className="flex items-start justify-center pt-1">
+                              <span className="text-[38px] leading-none font-medium text-neutral-300">
                                 {index + 1}
                               </span>
                             </div>
 
-                            {/* CENTER */}
-                            <div className="relative">
+                            {/* RIGHT CONTENT */}
+                            <div className="flex-1">
 
-                              {/* HEADER */}
-                              <div className="flex items-start justify-between gap-5">
-                                {impactEntries.map((entry, i) => (
-                                  <div
-                                    key={i}
-                                    className="rounded-md bg-green-600 px-2 py-1 text-xs font-medium text-white"
+                              {/* TOP ROW */}
+                              <div className="flex items-start justify-between gap-6">
+
+                                {/* LEFT SIDE */}
+                                <div className="flex-1 min-w-0">
+
+                                  {/* TITLE */}
+                                  <p
+                                    className="
+                                      text-[22px]
+                                      leading-[1.2]
+                                      font-semibold
+                                      tracking-[-0.02em]
+                                      text-[var(--ink-primary)]
+                                    "
                                   >
-                                    +{Math.abs(entry.value)}% {entry.key}
-                                  </div>
-                                ))}
-                              </div>
+                                      {item.section}
+                                  </p>
 
-                              {/* SECTION TITLE */}
-                              <p className="text-lg font-medium text-[var(--ink-primary)] pr-32">
-                                {item.section}
-                              </p>
+                                   {/* RECOMMENDATION */}
+                                   <p
+                                      className="
+                                        mt-3
+                                        max-w-[760px]
+                                        text-[15px]
+                                        leading-7
+                                        text-[var(--ink-secondary)]
+                                      "
+                                    >
+                                      {item.recommendation}
+                                   </p>
 
-                              {/* RECOMMENDATION */}
-                              <div className="mt-2">
-                                <p className="text-base leading-6 text-[var(--ink-primary)]">
-                                  {item.recommendation}
-                                </p>
+                                </div>
+
+                                {/* IMPACT BADGES */}
+                                <div className="flex shrink-0 flex-wrap justify-end gap-2 max-w-[240px]">
+                                  {impactEntries.map((entry, i) => (
+                                    <div
+                                      key={i}
+                                      className="
+                                        rounded-full
+                                       border
+                                       border-emerald-200
+                                       bg-emerald-50
+                                       px-4
+                                       py-2
+                                       text-[13px]
+                                       font-semibold
+                                       text-emerald-600
+                                       whitespace-nowrap
+                                      "
+                                    >
+                                      +{Math.abs(entry.value)}% {entry.key}
+                                    </div>
+                                  ))}
+                                </div>
+
                               </div>
 
                               {/* WHY IT WORKS */}
-                              <p className="mt-4 text-sm text-[var(--ink-secondary)]">
-                                <span className="font-medium text-[var(--ink-primary)]">Why it works:</span>
-                                &nbsp;{item.why}
-                              </p>
+                              {item.why && (
+                                <div className="mt-6 border-t border-neutral-100 pt-5">
 
+                                   <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
+                                     Why it works
+                                   </p>
+
+                                   <p className="mt-2 max-w-[920px] text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                     {item.why}
+                                   </p>
+                                </div>
+                                )}
                             </div>
                           </div>
                         );
                       })}
                     </div>
                   </div>
-                )}
+                )} 
 
                 {/* COPY REFINEMENT */}
                 {data?.copy && data.copy.length > 0 && (
