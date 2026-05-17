@@ -395,38 +395,123 @@ const screenshotToSend = uploadedImage;
             <div className="space-y-6 animate-fade-in transition-all duration-500 opacity-100">
               <div className="px-8 py-6">
 
-                {/* HEADER */}
-                <div className="mb-6 flex items-start justify-between">
-                  <div>
-                    <h1 className={styles.headingPage}>Clarity Report</h1>
+{/* REPORT HEADER */}
+<div className="mb-8 flex items-start justify-between gap-6">
 
-                    <div className="mt-1 flex items-center gap-2">
-                      {data.url && (
-                        <img
-                          src={`https://www.google.com/s2/favicons?domain=${data.url}&sz=32`}
-                          alt="favicon"
-                          className="h-4 w-4"
-                        />
-                      )}
+  {/* LEFT */}
+  <div>
 
-                      <p className="text-sm text-[var(--ink-secondary)]">{data.url}</p>
-                    </div>
-                  </div>
+    {/* TITLE */}
+    <div className="flex items-center gap-3">
 
-                  <div className="flex items-center gap-1">
-                    <button className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition">
-                      <DownloadSimple size={18} weight="regular" />
-                      <span>Download</span>
-                    </button>
+      <h1
+        className="
+          text-[40px]
+          leading-none
+          font-semibold
+          tracking-[-0.04em]
+          text-[var(--ink-primary)]
+        "
+      >
+        Clarity Report
+      </h1>
 
-                    <button className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-soft">
-                      <span className="text-xl leading-none text-[var(--ink-primary)] font-medium">⋯</span>
-                    </button>
-                  </div>
-                </div>
+      <div
+        className="
+          rounded-full
+          bg-[#EEF2FF]
+          px-3
+          py-1
+          text-[12px]
+          font-semibold
+          text-[#5B5BD6]
+        "
+      >
+        AI Generated
+      </div>
 
-                <hr className="mb-6 border-[var(--stroke-light)]" />
+    </div>
 
+    {/* META */}
+    <div className="mt-4 flex flex-wrap items-center gap-3 text-[14px] text-[var(--ink-secondary)]">
+
+      {/* DOMAIN */}
+      <div className="flex items-center gap-2">
+
+        {data.url && (
+          <img
+            src={`https://www.google.com/s2/favicons?domain=${data.url}&sz=32`}
+            alt="favicon"
+            className="h-4 w-4 rounded-sm"
+          />
+        )}
+
+        <span>{data.url}</span>
+      </div>
+
+      <span className="text-neutral-300">•</span>
+
+      <span>3 screenshots analyzed</span>
+
+      <span className="text-neutral-300">•</span>
+
+      <span>
+        Generated {new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}
+      </span>
+
+    </div>
+
+  </div>
+
+  {/* RIGHT */}
+  <div className="flex items-center gap-2">
+
+    {/* DOWNLOAD */}
+    <button
+      className="
+        flex items-center gap-2
+        rounded-xl
+        border border-neutral-200
+        bg-white
+        px-4
+        py-2.5
+        text-[14px]
+        font-medium
+        text-[var(--ink-primary)]
+        transition-all
+        hover:bg-neutral-50
+      "
+    >
+      <DownloadSimple size={18} weight="regular" />
+      <span>Download</span>
+    </button>
+
+    {/* RE-RUN */}
+    <button
+      onClick={handleReset}
+      className="
+        flex items-center gap-2
+        rounded-xl
+        px-4
+        py-2.5
+        text-[14px]
+        font-medium
+        text-[var(--ink-secondary)]
+        transition-all
+        hover:bg-neutral-100
+      "
+    >
+      <ArrowClockwise size={18} weight="regular" />
+      <span>Re-run</span>
+    </button>
+
+  </div>
+
+</div>
 
 {/* SUMMARY */}
 <div className="mt-2">
