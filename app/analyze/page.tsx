@@ -271,8 +271,7 @@ const screenshotToSend = uploadedImage;
     w-full
     border-b
     border-[rgba(0,0,0,0.06)]
-    bg-white/80
-    backdrop-blur-xl
+    bg-white
   "
 >
 
@@ -602,25 +601,6 @@ duration-200
     >
       <RiDownload2Line size={18} className="shrink-0" />
       <span>Download</span>
-    </button>
-
-    {/* RE-RUN */}
-    <button
-      onClick={handleReset}
-      className="
-        flex items-center gap-2
-        rounded-xl
-        px-4
-        py-2.5
-        text-[14px]
-        font-medium
-        text-[var(--ink-secondary)]
-        transition-all
-        hover:bg-neutral-100
-      "
-    >
-      <RiShareForwardLine size={18} className="shrink-0"/>
-      <span>Re-run</span>
     </button>
 
   </div>
@@ -1088,8 +1068,6 @@ duration-200
     rounded-[28px]
     border
     border-[var(--stroke-light)]
-    border-l-[4px]
-    border-l-sky-400
     bg-white
     px-8
     py-7
@@ -1325,48 +1303,6 @@ duration-200
                     </div>
                   </div>
                 )}
-
-                {/* UX BREAKDOWN */}
-                <div className="mt-10">
-                  <h3 className={styles.titleSection}>UX Breakdown</h3>
-
-                  <div className="rounded-xl bg-white border border-[var(--stroke-light)] p-5 space-y-5 mt-4">
-                    {breakdownItems.map(item => {
-                      const numericValue = Number(item.value ?? 0);
-                      const percent = Math.max(0, Math.min(100, numericValue));
-                      const meta = getBreakdownMeta(percent);
-
-                      return (
-                        <div key={item.key}>
-                          <div className="mb-1 flex justify-between">
-                            <span className="capitalize text-sm font-medium text-[var(--ink-primary)]">
-                              {item.label}
-                            </span>
-
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm font-semibold text-[var(--ink-primary)]">
-                                {percent}%
-                              </span>
-
-                              <span className="text-[var(--stroke-light)]">•</span>
-
-                              <span className={`text-sm font-medium ${meta.labelColor}`}>
-                                {meta.label}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="h-1.5 w-full rounded-full bg-[var(--stroke-light)] overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all ${meta.bar}`}
-                              style={{ width: `${percent}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
 
                 {/* NEXT ACTIONS */}
                 <div className="mt-10 flex flex-col items-center gap-6">
