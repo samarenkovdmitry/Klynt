@@ -507,8 +507,6 @@ const screenshotToSend = uploadedImage;
                           rounded-[28px]
                           border
                           border-[var(--stroke-light)]
-                          border-l-[4px]
-                          border-l-red-400
                           bg-white
                           px-8
                           py-7
