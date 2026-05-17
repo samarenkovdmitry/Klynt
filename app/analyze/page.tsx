@@ -264,11 +264,23 @@ const screenshotToSend = uploadedImage;
   return (
     <>
       {/* TOP NAVBAR */}
-      <header className="w-full border-b border-[#CDD7DF] bg-[#EBEFF3]">
-        <div className="mx-auto max-w-[1200px] px-6 h-16 flex items-center justify-between">
+      <header
+        className="
+        sticky
+        top-0
+        z-50
+        w-full
+        border-b
+        border-[rgba(6,28,47,0.06)]
+        bg-[rgba(235,239,243,0.82)]
+        backdrop-blur-xl
+        "
+      >
+
+        <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between px-8">
 
           {/* LEFT — LOGO */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
             <svg width="72" height="31" viewBox="0 0 72 31" fill="none">
               <path d="M63.9571 24.3398H67.8022V19.5777V9.55947H71.9999V6.70217H67.8022L67.8019 0H63.9569L63.9571 6.70217H61.0293V9.55947H63.9571V20.4595V24.3398Z" fill="#061C2F"/>
               <path d="M48.7903 24.339H44.9453V6.70139H48.6845V10.1584H48.755C49.4958 7.6891 51.3301 6.34863 53.9052 6.34863C57.7855 6.34863 59.6904 8.99428 59.6904 12.8746V24.339H55.8454V14.0034C55.8454 10.7228 54.6813 9.24121 52.3179 9.24121C49.9544 9.24121 48.7903 10.8639 48.7903 13.7565V24.339Z" fill="#061C2F"/>
@@ -276,16 +288,59 @@ const screenshotToSend = uploadedImage;
               <path d="M20.7266 24.34V0H24.5716V24.34H20.7266Z" fill="#061C2F"/>
               <path d="M3.98611 24.34H0V0H3.98611V11.147H7.47837L15.2389 0H19.6484L11.6056 11.5703H8.81883L19.7895 24.34H14.604L3.98611 11.9936V24.34Z" fill="#061C2F"/>
             </svg>
+            <div className="hidden sm:flex flex-col leading-none">
+              <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]">
+                UX Clarity Analyzer
+              </span>
+
+              <span className="mt-1 text-[11px] text-[var(--ink-secondary)]">
+                AI-powered website review
+              </span>
+            </div>
+
+
           </div>
 
           {/* RIGHT — ACTIONS */}
           <div className="flex items-center gap-1">
-            <button className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition">
+            <button className="
+  flex
+  items-center
+  gap-2
+  rounded-full
+  border
+  border-transparent
+  px-4
+  py-2
+  text-[14px]
+  font-medium
+  text-[var(--ink-primary)]
+  transition-all
+  duration-200
+  hover:border-[rgba(6,28,47,0.06)]
+  hover:bg-white
+">
               <ChatCircleText size={18} weight="regular" />
               <span>Feedback</span>
             </button>
 
-            <button className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition">
+            <button className="
+  flex
+  items-center
+  gap-2
+  rounded-full
+  border
+  border-transparent
+  px-4
+  py-2
+  text-[14px]
+  font-medium
+  text-[var(--ink-primary)]
+  transition-all
+  duration-200
+  hover:border-[rgba(6,28,47,0.06)]
+  hover:bg-white
+">
               <Gear size={18} weight="regular" />
               <span>Settings</span>
             </button>
@@ -295,17 +350,79 @@ const screenshotToSend = uploadedImage;
       </header>
 
       {/* MAIN */}
-      <main className="min-h-[calc(100dvh-64px)] bg-[#EBEFF3] p-6 text-[var(--ink-primary)]">
-        <div className={`mx-auto max-w-[960px] ${styles.outerCard}`}>
+      <main
+  className="
+    min-h-[calc(100dvh-72px)]
+    bg-[#F3F5F7]
+    px-6
+    py-10
+    text-[var(--ink-primary)]
+  "
+>
+        <div className="mx-auto max-w-[980px]">
 
           {/* START SCREEN */}
           {!data && (
-            <div className="flex flex-col w-full px-8 py-6">
+            <div
+  className="
+    rounded-[36px]
+    border
+    border-[rgba(6,28,47,0.06)]
+    bg-white
+    px-10
+    py-10
+    shadow-[0_10px_40px_rgba(0,0,0,0.03)]
+  "
+>
 
-              <h1 className={styles.headingPage}>Analyze your website</h1>
+              <div className="max-w-[720px]">
+  <div
+    className="
+      inline-flex
+      items-center
+      rounded-full
+      border
+      border-[#DCE7F8]
+      bg-[#F4F8FF]
+      px-3
+      py-1
+      text-[12px]
+      font-semibold
+      text-[#2F6FED]
+    "
+  >
+    AI UX Review
+  </div>
+
+  <h1
+    className="
+      mt-5
+      text-[44px]
+      leading-[1.05]
+      tracking-[-0.04em]
+      font-semibold
+      text-[var(--ink-primary)]
+    "
+  >
+    Analyze your website clarity and conversion UX
+  </h1>
+
+  <p
+    className="
+      mt-5
+      max-w-[620px]
+      text-[18px]
+      leading-8
+      text-[var(--ink-secondary)]
+    "
+  >
+    Get AI-powered insights about friction points, weak messaging,
+    trust issues, and conversion opportunities.
+  </p>
+</div>
 
               {/* URL INPUT */}
-              <div className="mt-5 w-full">
+              <div className="mt-10 w-full">
                 <FormLabel>Enter website URL</FormLabel>
 
                 <input
@@ -315,8 +432,19 @@ const screenshotToSend = uploadedImage;
                   placeholder="https://stripe.com"
                   disabled={loading}
                   className={`
-                    mt-2 w-full h-12 rounded-[8px] border-2 border-[#DCE2E7]
-                    bg-white px-3 text-base text-[var(--ink-primary)]
+                    mt-3
+h-[58px]
+w-full
+rounded-2xl
+border
+border-[#D8E0E7]
+bg-[#FCFDFD]
+px-5
+text-[16px]
+text-[var(--ink-primary)]
+shadow-[0_1px_2px_rgba(0,0,0,0.02)]
+transition-all
+duration-200
                     placeholder-[var(--ink-secondary)]
                     focus:outline-none
                     ${loading ? "opacity-60 cursor-not-allowed" : "focus:border-[#14A8E8]"}
@@ -331,11 +459,17 @@ const screenshotToSend = uploadedImage;
                 </label>
 
                 <div
-                  className={`
-                    mt-2 flex flex-col items-center justify-center gap-2
-                    rounded-[8px] py-6 px-4 text-center transition
-                    border-2 border-dashed border-[#DCE2E7]
-                    bg-white
+  className={`
+    mt-3
+    flex
+    min-h-[220px]
+    flex-col
+    items-center
+    justify-center
+    gap-3
+                    rounded-[28px] py-6 px-4 text-center transition
+                    border border-dashed border-[#D7E0E8]
+                    bg-[#FBFCFD]
                     ${loading ? "opacity-50 cursor-not-allowed" : "hover:border-[#8E99A2] cursor-pointer"}
                   `}
                   onClick={() => !loading && fileInputRef.current?.click()}
@@ -357,9 +491,15 @@ const screenshotToSend = uploadedImage;
               </div>
 
               {/* BUTTON / PROGRESS */}
-              <div className="mt-8 w-full">
+              <div className="mt-10 w-full">
                 {!loading ? (
                   <Button
+                  className="
+  h-[56px]
+  rounded-2xl
+  text-[15px]
+  font-semibold
+"
                     type="button"
                     disabled={isButtonDisabled}
                     onClick={handleAnalyze}
