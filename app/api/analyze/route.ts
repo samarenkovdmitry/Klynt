@@ -4,7 +4,7 @@ import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
 export const runtime = "nodejs";
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -240,7 +240,7 @@ async function captureWebsiteScreenshots(url: string) {
     await page.screenshot({
       path: "/tmp/mid.jpg",
       type: "jpeg",
-      quality: 35,
+      quality: 55,
       clip: {
         x: 0,
         y: 1200,
@@ -264,7 +264,7 @@ async function captureWebsiteScreenshots(url: string) {
 
     const hero = await page.screenshot({
      type: "jpeg",
-     quality: 35,
+     quality: 55,
      clip: {
        x: 0,
        y: 0,
@@ -277,7 +277,7 @@ async function captureWebsiteScreenshots(url: string) {
 
     const mid = await page.screenshot({
      type: "jpeg",
-     quality: 35,
+     quality: 55,
      clip: {
        x: 0,
        y: 1200,
@@ -288,7 +288,7 @@ async function captureWebsiteScreenshots(url: string) {
 
     const footer = await page.screenshot({
      type: "jpeg",
-     quality: 35,
+     quality: 55,
      clip: {
        x: 0,
        y: footerY,
@@ -297,6 +297,7 @@ async function captureWebsiteScreenshots(url: string) {
       },
     });
 
+screenshots.push(Buffer.from(footer).toString("base64"));
 screenshots.push(Buffer.from(mid).toString("base64"));
 
     return screenshots;
@@ -555,7 +556,6 @@ if (screenshotsBase64[2]) {
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
       temperature: 0.2,
-      max_output_tokens: 1800,
       input: [
         {
           role: "user",
@@ -610,7 +610,7 @@ if (screenshotsBase64[2]) {
      ...item,
      bullets: normalizeSignals(item.bullets || []),
      ...mapImpact(item.impact || {}),
-    }));
+     }));
 
     json.suggestions = json.suggestions.map((item: any) => ({
       ...item,
