@@ -720,8 +720,16 @@ duration-200
           />
         </svg>
 
+
+        {/* SCORE */}
         <div className="absolute text-center">
-          ...
+          <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
+            UX Score
+          </p>
+
+          <p className="mt-1 text-[44px] leading-none font-semibold text-[#FF7A00]">
+            {data.score}
+          </p>
         </div>
       </>
     );
