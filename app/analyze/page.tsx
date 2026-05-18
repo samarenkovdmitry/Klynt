@@ -341,7 +341,8 @@ const screenshotToSend = uploadedImage;
     min-h-[calc(100dvh-72px)]
     bg-[#F5F7FA]
     px-6
-    py-10
+    pt-6
+    pb-12
     text-[var(--ink-primary)]
   "
 >
@@ -361,9 +362,10 @@ const screenshotToSend = uploadedImage;
   "
 >
 
-              <div className="max-w-[720px]">
+              <div className="mx-auto max-w-[720px] text-center">
   <div
     className="
+      mx-auto
       inline-flex
       items-center
       rounded-full
@@ -382,8 +384,8 @@ const screenshotToSend = uploadedImage;
 
   <h1
     className="
-      mt-5
-      text-[44px]
+      mt-4
+      text-[52px]
       leading-[1.05]
       tracking-[-0.04em]
       font-semibold
@@ -395,7 +397,8 @@ const screenshotToSend = uploadedImage;
 
   <p
     className="
-      mt-5
+      mt-4
+      mx-auto
       max-w-[620px]
       text-[18px]
       leading-8
@@ -405,6 +408,23 @@ const screenshotToSend = uploadedImage;
     Get AI-powered insights about friction points, weak messaging,
     trust issues, and conversion opportunities.
   </p>
+
+<div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-[13px] text-neutral-500">
+
+  <div className="rounded-full bg-[#F5F7FA] px-3 py-1">
+    AI UX Analysis
+  </div>
+
+  <div className="rounded-full bg-[#F5F7FA] px-3 py-1">
+    Full-page screenshots
+  </div>
+
+  <div className="rounded-full bg-[#F5F7FA] px-3 py-1">
+    Conversion insights
+  </div>
+
+</div>
+
 </div>
 
               {/* URL INPUT */}
@@ -692,7 +712,7 @@ duration-200
 
           {/* REPORT SCREEN */}
           {data && (
-              <div className="animate-fade-in transition-all duration-500 opacity-100">
+              <div className="animate-fade-in opacity-100">
               <>
   {/* WHITE REPORT HERO */}
   <div
@@ -700,12 +720,9 @@ duration-200
       relative
       overflow-hidden
       rounded-[36px]
-      border
-      border-[rgba(6,28,47,0.06)]
       bg-white
       px-10
       py-8
-      shadow-[0_10px_40px_rgba(0,0,0,0.03)]
     "
   >
 
@@ -715,7 +732,7 @@ duration-200
         pointer-events-none
         absolute
         inset-0
-        bg-[radial-gradient(circle_at_top,#EAF4FF_0%,transparent_65%)]
+        bg-[radial-gradient(circle_at_top,#F7FBFF_0%,transparent_72%)]
       "
     />
 
@@ -1036,7 +1053,7 @@ duration-200
   <div className="relative z-10 -mt-4 space-y-6">
 
                 {/* UX ISSUES */}
-                <div className="mb-8 space-y-4 mt-6">
+                <div className="mb-8 mt-10 px-10">
                   <h3 className={styles.titleSection}>UX Issues</h3>
 
                   <div className="space-y-4">
@@ -1167,7 +1184,7 @@ duration-200
 
                 {/* SUGGESTED IMPROVEMENTS */}
                 {data?.suggestions && data.suggestions.length > 0 && (
-                  <div className="mt-6">
+                  <div className="mt-10 px-10">
                     <h3 className={styles.titleSection}>Suggested Improvements</h3>
 
                     <div className="space-y-4 mt-4">
@@ -1295,7 +1312,7 @@ duration-200
 
                 {/* COPY REFINEMENT */}
                 {data?.copy && data.copy.length > 0 && (
-                  <div className="mt-10">
+                  <div className="mt-10 px-10">
                     <h3 className={styles.titleSection}>Copy Refinement</h3>
 
                     <div className="space-y-4 mt-4">
@@ -1557,12 +1574,30 @@ duration-200
                 )}
 
                 {/* NEXT ACTIONS */}
-                <div className="mt-10 flex flex-col items-center gap-6">
+                <div className="mt-14 px-10 flex flex-col items-center gap-6">
                   <div className="flex items-center gap-1">
 
                     {/* Download report */}
                     <button
-                      className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
+                      className="
+  flex
+  items-center
+  gap-2
+  rounded-full
+  border
+  border-[rgba(6,28,47,0.08)]
+  bg-white
+  px-5
+  py-3
+  text-[14px]
+  font-medium
+  text-[var(--ink-primary)]
+  transition-all
+  duration-200
+  hover:border-[rgba(20,168,232,0.18)]
+  hover:bg-[#F8FBFF]
+  hover:shadow-[0_4px_16px_rgba(20,168,232,0.08)]
+"
                     >
                       <RiDownload2Line size={18} className="shrink-0"/>
                       <span>Download report</span>
@@ -1570,7 +1605,25 @@ duration-200
 
                     {/* Share */}
                     <button
-                      className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
+                      className="
+  flex
+  items-center
+  gap-2
+  rounded-full
+  border
+  border-[rgba(6,28,47,0.08)]
+  bg-white
+  px-5
+  py-3
+  text-[14px]
+  font-medium
+  text-[var(--ink-primary)]
+  transition-all
+  duration-200
+  hover:border-[rgba(20,168,232,0.18)]
+  hover:bg-[#F8FBFF]
+  hover:shadow-[0_4px_16px_rgba(20,168,232,0.08)]
+"
                     >
                       <RiShareForwardLine size={18} className="shrink-0"/>
                       <span>Share</span>
@@ -1579,7 +1632,25 @@ duration-200
                     {/* Re-run analysis */}
                     <button
                       onClick={handleReset}
-                      className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--ink-primary)] hover:bg-soft transition"
+                      className="
+  flex
+  items-center
+  gap-2
+  rounded-full
+  border
+  border-[rgba(6,28,47,0.08)]
+  bg-white
+  px-5
+  py-3
+  text-[14px]
+  font-medium
+  text-[var(--ink-primary)]
+  transition-all
+  duration-200
+  hover:border-[rgba(20,168,232,0.18)]
+  hover:bg-[#F8FBFF]
+  hover:shadow-[0_4px_16px_rgba(20,168,232,0.08)]
+"
                     >
                       <RiRefreshLine size={18} className="shrink-0"/>
                       <span>Re-run analysis</span>
