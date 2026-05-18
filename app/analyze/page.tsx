@@ -79,7 +79,6 @@ export default function Analyze() {
   const isButtonDisabled = !url && !uploadedImage;
 
   const styles = {
-    outerCard: "rounded-xl bg-white border border-[#DCE2E7]",
     card: "rounded-xl border border-[#DCE2E7] bg-white p-4 flex flex-col",
     label: "text-sm font-medium text-[var(--ink-primary)]",
     caption: "text-sm font-normal text-[#8E99A2]",
@@ -505,8 +504,34 @@ duration-200
 
           {/* REPORT SCREEN */}
           {data && (
-            <div className="space-y-6 animate-fade-in transition-all duration-500 opacity-100">
-              <div className="px-8 py-6">
+              <div className="animate-fade-in transition-all duration-500 opacity-100">
+              <>
+  {/* WHITE REPORT HERO */}
+  <div
+    className="
+      relative
+      overflow-hidden
+      rounded-[36px]
+      border
+      border-[rgba(6,28,47,0.06)]
+      bg-white
+      px-10
+      py-8
+      shadow-[0_10px_40px_rgba(0,0,0,0.03)]
+    "
+  >
+
+    {/* TOP LIGHT */}
+    <div
+      className="
+        pointer-events-none
+        absolute
+        inset-0
+        bg-[radial-gradient(circle_at_top,#EAF4FF_0%,transparent_65%)]
+      "
+    />
+
+    <div className="relative z-10">
 
 {/* REPORT HEADER */}
 <div className="mb-8 flex items-start justify-between gap-6">
@@ -782,6 +807,27 @@ duration-200
 
   </div>
 </div>
+
+    </div>
+
+    {/* FADE OUT */}
+    <div
+      className="
+        pointer-events-none
+        absolute
+        bottom-0
+        left-0
+        right-0
+        h-24
+        bg-gradient-to-b
+        from-transparent
+        to-[#F5F7FA]
+      "
+    />
+  </div>
+
+  {/* LOWER CONTENT */}
+  <div className="relative z-10 -mt-4 space-y-6">
 
                 {/* UX ISSUES */}
                 <div className="mb-8 space-y-4 mt-6">
@@ -1337,7 +1383,9 @@ duration-200
                 </div>
 
               </div>
-            </div>
+              
+            </>
+          </div>
           )}
         </div>
       </main>
