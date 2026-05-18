@@ -636,94 +636,150 @@ export default function Home() {
   </div>
 </section>
 
-        {/* HOW IT WORKS */}
-        <div className="mt-14 max-w-[900px]">
+{/* WORKFLOW */}
+<section className="px-6 py-24">
+  <div className="mx-auto max-w-[1180px]">
 
-  {[
-    {
-      title: "Submit website or screenshot",
-      text: "Paste a URL or upload a full-page screenshot.",
-    },
-    {
-      title: "AI analyzes UX patterns",
-      text: "Klynt detects friction, hierarchy issues, weak messaging and trust gaps.",
-    },
-    {
-      title: "Receive structured report",
-      text: "Get actionable improvements with prioritization and impact estimation.",
-    },
-  ].map((item, i) => (
-    <div
-      key={i}
-      className="relative flex gap-6 pb-12 last:pb-0"
-    >
+    {/* HEADER */}
+    <div className="max-w-[760px]">
 
-      {/* LINE */}
-      {i !== 2 && (
-        <div
-          className="
-            absolute
-            left-[19px]
-            top-10
-            h-full
-            w-px
-            bg-[#DCE7F8]
-          "
-        />
-      )}
-
-      {/* NUMBER */}
       <div
         className="
-          relative
-          z-10
-          flex
-          h-10
-          w-10
-          shrink-0
+          inline-flex
           items-center
-          justify-center
           rounded-full
-          bg-[#14A8E8]
-          text-[15px]
+          border
+          border-[#DCE7F8]
+          bg-[#F4F8FF]
+          px-3
+          py-1
+          text-[12px]
           font-semibold
-          text-white
+          text-[#2F6FED]
         "
       >
-        {i + 1}
+        Workflow
       </div>
 
-      {/* CONTENT */}
-      <div className="pt-1">
+      <h2
+        className="
+          mt-5
+          text-[42px]
+          leading-[1.05]
+          tracking-[-0.04em]
+          font-semibold
+          text-[#061C2F]
+        "
+      >
+        From screenshot to UX insights in minutes
+      </h2>
 
-        <h3
-          className="
-            text-[24px]
-            font-semibold
-            tracking-[-0.03em]
-            text-[#061C2F]
-          "
-        >
-          {item.title}
-        </h3>
+      <p
+        className="
+          mt-5
+          max-w-[680px]
+          text-[18px]
+          leading-8
+          text-[#6B7280]
+        "
+      >
+        Klynt turns visual interfaces into structured UX analysis
+        with prioritized improvements and measurable impact.
+      </p>
 
-        <p
-          className="
-            mt-3
-            max-w-[620px]
-            text-[16px]
-            leading-7
-            text-[#6B7280]
-          "
-        >
-          {item.text}
-        </p>
-
-      </div>
     </div>
-  ))}
 
-</div>
+    {/* TIMELINE */}
+    <div className="mt-16 max-w-[900px]">
+
+      {[
+        {
+          title: "Submit website or screenshot",
+          text: "Paste a URL or upload a full-page screenshot for analysis.",
+        },
+        {
+          title: "AI analyzes UX patterns",
+          text: "Klynt detects friction points, weak hierarchy, unclear messaging and trust issues.",
+        },
+        {
+          title: "Receive structured report",
+          text: "Get prioritized UX improvements with clear explanations and estimated impact.",
+        },
+      ].map((item, i) => (
+        <div
+          key={i}
+          className="relative flex gap-6 pb-12 last:pb-0"
+        >
+
+          {/* LINE */}
+          {i !== 2 && (
+            <div
+              className="
+                absolute
+                left-[19px]
+                top-10
+                h-full
+                w-px
+                bg-[#DCE7F8]
+              "
+            />
+          )}
+
+          {/* NUMBER */}
+          <div
+            className="
+              relative
+              z-10
+              flex
+              h-10
+              w-10
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-[#14A8E8]
+              text-[15px]
+              font-semibold
+              text-white
+            "
+          >
+            {i + 1}
+          </div>
+
+          {/* CONTENT */}
+          <div className="pt-1">
+
+            <h3
+              className="
+                text-[24px]
+                font-semibold
+                tracking-[-0.03em]
+                text-[#061C2F]
+              "
+            >
+              {item.title}
+            </h3>
+
+            <p
+              className="
+                mt-3
+                max-w-[620px]
+                text-[16px]
+                leading-7
+                text-[#6B7280]
+              "
+            >
+              {item.text}
+            </p>
+
+          </div>
+        </div>
+      ))}
+
+    </div>
+
+  </div>
+</section>
 
         {/* FINAL CTA */}
         <section className="px-6 pb-28 pt-32">
@@ -815,86 +871,6 @@ export default function Home() {
         </section>
 
       </div>
-
-{/* FOOTER */}
-<footer
-  className="
-    border-t
-    border-[rgba(6,28,47,0.06)]
-    px-6
-    py-10
-  "
->
-  <div
-    className="
-      mx-auto
-      flex
-      max-w-[1180px]
-      flex-col
-      items-start
-      justify-between
-      gap-8
-      md:flex-row
-      md:items-center
-    "
-  >
-
-    {/* LEFT */}
-    <div>
-
-      <div className="flex items-center gap-3">
-
-        <div
-          className="
-            flex
-            h-10
-            w-10
-            items-center
-            justify-center
-            rounded-2xl
-            bg-[#14A8E8]
-            text-white
-            text-[15px]
-            font-semibold
-          "
-        >
-          K
-        </div>
-
-        <div>
-          <p className="text-[15px] font-semibold text-[#061C2F]">
-            Klynt
-          </p>
-
-          <p className="text-[13px] text-[#8E99A2]">
-            AI UX Clarity Analyzer
-          </p>
-        </div>
-
-      </div>
-
-    </div>
-
-    {/* RIGHT */}
-    <div className="flex items-center gap-6 text-[14px] text-[#6B7280]">
-
-      <button className="hover:text-[#061C2F] transition">
-        Privacy
-      </button>
-
-      <button className="hover:text-[#061C2F] transition">
-        Terms
-      </button>
-
-      <button className="hover:text-[#061C2F] transition">
-        Contact
-      </button>
-
-    </div>
-
-  </div>
-</footer>
-
     </main>
   );
 }
