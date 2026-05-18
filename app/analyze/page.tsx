@@ -65,6 +65,8 @@ export default function Analyze() {
   const [data, setData] = useState<AuditResponseFlat | null>(null);
   const [loading, setLoading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [imageName, setImageName] = useState("");
+  const [imageSize, setImageSize] = useState("");
   const [url, setUrl] = useState("");
   const [progress, setProgress] = useState(0);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -73,7 +75,10 @@ export default function Analyze() {
   function handleImageUpload(e: any) {
     const file = e.target.files?.[0];
     if (!file) return;
+
     setUploadedImage(file);
+    setImageName(file.name);
+    setImageSize(`${(file.size / 1024 / 1024).toFixed(1)} MB`);
   }
 
   const isButtonDisabled = !url && !uploadedImage;
@@ -113,6 +118,8 @@ export default function Analyze() {
     setData(null);
     setUrl("");
     setProgress(0);
+    setUploadedImage(null);
+    setImageName("");
   }
 
   async function handleCopy(text: string, index: number) {
@@ -431,43 +438,143 @@ duration-200
                 />
               </div>
 
-              {/* UPLOAD */}
-              <div className="mt-6 w-full">
-                <label className="text-sm font-medium text-[var(--ink-secondary)]">
-                  Or upload website screenshot
-                </label>
+{/* UPLOAD */}
+<div className="mt-6 w-full">
 
-                <div
-  className={`
-    mt-3
-    flex
-    min-h-[220px]
-    flex-col
-    items-center
-    justify-center
-    gap-3
-                    rounded-[28px] py-6 px-4 text-center transition
-                    border border-dashed border-[#D7E0E8]
-                    bg-[#FBFCFD]
-                    ${loading ? "opacity-50 cursor-not-allowed" : "hover:border-[#8E99A2] cursor-pointer"}
-                  `}
-                  onClick={() => !loading && fileInputRef.current?.click()}
-                >
-                  <RiUpload2Line size={24} color="#8E99A2" className="shrink-0"/>
+  <label className="text-sm font-medium text-[var(--ink-secondary)]">
+    Or upload website screenshot
+  </label>
 
-                  <p className="text-sm text-[var(--ink-secondary)]">Click to upload or drag and drop</p>
-                  <p className="text-xs text-[var(--ink-secondary)]">Max 20 MB. Use full-page screenshot for best results.</p>
-                </div>
+  <div
+    onClick={() => !loading && fileInputRef.current?.click()}
+    className={`
+      mt-3
+      rounded-[24px]
+      border-2
+      border-dashed
+      transition-all
+      duration-200
+      cursor-pointer
 
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={loading}
-                />
-              </div>
+      ${
+        uploadedImage
+          ? `
+            border-[#BFE7F8]
+            bg-[#F7FCFF]
+            hover:border-[#8ED8F5]
+          `
+          : `
+            border-[#DCE2E7]
+            bg-white
+            hover:border-[#8E99A2]
+          `
+      }
+
+      ${loading ? "opacity-50 cursor-not-allowed" : ""}
+    `}
+  >
+
+    {!uploadedImage ? (
+      <div className="flex flex-col items-center justify-center px-6 py-10 text-center">
+
+        <div
+          className="
+            flex
+            h-14
+            w-14
+            items-center
+            justify-center
+            rounded-full
+            bg-[#F3F9FC]
+          "
+        >
+          <RiUpload2Line size={26} className="text-[#14A8E8]" />
+        </div>
+
+        <p className="mt-5 text-[15px] font-medium text-[var(--ink-primary)]">
+          Click to upload screenshot
+        </p>
+
+        <p className="mt-1 text-[14px] text-[var(--ink-secondary)]">
+          PNG, JPG up to 20 MB
+        </p>
+
+        <p className="mt-4 text-[13px] text-neutral-400">
+          Full-page screenshots produce better UX analysis
+        </p>
+
+      </div>
+    ) : (
+      <div className="flex items-center justify-between gap-5 px-6 py-5">
+
+        {/* LEFT */}
+        <div className="flex items-center gap-4 min-w-0">
+
+          <div
+            className="
+              flex
+              h-12
+              w-12
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-[#14A8E8]
+            "
+          >
+            <RiCheckLine size={22} className="text-white" />
+          </div>
+
+          <div className="min-w-0">
+
+            <p
+              className="
+                truncate
+                text-[15px]
+                font-semibold
+                text-[var(--ink-primary)]
+              "
+            >
+              {imageName}
+            </p>
+
+            <p className="mt-1 text-[13px] text-[#14A8E8]">
+              {imageSize} • Ready for analysis
+            </p>
+
+          </div>
+        </div>
+
+        {/* ACTION */}
+        <div
+          className="
+            rounded-full
+            border
+            border-[#D9EAF3]
+            bg-white
+            px-4
+            py-2
+            text-[13px]
+            font-medium
+            text-[var(--ink-primary)]
+          "
+        >
+          Replace
+        </div>
+
+      </div>
+    )}
+  </div>
+
+  <input
+    type="file"
+    ref={fileInputRef}
+    className="hidden"
+    accept="image/*"
+    onChange={handleImageUpload}
+    disabled={loading}
+  />
+</div>
 
               {/* BUTTON / PROGRESS */}
 <div className="mt-10 w-full">
