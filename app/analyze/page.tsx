@@ -470,35 +470,115 @@ duration-200
               </div>
 
               {/* BUTTON / PROGRESS */}
-              <div className="mt-10 w-full">
-                {!loading ? (
-                  <Button
-                    type="button"
-                    disabled={isButtonDisabled}
-                    onClick={handleAnalyze}
-                  >
-                    Analyze UX
-                  </Button>
-                ) : (
-                  <div className="space-y-3">
+<div className="mt-10 w-full">
+  {!loading ? (
+    <Button
+      type="button"
+      disabled={isButtonDisabled}
+      onClick={handleAnalyze}
+      className="w-full"
+    >
+      Analyze UX
+    </Button>
+  ) : (
+    <div
+      className="
+        rounded-[24px]
+        border
+        border-[rgba(20,168,232,0.10)]
+        bg-[#F8FCFF]
+        px-6
+        py-5
+      "
+    >
 
-                    {/* PROGRESS BAR */}
-                    <div className="w-full h-2 rounded-lg bg-gray-200 overflow-hidden">
-                      <div
-                        className="h-full bg-blue-600 transition-all duration-300 ease-out"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
+      {/* TOP */}
+      <div className="flex items-start justify-between gap-6">
 
-                    {/* PERCENT + LABEL */}
-                    <div className="flex items-center justify-between text-xs text-[var(--ink-secondary)]">
-                      <span>{Math.floor(progress)}%</span>
-                      <span>{getLoadingLabel(progress)}</span>
-                    </div>
+        {/* LEFT */}
+        <div>
+          <p
+            className="
+              text-[18px]
+              font-semibold
+              tracking-[-0.02em]
+              text-[var(--ink-primary)]
+            "
+          >
+            Generating UX report
+          </p>
 
-                  </div>
-                )}
-              </div>
+          <p className="mt-1 text-[14px] text-[var(--ink-secondary)]">
+            {getLoadingLabel(progress)}
+          </p>
+        </div>
+
+        {/* PERCENT */}
+        <div
+          className="
+            rounded-full
+            border
+            border-[rgba(20,168,232,0.12)]
+            bg-white
+            px-3
+            py-1.5
+            text-[14px]
+            font-semibold
+            text-[#14A8E8]
+          "
+        >
+          {Math.floor(progress)}%
+        </div>
+      </div>
+
+      {/* BAR */}
+      <div className="mt-5">
+
+        <div
+          className="
+            h-[10px]
+            overflow-hidden
+            rounded-full
+            bg-[#DDEAF2]
+          "
+        >
+          <div
+            className="
+              h-full
+              rounded-full
+              transition-all
+              duration-500
+              ease-out
+            "
+            style={{
+              width: `${progress}%`,
+              background:
+                "linear-gradient(90deg, #14A8E8 0%, #3CC6FF 100%)",
+              boxShadow: "0 0 18px rgba(20,168,232,0.35)",
+            }}
+          />
+        </div>
+
+        {/* FOOTER */}
+        <div className="mt-3 flex items-center justify-between">
+
+          <span className="text-[13px] text-[var(--ink-secondary)]">
+            AI is evaluating visual hierarchy, clarity & trust signals
+          </span>
+
+          <div className="flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-[#14A8E8] animate-pulse" />
+
+            <span className="text-[13px] font-medium text-[#14A8E8]">
+              Processing
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  )}
+</div>
 
             </div>
           )}
@@ -727,7 +807,7 @@ duration-200
             UX Score
           </p>
 
-          <p className="mt-1 text-[44px] leading-none font-semibold text-[#FF7A00]">
+          <p className="text-[44px] leading-none font-semibold text-[#FF7A00]">
             {data.score}
           </p>
         </div>
