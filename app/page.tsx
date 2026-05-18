@@ -6,6 +6,9 @@ import {
   RiLineChartLine,
   RiEdit2Line,
   RiCheckboxCircleFill,
+  RiScanLine,
+  RiBubbleChartLine,
+  RiFileChartLine
 } from "@remixicon/react";
 
 export default function Home() {
@@ -352,153 +355,375 @@ export default function Home() {
 
         </section>
 
-        {/* FEATURES */}
-        <section className="px-6 pt-28">
+{/* FEATURES */}
+<section className="px-6 py-24">
+  <div className="mx-auto max-w-[1180px]">
 
-          <div className="mx-auto max-w-[1180px]">
+    {/* HEADER */}
+    <div className="max-w-[760px]">
+      <div
+        className="
+          inline-flex
+          items-center
+          rounded-full
+          border
+          border-[#DCE7F8]
+          bg-[#F4F8FF]
+          px-3
+          py-1
+          text-[12px]
+          font-semibold
+          text-[#2F6FED]
+        "
+      >
+        Platform
+      </div>
 
-            <div className="max-w-[720px]">
+      <h2
+        className="
+          mt-5
+          text-[42px]
+          leading-[1.05]
+          tracking-[-0.04em]
+          font-semibold
+          text-[#061C2F]
+        "
+      >
+        Designed for fast, actionable UX audits
+      </h2>
 
-              <p className="text-[14px] font-semibold uppercase tracking-[0.12em] text-[#14A8E8]">
-                Features
-              </p>
+      <p
+        className="
+          mt-5
+          max-w-[680px]
+          text-[18px]
+          leading-8
+          text-[#6B7280]
+        "
+      >
+        Klynt transforms screenshots and websites into structured
+        UX findings with prioritized improvements and measurable impact.
+      </p>
+    </div>
 
-              <h2
-                className="
-                  mt-5
-                  text-[48px]
-                  leading-[1]
-                  tracking-[-0.05em]
-                  font-semibold
-                "
-              >
-                Built for modern product teams
-              </h2>
+    {/* GRID */}
+    <div className="mt-14 grid gap-5 md:grid-cols-2">
 
-            </div>
+      {/* BIG CARD */}
+      <div
+        className="
+          relative
+          overflow-hidden
+          rounded-[36px]
+          border
+          border-[rgba(6,28,47,0.06)]
+          bg-white
+          p-8
+        "
+      >
 
-            <div className="mt-14 grid gap-5 md:grid-cols-3">
+        {/* LIGHT */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            bg-[radial-gradient(circle_at_top_left,#EAF4FF_0%,transparent_60%)]
+          "
+        />
 
-              {features.map((feature) => (
-                <div
-                  key={feature.title}
-                  className="
-                    rounded-[32px]
-                    border
-                    border-[rgba(6,28,47,0.06)]
-                    bg-white
-                    p-7
-                    transition-all
-                    duration-200
-                    hover:-translate-y-[2px]
-                    hover:shadow-[0_18px_50px_rgba(0,0,0,0.04)]
-                  "
-                >
+        <div className="relative z-10">
 
-                  <div
-                    className="
-                      flex
-                      h-12
-                      w-12
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-[#F4F8FF]
-                      text-[#14A8E8]
-                    "
-                  >
-                    {feature.icon}
-                  </div>
-
-                  <h3 className="mt-6 text-[24px] font-semibold tracking-[-0.03em]">
-                    {feature.title}
-                  </h3>
-
-                  <p className="mt-4 text-[16px] leading-8 text-[#5E6A74]">
-                    {feature.description}
-                  </p>
-
-                </div>
-              ))}
-
-            </div>
-
+          <div
+            className="
+              flex
+              h-14
+              w-14
+              items-center
+              justify-center
+              rounded-2xl
+              bg-[#F4F8FF]
+            "
+          >
+            <RiScanLine size={26} className="text-[#14A8E8]" />
           </div>
 
-        </section>
+          <h3
+            className="
+              mt-8
+              text-[28px]
+              leading-[1.1]
+              tracking-[-0.03em]
+              font-semibold
+              text-[#061C2F]
+            "
+          >
+            Full-page UX analysis
+          </h3>
+
+          <p
+            className="
+              mt-4
+              max-w-[420px]
+              text-[16px]
+              leading-7
+              text-[#6B7280]
+            "
+          >
+            Automatically captures long pages, detects friction,
+            messaging gaps, weak hierarchy, trust issues,
+            and conversion blockers.
+          </p>
+
+          {/* MOCK */}
+          <div
+            className="
+              mt-10
+              rounded-[24px]
+              border
+              border-[rgba(6,28,47,0.06)]
+              bg-[#F7FAFC]
+              p-5
+            "
+          >
+            <div className="space-y-3">
+
+              <div className="h-3 w-[70%] rounded-full bg-[#DCE7F8]" />
+              <div className="h-3 w-[90%] rounded-full bg-[#E7EDF5]" />
+              <div className="h-3 w-[55%] rounded-full bg-[#DCE7F8]" />
+
+              <div className="pt-4">
+                <div className="rounded-2xl bg-white p-4 shadow-sm">
+
+                  <div className="flex items-center justify-between">
+
+                    <div>
+                      <div className="h-3 w-24 rounded-full bg-[#DCE7F8]" />
+                      <div className="mt-2 h-2 w-40 rounded-full bg-[#EEF2F7]" />
+                    </div>
+
+                    <div
+                      className="
+                        rounded-full
+                        bg-[#FFF1E6]
+                        px-3
+                        py-1
+                        text-[12px]
+                        font-semibold
+                        text-[#FF7A00]
+                      "
+                    >
+                      -18% Clarity
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* RIGHT COLUMN */}
+      <div className="grid gap-5">
+
+        {/* CARD */}
+        <div
+          className="
+            rounded-[32px]
+            border
+            border-[rgba(6,28,47,0.06)]
+            bg-white
+            p-7
+          "
+        >
+          <div
+            className="
+              flex
+              h-12
+              w-12
+              items-center
+              justify-center
+              rounded-2xl
+              bg-[#F4F8FF]
+            "
+          >
+            <RiBubbleChartLine size={22} className="text-[#14A8E8]" />
+          </div>
+
+          <h3
+            className="
+              mt-6
+              text-[24px]
+              leading-[1.15]
+              font-semibold
+              tracking-[-0.03em]
+              text-[#061C2F]
+            "
+          >
+            Prioritized improvements
+          </h3>
+
+          <p
+            className="
+              mt-3
+              text-[15px]
+              leading-7
+              text-[#6B7280]
+            "
+          >
+            Suggestions ranked by expected impact on conversion,
+            trust, clarity, and engagement.
+          </p>
+        </div>
+
+        {/* CARD */}
+        <div
+          className="
+            rounded-[32px]
+            border
+            border-[rgba(6,28,47,0.06)]
+            bg-white
+            p-7
+          "
+        >
+          <div
+            className="
+              flex
+              h-12
+              w-12
+              items-center
+              justify-center
+              rounded-2xl
+              bg-[#F4F8FF]
+            "
+          >
+            <RiFileChartLine size={22} className="text-[#14A8E8]" />
+          </div>
+
+          <h3
+            className="
+              mt-6
+              text-[24px]
+              leading-[1.15]
+              font-semibold
+              tracking-[-0.03em]
+              text-[#061C2F]
+            "
+          >
+            Shareable UX reports
+          </h3>
+
+          <p
+            className="
+              mt-3
+              text-[15px]
+              leading-7
+              text-[#6B7280]
+            "
+          >
+            Clean reports designed for founders,
+            marketers, designers, and product teams.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
 
         {/* HOW IT WORKS */}
-        <section className="px-6 pt-28">
+        <div className="mt-14 max-w-[900px]">
 
-          <div className="mx-auto max-w-[1180px]">
+  {[
+    {
+      title: "Submit website or screenshot",
+      text: "Paste a URL or upload a full-page screenshot.",
+    },
+    {
+      title: "AI analyzes UX patterns",
+      text: "Klynt detects friction, hierarchy issues, weak messaging and trust gaps.",
+    },
+    {
+      title: "Receive structured report",
+      text: "Get actionable improvements with prioritization and impact estimation.",
+    },
+  ].map((item, i) => (
+    <div
+      key={i}
+      className="relative flex gap-6 pb-12 last:pb-0"
+    >
 
-            <div className="max-w-[720px]">
+      {/* LINE */}
+      {i !== 2 && (
+        <div
+          className="
+            absolute
+            left-[19px]
+            top-10
+            h-full
+            w-px
+            bg-[#DCE7F8]
+          "
+        />
+      )}
 
-              <p className="text-[14px] font-semibold uppercase tracking-[0.12em] text-[#14A8E8]">
-                Workflow
-              </p>
+      {/* NUMBER */}
+      <div
+        className="
+          relative
+          z-10
+          flex
+          h-10
+          w-10
+          shrink-0
+          items-center
+          justify-center
+          rounded-full
+          bg-[#14A8E8]
+          text-[15px]
+          font-semibold
+          text-white
+        "
+      >
+        {i + 1}
+      </div>
 
-              <h2
-                className="
-                  mt-5
-                  text-[48px]
-                  leading-[1]
-                  tracking-[-0.05em]
-                  font-semibold
-                "
-              >
-                From URL to clarity report
-              </h2>
+      {/* CONTENT */}
+      <div className="pt-1">
 
-            </div>
+        <h3
+          className="
+            text-[24px]
+            font-semibold
+            tracking-[-0.03em]
+            text-[#061C2F]
+          "
+        >
+          {item.title}
+        </h3>
 
-            <div className="mt-14 grid gap-5 md:grid-cols-3">
+        <p
+          className="
+            mt-3
+            max-w-[620px]
+            text-[16px]
+            leading-7
+            text-[#6B7280]
+          "
+        >
+          {item.text}
+        </p>
 
-              {steps.map((step, index) => (
-                <div
-                  key={step.title}
-                  className="
-                    rounded-[32px]
-                    border
-                    border-[rgba(6,28,47,0.06)]
-                    bg-white
-                    p-7
-                  "
-                >
+      </div>
+    </div>
+  ))}
 
-                  <div
-                    className="
-                      flex
-                      h-11
-                      w-11
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-[#14A8E8]
-                      text-[16px]
-                      font-semibold
-                      text-white
-                    "
-                  >
-                    {index + 1}
-                  </div>
-
-                  <h3 className="mt-6 text-[24px] font-semibold tracking-[-0.03em]">
-                    {step.title}
-                  </h3>
-
-                  <p className="mt-4 text-[16px] leading-8 text-[#5E6A74]">
-                    {step.description}
-                  </p>
-
-                </div>
-              ))}
-
-            </div>
-
-          </div>
-
-        </section>
+</div>
 
         {/* FINAL CTA */}
         <section className="px-6 pb-28 pt-32">
@@ -590,6 +815,86 @@ export default function Home() {
         </section>
 
       </div>
+
+{/* FOOTER */}
+<footer
+  className="
+    border-t
+    border-[rgba(6,28,47,0.06)]
+    px-6
+    py-10
+  "
+>
+  <div
+    className="
+      mx-auto
+      flex
+      max-w-[1180px]
+      flex-col
+      items-start
+      justify-between
+      gap-8
+      md:flex-row
+      md:items-center
+    "
+  >
+
+    {/* LEFT */}
+    <div>
+
+      <div className="flex items-center gap-3">
+
+        <div
+          className="
+            flex
+            h-10
+            w-10
+            items-center
+            justify-center
+            rounded-2xl
+            bg-[#14A8E8]
+            text-white
+            text-[15px]
+            font-semibold
+          "
+        >
+          K
+        </div>
+
+        <div>
+          <p className="text-[15px] font-semibold text-[#061C2F]">
+            Klynt
+          </p>
+
+          <p className="text-[13px] text-[#8E99A2]">
+            AI UX Clarity Analyzer
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    {/* RIGHT */}
+    <div className="flex items-center gap-6 text-[14px] text-[#6B7280]">
+
+      <button className="hover:text-[#061C2F] transition">
+        Privacy
+      </button>
+
+      <button className="hover:text-[#061C2F] transition">
+        Terms
+      </button>
+
+      <button className="hover:text-[#061C2F] transition">
+        Contact
+      </button>
+
+    </div>
+
+  </div>
+</footer>
+
     </main>
   );
 }
