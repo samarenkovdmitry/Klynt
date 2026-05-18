@@ -278,13 +278,13 @@ const screenshotToSend = uploadedImage;
 
           {/* LEFT — LOGO */}
           <div className="flex items-center gap-3">
-            <svg width="125" height="42" viewBox="0 0 125 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M115.564 17.966V33.0578H120.007V17.966H124.193V14.5511H120.007V9.22668L115.564 10.0345V14.5511H112.369V17.966H115.564Z" fill="#061C2F"/>
-<path d="M95.7131 33.0577V14.551H99.9359V18.1495H100.046C100.438 16.9011 101.123 15.9219 102.102 15.2119C103.106 14.4775 104.305 14.1104 105.701 14.1104C106.876 14.1104 107.941 14.3796 108.895 14.9182C109.85 15.4323 110.621 16.2156 111.209 17.2683C111.796 18.3209 112.09 19.6673 112.09 21.3074V33.0577H107.647V22.0418C107.647 20.6954 107.316 19.655 106.656 18.9206C106.019 18.1862 105.187 17.819 104.159 17.819C102.91 17.819 101.931 18.2719 101.221 19.1777C100.511 20.0834 100.156 21.2952 100.156 22.8129V33.0577H95.7131Z" fill="#061C2F"/>
-<path d="M75.8911 14.5511H80.5912L85.4382 31.0015H85.5116L90.3219 14.5511H94.8751L86.9437 39.5205H82.5741L84.9608 32.4336H81.5826L75.8911 14.5511Z" fill="#061C2F"/>
-<path d="M70.6437 33.0578V7.50085H75.0867V33.0578H70.6437Z" fill="#061C2F"/>
-<path d="M64.0247 8.0885H69.2388L59.1777 21.6381L59.398 18.7372L69.606 33.0579H64.2083L55.3956 20.3162L64.0247 8.0885ZM50.6221 8.0885H55.1753V33.0579H50.6221V8.0885Z" fill="#061C2F"/>
-<path d="M29.3994 33.6003L20.9997 42V25.2007L29.3994 33.6003ZM41.9995 21.0001L31.4993 31.5004L20.9991 21.0001L31.4993 10.4998L41.9995 21.0001ZM17.8502 38.8505L0 21.0001L17.8502 3.14975V38.8505ZM29.3994 8.3999L20.9997 16.7996V0.000210792L29.3994 8.3999Z" fill="#061C2F"/>
+            <svg width="110" height="38" viewBox="0 0 110 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M102.178 15.8852V29.2289H106.106V15.8852H109.807V12.8658H106.106V8.1582L102.178 8.87246V12.8658H99.353V15.8852H102.178Z" fill="#061C2F"/>
+<path d="M84.6265 29.2288V12.8658H88.3601V16.0475H88.4575C88.8038 14.9436 89.4098 14.0779 90.2756 13.4502C91.163 12.8009 92.2235 12.4762 93.4572 12.4762C94.4962 12.4762 95.4377 12.7143 96.2818 13.1905C97.1259 13.645 97.8077 14.3376 98.3272 15.2683C98.8466 16.199 99.1063 17.3894 99.1063 18.8396V29.2288H95.1779V19.4889C95.1779 18.2985 94.8858 17.3786 94.3014 16.7293C93.7386 16.08 93.0027 15.7553 92.0937 15.7553C90.9898 15.7553 90.1241 16.1557 89.4964 16.9566C88.8687 17.7574 88.5549 18.8288 88.5549 20.1707V29.2288H84.6265Z" fill="#061C2F"/>
+<path d="M67.1005 12.8658H71.2561L75.5416 27.4108H75.6066L79.8596 12.8658H83.8854L76.8728 34.943H73.0093L75.1196 28.6769H72.1327L67.1005 12.8658Z" fill="#061C2F"/>
+<path d="M62.4609 29.2288V6.63226H66.3893V29.2288H62.4609Z" fill="#061C2F"/>
+<path d="M56.6085 7.15186H61.2187L52.323 19.1319L52.5178 16.5671L61.5434 29.229H56.7709L48.979 17.9631L56.6085 7.15186ZM44.7584 7.15186H48.7842V29.229H44.7584V7.15186Z" fill="#061C2F"/>
+<path d="M37.1354 18.5678L18.5677 37.1357V22.2822L25.9937 29.7083L27.8505 27.8514L18.567 18.5678L27.8505 9.28427L25.9937 7.42741L18.5677 14.8534V4.21569e-06L37.1354 18.5678ZM15.7821 34.3501L0 18.5678L15.7821 2.78563V34.3501Z" fill="#061C2F"/>
 </svg>
             <div className="hidden sm:flex flex-col leading-none">
               <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]">
@@ -682,41 +682,60 @@ duration-200
     >
       <div className="flex items-center gap-7">
 
+{/* SCORE */}
+<div className="relative flex h-[132px] w-[132px] items-center justify-center">
+
+  {(() => {
+    const radius = 54;
+    const circumference = 2 * Math.PI * radius;
+    const progress = circumference - (data.score / 100) * circumference;
+
+    return (
+      <>
+        <svg
+          className="-rotate-90"
+          width="132"
+          height="132"
+        >
+          {/* BACKGROUND */}
+          <circle
+            cx="66"
+            cy="66"
+            r={radius}
+            stroke="#E5E7EB"
+            strokeWidth="8"
+            fill="transparent"
+          />
+
+          {/* ACTIVE */}
+          <circle
+            cx="66"
+            cy="66"
+            r={radius}
+            stroke="#FF7A00"
+            strokeWidth="8"
+            fill="transparent"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={progress}
+            className="transition-all duration-700 ease-out"
+          />
+        </svg>
+
         {/* SCORE */}
-        <div className="relative flex h-[132px] w-[132px] items-center justify-center">
+        <div className="absolute text-center">
+          <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
+            UX Score
+          </p>
 
-          {/* RING */}
-          <div
-            className="
-              absolute inset-0 rounded-full
-              border-[7px]
-              border-neutral-200
-            "
-          />
-
-          {/* ACTIVE ARC */}
-          <div
-            className="
-              absolute inset-0 rounded-full
-              border-[7px]
-              border-transparent
-              border-t-[#FF7A00]
-              border-r-[#FF7A00]
-              rotate-[135deg]
-            "
-          />
-
-          {/* SCORE */}
-          <div className="text-center">
-            <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
-              UX Score
-            </p>
-
-            <p className="mt-1 text-[44px] leading-none font-semibold text-[#FF7A00]">
-              {data.score}
-            </p>
-          </div>
+          <p className="mt-1 text-[44px] leading-none font-semibold text-[#FF7A00]">
+            {data.score}
+          </p>
         </div>
+      </>
+    );
+  })()}
+</div>
 
         {/* CONTENT */}
         <div className="flex-1">
