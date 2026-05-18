@@ -683,10 +683,10 @@ duration-200
       <div className="flex items-center gap-7">
 
 {/* SCORE */}
-<div className="relative flex h-[132px] w-[132px] items-center justify-center">
+<div className="relative flex h-[148px] w-[148px] items-center justify-center">
 
   {(() => {
-    const radius = 54;
+    const radius = 62;
     const circumference = 2 * Math.PI * radius;
     const progress = circumference - (data.score / 100) * circumference;
 
@@ -694,23 +694,21 @@ duration-200
       <>
         <svg
           className="-rotate-90"
-          width="132"
-          height="132"
+          width="148"
+          height="148"
         >
-          {/* BACKGROUND */}
           <circle
-            cx="66"
-            cy="66"
+            cx="74"
+            cy="74"
             r={radius}
             stroke="#E5E7EB"
             strokeWidth="8"
             fill="transparent"
           />
 
-          {/* ACTIVE */}
           <circle
-            cx="66"
-            cy="66"
+            cx="74"
+            cy="74"
             r={radius}
             stroke="#FF7A00"
             strokeWidth="8"
@@ -722,15 +720,8 @@ duration-200
           />
         </svg>
 
-        {/* SCORE */}
         <div className="absolute text-center">
-          <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
-            UX Score
-          </p>
-
-          <p className="mt-1 text-[44px] leading-none font-semibold text-[#FF7A00]">
-            {data.score}
-          </p>
+          ...
         </div>
       </>
     );
