@@ -640,6 +640,32 @@ export default function Home() {
 <section className="px-6 py-24">
   <div className="mx-auto max-w-[1180px]">
 
+{/* PANEL */}
+<div
+  className="
+    relative
+    overflow-hidden
+    rounded-[40px]
+    border
+    border-[rgba(6,28,47,0.06)]
+    bg-white
+    px-10
+    py-10
+  "
+>
+
+  {/* LIGHT */}
+  <div
+    className="
+      pointer-events-none
+      absolute
+      inset-0
+      bg-[radial-gradient(circle_at_top,#EAF4FF_0%,transparent_60%)]
+    "
+  />
+
+  <div className="relative z-10">
+
     {/* HEADER */}
     <div className="max-w-[760px]">
 
@@ -683,102 +709,191 @@ export default function Home() {
           text-[#6B7280]
         "
       >
-        Klynt turns visual interfaces into structured UX analysis
+        Klynt transforms screenshots into structured UX analysis
         with prioritized improvements and measurable impact.
       </p>
 
     </div>
 
-    {/* TIMELINE */}
-    <div className="mt-16 max-w-[900px]">
+    {/* CONTENT */}
+    <div className="mt-16 grid gap-14 lg:grid-cols-[560px_1fr]">
 
-      {[
-        {
-          title: "Submit website or screenshot",
-          text: "Paste a URL or upload a full-page screenshot for analysis.",
-        },
-        {
-          title: "AI analyzes UX patterns",
-          text: "Klynt detects friction points, weak hierarchy, unclear messaging and trust issues.",
-        },
-        {
-          title: "Receive structured report",
-          text: "Get prioritized UX improvements with clear explanations and estimated impact.",
-        },
-      ].map((item, i) => (
-        <div
-          key={i}
-          className="relative flex gap-6 pb-12 last:pb-0"
-        >
+      {/* LEFT — TIMELINE */}
+      <div>
 
-          {/* LINE */}
-          {i !== 2 && (
+        {[
+          {
+            title: "Submit website or screenshot",
+            text: "Paste a URL or upload a full-page screenshot for analysis.",
+          },
+          {
+            title: "AI analyzes UX patterns",
+            text: "Klynt detects friction points, weak hierarchy and trust issues.",
+          },
+          {
+            title: "Receive structured report",
+            text: "Get prioritized UX improvements with impact estimation.",
+          },
+        ].map((item, i) => (
+          <div
+            key={i}
+            className="relative flex gap-5 pb-12 last:pb-0"
+          >
+
+            {/* LINE */}
+            {i !== 2 && (
+              <div
+                className="
+                  absolute
+                  left-[19px]
+                  top-10
+                  h-full
+                  w-px
+                  bg-[#DCE7F8]
+                "
+              />
+            )}
+
+            {/* NUMBER */}
             <div
               className="
-                absolute
-                left-[19px]
-                top-10
-                h-full
-                w-px
-                bg-[#DCE7F8]
+                relative
+                z-10
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-full
+                bg-[#14A8E8]
+                text-[15px]
+                font-semibold
+                text-white
+                shadow-[0_8px_24px_rgba(20,168,232,0.25)]
               "
-            />
-          )}
+            >
+              {i + 1}
+            </div>
 
-          {/* NUMBER */}
+            {/* TEXT */}
+            <div className="pt-1">
+
+              <h3
+                className="
+                  text-[24px]
+                  leading-[1.15]
+                  font-semibold
+                  tracking-[-0.03em]
+                  text-[#061C2F]
+                "
+              >
+                {item.title}
+              </h3>
+
+              <p
+                className="
+                  mt-3
+                  max-w-[420px]
+                  text-[16px]
+                  leading-7
+                  text-[#6B7280]
+                "
+              >
+                {item.text}
+              </p>
+
+            </div>
+          </div>
+        ))}
+
+      </div>
+
+      {/* RIGHT — MOCK REPORT */}
+      <div
+        className="
+          rounded-[32px]
+          border
+          border-[rgba(6,28,47,0.06)]
+          bg-[#F7FAFC]
+          p-5
+        "
+      >
+
+        {/* TOP */}
+        <div className="flex items-center justify-between">
+
+          <div>
+            <div className="h-3 w-28 rounded-full bg-[#DCE7F8]" />
+            <div className="mt-2 h-2 w-40 rounded-full bg-[#E7EDF5]" />
+          </div>
+
           <div
             className="
-              relative
-              z-10
-              flex
-              h-10
-              w-10
-              shrink-0
-              items-center
-              justify-center
               rounded-full
-              bg-[#14A8E8]
-              text-[15px]
+              bg-[#FFF1E6]
+              px-3
+              py-1
+              text-[12px]
               font-semibold
-              text-white
+              text-[#FF7A00]
             "
           >
-            {i + 1}
+            UX Score 78
           </div>
 
-          {/* CONTENT */}
-          <div className="pt-1">
-
-            <h3
-              className="
-                text-[24px]
-                font-semibold
-                tracking-[-0.03em]
-                text-[#061C2F]
-              "
-            >
-              {item.title}
-            </h3>
-
-            <p
-              className="
-                mt-3
-                max-w-[620px]
-                text-[16px]
-                leading-7
-                text-[#6B7280]
-              "
-            >
-              {item.text}
-            </p>
-
-          </div>
         </div>
-      ))}
+
+        {/* CARDS */}
+        <div className="mt-6 space-y-4">
+
+          {[1,2,3].map((i) => (
+            <div
+              key={i}
+              className="
+                rounded-2xl
+                border
+                border-[rgba(6,28,47,0.05)]
+                bg-white
+                p-4
+              "
+            >
+
+              <div className="flex items-start justify-between gap-4">
+
+                <div className="flex-1">
+                  <div className="h-3 w-[60%] rounded-full bg-[#DCE7F8]" />
+                  <div className="mt-3 h-2 w-full rounded-full bg-[#EEF2F7]" />
+                  <div className="mt-2 h-2 w-[80%] rounded-full bg-[#EEF2F7]" />
+                </div>
+
+                <div
+                  className="
+                    rounded-full
+                    bg-[#EEF8F1]
+                    px-2.5
+                    py-1
+                    text-[11px]
+                    font-semibold
+                    text-[#16A34A]
+                  "
+                >
+                  High
+                </div>
+
+              </div>
+
+            </div>
+          ))}
+
+        </div>
+
+      </div>
 
     </div>
-
   </div>
+</div>
+</div>
 </section>
 
         {/* FINAL CTA */}
@@ -871,6 +986,85 @@ export default function Home() {
         </section>
 
       </div>
+
+      {/* FOOTER */}
+<footer
+  className="
+    border-t
+    border-[rgba(6,28,47,0.06)]
+    px-6
+    py-10
+  "
+>
+  <div
+    className="
+      mx-auto
+      flex
+      max-w-[1180px]
+      flex-col
+      items-start
+      justify-between
+      gap-8
+      md:flex-row
+      md:items-center
+    "
+  >
+
+    {/* LEFT */}
+    <div>
+
+      <div className="flex items-center gap-3">
+
+        <div
+          className="
+            flex
+            h-10
+            w-10
+            items-center
+            justify-center
+            rounded-2xl
+            bg-[#14A8E8]
+            text-white
+            text-[15px]
+            font-semibold
+          "
+        >
+          K
+        </div>
+
+        <div>
+          <p className="text-[15px] font-semibold text-[#061C2F]">
+            Klynt
+          </p>
+
+          <p className="text-[13px] text-[#8E99A2]">
+            AI UX Clarity Analyzer
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    {/* RIGHT */}
+    <div className="flex items-center gap-6 text-[14px] text-[#6B7280]">
+
+      <button className="hover:text-[#061C2F] transition">
+        Privacy
+      </button>
+
+      <button className="hover:text-[#061C2F] transition">
+        Terms
+      </button>
+
+      <button className="hover:text-[#061C2F] transition">
+        Contact
+      </button>
+
+    </div>
+
+  </div>
+</footer>
     </main>
   );
 }
