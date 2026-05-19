@@ -12,14 +12,10 @@ export function Button({
         inline-flex
         items-center
         justify-center
-
         h-[56px]
         w-full
-
         rounded-2xl
-
         px-6
-
         text-[15px]
         font-semibold
         leading-none
@@ -33,10 +29,17 @@ export function Button({
         ${disabled
           ? "bg-[#DCE2E7] opacity-60 cursor-not-allowed"
           : `
-            bg-[#111827]
-            hover:bg-black
-            hover:-translate-y-[1px]
-            active:translate-y-0
+            bg-[#14A8E8]
+                  px-7
+                  py-4
+                  text-[15px]
+                  font-semibold
+                  text-white
+                  transition-all
+                  duration-200
+                  hover:-translate-y-[1px]
+                  hover:bg-[#1198D2]
+                  hover:shadow-[0_14px_34px_rgba(20,168,232,0.24)]
           `
         }
 

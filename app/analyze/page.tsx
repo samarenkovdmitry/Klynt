@@ -6,8 +6,7 @@ import {
   RiSettings3Line,
   RiUpload2Line,
   RiDownload2Line,
-  RiCheckLine,
-  RiArrowRightLine
+  RiCheckLine
 } from "@remixicon/react";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { Button } from "@/components/ui/Button";
@@ -573,32 +572,14 @@ duration-200
               {/* BUTTON / PROGRESS */}
 <div className="mt-10 w-full">
   {!loading ? (
- 
-
-<Button
-                href="/analyze"
-                className="
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-full
-                  bg-[#14A8E8]
-                  px-7
-                  py-4
-                  text-[15px]
-                  font-semibold
-                  text-white
-                  transition-all
-                  duration-200
-                  hover:-translate-y-[1px]
-                  hover:bg-[#1198D2]
-                  hover:shadow-[0_14px_34px_rgba(20,168,232,0.24)]
-                "
-              >
-                Start free audit
-
-                <RiArrowRightLine size={18} />
-              </Button>
+    <Button
+      type="button"
+      disabled={isButtonDisabled}
+      onClick={handleAnalyze}
+      className="w-full"
+    >
+      Analyze UX
+    </Button>
 
 
 
