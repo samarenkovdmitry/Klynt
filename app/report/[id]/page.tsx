@@ -8,6 +8,7 @@ import {
   RiCheckLine,
   RiShareForwardLine,
   RiRefreshLine,
+  RiSettings3Line
 } from "@remixicon/react";
 
 export default function ReportPage() {
@@ -114,8 +115,91 @@ export default function ReportPage() {
 
 
   return (
-    <main className="min-h-screen bg-[#F5F7FA]">
-      <div className="animate-fade-in opacity-100">
+      <>
+      {/* TOP NAVBAR */}
+      <header
+  className="
+    sticky
+    top-0
+    z-50
+    w-full
+    border-b
+    border-[rgba(0,0,0,0.06)]
+    bg-white
+  "
+>
+
+        <div className="mx-auto flex h-[72px] max-w-[1180px] items-center justify-between px-8">
+
+          {/* LEFT — LOGO */}
+          <div className="flex items-center gap-3">
+            <svg width="110" height="38" viewBox="0 0 110 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M102.178 15.8852V29.2289H106.106V15.8852H109.807V12.8658H106.106V8.1582L102.178 8.87246V12.8658H99.353V15.8852H102.178Z" fill="#061C2F"/>
+<path d="M84.6265 29.2288V12.8658H88.3601V16.0475H88.4575C88.8038 14.9436 89.4098 14.0779 90.2756 13.4502C91.163 12.8009 92.2235 12.4762 93.4572 12.4762C94.4962 12.4762 95.4377 12.7143 96.2818 13.1905C97.1259 13.645 97.8077 14.3376 98.3272 15.2683C98.8466 16.199 99.1063 17.3894 99.1063 18.8396V29.2288H95.1779V19.4889C95.1779 18.2985 94.8858 17.3786 94.3014 16.7293C93.7386 16.08 93.0027 15.7553 92.0937 15.7553C90.9898 15.7553 90.1241 16.1557 89.4964 16.9566C88.8687 17.7574 88.5549 18.8288 88.5549 20.1707V29.2288H84.6265Z" fill="#061C2F"/>
+<path d="M67.1005 12.8658H71.2561L75.5416 27.4108H75.6066L79.8596 12.8658H83.8854L76.8728 34.943H73.0093L75.1196 28.6769H72.1327L67.1005 12.8658Z" fill="#061C2F"/>
+<path d="M62.4609 29.2288V6.63226H66.3893V29.2288H62.4609Z" fill="#061C2F"/>
+<path d="M56.6085 7.15186H61.2187L52.323 19.1319L52.5178 16.5671L61.5434 29.229H56.7709L48.979 17.9631L56.6085 7.15186ZM44.7584 7.15186H48.7842V29.229H44.7584V7.15186Z" fill="#061C2F"/>
+<path d="M37.1354 18.5678L18.5677 37.1357V22.2822L25.9937 29.7083L27.8505 27.8514L18.567 18.5678L27.8505 9.28427L25.9937 7.42741L18.5677 14.8534V4.21569e-06L37.1354 18.5678ZM15.7821 34.3501L0 18.5678L15.7821 2.78563V34.3501Z" fill="#061C2F"/>
+</svg>
+            <div className="hidden sm:flex flex-col leading-none">
+              <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]">
+                UX Clarity Analyzer
+              </span>
+
+              <span className="mt-1 text-[11px] text-[var(--ink-secondary)]">
+                AI-powered website review
+              </span>
+            </div>
+
+
+          </div>
+
+          {/* RIGHT — ACTIONS */}
+<div className="flex items-center">
+  <button
+    className="
+      flex
+      items-center
+      gap-2
+      rounded-full
+      border
+      border-transparent
+      px-4
+      py-2
+      text-[14px]
+      font-medium
+      text-[var(--ink-primary)]
+      transition-all
+      duration-200
+      hover:border-[rgba(6,28,47,0.06)]
+      hover:bg-white
+    "
+  >
+    <RiSettings3Line size={18} className="shrink-0" />
+    <span>Settings</span>
+  </button>
+</div>
+
+        </div>
+      </header>
+
+      {/* MAIN */}
+      <main
+  className="
+    min-h-[calc(100dvh-72px)]
+    bg-[#F5F7FA]
+    px-6
+    pt-6
+    pb-12
+    text-[var(--ink-primary)]
+  "
+>
+        <div className="mx-auto max-w-[980px]">
+
+          {/* START SCREEN */}
+
+
+         <div className="animate-fade-in opacity-100">
               <>
                {/* WHITE REPORT HERO */}
               <div
@@ -1065,8 +1149,10 @@ export default function ReportPage() {
               </div>
               
             </>
+            </div>
           </div>
     </main>
+    </>
   );
 }          
           
