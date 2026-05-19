@@ -97,6 +97,13 @@ export default function ReportPage() {
   await navigator.clipboard.writeText(url);
 }
 
+function scoreColorClass(score: number) {
+  if (score >= 85) return "text-[#00C853]";
+  if (score >= 70) return "text-[#FFB300]";
+  if (score >= 50) return "text-[#FF6D00]";
+  return "text-[#D50000]";
+}
+
 
 
   // =========================
@@ -401,7 +408,7 @@ export default function ReportPage() {
             cx="74"
             cy="74"
             r={radius}
-            stroke="#FF7A00"
+            stroke={scoreColorClass(data.score)}
             strokeWidth="8"
             fill="transparent"
             strokeLinecap="round"
@@ -418,9 +425,17 @@ export default function ReportPage() {
             UX Score
           </p>
 
-          <p className="text-[44px] leading-none font-semibold text-[#FF7A00]">
-            {data.score}
-          </p>
+          <p
+            className={`
+            text-[44px]
+            leading-none
+            font-semibold
+            ${scoreColorClass(data.score)}
+          `}
+        >
+          {data.score}
+        </p>
+
         </div>
       </>
     );

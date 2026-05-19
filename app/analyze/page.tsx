@@ -374,7 +374,7 @@ const flat: AuditResponseFlat = {
       mx-auto
       max-w-[620px]
       text-[18px]
-      leading-8
+      leading-6
       text-[var(--ink-secondary)]
     "
   >
