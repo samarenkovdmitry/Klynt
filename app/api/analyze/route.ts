@@ -208,6 +208,18 @@ async function captureWebsiteScreenshots(url: string) {
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     );
 
+    // ✅ 1. Отключаем тяжёлые ресурсы (главное ускорение)
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const block = ["image", "stylesheet", "font", "media"];
+      if (block.includes(req.resourceType())) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    // ⚡ 2. Быстрая загрузка страницы (у тебя уже стоит)
     await page.goto(url, {
       waitUntil: "domcontentloaded",
       timeout: 15000,
@@ -257,54 +269,55 @@ async function captureWebsiteScreenshots(url: string) {
     const footerY = Math.max(bodyHeight - 1600, 0);
 
     await page.evaluate((y: number) => {
-  window.scrollTo(0, y);
-   }, footerY);
+      window.scrollTo(0, y);
+    }, footerY);
 
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     const hero = await page.screenshot({
-     type: "jpeg",
-     quality: 55,
-     clip: {
-       x: 0,
-       y: 0,
-       width: 1440,
-       height: 1400,
+      type: "jpeg",
+      quality: 55,
+      clip: {
+        x: 0,
+        y: 0,
+        width: 1440,
+        height: 1400,
       },
     });
 
-     screenshots.push(Buffer.from(hero).toString("base64"));
+    screenshots.push(Buffer.from(hero).toString("base64"));
 
     const mid = await page.screenshot({
-     type: "jpeg",
-     quality: 55,
-     clip: {
-       x: 0,
-       y: 1200,
-       width: 1440,
-       height: 1400,
+      type: "jpeg",
+      quality: 55,
+      clip: {
+        x: 0,
+        y: 1200,
+        width: 1440,
+        height: 1400,
       },
     });
 
     const footer = await page.screenshot({
-     type: "jpeg",
-     quality: 55,
-     clip: {
-       x: 0,
-       y: footerY,
-       width: 1440,
-       height: 1400,
+      type: "jpeg",
+      quality: 55,
+      clip: {
+        x: 0,
+        y: footerY,
+        width: 1440,
+        height: 1400,
       },
     });
 
-screenshots.push(Buffer.from(footer).toString("base64"));
-screenshots.push(Buffer.from(mid).toString("base64"));
+    screenshots.push(Buffer.from(footer).toString("base64"));
+    screenshots.push(Buffer.from(mid).toString("base64"));
 
     return screenshots;
   } finally {
     await browser.close();
   }
 }
+
 
 // -----------------------------
 // ROUTE
