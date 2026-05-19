@@ -2,368 +2,278 @@ import Link from "next/link";
 import {
   RiArrowRightUpLine,
   RiSparkling2Line,
-  RiScan2Line,
-  RiFlashlightLine,
+  RiEyeLine,
+  RiCheckboxCircleLine,
   RiLineChartLine,
-  RiLayout4Line,
-  RiCheckLine,
+  RiLayoutGridLine,
 } from "@remixicon/react";
 
 export default function Home() {
   return (
-    <main className="relative overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
-
-      {/* BACKGROUND */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
-        {/* TOP BLUE GLOW */}
-        <div
-          className="
-            absolute
-            left-1/2
-            top-[-280px]
-            h-[700px]
-            w-[1000px]
-            -translate-x-1/2
-            rounded-full
-            bg-[radial-gradient(circle,rgba(20,168,232,0.22)_0%,rgba(20,168,232,0)_72%)]
-          "
-        />
-
-        {/* SIDE LIGHT */}
-        <div
-          className="
-            absolute
-            right-[-220px]
-            top-[240px]
-            h-[520px]
-            w-[520px]
-            rounded-full
-            bg-[radial-gradient(circle,rgba(95,180,255,0.18)_0%,transparent_70%)]
-          "
-        />
-
-      </div>
-
-      {/* NAVBAR */}
-      <header
-        className="
-          sticky
-          top-0
-          z-50
-          border-b
-          border-[rgba(6,28,47,0.05)]
-          bg-[rgba(245,247,250,0.82)]
-          backdrop-blur-xl
-        "
-      >
-        <div className="mx-auto flex h-[74px] max-w-[1240px] items-center justify-between px-8">
-
-          {/* LOGO */}
-          <div className="flex items-center gap-3">
-
-            <svg width="118" height="44" viewBox="0 0 118 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="0.5" y="2.5" width="39" height="39" rx="9.5" stroke="#DCE2E7"/>
-<path d="M25.6568 30.4854L19.9999 36.1422L20 24.8285L25.6568 30.4854ZM34.1421 22.0001L27.5426 28.5995L20.9433 22.0001L27.5427 15.4006L34.1421 22.0001ZM17.1715 33.3138L5.85791 22L17.1716 10.6863L17.1715 33.3138ZM25.6569 13.5148L20 19.1716L20 7.85786L25.6569 13.5148Z" fill="#061C2F"/>
-<path d="M109.419 19.0976V32.4413H113.348V19.0976H117.049V16.0782H113.348V11.3706L109.419 12.0849V16.0782H106.595V19.0976H109.419Z" fill="#061C2F"/>
-<path d="M91.8683 32.4411V16.0781H95.6019V19.2598H95.6993C96.0456 18.1559 96.6516 17.2901 97.5174 16.6625C98.4048 16.0131 99.4654 15.6885 100.699 15.6885C101.738 15.6885 102.679 15.9266 103.524 16.4027C104.368 16.8573 105.05 17.5499 105.569 18.4806C106.088 19.4113 106.348 20.6017 106.348 22.0519V32.4411H102.42V22.7012C102.42 21.5108 102.128 20.5909 101.543 19.9416C100.98 19.2922 100.245 18.9676 99.3355 18.9676C98.2316 18.9676 97.3659 19.368 96.7382 20.1688C96.1105 20.9697 95.7967 22.0411 95.7967 23.383V32.4411H91.8683Z" fill="#061C2F"/>
-<path d="M74.3423 16.0781H78.4979L82.7835 30.623H82.8484L87.1015 16.0781H91.1273L84.1146 38.1552H80.2511L82.3614 31.8892H79.3745L74.3423 16.0781Z" fill="#061C2F"/>
-<path d="M69.7028 32.4413V9.84473H73.6312V32.4413H69.7028Z" fill="#061C2F"/>
-<path d="M63.8504 10.3643H68.4606L59.5648 22.3443L59.7596 19.7795L68.7852 32.4414H64.0127L56.2208 21.1755L63.8504 10.3643ZM52.0002 10.3643H56.026V32.4414H52.0002V10.3643Z" fill="#061C2F"/>
-</svg>
-            </div>
-
-          {/* NAV */}
-          <div className="hidden items-center gap-8 md:flex">
-            <a
-              href="#features"
-              className="text-[14px] font-medium text-[#5E6B76] transition hover:text-[#061C2F]"
-            >
-              Features
-            </a>
-
-            <a
-              href="#workflow"
-              className="text-[14px] font-medium text-[#5E6B76] transition hover:text-[#061C2F]"
-            >
-              Workflow
-            </a>
-
-            <a
-              href="#faq"
-              className="text-[14px] font-medium text-[#5E6B76] transition hover:text-[#061C2F]"
-            >
-              FAQ
-            </a>
-          </div>
-
-          {/* CTA */}
-          <Link
-            href="/analyze"
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-full
-              bg-[#14A8E8]
-              px-5
-              py-3
-              text-[14px]
-              font-semibold
-              text-white
-              shadow-[0_12px_30px_rgba(20,168,232,0.32)]
-              transition-all
-              duration-200
-              hover:-translate-y-[1px]
-              hover:shadow-[0_18px_40px_rgba(20,168,232,0.4)]
-            "
-          >
-            Start audit
-            <RiArrowRightUpLine size={18} />
-          </Link>
-
-        </div>
-      </header>
+    <main className="bg-[#F5F7FA] text-[#061C2F] overflow-hidden">
 
       {/* HERO */}
-      <section className="relative">
+      <section className="relative overflow-hidden bg-[#061C2F]">
 
-        <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-14 px-8 pb-24 pt-24 lg:grid-cols-[1.05fr_0.95fr]">
+        {/* GRADIENTS */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(20,168,232,0.28),transparent_38%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(66,117,255,0.18),transparent_30%)]" />
 
-          {/* LEFT */}
-          <div className="relative z-10">
+        {/* GRID */}
+        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,0.4)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.4)_1px,transparent_1px)] bg-[size:72px_72px]" />
 
-            {/* TAG */}
-            <div
-              className="
-                inline-flex
-                items-center
-                gap-2
-                rounded-full
-                border
-                border-[#D9E9FF]
-                bg-[rgba(255,255,255,0.7)]
-                px-4
-                py-2
-                backdrop-blur
-              "
-            >
-              <div className="h-2 w-2 rounded-full bg-[#14A8E8]" />
+        <div className="relative mx-auto max-w-[1280px] px-8 pt-8 pb-28">
 
-              <span className="text-[13px] font-semibold text-[#2A6CEB]">
-                AI-powered UX clarity analysis
-              </span>
+          {/* NAVBAR */}
+          <header className="flex items-center justify-between">
+
+            {/* LOGO */}
+            <div className="flex items-center gap-4">
+
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
+                <div className="h-5 w-5 rounded-full bg-[#14A8E8]" />
+              </div>
+
+              <div>
+                <div className="text-[18px] font-semibold tracking-[-0.03em] text-white">
+                  Klynt
+                </div>
+
+                <div className="text-[12px] text-white/50">
+                  AI UX clarity platform
+                </div>
+              </div>
             </div>
 
-            {/* TITLE */}
-            <h1
-              className="
-                mt-7
-                max-w-[760px]
-                text-[58px]
-                font-semibold
-                leading-[0.95]
-                tracking-[-0.06em]
-                text-[#061C2F]
-              "
-            >
-              Find conversion friction before users leave.
-            </h1>
+            {/* NAV */}
+            <div className="hidden md:flex items-center gap-8 text-[14px] text-white/70">
+              <a href="#features" className="hover:text-white transition">
+                Features
+              </a>
 
-            {/* SUB */}
-            <p
-              className="
-                mt-8
-                max-w-[620px]
-                text-[20px]
-                leading-9
-                text-[#60707C]
-              "
-            >
-              Klynt analyzes your website like a senior UX consultant —
-              detecting weak hierarchy, unclear messaging, trust gaps and
-              conversion blockers in seconds.
-            </p>
+              <a href="#workflow" className="hover:text-white transition">
+                Workflow
+              </a>
 
-            {/* CTA */}
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <a href="#pricing" className="hover:text-white transition">
+                Pricing
+              </a>
+            </div>
 
-              <Link
-                href="/analyze"
+          </header>
+
+          {/* HERO CONTENT */}
+          <div className="relative mt-24 grid items-center gap-16 lg:grid-cols-[1.1fr_0.9fr]">
+
+            {/* LEFT */}
+            <div>
+
+              {/* BADGE */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-md">
+
+                <RiSparkling2Line
+                  size={16}
+                  className="text-[#14A8E8]"
+                />
+
+                <span className="text-[13px] font-medium text-white/80">
+                  AI-powered UX clarity analysis
+                </span>
+              </div>
+
+              {/* TITLE */}
+              <h1
                 className="
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-full
-                  bg-[#14A8E8]
-                  px-7
-                  py-4
-                  text-[15px]
+                  mt-8
+                  max-w-[760px]
+                  text-[72px]
+                  leading-[0.95]
+                  tracking-[-0.06em]
                   font-semibold
                   text-white
-                  shadow-[0_16px_40px_rgba(20,168,232,0.35)]
-                  transition-all
-                  duration-200
-                  hover:-translate-y-[2px]
                 "
               >
-                Analyze website
-                <RiArrowRightUpLine size={20} />
-              </Link>
+                Find conversion
+                friction before
+                your users do.
+              </h1>
 
-              <div className="flex items-center gap-3 rounded-full bg-white px-5 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
-                <div className="flex -space-x-2">
-                  <div className="h-8 w-8 rounded-full bg-[#D7EFFF]" />
-                  <div className="h-8 w-8 rounded-full bg-[#C9E8FF]" />
-                  <div className="h-8 w-8 rounded-full bg-[#B7DEFF]" />
-                </div>
+              {/* SUBTITLE */}
+              <p
+                className="
+                  mt-8
+                  max-w-[640px]
+                  text-[22px]
+                  leading-[1.6]
+                  text-white/70
+                "
+              >
+                Klynt analyzes websites using AI and transforms
+                messy interfaces into clear UX problems,
+                conversion risks and actionable improvements.
+              </p>
 
-                <div className="leading-none">
-                  <p className="text-[13px] font-semibold">
-                    UX teams & founders
-                  </p>
+              {/* CTA */}
+              <div className="mt-10 flex flex-wrap items-center gap-4">
 
-                  <p className="mt-1 text-[12px] text-[#7B8A97]">
-                    use Klynt to improve conversion clarity
-                  </p>
-                </div>
-              </div>
-
-            </div>
-
-            {/* STATS */}
-            <div className="mt-14 grid grid-cols-3 gap-4">
-
-              {[
-                ["+31%", "Avg. CTA improvement"],
-                ["5 min", "Audit generation"],
-                ["AI", "UX reasoning engine"],
-              ].map((item, index) => (
-                <div
-                  key={index}
+                <Link
+                  href="/analyze"
                   className="
-                    rounded-[28px]
-                    border
-                    border-[rgba(6,28,47,0.05)]
-                    bg-[rgba(255,255,255,0.7)]
-                    px-5
-                    py-5
-                    backdrop-blur
-                  "
-                >
-                  <p className="text-[28px] font-semibold tracking-[-0.04em]">
-                    {item[0]}
-                  </p>
-
-                  <p className="mt-2 text-[14px] text-[#71808D]">
-                    {item[1]}
-                  </p>
-                </div>
-              ))}
-
-            </div>
-
-          </div>
-
-          {/* RIGHT VISUAL */}
-          <div className="relative flex items-center justify-center">
-
-            {/* MAIN CARD */}
-            <div
-              className="
-                relative
-                w-full
-                max-w-[560px]
-                overflow-hidden
-                rounded-[38px]
-                border
-                border-[rgba(6,28,47,0.05)]
-                bg-white
-                p-6
-                shadow-[0_40px_100px_rgba(10,30,60,0.10)]
-              "
-            >
-
-              {/* TOP BAR */}
-              <div className="flex items-center justify-between">
-
-                <div className="flex items-center gap-3">
-
-                  <div className="h-3 w-3 rounded-full bg-[#14A8E8]" />
-                  <div className="h-3 w-3 rounded-full bg-[#D9EFFF]" />
-                  <div className="h-3 w-3 rounded-full bg-[#EEF6FF]" />
-
-                </div>
-
-                <div
-                  className="
-                    rounded-full
-                    bg-[#EEF8FF]
-                    px-3
-                    py-1
-                    text-[12px]
+                    group
+                    inline-flex
+                    h-[58px]
+                    items-center
+                    gap-3
+                    rounded-2xl
+                    bg-[#14A8E8]
+                    px-7
+                    text-[16px]
                     font-semibold
-                    text-[#1593CB]
+                    text-white
+                    transition-all
+                    duration-300
+                    hover:-translate-y-[1px]
+                    hover:shadow-[0_12px_40px_rgba(20,168,232,0.45)]
                   "
                 >
-                  AI analysis running
+                  Start free audit
+
+                  <RiArrowRightUpLine
+                    size={18}
+                    className="transition-transform duration-300 group-hover:translate-x-[2px] group-hover:-translate-y-[2px]"
+                  />
+                </Link>
+
+                <div className="text-[14px] text-white/50">
+                  No signup required
                 </div>
               </div>
 
-              {/* SCREEN */}
+              {/* METRICS */}
+              <div className="mt-16 flex flex-wrap gap-10">
+
+                <div>
+                  <div className="text-[34px] font-semibold text-white">
+                    +37%
+                  </div>
+
+                  <div className="mt-1 text-[14px] text-white/50">
+                    Average clarity uplift
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-[34px] font-semibold text-white">
+                    12s
+                  </div>
+
+                  <div className="mt-1 text-[14px] text-white/50">
+                    To detect key UX issues
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-[34px] font-semibold text-white">
+                    AI
+                  </div>
+
+                  <div className="mt-1 text-[14px] text-white/50">
+                    Interface reasoning engine
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* RIGHT */}
+            <div className="relative">
+
+              {/* GLOW */}
+              <div className="absolute inset-0 blur-[90px] bg-[#14A8E8]/20" />
+
+              {/* MAIN CARD */}
               <div
                 className="
-                  mt-6
-                  overflow-hidden
-                  rounded-[26px]
+                  relative
+                  rounded-[36px]
                   border
-                  border-[#E6EDF4]
-                  bg-[#F7FAFD]
-                  p-5
+                  border-white/10
+                  bg-white/[0.06]
+                  p-6
+                  backdrop-blur-2xl
                 "
               >
 
-                {/* HEADER */}
+                {/* TOP */}
                 <div className="flex items-center justify-between">
 
                   <div>
-                    <div className="h-4 w-28 rounded-full bg-[#061C2F]" />
+                    <div className="text-[13px] text-white/50">
+                      UX Clarity Report
+                    </div>
 
-                    <div className="mt-3 h-3 w-44 rounded-full bg-[#D7E6F3]" />
+                    <div className="mt-2 text-[28px] font-semibold text-white">
+                      stripe.com
+                    </div>
                   </div>
 
-                  <div className="rounded-full bg-[#14A8E8] px-4 py-2 text-[12px] font-semibold text-white">
-                    Analyze
+                  <div
+                    className="
+                      flex
+                      h-[88px]
+                      w-[88px]
+                      items-center
+                      justify-center
+                      rounded-full
+                      border-[6px]
+                      border-[#14A8E8]
+                      text-[28px]
+                      font-semibold
+                      text-white
+                    "
+                  >
+                    82
                   </div>
 
                 </div>
 
-                {/* BLOCKS */}
+                {/* CARDS */}
                 <div className="mt-8 space-y-4">
 
-                  {[1, 2, 3].map((i) => (
+                  {[
+                    "Weak hierarchy in hero section",
+                    "CTA lacks visual dominance",
+                    "Trust signals appear too late",
+                  ].map((item, index) => (
                     <div
-                      key={i}
+                      key={index}
                       className="
                         rounded-2xl
                         border
-                        border-[#E6EDF4]
-                        bg-white
+                        border-white/10
+                        bg-white/[0.04]
                         p-4
                       "
                     >
-                      <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
 
-                        <div>
-                          <div className="h-3 w-32 rounded-full bg-[#061C2F]" />
-
-                          <div className="mt-3 h-3 w-52 rounded-full bg-[#DCE7F2]" />
-
-                          <div className="mt-2 h-3 w-40 rounded-full bg-[#E7EFF6]" />
+                        <div className="mt-1">
+                          <RiCheckboxCircleLine
+                            size={18}
+                            className="text-[#14A8E8]"
+                          />
                         </div>
 
-                        <div className="rounded-full bg-[#EFF8FF] px-3 py-1 text-[11px] font-semibold text-[#1593CB]">
-                          +18% clarity
+                        <div>
+                          <div className="text-[15px] font-medium text-white">
+                            {item}
+                          </div>
+
+                          <div className="mt-1 text-[13px] leading-6 text-white/50">
+                            AI identified conversion friction
+                            affecting clarity and user confidence.
+                          </div>
                         </div>
 
                       </div>
@@ -374,45 +284,36 @@ export default function Home() {
 
               </div>
 
-              {/* FLOATING BADGE */}
+              {/* FLOATING */}
               <div
                 className="
                   absolute
-                  -left-8
-                  top-20
-                  rounded-[26px]
+                  -left-10
+                  top-10
+                  rounded-2xl
                   border
-                  border-[#D9E9FF]
-                  bg-white
-                  px-5
-                  py-4
-                  shadow-[0_20px_50px_rgba(20,168,232,0.18)]
+                  border-white/10
+                  bg-white/[0.08]
+                  px-4
+                  py-3
+                  backdrop-blur-xl
                 "
               >
                 <div className="flex items-center gap-3">
 
-                  <div
-                    className="
-                      flex
-                      h-11
-                      w-11
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-[#EEF8FF]
-                    "
-                  >
-                    <RiLineChartLine size={20} className="text-[#14A8E8]" />
-                  </div>
+                  <RiLineChartLine
+                    size={18}
+                    className="text-[#14A8E8]"
+                  />
 
                   <div>
-                    <p className="text-[13px] font-semibold">
-                      UX Score
-                    </p>
+                    <div className="text-[12px] text-white/50">
+                      Conversion impact
+                    </div>
 
-                    <p className="mt-1 text-[24px] font-semibold text-[#14A8E8]">
-                      82
-                    </p>
+                    <div className="text-[16px] font-semibold text-white">
+                      +18%
+                    </div>
                   </div>
 
                 </div>
@@ -426,37 +327,42 @@ export default function Home() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="pb-24">
+      <section
+        id="features"
+        className="relative py-28"
+      >
+        <div className="mx-auto max-w-[1200px] px-8">
 
-        <div className="mx-auto max-w-[1240px] px-8">
+          <div className="max-w-[760px]">
 
-          <div className="mb-14 max-w-[700px]">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.2em] text-[#14A8E8]">
+            <div className="text-[13px] font-semibold uppercase tracking-[0.18em] text-[#14A8E8]">
               Features
-            </p>
+            </div>
 
-            <h2 className="mt-5 text-[48px] font-semibold leading-[1.02] tracking-[-0.05em]">
-              Built for clarity-first product teams.
+            <h2 className="mt-5 text-[56px] leading-[1] tracking-[-0.05em] font-semibold">
+              Built for modern
+              product teams
             </h2>
+
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="mt-16 grid gap-6 md:grid-cols-3">
 
             {[
               {
-                icon: <RiScan2Line size={24} />,
-                title: "AI UX Detection",
-                text: "Automatically identifies weak hierarchy, low trust and conversion friction.",
+                icon: RiEyeLine,
+                title: "Visual hierarchy analysis",
+                text: "Detects clutter, weak emphasis and scanning problems.",
               },
               {
-                icon: <RiFlashlightLine size={24} />,
-                title: "Actionable Fixes",
-                text: "Get concrete interface improvements instead of generic UX feedback.",
+                icon: RiLayoutGridLine,
+                title: "Conversion-focused audits",
+                text: "Finds CTA friction and trust gaps affecting actions.",
               },
               {
-                icon: <RiLayout4Line size={24} />,
-                title: "Copy Refinement",
-                text: "Improve clarity and conversion messaging with AI-generated rewrites.",
+                icon: RiSparkling2Line,
+                title: "AI copy refinement",
+                text: "Improves messaging clarity and persuasion instantly.",
               },
             ].map((item, index) => (
               <div
@@ -465,17 +371,19 @@ export default function Home() {
                   group
                   relative
                   overflow-hidden
-                  rounded-[34px]
+                  rounded-[32px]
                   border
-                  border-[rgba(6,28,47,0.05)]
+                  border-[rgba(6,28,47,0.06)]
                   bg-white
                   p-8
-                  shadow-[0_12px_40px_rgba(0,0,0,0.03)]
                   transition-all
                   duration-300
                   hover:-translate-y-[3px]
+                  hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]
                 "
               >
+
+                <div className="absolute right-0 top-0 h-[140px] w-[140px] rounded-full bg-[#14A8E8]/[0.06] blur-3xl" />
 
                 <div
                   className="
@@ -485,18 +393,20 @@ export default function Home() {
                     items-center
                     justify-center
                     rounded-2xl
-                    bg-[#EEF8FF]
-                    text-[#14A8E8]
+                    bg-[#EEF8FD]
                   "
                 >
-                  {item.icon}
+                  <item.icon
+                    size={24}
+                    className="text-[#14A8E8]"
+                  />
                 </div>
 
-                <h3 className="mt-8 text-[24px] font-semibold tracking-[-0.03em]">
+                <h3 className="mt-8 text-[24px] leading-tight font-semibold">
                   {item.title}
                 </h3>
 
-                <p className="mt-4 text-[16px] leading-8 text-[#667481]">
+                <p className="mt-4 text-[16px] leading-8 text-[#5F7283]">
                   {item.text}
                 </p>
 
@@ -504,142 +414,107 @@ export default function Home() {
             ))}
 
           </div>
+
         </div>
       </section>
 
-      {/* WORKFLOW */}
-      <section id="workflow" className="pb-24">
+      {/* DARK STRIP */}
+      <section
+        id="workflow"
+        className="relative overflow-hidden bg-[#061C2F] py-24"
+      >
 
-        <div className="mx-auto max-w-[1240px] px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(20,168,232,0.22),transparent_40%)]" />
 
-          <div
-            className="
-              relative
-              overflow-hidden
-              rounded-[40px]
-              border
-              border-[rgba(6,28,47,0.05)]
-              bg-[#061C2F]
-              px-10
-              py-14
-            "
-          >
+        <div className="relative mx-auto max-w-[1200px] px-8">
 
-            <div
-              className="
-                absolute
-                right-[-180px]
-                top-[-120px]
-                h-[480px]
-                w-[480px]
-                rounded-full
-                bg-[radial-gradient(circle,rgba(20,168,232,0.22)_0%,transparent_72%)]
-              "
-            />
+          <div className="max-w-[760px]">
 
-            <div className="relative z-10">
+            <div className="text-[13px] font-semibold uppercase tracking-[0.18em] text-[#14A8E8]">
+              Workflow
+            </div>
 
-              <p className="text-[13px] font-semibold uppercase tracking-[0.2em] text-[#7FD7FF]">
-                Workflow
-              </p>
+            <h2 className="mt-5 text-[56px] leading-[1] tracking-[-0.05em] font-semibold text-white">
+              From screenshot
+              to UX clarity
+            </h2>
 
-              <h2 className="mt-5 max-w-[680px] text-[48px] font-semibold leading-[1.02] tracking-[-0.05em] text-white">
-                From screenshot to UX audit in minutes.
-              </h2>
+          </div>
 
-              <div className="mt-14 grid gap-6 md:grid-cols-3">
+          <div className="mt-16 grid gap-6 md:grid-cols-3">
 
-                {[
-                  [
-                    "01",
-                    "Upload website",
-                    "Paste a URL or upload screenshots of your interface.",
-                  ],
-                  [
-                    "02",
-                    "AI analyzes UX",
-                    "Klynt detects hierarchy, clarity and conversion problems.",
-                  ],
-                  [
-                    "03",
-                    "Get improvements",
-                    "Receive prioritized fixes and rewritten copy suggestions.",
-                  ],
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className="
-                      rounded-[30px]
-                      border
-                      border-[rgba(255,255,255,0.08)]
-                      bg-[rgba(255,255,255,0.04)]
-                      p-7
-                      backdrop-blur
-                    "
-                  >
+            {[
+              {
+                step: "01",
+                title: "Paste a URL",
+                text: "Klynt captures key sections of your interface automatically.",
+              },
+              {
+                step: "02",
+                title: "AI analyzes friction",
+                text: "Visual hierarchy, clarity, trust and conversion are evaluated.",
+              },
+              {
+                step: "03",
+                title: "Receive a report",
+                text: "Actionable UX insights and copy improvements in seconds.",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="
+                  rounded-[30px]
+                  border
+                  border-white/10
+                  bg-white/[0.04]
+                  p-8
+                  backdrop-blur-xl
+                "
+              >
 
-                    <div className="flex items-center justify-between">
+                <div className="text-[14px] font-semibold text-[#14A8E8]">
+                  {item.step}
+                </div>
 
-                      <div className="text-[42px] font-semibold tracking-[-0.05em] text-[#14A8E8]">
-                        {item[0]}
-                      </div>
+                <h3 className="mt-6 text-[28px] leading-tight font-semibold text-white">
+                  {item.title}
+                </h3>
 
-                      <div
-                        className="
-                          flex
-                          h-11
-                          w-11
-                          items-center
-                          justify-center
-                          rounded-2xl
-                          bg-[rgba(20,168,232,0.16)]
-                        "
-                      >
-                        <RiCheckLine size={18} className="text-[#7FD7FF]" />
-                      </div>
-
-                    </div>
-
-                    <h3 className="mt-8 text-[24px] font-semibold text-white">
-                      {item[1]}
-                    </h3>
-
-                    <p className="mt-4 text-[16px] leading-8 text-[#9EB3C3]">
-                      {item[2]}
-                    </p>
-
-                  </div>
-                ))}
+                <p className="mt-4 text-[16px] leading-8 text-white/60">
+                  {item.text}
+                </p>
 
               </div>
+            ))}
 
-            </div>
           </div>
+
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[rgba(6,28,47,0.05)] py-10">
+      <footer className="border-t border-[rgba(6,28,47,0.06)] bg-white py-10">
 
-        <div className="mx-auto flex max-w-[1240px] flex-col items-center justify-between gap-6 px-8 md:flex-row">
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-6 px-8 md:flex-row">
 
           <div>
-            <p className="text-[16px] font-semibold">
+            <div className="text-[18px] font-semibold tracking-[-0.03em]">
               Klynt
-            </p>
+            </div>
 
-            <p className="mt-2 text-[14px] text-[#7B8A97]">
-              AI-powered UX clarity analysis for modern websites.
-            </p>
+            <div className="mt-2 text-[14px] text-[#6B7A88]">
+              AI UX clarity platform
+            </div>
           </div>
 
-          <div className="flex items-center gap-6 text-[14px] text-[#71808D]">
+          <div className="flex items-center gap-8 text-[14px] text-[#6B7A88]">
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
             <a href="#">Contact</a>
           </div>
 
         </div>
+
       </footer>
 
     </main>
