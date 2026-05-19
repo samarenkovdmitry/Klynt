@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
-import sharp from "sharp";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -232,7 +231,7 @@ page.on("request", (req) => {
     );
 
     await page.goto(url, {
-      waitUntil: "networkidle0",
+      waitUntil: "domcontentloaded",
       timeout: 10000,
     });
 
@@ -249,45 +248,38 @@ page.on("request", (req) => {
     const footerY = Math.max(bodyHeight - 1600, 0);
 
     // 2) Скроллим последовательно в нужные зоны (быстро)
+    console.log("START SCREENSHOTS");
     await jumpTo(page, heroY);
     await jumpTo(page, midY);
     await jumpTo(page, footerY);
 
 
     // 3) Делаем три скриншота ПАРАЛЛЕЛЬНО
-    const fullShot = await page.screenshot({
-  type: "png",
-  fullPage: true,
+await jumpTo(page, heroY);
+
+const hero = await page.screenshot({
+  type: "jpeg",
+  quality: 55,
 });
 
-const image = sharp(fullShot as Buffer);
+await jumpTo(page, midY);
 
-const metadata = await image.metadata();
+const mid = await page.screenshot({
+  type: "jpeg",
+  quality: 55,
+});
 
-const width = metadata.width || 900;
-const height = metadata.height || 2000;
+await jumpTo(page, footerY);
 
-const sectionHeight = 760;
+const footer = await page.screenshot({
+  type: "jpeg",
+  quality: 55,
+});
 
-const positions = [
-  0,
-  Math.min(1000, height - sectionHeight),
-  Math.max(height - sectionHeight, 0),
-];
-
-for (const pos of positions) {
-  const cropped = await image
-    .extract({
-      left: 0,
-      top: pos,
-      width,
-      height: Math.min(sectionHeight, height - pos),
-    })
-    .jpeg({ quality: 55 })
-    .toBuffer();
-
-  screenshots.push(cropped.toString("base64"));
-}
+screenshots.push(Buffer.from(hero as Buffer).toString("base64"));
+screenshots.push(Buffer.from(mid as Buffer).toString("base64"));
+screenshots.push(Buffer.from(footer as Buffer).toString("base64"));
+console.log("SCREENSHOTS DONE");
 
     return screenshots;
   } finally {
@@ -586,7 +578,9 @@ if (screenshotsBase64[2]) {
 
     return NextResponse.json(json);
   } catch (error: any) {
+    console.error("ANALYZE ERROR:");
     console.error(error);
+    console.error(error?.stack);
 
     return NextResponse.json(
       {
