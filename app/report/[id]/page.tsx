@@ -147,7 +147,7 @@ export default function ReportPage() {
         <div className="mx-auto flex h-[72px] max-w-[1180px] items-center justify-between px-8">
 
           {/* LEFT — LOGO */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <svg width="118" height="44" viewBox="0 0 118 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="0.5" y="2.5" width="39" height="39" rx="9.5" stroke="#DCE2E7"/>
 <path d="M25.6568 30.4854L19.9999 36.1422L20 24.8285L25.6568 30.4854ZM34.1421 22.0001L27.5426 28.5995L20.9433 22.0001L27.5427 15.4006L34.1421 22.0001ZM17.1715 33.3138L5.85791 22L17.1716 10.6863L17.1715 33.3138ZM25.6569 13.5148L20 19.1716L20 7.85786L25.6569 13.5148Z" fill="#061C2F"/>
@@ -294,24 +294,29 @@ export default function ReportPage() {
 
     {/* DOWNLOAD */}
     <button
-      onClick={() => window.print()}
-      className="
-        flex items-center gap-2
-        rounded-xl
-        border border-neutral-200
-        bg-white
-        px-4
-        py-2.5
-        text-[14px]
-        font-medium
-        text-[var(--ink-primary)]
-        transition-all
-        hover:bg-neutral-50
-      "
-    >
-      <RiDownload2Line size={18} className="shrink-0" />
-      <span>Export PDF</span>
-    </button>
+                      className="
+                        flex
+                        items-center
+                        gap-2
+                        rounded-full
+                        border
+                        border-[rgba(6,28,47,0.08)]
+                        bg-white
+                        px-5
+                        py-3
+                        text-[14px]
+                        font-medium
+                        text-[var(--ink-primary)]
+                        transition-all
+                        duration-200
+                        hover:border-[rgba(20,168,232,0.18)]
+                        hover:bg-[#F8FBFF]
+                        hover:shadow-[0_4px_16px_rgba(20,168,232,0.08)]
+                      "
+                    >
+                      <RiDownload2Line size={18} className="shrink-0"/>
+                      <span>Export PDF</span>
+                    </button>
 
   </div>
 
@@ -326,7 +331,7 @@ export default function ReportPage() {
   {/* TOP INSIGHT */}
   <div
     className="
-      mt-4
+      mt-5
       rounded-[24px]
       border
       border-neutral-200
@@ -502,7 +507,7 @@ export default function ReportPage() {
         className="
           mt-6
           text-[15px]
-          leading-7
+          leading-5
           text-[var(--ink-secondary)]
         "
       >
@@ -538,7 +543,7 @@ export default function ReportPage() {
                 <div className="mb-8 mt-10 px-10">
                   <h3 className={styles.titleSection}>UX Issues</h3>
 
-                  <div className="space-y-4">
+                  <div className="space-y-4 mt-5">
                     {data.issues?.map((issue: any, index: number) => {
                       const impactEntries = [
                         {
@@ -653,7 +658,7 @@ export default function ReportPage() {
                                    Why it matters
                                 </p>
 
-                                <p className="mt-2 max-w-[920px] text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                <p className="mt-1 max-w-[920px] text-[15px] leading-5 text-[var(--ink-secondary)]">
                                    {issue.why}
                                 </p>
                               </div>
@@ -670,7 +675,7 @@ export default function ReportPage() {
                   <div className="mt-10 px-10">
                     <h3 className={styles.titleSection}>Suggested Improvements</h3>
 
-                    <div className="space-y-4 mt-4">
+                    <div className="space-y-4 mt-5">
                       {data.suggestions.map((item: any, index: number) => {
                         const impactEntries = [
                           {
@@ -724,7 +729,7 @@ export default function ReportPage() {
                                   <p
                                     className="
                                       text-[21px]
-                                      leading-[1.2]
+                                      leading-[1.4]
                                       font-semibold
                                       tracking-[-0.02em]
                                       text-[var(--ink-primary)]
@@ -781,7 +786,7 @@ export default function ReportPage() {
                                      Why it works
                                    </p>
 
-                                   <p className="max-w-[920px] text-[16px] leading-7 text-[var(--ink-secondary)]">
+                                   <p className="mt-1 max-w-[920px] text-[16px] leading-7 text-[var(--ink-secondary)]">
                                      {item.why}
                                    </p>
                                 </div>
@@ -799,7 +804,7 @@ export default function ReportPage() {
                   <div className="mt-10 px-10">
                     <h3 className={styles.titleSection}>Copy Refinement</h3>
 
-                    <div className="space-y-4 mt-4">
+                    <div className="space-y-4 mt-5">
                       {data.copy.map((item: any, index: number) => {
                         const impactEntries = [
                           {
@@ -859,7 +864,7 @@ export default function ReportPage() {
           className="
             mt-2
             text-[22px]
-            leading-[1.2]
+            leading-[1.4]
             font-semibold
             tracking-[-0.02em]
             text-[var(--ink-primary)]
@@ -1043,7 +1048,7 @@ export default function ReportPage() {
           Why it works
         </p>
 
-        <p className="mt-2 max-w-[920px] text-[15px] leading-7 text-[var(--ink-secondary)]">
+        <p className="mt-1 max-w-[920px] text-[15px] leading-5 text-[var(--ink-secondary)]">
           {item.why}
         </p>
 
@@ -1060,7 +1065,7 @@ export default function ReportPage() {
 
                 {/* NEXT ACTIONS */}
                 <div className="mt-14 px-10 flex flex-col items-center gap-6">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
 
                     {/* Download report */}
                     <button
@@ -1085,7 +1090,7 @@ export default function ReportPage() {
                       "
                     >
                       <RiDownload2Line size={18} className="shrink-0"/>
-                      <span>Download report</span>
+                      <span>Export PDF</span>
                     </button>
 
                     {/* Share */}
