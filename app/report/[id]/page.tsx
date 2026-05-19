@@ -170,30 +170,16 @@ export default function ReportPage() {
 
           </div>
 
-          {/* RIGHT — ACTIONS */}
-<div className="flex items-center">
-  <button
-    className="
-      flex
-      items-center
-      gap-2
-      rounded-full
-      border
-      border-transparent
-      px-4
-      py-2
-      text-[14px]
-      font-medium
-      text-[var(--ink-primary)]
-      transition-all
-      duration-200
-      hover:border-[rgba(6,28,47,0.06)]
-      hover:bg-white
-    "
-  >
-    <RiSettings3Line size={18} className="shrink-0" />
-    <span>Settings</span>
-  </button>
+          <div className="flex items-center">
+  <div className="hidden sm:flex flex-col leading-none">
+              <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]">
+                UX Clarity Analyzer
+              </span>
+
+              <span className="mt-1 text-[11px] text-[var(--ink-secondary)]">
+                AI-powered website review
+              </span>
+            </div>
 </div>
 
         </div>

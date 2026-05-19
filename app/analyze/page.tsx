@@ -292,7 +292,7 @@ const flat: AuditResponseFlat = {
 
           </div>
 
-          {/* RIGHT — ACTIONS */}
+          {/* RIGHT */}
 <div className="flex items-center">
   <div className="hidden sm:flex flex-col leading-none">
               <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]">
