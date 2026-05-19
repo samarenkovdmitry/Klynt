@@ -281,15 +281,20 @@ const flat: AuditResponseFlat = {
           {/* LEFT — LOGO */}
           <div className="flex items-center gap-3">
             <svg width="118" height="44" viewBox="0 0 118 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="0.5" y="0.5" width="43.0002" height="43.0002" rx="9.5" stroke="#DCE2E7"/>
-<path d="M28.2232 31.3334L22.0001 37.5565L22.0001 25.1102L28.2232 31.3334ZM37.5564 22.0001L30.2968 29.2597L23.0373 22.0001L30.2969 14.7405L37.5564 22.0001ZM18.8886 34.4449L6.44385 22L18.8886 9.55519L18.8886 34.4449ZM28.2232 12.6668L22.0001 18.8899L22.0002 6.44365L28.2232 12.6668Z" fill="#061C2F"/>
+<rect x="0.5" y="2.5" width="39" height="39" rx="9.5" stroke="#DCE2E7"/>
+<path d="M25.6568 30.4854L19.9999 36.1422L20 24.8285L25.6568 30.4854ZM34.1421 22.0001L27.5426 28.5995L20.9433 22.0001L27.5427 15.4006L34.1421 22.0001ZM17.1715 33.3138L5.85791 22L17.1716 10.6863L17.1715 33.3138ZM25.6569 13.5148L20 19.1716L20 7.85786L25.6569 13.5148Z" fill="#061C2F"/>
 <path d="M109.419 19.0976V32.4413H113.348V19.0976H117.049V16.0782H113.348V11.3706L109.419 12.0849V16.0782H106.595V19.0976H109.419Z" fill="#061C2F"/>
 <path d="M91.8683 32.4411V16.0781H95.6019V19.2598H95.6993C96.0456 18.1559 96.6516 17.2901 97.5174 16.6625C98.4048 16.0131 99.4654 15.6885 100.699 15.6885C101.738 15.6885 102.679 15.9266 103.524 16.4027C104.368 16.8573 105.05 17.5499 105.569 18.4806C106.088 19.4113 106.348 20.6017 106.348 22.0519V32.4411H102.42V22.7012C102.42 21.5108 102.128 20.5909 101.543 19.9416C100.98 19.2922 100.245 18.9676 99.3355 18.9676C98.2316 18.9676 97.3659 19.368 96.7382 20.1688C96.1105 20.9697 95.7967 22.0411 95.7967 23.383V32.4411H91.8683Z" fill="#061C2F"/>
 <path d="M74.3423 16.0781H78.4979L82.7835 30.623H82.8484L87.1015 16.0781H91.1273L84.1146 38.1552H80.2511L82.3614 31.8892H79.3745L74.3423 16.0781Z" fill="#061C2F"/>
 <path d="M69.7028 32.4413V9.84473H73.6312V32.4413H69.7028Z" fill="#061C2F"/>
 <path d="M63.8504 10.3643H68.4606L59.5648 22.3443L59.7596 19.7795L68.7852 32.4414H64.0127L56.2208 21.1755L63.8504 10.3643ZM52.0002 10.3643H56.026V32.4414H52.0002V10.3643Z" fill="#061C2F"/>
 </svg>
-            <div className="hidden sm:flex flex-col leading-none">
+
+          </div>
+
+          {/* RIGHT — ACTIONS */}
+<div className="flex items-center">
+  <div className="hidden sm:flex flex-col leading-none">
               <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]">
                 UX Clarity Analyzer
               </span>
@@ -298,34 +303,6 @@ const flat: AuditResponseFlat = {
                 AI-powered website review
               </span>
             </div>
-
-
-          </div>
-
-          {/* RIGHT — ACTIONS */}
-<div className="flex items-center">
-  <button
-    className="
-      flex
-      items-center
-      gap-2
-      rounded-full
-      border
-      border-transparent
-      px-4
-      py-2
-      text-[14px]
-      font-medium
-      text-[var(--ink-primary)]
-      transition-all
-      duration-200
-      hover:border-[rgba(6,28,47,0.06)]
-      hover:bg-white
-    "
-  >
-    <RiSettings3Line size={18} className="shrink-0" />
-    <span>Settings</span>
-  </button>
 </div>
 
         </div>
