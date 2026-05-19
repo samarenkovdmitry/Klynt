@@ -4,7 +4,7 @@ import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 90;
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
