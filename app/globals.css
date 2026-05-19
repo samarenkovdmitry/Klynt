@@ -59,3 +59,25 @@ body {
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
+
+@media print {
+  body {
+    background: white !important;
+  }
+
+  header {
+    display: none !important;
+  }
+
+  button {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .print-break {
+    break-inside: avoid;
+  }
+}

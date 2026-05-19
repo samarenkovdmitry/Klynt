@@ -62,6 +62,7 @@ type AuditResponseFlat = {
 export default function Analyze() {
   const [data, setData] = useState<AuditResponseFlat | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [imageName, setImageName] = useState("");
@@ -123,6 +124,7 @@ export default function Analyze() {
       setLoading(true);
       setData(null);
       setProgress(0);
+      setError(null);
 
       const interval = setInterval(() => {
         setProgress(prev => {
@@ -155,22 +157,34 @@ const screenshotToSend = uploadedImage;
         return;
       }
 
-      const json = await res.json();
+const json = await res.json();
 
-      // 4. Flatten breakdown for UI
-      const flat: AuditResponseFlat = {
-        url: json.url ?? "",
-        score: json.score ?? 0,
-        risk: json.risk ?? "low",
-        issues: json.issues ?? [],
-        suggestions: json.suggestions ?? [],
-        copy: json.copy ?? [],
-        clarity: json.breakdown?.clarity ?? 0,
-        navigation: json.breakdown?.navigation ?? 0,
-        visuals: json.breakdown?.visuals ?? 0,
-        trust: json.breakdown?.trust ?? 0,
-        conversion: json.breakdown?.conversion ?? 0,
-      };
+/* ERROR STATE */
+if (!res.ok) {
+  setLoading(false);
+  clearInterval(interval);
+
+  setError(
+    json?.error || "Something went wrong during analysis."
+  );
+
+  return;
+}
+
+// 4. Flatten breakdown for UI
+const flat: AuditResponseFlat = {
+  url: json.url ?? "",
+  score: json.score ?? 0,
+  risk: json.risk ?? "low",
+  issues: json.issues ?? [],
+  suggestions: json.suggestions ?? [],
+  copy: json.copy ?? [],
+  clarity: json.breakdown?.clarity ?? 0,
+  navigation: json.breakdown?.navigation ?? 0,
+  visuals: json.breakdown?.visuals ?? 0,
+  trust: json.breakdown?.trust ?? 0,
+  conversion: json.breakdown?.conversion ?? 0,
+};
 
       const reportId = crypto.randomUUID();
 
@@ -186,10 +200,13 @@ const screenshotToSend = uploadedImage;
       // переход на страницу отчета
       router.push(`/report/${reportId}`);
 
-    } catch (err) {
-      console.error("Request failed:", err);
-    } finally {
-      setTimeout(() => setLoading(false), 400);
+    } catch (error: any) {
+      setError(
+      error?.message ||
+      "Something went wrong while analyzing the website."
+      );
+
+      } finally {
     }
   }
 
@@ -685,6 +702,47 @@ duration-200
     </div>
   )}
 </div>
+
+{error && (
+  <div
+    className="
+      mt-5
+      rounded-2xl
+      border
+      border-[#FFD9D6]
+      bg-[#FFF4F3]
+      px-4
+      py-4
+    "
+  >
+    <p className="text-[15px] font-medium text-[#D14343]">
+      Analysis failed
+    </p>
+
+    <p className="mt-1 text-[14px] text-[#9F5C5C]">
+      <div className="flex items-center justify-between gap-4">
+  <span>{error}</span>
+
+  <button
+    onClick={handleAnalyze}
+    className="
+      rounded-full
+      bg-red-100
+      px-3
+      py-1
+      text-[13px]
+      font-medium
+      text-red-700
+      transition
+      hover:bg-red-200
+    "
+  >
+    Retry
+  </button>
+</div>
+    </p>
+  </div>
+)}
 
             </div>
           

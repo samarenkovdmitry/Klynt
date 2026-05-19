@@ -22,6 +22,7 @@ export default function ReportPage() {
   const [imageName, setImageName] = useState("");
   const [url, setUrl] = useState("");
   const [progress, setProgress] = useState(0);
+  const [copied, setCopied] = useState(false);
 
   // =========================
   // STATE
@@ -79,6 +80,22 @@ export default function ReportPage() {
     setUploadedImage(null);
     setImageName("");
   }
+
+
+  async function handleShare() {
+  const url = window.location.href;
+
+  if (navigator.share) {
+    await navigator.share({
+      title: "Klynt UX Report",
+      url,
+    });
+
+    return;
+  }
+
+  await navigator.clipboard.writeText(url);
+}
 
 
 
@@ -301,6 +318,7 @@ export default function ReportPage() {
 
     {/* DOWNLOAD */}
     <button
+      onClick={() => window.print()}
       className="
         flex items-center gap-2
         rounded-xl
@@ -316,7 +334,7 @@ export default function ReportPage() {
       "
     >
       <RiDownload2Line size={18} className="shrink-0" />
-      <span>Download</span>
+      <span>Export PDF</span>
     </button>
 
   </div>
@@ -362,6 +380,7 @@ export default function ReportPage() {
     {/* MAIN CARD */}
     <div
       className="
+        print-break
         rounded-[28px]
         border
         border-neutral-200
@@ -474,6 +493,7 @@ export default function ReportPage() {
     {/* CONVERSION CARD */}
     <div
       className="
+        print-break
         rounded-[28px]
         border
         border-neutral-200
@@ -561,6 +581,7 @@ export default function ReportPage() {
                         <div
                           key={index}
                           className="
+                          print-break
                           rounded-[28px]
                           border
                           border-[var(--stroke-light)]
@@ -692,6 +713,7 @@ export default function ReportPage() {
                           <div
                             key={index}
                             className="
+                              print-break
                               rounded-[28px]
                               border
                               border-[var(--stroke-light)]
@@ -820,6 +842,7 @@ export default function ReportPage() {
                           <div
   key={index}
   className="
+    print-break
     rounded-[28px]
     border
     border-[var(--stroke-light)]
@@ -1091,6 +1114,7 @@ export default function ReportPage() {
 
                     {/* Share */}
                     <button
+                      onClick={handleShare}
                       className="
                         flex
                         items-center
@@ -1113,6 +1137,8 @@ export default function ReportPage() {
                     >
                       <RiShareForwardLine size={18} className="shrink-0"/>
                       <span>Share</span>
+
+                      {copied ? "Copied link" : "Share"}
                     </button>
 
                     {/* Re-run analysis */}

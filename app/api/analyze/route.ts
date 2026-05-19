@@ -45,7 +45,9 @@ function extractJSON(text: string) {
     start = text.indexOf("{", start + 1);
   }
 
-  throw new Error("Valid JSON not found");
+  throw new Error(
+  "AI analysis failed. Please try again."
+);
 }
 
 function clampPercent(n: any) {
@@ -578,13 +580,17 @@ if (screenshotsBase64[2]) {
 
     return NextResponse.json(json);
   } catch (error: any) {
+    
     console.error("ANALYZE ERROR:");
     console.error(error);
     console.error(error?.stack);
 
     return NextResponse.json(
       {
-        error: error.message || "Unknown server error",
+        error:
+        error?.message?.includes("timeout")
+        ? "Website loading timed out."
+        : error.message || "Unknown server error",
       },
       {
         status: 500,
