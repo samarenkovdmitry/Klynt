@@ -219,8 +219,8 @@ async function captureWebsiteScreenshots(url: string) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
-      width: 1440,
-      height: 1400,
+      width: 1024,
+      height: 900,
       deviceScaleFactor: 1,
     },
     executablePath: await chromium.executablePath(),
@@ -262,32 +262,32 @@ async function captureWebsiteScreenshots(url: string) {
     const [hero, mid, footer] = await Promise.all([
       page.screenshot({
         type: "jpeg",
-        quality: 55,
+        quality: 40,
         clip: {
           x: 0,
           y: heroY,
-          width: 1440,
-          height: 1400,
+          width: 1024,
+          height: 900,
         },
       }),
       page.screenshot({
         type: "jpeg",
-        quality: 55,
+        quality: 40,
         clip: {
           x: 0,
           y: midY,
-          width: 1440,
-          height: 1400,
+          width: 1024,
+          height: 900,
         },
       }),
       page.screenshot({
         type: "jpeg",
-        quality: 55,
+        quality: 40,
         clip: {
           x: 0,
           y: footerY,
-          width: 1440,
-          height: 1400,
+          width: 1024,
+          height: 900,
         },
       }),
     ]);
