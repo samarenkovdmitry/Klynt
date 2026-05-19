@@ -219,7 +219,7 @@ async function captureWebsiteScreenshots(url: string) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
-      width: 1024,          // 🔥 меньше → быстрее Vision
+      width: 1024,
       height: 900,
       deviceScaleFactor: 1,
     },
@@ -230,88 +230,77 @@ async function captureWebsiteScreenshots(url: string) {
   try {
     const page = await browser.newPage();
 
-    // 🔥 1. Быстрый User-Agent
     await page.setUserAgent(
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     );
 
-    // 🔥 2. Отключаем тяжёлые ресурсы
-    await page.setRequestInterception(true);
-    page.on("request", (req) => {
-      const block = ["image", "stylesheet", "font", "media"];
-      block.includes(req.resourceType()) ? req.abort() : req.continue();
-    });
-
-    // 🔥 3. Быстрая загрузка DOM
     await page.goto(url, {
       waitUntil: "domcontentloaded",
       timeout: 15000,
     });
 
-    // 🔥 4. Дать странице дорендериться
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
+    const screenshots: string[] = [];
 
-    // 🔥 5. Smooth scroll (как Lighthouse)
-    async function smoothScroll(page: any, targetY: number) {
-  await page.evaluate(async (y: number) => {
-    await new Promise<void>((resolve) => {
-      const step = () => {
-        const current = window.scrollY;
-        const diff = y - current;
-
-        if (Math.abs(diff) < 50) {
-          window.scrollTo(0, y);
-          resolve();
-          return;
-        }
-
-        window.scrollTo(0, current + diff * 0.2);
-        requestAnimationFrame(step);
-      };
-
-      step();
-    });
-  }, targetY);
-
-  // заменяем waitForTimeout на обычный setTimeout
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  // и ждём пока сеть успокоится
-  try {
-    await page.waitForNetworkIdle({ idleTime: 200, timeout: 1500 });
-  } catch {}
-}
-
-
-    // 🔥 6. Adaptive scroll zones
-    const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
-    const viewport = 900;
-
-    const zones = [
-      0,                                 // hero
-      Math.min(bodyHeight * 0.33, bodyHeight - viewport), // mid
-      Math.max(bodyHeight - viewport, 0),                 // footer
-    ];
-
-    // 🔥 7. Прокручиваем страницу (быстро)
-    for (const y of zones) {
-      await smoothScroll(page, y);
-    }
-
-    // 🔥 8. Один оптимальный скриншот (viewport)
-    const screenshot = await page.screenshot({
-      type: "jpeg",
-      quality: 40,     // 🔥 Vision любит низкое качество
-      fullPage: false, // 🔥 быстрее, меньше размер
+    // 1) Считаем высоту страницы
+    const bodyHeight = await page.evaluate(() => {
+      return document.body.scrollHeight;
     });
 
-    return [Buffer.from(screenshot as Buffer).toString("base64")];
+    const heroY = 0;
+    const midY = 1200;
+    const footerY = Math.max(bodyHeight - 1600, 0);
+
+    // 2) Скроллим последовательно в нужные зоны (быстро)
+    await smoothScroll(page, heroY);
+    await smoothScroll(page, midY);
+    await smoothScroll(page, footerY);
+
+
+    // 3) Делаем три скриншота ПАРАЛЛЕЛЬНО
+    const [hero, mid, footer] = await Promise.all([
+      page.screenshot({
+        type: "jpeg",
+        quality: 40,
+        clip: {
+          x: 0,
+          y: heroY,
+          width: 1024,
+          height: 900,
+        },
+      }),
+      page.screenshot({
+        type: "jpeg",
+        quality: 40,
+        clip: {
+          x: 0,
+          y: midY,
+          width: 1024,
+          height: 900,
+        },
+      }),
+      page.screenshot({
+        type: "jpeg",
+        quality: 40,
+        clip: {
+          x: 0,
+          y: footerY,
+          width: 1024,
+          height: 900,
+        },
+      }),
+    ]);
+
+    screenshots.push(Buffer.from(hero as Buffer).toString("base64"));
+    screenshots.push(Buffer.from(mid as Buffer).toString("base64"));
+    screenshots.push(Buffer.from(footer as Buffer).toString("base64"));
+
+    return screenshots;
   } finally {
     await browser.close();
   }
 }
-
 
 
 
