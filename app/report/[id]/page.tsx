@@ -294,6 +294,7 @@ export default function ReportPage() {
 
     {/* DOWNLOAD */}
     <button
+                      onClick={() => window.print()}
                       className="
                         flex
                         items-center
@@ -1069,6 +1070,7 @@ export default function ReportPage() {
 
                     {/* Download report */}
                     <button
+                      onClick={() => window.print()}
                       className="
                         flex
                         items-center
