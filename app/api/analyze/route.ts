@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
+import sharp from "sharp";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -18,32 +19,13 @@ async function blobToBase64(blob: Blob) {
   return Buffer.from(arrayBuffer).toString("base64");
 }
 
-async function smoothScroll(page: any, targetY: number) {
-  await page.evaluate(async (y: number) => {
-    await new Promise<void>((resolve) => {
-      const step = () => {
-        const current = window.scrollY;
-        const diff = y - current;
+async function jumpTo(page: any, y: number) {
+  await page.evaluate((scrollY: number) => {
+    window.scrollTo(0, scrollY);
+  }, y);
 
-        if (Math.abs(diff) < 50) {
-          window.scrollTo(0, y);
-          resolve();
-          return;
-        }
-
-        window.scrollTo(0, current + diff * 0.2);
-        requestAnimationFrame(step);
-      };
-
-      step();
-    });
-  }, targetY);
-
-  // даём странице дорендерить lazy‑контент
-  await page.waitForNetworkIdle({ idleTime: 200, timeout: 1500 }).catch(() => {});
+  await new Promise((r) => setTimeout(r, 250));
 }
-
-
 
 function extractJSON(text: string) {
   let start = text.indexOf("{");
@@ -219,9 +201,8 @@ async function captureWebsiteScreenshots(url: string) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
-      width: 1024,
-      height: 900,
-      deviceScaleFactor: 1,
+      width: 900,
+      height: 760,
     },
     executablePath: await chromium.executablePath(),
     headless: true,
@@ -230,16 +211,31 @@ async function captureWebsiteScreenshots(url: string) {
   try {
     const page = await browser.newPage();
 
+    await page.setRequestInterception(true);
+
+page.on("request", (req) => {
+  const type = req.resourceType();
+
+  if (
+    type === "font" ||
+    type === "media" ||
+    type === "websocket"
+  ) {
+    req.abort();
+  } else {
+    req.continue();
+  }
+});
+
     await page.setUserAgent(
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     );
 
     await page.goto(url, {
-      waitUntil: "domcontentloaded",
-      timeout: 15000,
+      waitUntil: "networkidle0",
+      timeout: 10000,
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const screenshots: string[] = [];
 
@@ -253,48 +249,45 @@ async function captureWebsiteScreenshots(url: string) {
     const footerY = Math.max(bodyHeight - 1600, 0);
 
     // 2) Скроллим последовательно в нужные зоны (быстро)
-    await smoothScroll(page, heroY);
-    await smoothScroll(page, midY);
-    await smoothScroll(page, footerY);
+    await jumpTo(page, heroY);
+    await jumpTo(page, midY);
+    await jumpTo(page, footerY);
 
 
     // 3) Делаем три скриншота ПАРАЛЛЕЛЬНО
-    const [hero, mid, footer] = await Promise.all([
-      page.screenshot({
-        type: "jpeg",
-        quality: 40,
-        clip: {
-          x: 0,
-          y: heroY,
-          width: 1024,
-          height: 900,
-        },
-      }),
-      page.screenshot({
-        type: "jpeg",
-        quality: 40,
-        clip: {
-          x: 0,
-          y: midY,
-          width: 1024,
-          height: 900,
-        },
-      }),
-      page.screenshot({
-        type: "jpeg",
-        quality: 40,
-        clip: {
-          x: 0,
-          y: footerY,
-          width: 1024,
-          height: 900,
-        },
-      }),
-    ]);
+    const fullShot = await page.screenshot({
+  type: "png",
+  fullPage: true,
+});
 
-    screenshots.push(Buffer.from(hero as Buffer).toString("base64"));
-    screenshots.push(Buffer.from(mid as Buffer).toString("base64"));
-    screenshots.push(Buffer.from(footer as Buffer).toString("base64"));
+const image = sharp(fullShot as Buffer);
+
+const metadata = await image.metadata();
+
+const width = metadata.width || 900;
+const height = metadata.height || 2000;
+
+const sectionHeight = 760;
+
+const positions = [
+  0,
+  Math.min(1000, height - sectionHeight),
+  Math.max(height - sectionHeight, 0),
+];
+
+for (const pos of positions) {
+  const cropped = await image
+    .extract({
+      left: 0,
+      top: pos,
+      width,
+      height: Math.min(sectionHeight, height - pos),
+    })
+    .jpeg({ quality: 55 })
+    .toBuffer();
+
+  screenshots.push(cropped.toString("base64"));
+}
 
     return screenshots;
   } finally {
@@ -342,38 +335,9 @@ export async function POST(req: Request) {
     }
 
     const basePrompt = `
-You are a senior UX auditor.
-You are an elite SaaS conversion optimization expert.
+You are a senior SaaS UX auditor.
 
 Evaluate the interface using these UX criteria:
-
-1. Message clarity
-- Is the value proposition instantly understandable?
-- Is the headline concrete and outcome-oriented?
-- Is jargon reducing clarity?
-
-2. Visual hierarchy
-- Are primary actions visually dominant?
-- Is the reading flow obvious?
-- Is spacing helping comprehension?
-
-3. Conversion optimization
-- Are CTAs specific and confidence-building?
-- Are trust signals placed near decision points?
-- Is friction minimized?
-
-4. Information architecture
-- Are sections logically ordered?
-- Is content chunked correctly?
-- Are feature explanations scannable?
-
-5. SaaS landing page effectiveness
-- Does the page communicate:
-  - who it's for
-  - what problem it solves
-  - why it's better
-  - why users should trust it
-  - what action to take next
 
 Avoid generic UX advice.
 Every issue and recommendation must reference specific visible interface elements.
@@ -464,8 +428,8 @@ RULES:
 - Detect trust signal weaknesses.
 - Detect readability issues.
 - Detect conversion blockers.
-- 3–7 issues.
-- 3–7 suggestions.
+- 3–5 issues.
+- 3–5 suggestions.
 - Use concise UX language.
 - All numbers must be integers.
 - Issues use NEGATIVE impacts.
@@ -473,7 +437,7 @@ RULES:
 - Breakdown values must be 0–100.
 
 Copy requirements:
-- Generate EXACTLY 6 copy improvements.
+- Generate EXACTLY 3 copy improvements.
 - Each improvement MUST target a DIFFERENT section.
 - Never repeat the same section twice.
 - Prioritize the most conversion-critical sections first.
@@ -552,7 +516,7 @@ if (screenshotsBase64[2]) {
 }
 
     const response = await client.responses.create({
-      model: "gpt-4.1-mini",
+      model: "gpt-4.1-nano",
       temperature: 0.2,
       input: [
         {
