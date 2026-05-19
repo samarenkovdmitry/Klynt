@@ -39,8 +39,11 @@ async function smoothScroll(page: any, targetY: number) {
     });
   }, targetY);
 
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  // даём странице дорендерить lazy‑контент
+  await page.waitForNetworkIdle({ idleTime: 200, timeout: 1500 }).catch(() => {});
 }
+
+
 
 function extractJSON(text: string) {
   let start = text.indexOf("{");
@@ -66,7 +69,9 @@ function extractJSON(text: string) {
 
 function clampPercent(n: any) {
   const v = Number(n ?? 0);
+
   if (Number.isNaN(v)) return 0;
+
   return Math.max(0, Math.min(100, v));
 }
 
@@ -100,6 +105,7 @@ function mapImpact(impactObj: Record<string, number>) {
 
   if (entries.length > 1) {
     const [candM2, candV2] = entries[1];
+
     if (Math.abs(candV2) >= Math.abs(v1) * 0.15) {
       m2 = candM2;
       v2 = candV2;
@@ -114,37 +120,102 @@ function mapImpact(impactObj: Record<string, number>) {
   };
 }
 
+
+
+// -----------------------------
+// URL NORMALIZER
+// -----------------------------
 function normalizeUrl(input: string) {
   if (!input) return "";
+
   let url = input.trim();
+
   if (!url.startsWith("http://") && !url.startsWith("https://")) {
     url = `https://${url}`;
   }
+
   return url;
 }
 
+
+// -----------------------------
+// SIGNALS -> COMPACT CHIPS
+// -----------------------------
 function normalizeSignals(signals: string[] = []) {
   const tags = new Set<string>();
+
   const joined = signals.join(" ").toLowerCase();
 
-  if (joined.includes("hierarchy")) tags.add("Weak hierarchy");
-  if (joined.includes("contrast")) tags.add("Low contrast");
-  if (joined.includes("spacing") || joined.includes("layout"))
+  // hierarchy
+  if (
+    joined.includes("hierarchy") ||
+    joined.includes("visual priority")
+  ) {
+    tags.add("Weak hierarchy");
+  }
+
+  // contrast
+  if (
+    joined.includes("contrast") ||
+    joined.includes("hard to see") ||
+    joined.includes("visibility")
+  ) {
+    tags.add("Low contrast");
+  }
+
+  // layout
+  if (
+    joined.includes("crowded") ||
+    joined.includes("spacing") ||
+    joined.includes("layout") ||
+    joined.includes("dense")
+  ) {
     tags.add("Overloaded layout");
-  if (joined.includes("cta") || joined.includes("button"))
+  }
+
+  // CTA
+  if (
+    joined.includes("cta") ||
+    joined.includes("button")
+  ) {
     tags.add("Weak CTA");
-  if (joined.includes("trust") || joined.includes("testimonial"))
+  }
+
+  // trust
+  if (
+    joined.includes("trust") ||
+    joined.includes("testimonial") ||
+    joined.includes("social proof")
+  ) {
     tags.add("Missing trust signals");
-  if (joined.includes("navigation")) tags.add("Navigation friction");
-  if (joined.includes("clarity")) tags.add("Low clarity");
+  }
+
+  // navigation
+  if (
+    joined.includes("navigation") ||
+    joined.includes("menu")
+  ) {
+    tags.add("Navigation friction");
+  }
+
+  // clarity
+  if (
+    joined.includes("clarity") ||
+    joined.includes("unclear") ||
+    joined.includes("generic")
+  ) {
+    tags.add("Low clarity");
+  }
 
   return Array.from(tags).slice(0, 3);
 }
 
+
+
 // -----------------------------
-// FAST SCREENSHOT (1 IMAGE)
+// FULL PAGE SCREENSHOT
 // -----------------------------
-async function captureWebsiteScreenshot(url: string) {
+async function captureWebsiteScreenshots(url: string) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
@@ -163,30 +234,75 @@ async function captureWebsiteScreenshot(url: string) {
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     );
 
-    await page.setRequestInterception(true);
-    page.on("request", (req) => {
-      const block = ["image", "stylesheet", "font", "media"];
-      block.includes(req.resourceType()) ? req.abort() : req.continue();
-    });
-
     await page.goto(url, {
       waitUntil: "domcontentloaded",
       timeout: 15000,
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const screenshot = await page.screenshot({
-      type: "jpeg",
-      quality: 40,
-      fullPage: true,
+    const screenshots: string[] = [];
+
+    // 1) Считаем высоту страницы
+    const bodyHeight = await page.evaluate(() => {
+      return document.body.scrollHeight;
     });
 
-    return Buffer.from(screenshot as Buffer).toString("base64");
+    const heroY = 0;
+    const midY = 1200;
+    const footerY = Math.max(bodyHeight - 1600, 0);
+
+    // 2) Скроллим последовательно в нужные зоны (быстро)
+    await smoothScroll(page, heroY);
+    await smoothScroll(page, midY);
+    await smoothScroll(page, footerY);
+
+
+    // 3) Делаем три скриншота ПАРАЛЛЕЛЬНО
+    const [hero, mid, footer] = await Promise.all([
+      page.screenshot({
+        type: "jpeg",
+        quality: 40,
+        clip: {
+          x: 0,
+          y: heroY,
+          width: 1024,
+          height: 900,
+        },
+      }),
+      page.screenshot({
+        type: "jpeg",
+        quality: 40,
+        clip: {
+          x: 0,
+          y: midY,
+          width: 1024,
+          height: 900,
+        },
+      }),
+      page.screenshot({
+        type: "jpeg",
+        quality: 40,
+        clip: {
+          x: 0,
+          y: footerY,
+          width: 1024,
+          height: 900,
+        },
+      }),
+    ]);
+
+    screenshots.push(Buffer.from(hero as Buffer).toString("base64"));
+    screenshots.push(Buffer.from(mid as Buffer).toString("base64"));
+    screenshots.push(Buffer.from(footer as Buffer).toString("base64"));
+
+    return screenshots;
   } finally {
     await browser.close();
   }
 }
+
+
 
 // -----------------------------
 // ROUTE
@@ -200,73 +316,136 @@ export async function POST(req: Request) {
 
     const uploadedScreenshot = formData.get("screenshot") as Blob | null;
 
-    let screenshotBase64: string | null = null;
+    let screenshotsBase64: string[] = [];
 
+    // PRIORITY #1 — uploaded screenshot
     if (uploadedScreenshot) {
-      screenshotBase64 = await blobToBase64(uploadedScreenshot);
-    } else if (url) {
-      screenshotBase64 = await captureWebsiteScreenshot(url);
+     const uploadedBase64 = await blobToBase64(uploadedScreenshot);
+
+     screenshotsBase64 = [uploadedBase64];
     }
 
-    if (!screenshotBase64) {
+    // PRIORITY #2 — auto capture from URL
+    else if (url) {
+      screenshotsBase64 = await captureWebsiteScreenshots(url);
+    }
+
+    if (screenshotsBase64.length === 0) {
       return NextResponse.json(
-        { error: "Either URL or screenshot is required" },
-        { status: 400 }
+        {
+          error: "Either URL or screenshot is required",
+        },
+        {
+          status: 400,
+        }
       );
     }
 
-    // -----------------------------
-    // STEP 1 — VISION SUMMARY
-    // -----------------------------
-    const vision = await client.responses.create({
-      model: "gpt-4o-mini",
-      input: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_image",
-              image_url: `data:image/jpeg;base64,${screenshotBase64}`,
-              detail: "low"
-            },
-            {
-              type: "input_text",
-              text: `
-Ты — UX-аудитор. Дай 5–7 ключевых UX-проблем в формате массива:
-[
-  { "title": "", "why": "" }
-]
-              `,
-            },
-          ],
-        },
-      ],
-    });
+    const basePrompt = `
+You are a senior UX auditor.
+You are an elite SaaS conversion optimization expert.
 
-    const summary = vision.output_text;
+Evaluate the interface using these UX criteria:
 
-    // -----------------------------
-    // STEP 2 — LLM STRUCTURED JSON
-    // -----------------------------
-    const llm = await client.responses.create({
-      model: "gpt-4o-mini",
-      temperature: 0.2,
-      input: `
-Ты — UX-аудитор. На основе списка проблем ниже создай JSON по моей схеме.
+1. Message clarity
+- Is the value proposition instantly understandable?
+- Is the headline concrete and outcome-oriented?
+- Is jargon reducing clarity?
 
-Проблемы:
-${summary}
+2. Visual hierarchy
+- Are primary actions visually dominant?
+- Is the reading flow obvious?
+- Is spacing helping comprehension?
 
-Верни ТОЛЬКО JSON.
+3. Conversion optimization
+- Are CTAs specific and confidence-building?
+- Are trust signals placed near decision points?
+- Is friction minimized?
+
+4. Information architecture
+- Are sections logically ordered?
+- Is content chunked correctly?
+- Are feature explanations scannable?
+
+5. SaaS landing page effectiveness
+- Does the page communicate:
+  - who it's for
+  - what problem it solves
+  - why it's better
+  - why users should trust it
+  - what action to take next
+
+Avoid generic UX advice.
+Every issue and recommendation must reference specific visible interface elements.
+
+Analyze the FULL webpage screenshot very carefully.
+
+Analyze the interface ONLY from the provided screenshots.
+Do not invent elements that are not visible.
+Base every issue and recommendation on observable UI evidence.
+
+Return ONLY valid JSON.
+No markdown.
+No comments.
+
 JSON FORMAT:
 {
   "url": "string",
   "score": number,
   "risk": "low" | "medium" | "high",
 
-  "issues": [...],
-  "suggestions": [...],
-  "copy": [...],
+  "issues": [
+    {
+      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
+      "title": "string",
+      "description": "string",
+      "impact": {
+        "clarity"?: number,
+        "navigation"?: number,
+        "visuals"?: number,
+        "trust"?: number,
+        "conversion"?: number,
+        "cta"?: number
+      },
+      "bullets": ["string"],
+      "why": "string"
+    }
+  ],
+
+  "suggestions": [
+    {
+      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
+      "section": "string",
+      "recommendation": "string",
+      "impact": {
+        "clarity"?: number,
+        "navigation"?: number,
+        "visuals"?: number,
+        "trust"?: number,
+        "conversion"?: number,
+        "cta"?: number
+      },
+      "bullets": ["string"],
+      "why": "string"
+    }
+  ],
+
+  "copy": [
+    {
+      "section": "string",
+      "before": "string",
+      "after": "string",
+      "impact": {
+        "clarity"?: number,
+        "navigation"?: number,
+        "visuals"?: number,
+        "trust"?: number,
+        "conversion"?: number,
+        "cta"?: number
+      },
+      "why": "string"
+    }
+  ],
 
   "breakdown": {
     "clarity": number,
@@ -276,48 +455,182 @@ JSON FORMAT:
     "conversion": number
   }
 }
-      `,
-    });
 
-    const raw = llm.output_text;
+RULES:
+- Analyze REAL visible UI.
+- Detect UX hierarchy problems.
+- Detect CTA visibility problems.
+- Detect spacing/layout inconsistencies.
+- Detect trust signal weaknesses.
+- Detect readability issues.
+- Detect conversion blockers.
+- 3–7 issues.
+- 3–7 suggestions.
+- Use concise UX language.
+- All numbers must be integers.
+- Issues use NEGATIVE impacts.
+- Suggestions use POSITIVE impacts.
+- Breakdown values must be 0–100.
+
+Copy requirements:
+- Generate EXACTLY 6 copy improvements.
+- Each improvement MUST target a DIFFERENT section.
+- Never repeat the same section twice.
+- Prioritize the most conversion-critical sections first.
+
+Allowed sections:
+Hero Headline,
+Hero Subheadline,
+Primary CTA,
+Feature Section,
+Feature Highlights,
+Benefits Section,
+Trust Section,
+Testimonials,
+Social Proof,
+Pricing Section,
+Navigation,
+Footer CTA,
+About Section,
+Onboarding Section,
+Value Proposition,
+Integration Section.
+
+If a section is already strong, do not invent weak UX problems.
+
+Prioritize:
+- high-confidence issues
+- conversion-critical weaknesses
+- specific friction points
+
+Avoid filler recommendations.
+
+`;
+
+const screenshotContent: any[] = [];
+
+// HERO
+if (screenshotsBase64[0]) {
+  screenshotContent.push(
+    {
+      type: "input_text",
+      text: "Screenshot 1 — Hero section and above-the-fold experience",
+    },
+    {
+      type: "input_image",
+      image_url: `data:image/jpeg;base64,${screenshotsBase64[0]}`,
+    }
+  );
+}
+
+// MID
+if (screenshotsBase64[1]) {
+  screenshotContent.push(
+    {
+      type: "input_text",
+      text: "Screenshot 2 — Mid-page features, product explanation and content hierarchy",
+    },
+    {
+      type: "input_image",
+      image_url: `data:image/jpeg;base64,${screenshotsBase64[1]}`,
+    }
+  );
+}
+
+// FOOTER
+if (screenshotsBase64[2]) {
+  screenshotContent.push(
+    {
+      type: "input_text",
+      text: "Screenshot 3 — Bottom sections, trust signals, CTA repetition and footer",
+    },
+    {
+      type: "input_image",
+      image_url: `data:image/jpeg;base64,${screenshotsBase64[2]}`,
+    }
+  );
+}
+
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      temperature: 0.2,
+      input: [
+        {
+          role: "user",
+
+          content: [
+        {
+          type: "input_text",
+          text: basePrompt,
+        },
+
+        {
+          type: "input_text",
+          text: `Website URL: ${url}`,
+        },
+
+        ...screenshotContent,
+      ],
+    },
+  ],
+} as any);
+
+
+    const raw = response.output_text;
+
     const json = extractJSON(raw);
 
-    // -----------------------------
-    // POST-PROCESSING
-    // -----------------------------
+    if (!json.breakdown || typeof json.breakdown !== "object") {
+      json.breakdown = {
+        clarity: 0,
+        navigation: 0,
+        visuals: 0,
+        trust: 0,
+        conversion: 0,
+      };
+    }
+
     json.breakdown = {
-      clarity: clampPercent(json.breakdown?.clarity),
-      navigation: clampPercent(json.breakdown?.navigation),
-      visuals: clampPercent(json.breakdown?.visuals),
-      trust: clampPercent(json.breakdown?.trust),
-      conversion: clampPercent(json.breakdown?.conversion),
+      clarity: clampPercent(json.breakdown.clarity),
+      navigation: clampPercent(json.breakdown.navigation),
+      visuals: clampPercent(json.breakdown.visuals),
+      trust: clampPercent(json.breakdown.trust),
+      conversion: clampPercent(json.breakdown.conversion),
     };
 
-    json.issues = (json.issues || []).map((item: any) => ({
+    json.issues = Array.isArray(json.issues) ? json.issues : [];
+    json.suggestions = Array.isArray(json.suggestions)
+      ? json.suggestions
+      : [];
+    json.copy = Array.isArray(json.copy) ? json.copy : [];
+
+    json.issues = json.issues.map((item: any) => ({
+     ...item,
+     bullets: normalizeSignals(item.bullets || []),
+     ...mapImpact(item.impact || {}),
+     }));
+
+    json.suggestions = json.suggestions.map((item: any) => ({
       ...item,
-      bullets: normalizeSignals(item.bullets || []),
       ...mapImpact(item.impact || {}),
     }));
 
-    json.suggestions = (json.suggestions || []).map((item: any) => ({
+    json.copy = json.copy.map((item: any) => ({
       ...item,
       ...mapImpact(item.impact || {}),
     }));
-
-    json.copy = (json.copy || []).map((item: any) => ({
-      ...item,
-      ...mapImpact(item.impact || {}),
-    }));
-
-    json.url = url;
 
     return NextResponse.json(json);
   } catch (error: any) {
     console.error(error);
 
     return NextResponse.json(
-      { error: error.message || "Unknown server error" },
-      { status: 500 }
+      {
+        error: error.message || "Unknown server error",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
