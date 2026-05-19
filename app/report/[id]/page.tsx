@@ -1136,7 +1136,6 @@ export default function ReportPage() {
                       "
                     >
                       <RiShareForwardLine size={18} className="shrink-0"/>
-                      <span>Share</span>
 
                       {copied ? "Copied link" : "Share"}
                     </button>
