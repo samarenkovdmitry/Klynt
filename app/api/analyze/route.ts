@@ -18,6 +18,33 @@ async function blobToBase64(blob: Blob) {
   return Buffer.from(arrayBuffer).toString("base64");
 }
 
+async function smoothScroll(page: any, targetY: number) {
+  await page.evaluate(async (y: number) => {
+    await new Promise<void>((resolve) => {
+      const step = () => {
+        const current = window.scrollY;
+        const diff = y - current;
+
+        if (Math.abs(diff) < 50) {
+          window.scrollTo(0, y);
+          resolve();
+          return;
+        }
+
+        window.scrollTo(0, current + diff * 0.2);
+        requestAnimationFrame(step);
+      };
+
+      step();
+    });
+  }, targetY);
+
+  // даём странице дорендерить lazy‑контент
+  await page.waitForNetworkIdle({ idleTime: 200, timeout: 1500 }).catch(() => {});
+}
+
+
+
 function extractJSON(text: string) {
   let start = text.indexOf("{");
 
@@ -93,6 +120,8 @@ function mapImpact(impactObj: Record<string, number>) {
   };
 }
 
+
+
 // -----------------------------
 // URL NORMALIZER
 // -----------------------------
@@ -107,7 +136,6 @@ function normalizeUrl(input: string) {
 
   return url;
 }
-
 
 
 // -----------------------------
@@ -225,14 +253,10 @@ async function captureWebsiteScreenshots(url: string) {
     const footerY = Math.max(bodyHeight - 1600, 0);
 
     // 2) Скроллим последовательно в нужные зоны (быстро)
-    await page.evaluate((y: number) => window.scrollTo(0, y), heroY);
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await smoothScroll(page, heroY);
+    await smoothScroll(page, midY);
+    await smoothScroll(page, footerY);
 
-    await page.evaluate((y: number) => window.scrollTo(0, y), midY);
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    await page.evaluate((y: number) => window.scrollTo(0, y), footerY);
-    await new Promise((resolve) => setTimeout(resolve, 300));
 
     // 3) Делаем три скриншота ПАРАЛЛЕЛЬНО
     const [hero, mid, footer] = await Promise.all([
