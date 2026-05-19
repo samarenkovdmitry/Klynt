@@ -157,16 +157,6 @@ export default function ReportPage() {
 <path d="M69.7028 32.4413V9.84473H73.6312V32.4413H69.7028Z" fill="#061C2F"/>
 <path d="M63.8504 10.3643H68.4606L59.5648 22.3443L59.7596 19.7795L68.7852 32.4414H64.0127L56.2208 21.1755L63.8504 10.3643ZM52.0002 10.3643H56.026V32.4414H52.0002V10.3643Z" fill="#061C2F"/>
 </svg>
-            <div className="hidden sm:flex flex-col leading-none">
-              <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]">
-                UX Clarity Analyzer
-              </span>
-
-              <span className="mt-1 text-[11px] text-[var(--ink-secondary)]">
-                AI-powered website review
-              </span>
-            </div>
-
 
           </div>
 
