@@ -340,78 +340,85 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="mt-14 space-y-5">
+<div className="
+  relative
+  max-h-[520px]
+  overflow-hidden
+  [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
+">
+  <div className="mt-14 space-y-5">
 
-            {[1,2].map((item) => (
-              <div
-                key={item}
-                className="
-                  rounded-[32px]
-                  border
-                  border-[rgba(6,28,47,0.06)]
-                  bg-white
-                  px-8
-                  py-8
-                  transition-all
-                  duration-200
-                  hover:-translate-y-[2px]
-                  hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)]
-                "
-              >
-                <div className="flex gap-6">
+    {[1,2].map((item) => (
+      <div
+        key={item}
+        className="
+          rounded-[32px]
+          border
+          border-[rgba(6,28,47,0.06)]
+          bg-white
+          px-8
+          py-8
+          transition-all
+          duration-200
+          hover:-translate-y-[2px]
+          hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)]
+        "
+      >
+        <div className="flex gap-6">
 
-                  <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
-                    0{item}
+          <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+            0{item}
+          </div>
+
+          <div className="flex-1">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+
+              <div>
+                <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  {item === 1
+                    ? "Unclear primary CTA hierarchy"
+                    : "Navigation menu lacks visual separation"}
+                </h3>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="rounded-full bg-[#F3F4F6] px-3 py-1 text-[13px] font-medium text-[#6B7280]">
+                    Weak hierarchy
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-
-                      <div>
-                        <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                          {item === 1
-                            ? "Unclear primary CTA hierarchy"
-                            : "Navigation menu lacks visual separation"}
-                        </h3>
-
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          <div className="rounded-full bg-[#F3F4F6] px-3 py-1 text-[13px] font-medium text-[#6B7280]">
-                            Weak hierarchy
-                          </div>
-
-                          <div className="rounded-full bg-[#F3F4F6] px-3 py-1 text-[13px] font-medium text-[#6B7280]">
-                            Weak CTA
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454]">
-                          +16% clarity
-                        </div>
-
-                        <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454]">
-                          +12% conversion
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-8">
-                      <p className="text-[15px] font-semibold text-[#061C2F]">
-                        Why it works
-                      </p>
-
-                      <p className="mt-2 max-w-[720px] text-[16px] leading-8 text-[#6B7280]">
-                        Clear action hierarchy helps users instantly identify the main
-                        interaction and improves conversion confidence.
-                      </p>
-                    </div>
+                  <div className="rounded-full bg-[#F3F4F6] px-3 py-1 text-[13px] font-medium text-[#6B7280]">
+                    Weak CTA
                   </div>
                 </div>
               </div>
-            ))}
+
+              <div className="flex flex-wrap gap-2">
+                <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454]">
+                  +16% clarity
+                </div>
+
+                <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454]">
+                  +12% conversion
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <p className="text-[15px] font-semibold text-[#061C2F]">
+                Why it works
+              </p>
+
+              <p className="mt-2 max-w-[720px] text-[16px] leading-8 text-[#6B7280]">
+                Clear action hierarchy helps users instantly identify the main
+                interaction and improves conversion confidence.
+              </p>
+            </div>
           </div>
         </div>
+      </div>
+    ))}
+</div>
+  </div>
+</div>
       </section>
 
 
