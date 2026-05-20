@@ -13,7 +13,6 @@ RiLayoutGridLine,
 export default function Home() {
 return ( <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
 
-```
   {/* HERO */}
   <section className="relative overflow-hidden bg-[#14A8E8]">
 
