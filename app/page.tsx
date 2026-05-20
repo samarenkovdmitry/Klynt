@@ -326,14 +326,14 @@ export default function Home() {
       </section>
 
 
-  {/* FEATURES */}
+{/* FEATURES */}
 <section className="px-6 py-20">
   <div className="mx-auto max-w-[920px]">
 
     {/* SECTION 1 — UX Signals */}
     <div className="mx-auto max-w-[760px] text-center">
       <div className="inline-flex rounded-full bg-[#DFF5FF] px-4 py-2 text-[12px] font-semibold text-[#0F7FB3]">
-        UX Issues
+        UX Signals
       </div>
 
       <h2 className="mt-6 text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
@@ -362,8 +362,6 @@ export default function Home() {
               bg-white
               px-8
               py-8
-              transition-all
-              duration-200
             "
           >
             <div className="flex gap-6">
@@ -424,7 +422,7 @@ export default function Home() {
 
     {/* SECTION 2 — Suggested Improvements */}
     <div className="mt-28 mx-auto max-w-[760px] text-center">
-      <div className="inline-flex rounded-full bg-[#E8F7EE] px-4 py-2 text-[12px] font-semibold text-[#2E7D4F]">
+      <div className="inline-flex rounded-full bg-[#DFF5FF] px-4 py-2 text-[12px] font-semibold text-[#0F7FB3]">
         Suggested Improvements
       </div>
 
@@ -433,73 +431,86 @@ export default function Home() {
       </h2>
     </div>
 
-    <div className="mt-14 space-y-5">
-      {/* CARD 1 */}
-      <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-8 py-8">
-        <div className="flex gap-6">
-          <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
-            01
-          </div>
+    {/* CARD LIST WITH iOS MASK */}
+    <div
+      className="
+        relative
+        max-h-[520px]
+        overflow-hidden
+        mt-14
+        [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
+      "
+    >
+      <div className="space-y-5">
 
-          <div className="flex-1">
-            <div className="flex justify-between flex-wrap gap-4">
-              <div>
-                <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                  Hero Section
-                </h3>
-
-                <p className="mt-4 text-[16px] text-[#6B7280] max-w-[720px]">
-                  Make the ‘Download’ button more prominent as the primary CTA by increasing size,
-                  contrast, or adding a visual indicator.
-                </p>
-              </div>
-
-              <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454] h-fit">
-                +15% conversion
-              </div>
+        {/* CARD 1 */}
+        <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-8 py-8">
+          <div className="flex gap-6">
+            <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              01
             </div>
 
-            <div className="mt-8">
-              <p className="text-[15px] font-semibold text-[#061C2F]">Why it works</p>
-              <p className="mt-2 text-[16px] leading-8 text-[#6B7280] max-w-[720px]">
-                Enhancing CTA visibility directs user focus and improves click‑through rates.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+            <div className="flex-1">
+              <div className="flex justify-between flex-wrap gap-4">
+                <div>
+                  <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                    Hero Section
+                  </h3>
 
-      {/* CARD 2 */}
-      <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-8 py-8">
-        <div className="flex gap-6">
-          <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
-            02
-          </div>
+                  <p className="mt-4 text-[16px] text-[#6B7280] max-w-[720px]">
+                    Make the ‘Download’ button more prominent as the primary CTA by increasing size,
+                    contrast, or adding a visual indicator.
+                  </p>
+                </div>
 
-          <div className="flex-1">
-            <div className="flex justify-between flex-wrap gap-4">
-              <div>
-                <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                  Top Menu
-                </h3>
-
-                <p className="mt-4 text-[16px] text-[#6B7280] max-w-[720px]">
-                  Introduce visual separators or hover effects for menu items to clarify interactivity.
-                </p>
+                <div className="rounded-full bg-[#E8F7EE] px-3 py-1 text-[13px] font-semibold text-[#2E7D4F] h-fit">
+                  +15% conversion
+                </div>
               </div>
 
-              <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454] h-fit">
-                +10% navigation
+              <div className="mt-8">
+                <p className="text-[15px] font-semibold text-[#061C2F]">Why it works</p>
+                <p className="mt-2 text-[16px] leading-8 text-[#6B7280] max-w-[720px]">
+                  Enhancing CTA visibility directs user focus and improves click‑through rates.
+                </p>
               </div>
             </div>
           </div>
         </div>
+
+        {/* CARD 2 */}
+        <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-8 py-8">
+          <div className="flex gap-6">
+            <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              02
+            </div>
+
+            <div className="flex-1">
+              <div className="flex justify-between flex-wrap gap-4">
+                <div>
+                  <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                    Top Menu
+                  </h3>
+
+                  <p className="mt-4 text-[16px] text-[#6B7280] max-w-[720px]">
+                    Introduce visual separators or hover effects for menu items to clarify interactivity.
+                  </p>
+                </div>
+
+                <div className="rounded-full bg-[#E8F7EE] px-3 py-1 text-[13px] font-semibold text-[#2E7D4F] h-fit">
+                  +10% navigation
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
     {/* SECTION 3 — Copy Refinement */}
     <div className="mt-28 mx-auto max-w-[760px] text-center">
-      <div className="inline-flex rounded-full bg-[#FFF4D6] px-4 py-2 text-[12px] font-semibold text-[#B37A00]">
+      <div className="inline-flex rounded-full bg-[#DFF5FF] px-4 py-2 text-[12px] font-semibold text-[#0F7FB3]">
         Copy Refinement
       </div>
 
@@ -508,55 +519,107 @@ export default function Home() {
       </h2>
     </div>
 
-    <div className="mt-14 space-y-5">
-      {/* CARD */}
-      <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-8 py-8">
-        <div className="flex gap-6">
-          <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
-            01
-          </div>
+    {/* CARD LIST WITH iOS MASK */}
+    <div
+      className="
+        relative
+        max-h-[520px]
+        overflow-hidden
+        mt-14
+        [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
+      "
+    >
+      <div className="space-y-5">
 
-          <div className="flex-1">
-            <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-              Hero Headline
-            </h3>
-
-            <p className="mt-4 text-[16px] text-[#6B7280] max-w-[720px]">
-              Improve copy clarity and conversion intent.
-            </p>
-
-            <div className="mt-6">
-              <p className="text-[15px] font-semibold text-[#061C2F]">Before</p>
-              <p className="mt-1 text-[16px] text-[#6B7280]">Turn waiting into watching.</p>
-
-              <p className="mt-6 text-[15px] font-semibold text-[#061C2F]">Improved</p>
-              <p className="mt-1 text-[16px] text-[#6B7280]">
-                Beautiful Mac Screensavers That Keep Your Screen Alive.
-              </p>
+        {/* CARD 1 */}
+        <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-8 py-8">
+          <div className="flex gap-6">
+            <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              01
             </div>
 
-            <div className="mt-8 flex gap-2">
-              <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454]">
-                +15% clarity
-              </div>
-              <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454]">
-                +10% conversion
-              </div>
-            </div>
+            <div className="flex-1">
+              <div className="flex justify-between flex-wrap gap-4">
+                <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  Hero Headline
+                </h3>
 
-            <div className="mt-8">
-              <p className="text-[15px] font-semibold text-[#061C2F]">Why it works</p>
-              <p className="mt-2 text-[16px] leading-8 text-[#6B7280] max-w-[720px]">
-                Explicitly states product and benefit, improving immediate comprehension.
-              </p>
+                <div className="rounded-full bg-[#DFF5FF] px-3 py-1 text-[13px] font-semibold text-[#0F7FB3] h-fit">
+                  +15% clarity
+                </div>
+              </div>
+
+              {/* BEFORE / IMPROVED */}
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <p className="text-[15px] font-semibold text-[#061C2F]">Before</p>
+                  <p className="mt-2 text-[16px] text-[#6B7280]">
+                    Turn waiting into watching.
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-[15px] font-semibold text-[#061C2F]">Improved</p>
+                  <p className="mt-2 text-[16px] text-[#6B7280]">
+                    Beautiful Mac Screensavers That Keep Your Screen Alive.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <p className="text-[15px] font-semibold text-[#061C2F]">Why it works</p>
+                <p className="mt-2 text-[16px] leading-8 text-[#6B7280] max-w-[720px]">
+                  Explicitly states product and benefit, improving immediate comprehension.
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* CARD 2 (уходит в фон) */}
+        <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-8 py-8">
+          <div className="flex gap-6">
+            <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              02
+            </div>
+
+            <div className="flex-1">
+              <div className="flex justify-between flex-wrap gap-4">
+                <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  Subheadline
+                </h3>
+
+                <div className="rounded-full bg-[#DFF5FF] px-3 py-1 text-[13px] font-semibold text-[#0F7FB3] h-fit">
+                  +10% conversion
+                </div>
+              </div>
+
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <p className="text-[15px] font-semibold text-[#061C2F]">Before</p>
+                  <p className="mt-2 text-[16px] text-[#6B7280]">
+                    Generic subheadline text.
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-[15px] font-semibold text-[#061C2F]">Improved</p>
+                  <p className="mt-2 text-[16px] text-[#6B7280]">
+                    Clearer, more benefit‑driven messaging.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
   </div>
 </section>
+
 
 
 
