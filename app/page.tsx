@@ -15,20 +15,6 @@ export default function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden bg-[#53C2EE] pb-[180px]">
 
-        {/* GRID OVERLAY */}
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)
-            `,
-            backgroundSize: "42px 42px",
-          }}
-        />
-
-        {/* TOP LIGHT */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_60%)]" />
 
         {/* NAVBAR */}
         <header className="relative z-20">
@@ -80,12 +66,12 @@ export default function Home() {
             className="
               mt-8
               max-w-[860px]
-              text-[64px]
+              text-[100px]
               font-semibold
-              leading-[0.95]
+              leading-[0.85]
               tracking-[-0.06em]
               text-[#061C2F]
-              sm:text-[72px]
+              text-[#061C2F]
             "
           >
             UX, decoded
@@ -94,10 +80,10 @@ export default function Home() {
           {/* SUB */}
           <p
             className="
-              mt-7
+              mt-8
               max-w-[700px]
-              text-[19px]
-              leading-8
+              text-[22px]
+              leading-[1.6]
               text-[rgba(6,28,47,0.72)]
             "
           >
