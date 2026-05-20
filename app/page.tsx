@@ -444,7 +444,7 @@ export default function Home() {
   <div className="space-y-5 flex flex-col items-center">
 
     {/* CARD 1 */}
-    <div className="w-[720px] rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-10 py-10">
+    <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-10 py-10">
       <div className="flex gap-6">
 
         {/* NUMBER */}
@@ -485,7 +485,7 @@ export default function Home() {
     </div>
 
     {/* CARD 2 — fades out */}
-    <div className="w-[720px] rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-10 py-10">
+    <div className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-10 py-10">
       <div className="flex gap-6">
 
         {/* NUMBER */}
