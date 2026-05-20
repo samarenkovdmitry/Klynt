@@ -2,578 +2,667 @@ import Link from "next/link";
 import {
 RiArrowRightLine,
 RiSparkling2Line,
-RiSearch2Line,
+RiFocus3Line,
+RiScan2Line,
+RiBarChartBoxLine,
+RiMagicLine,
 RiFlashlightLine,
-RiFileCopyLine,
-RiCheckboxCircleFill,
+RiLayoutGridLine,
 } from "@remixicon/react";
 
 export default function Home() {
-return ( <main className="bg-[#F5F7FA] text-[#061C2F] overflow-hidden">
-
-
-  {/* NAVBAR */}
-  <header className="relative z-50 px-8 pt-8">
-    <div className="mx-auto flex max-w-[1400px] items-center justify-between">
-
-      {/* LOGO */}
-      <Link href="/" className="flex items-center">
-        <img
-          src="/klynt-logo-dark.svg"
-          alt="Klynt"
-          className="h-[46px] w-auto"
-        />
-      </Link>
-
-      {/* RIGHT */}
-      <button
-        className="text-[15px] font-medium text-[#061C2F] opacity-70 transition hover:opacity-100"
-      >
-        Examples
-      </button>
-    </div>
-  </header>
-
+return ( <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
 
   {/* HERO */}
-  <section className="relative px-5 pb-0 pt-6">
+  <section className="relative overflow-hidden bg-[#14A8E8]">
 
-    <div
-      className="
-        relative
-        mx-auto
-        max-w-[1760px]
-        overflow-hidden
-        rounded-[56px]
-        bg-[#123453]
-        px-[84px]
-        pt-[110px]
-        min-h-[980px]
-      "
-    >
+    {/* BACKGROUND */}
+    <div className="absolute inset-0 bg-[#54CDF7]" />
 
-      {/* GLOW */}
-      <div className="absolute left-[120px] top-[180px] h-[500px] w-[500px] rounded-full bg-[#14A8E8]/[0.16] blur-[120px]" />
+    <div className="relative z-10 mx-auto max-w-[1280px] px-6 pt-7 pb-[140px] lg:px-10">
 
-      {/* CONTENT */}
-      <div className="relative z-10 grid grid-cols-[620px_1fr] items-start gap-20">
+      {/* NAVBAR */}
+      <header className="flex items-center justify-between">
 
-        {/* LEFT */}
-        <div className="max-w-[620px] pt-10">
+        <Link href="/" className="flex items-center">
+          <img
+            src="/klynt-logo-dark.svg"
+            alt="Klynt"
+            className="h-8 w-auto"
+          />
+        </Link>
 
-          {/* PILL */}
-          <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-full
-              bg-white/8
-              px-5
-              py-3
-              text-[16px]
-              font-medium
-              text-white
-              backdrop-blur-sm
-            "
+        <div className="flex items-center gap-3">
+          <Link
+            href="/report/demo"
+            className="rounded-full border border-[rgba(6,28,47,0.08)] bg-white/70 px-5 py-2.5 text-[14px] font-medium text-[#061C2F] backdrop-blur transition-all duration-200 hover:bg-white"
           >
-            <RiSparkling2Line size={18} />
-            AI UX intelligence
-          </div>
+            View sample report
+          </Link>
+        </div>
+      </header>
 
-          {/* TITLE */}
-          <h1
-            className="
-              mt-10
-              text-[100px]
-              font-semibold
-              leading-[0.9]
-              tracking-[-0.07em]
-              text-white
-            "
-          >
-            Ship clearer
-            <br />
-            experiences faster
-          </h1>
+      {/* HERO CONTENT */}
+      <div className="mx-auto mt-24 max-w-[980px] text-center">
 
-          {/* DESCRIPTION */}
-          <p
-            className="
-              mt-10
-              max-w-[620px]
-              text-[28px]
-              leading-[1.65]
-              tracking-[-0.03em]
-              text-white/68
-            "
-          >
-            Klynt helps product teams identify friction,
-            improve clarity and optimize conversion before launch.
-          </p>
-
-          {/* CTA */}
-          <div className="mt-14 flex items-center gap-5">
-
-            <Link
-              href="/analyze"
-              className="
-                inline-flex
-                h-[74px]
-                items-center
-                justify-center
-                rounded-full
-                bg-[#14A8E8]
-                px-10
-                text-[22px]
-                font-semibold
-                text-white
-                shadow-[0_20px_80px_rgba(20,168,232,0.35)]
-                transition-all
-                duration-300
-                hover:translate-y-[-2px]
-                hover:bg-[#2CC2FF]
-              "
-            >
-              Start free audit
-            </Link>
-
-          </div>
+        {/* PILL */}
+        <div className="inline-flex items-center gap-2 rounded-full bg-white/18 px-4 py-2 text-[13px] font-medium text-[#061C2F] backdrop-blur-md">
+          <RiSparkling2Line size={15} />
+          AI-powered UX reviews
         </div>
 
-
-        {/* RIGHT MOCKUP */}
-        <div className="relative pt-10">
-
-          <div
-            className="
-              overflow-hidden
-              rounded-[40px]
-              border
-              border-[rgba(0,0,0,0.06)]
-              bg-white
-              shadow-[0_40px_120px_rgba(0,0,0,0.22)]
-            "
-          >
-            <img
-              src="/report-preview.png"
-              alt="Clarity Report"
-              className="w-full"
-            />
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-
-    {/* FLOATING REPORT OVERLAP */}
-    <div className="relative z-20 mx-auto -mt-[280px] max-w-[1320px] px-10">
-      <div
-        className="
-          overflow-hidden
-          rounded-[40px]
-          border
-          border-[rgba(0,0,0,0.06)]
-          bg-white
-          shadow-[0_40px_120px_rgba(0,0,0,0.18)]
-        "
-      >
-        <img
-          src="/report-preview-large.png"
-          alt="Clarity Report"
-          className="w-full"
-        />
-      </div>
-    </div>
-
-
-    {/* PILLS */}
-    <div className="relative z-20 mx-auto mt-12 flex max-w-[1200px] flex-wrap items-center justify-center gap-4 px-8">
-
-      {[
-        ["Prioritized UX issues", RiSearch2Line],
-        ["Full-page screenshot analysis", RiFlashlightLine],
-        ["Conversion-focused insights", RiCheckboxCircleFill],
-        ["AI copy refinement", RiFileCopyLine],
-      ].map(([label, Icon]: any, i) => (
-        <div
-          key={i}
-          className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-full
-            border
-            border-[#D7EAF4]
-            bg-white
-            px-5
-            py-3
-            text-[15px]
-            font-medium
-            text-[#0E7490]
-            shadow-[0_4px_18px_rgba(0,0,0,0.03)]
-          "
+        {/* TITLE */}
+        <h1
+          className="mt-8 text-[72px] font-semibold leading-[0.92] tracking-[-0.07em] text-[#061C2F] md:text-[100px]"
         >
-          <Icon size={16} />
-          {label}
+          UX, decoded
+        </h1>
+
+        {/* DESCRIPTION */}
+        <p className="mx-auto mt-8 max-w-[760px] text-[22px] leading-[1.6] text-[rgba(6,28,47,0.78)]">
+          Klynt transforms screenshots and websites into structured UX
+          findings with prioritized improvements and measurable impact.
+        </p>
+
+        {/* CTA */}
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/analyze"
+            className="group inline-flex items-center gap-2 rounded-full bg-[#061C2F] px-7 py-4 text-[16px] font-semibold text-white transition-all duration-200 hover:translate-y-[-1px] hover:shadow-[0_12px_30px_rgba(6,28,47,0.25)]"
+          >
+            Start free audit
+            <RiArrowRightLine
+              size={18}
+              className="transition-transform duration-200 group-hover:translate-x-0.5"
+            />
+          </Link>
         </div>
-      ))}
+      </div>
+
+      {/* FLOATING REPORT */}
+      <div className="relative mx-auto mt-20 max-w-[1120px]">
+
+        {/* CARD */}
+        <div className="overflow-hidden rounded-[40px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_40px_120px_rgba(6,28,47,0.16)]">
+
+          {/* TOP */}
+          <div className="border-b border-[rgba(6,28,47,0.06)] px-8 py-7">
+
+            <div className="flex items-start justify-between gap-6">
+
+              <div>
+                <div className="flex items-center gap-3">
+                  <h2 className="text-[34px] font-semibold tracking-[-0.04em] text-[#061C2F]">
+                    Clarity Report
+                  </h2>
+
+                  <div className="rounded-full bg-[#EEF6FF] px-3 py-1 text-[12px] font-semibold text-[#3E7BFF]">
+                    AI Generated
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center gap-3 text-[14px] text-[#73808C]">
+
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="https://www.google.com/s2/favicons?domain=notion.so&sz=64"
+                      alt="favicon"
+                      className="h-4 w-4 rounded-sm"
+                    />
+
+                    <span>https://notion.so</span>
+                  </div>
+
+                  <span className="text-[#C8D0D7]">•</span>
+                  <span>3 screenshots analyzed</span>
+                  <span className="text-[#C8D0D7]">•</span>
+                  <span>Generated Nov 18, 2026</span>
+                </div>
+              </div>
+
+              <button
+                className="flex items-center gap-2 rounded-full border border-[rgba(6,28,47,0.08)] px-4 py-2 text-[14px] font-medium text-[#061C2F] transition hover:bg-[#F7FAFC]"
+              >
+                Export PDF
+              </button>
+            </div>
+          </div>
+
+          {/* SUMMARY */}
+          <div className="px-8 py-8">
+
+            <h3 className="text-[24px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+              Summary
+            </h3>
+
+            <div className="mt-5 rounded-[22px] border border-[#E5EBF0] bg-[#FBFCFD] px-5 py-4">
+              <p className="text-[16px] leading-7 text-[#44515D]">
+                Clear visual structure and modern presentation, but weak CTA
+                specificity reduces conversion confidence in the first
+                screen experience.
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_0.9fr]">
+
+              {/* SCORE */}
+              <div className="rounded-[28px] border border-[#E5EBF0] bg-white p-6">
+                <div className="flex items-center gap-6">
+
+                  <div className="relative flex h-[132px] w-[132px] items-center justify-center">
+
+                    <svg className="absolute inset-0 h-full w-full -rotate-90">
+                      <circle
+                        cx="66"
+                        cy="66"
+                        r="54"
+                        stroke="#E8EDF2"
+                        strokeWidth="8"
+                        fill="none"
+                      />
+
+                      <circle
+                        cx="66"
+                        cy="66"
+                        r="54"
+                        stroke="#FF8A28"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeDasharray={339}
+                        strokeDashoffset={85}
+                      />
+                    </svg>
+
+                    <div className="text-center">
+                      <p className="text-[14px] font-semibold text-[#061C2F]">
+                        UX Score
+                      </p>
+
+                      <p className="mt-1 text-[44px] leading-none font-semibold text-[#FF8A28]">
+                        75
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="max-w-[380px] text-[24px] font-semibold leading-[1.35] tracking-[-0.03em] text-[#061C2F]">
+                      Above average UX quality with moderate conversion friction
+                    </h4>
+
+                    <div className="mt-5 space-y-2 text-[15px] text-[#73808C]">
+                      <p>
+                        <span className="font-medium text-[#061C2F]">
+                          Best:
+                        </span>{" "}
+                        Navigation clarity
+                      </p>
+
+                      <p>
+                        <span className="font-medium text-[#061C2F]">
+                          Risk:
+                        </span>{" "}
+                        Trust positioning
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* HEALTH */}
+              <div className="rounded-[28px] border border-[#E5EBF0] bg-white p-6">
+                <div className="flex h-full flex-col justify-between">
+
+                  <div>
+                    <p className="text-[15px] font-semibold text-[#061C2F]">
+                      Conversion Health
+                    </p>
+
+                    <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#FFF2F2] px-3 py-1.5 text-[13px] font-semibold text-[#F15A5A]">
+                      <div className="h-2 w-2 rounded-full bg-[#F15A5A]" />
+                      Fair
+                    </div>
+                  </div>
+
+                  <p className="mt-6 text-[15px] leading-7 text-[#73808C]">
+                    CTA clarity and trust positioning reduce conversion confidence.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* PILLS */}
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+
+          {[
+            {
+              icon: RiFocus3Line,
+              label: "Prioritized UX issues",
+            },
+            {
+              icon: RiScan2Line,
+              label: "Full-page screenshot analysis",
+            },
+            {
+              icon: RiBarChartBoxLine,
+              label: "Conversion focused insights",
+            },
+            {
+              icon: RiMagicLine,
+              label: "AI copy refinement",
+            },
+            {
+              icon: RiFlashlightLine,
+              label: "Fast visual audits",
+            },
+            {
+              icon: RiLayoutGridLine,
+              label: "Designed for product teams",
+            },
+          ].map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <div
+                key={item.label}
+                className="flex items-center gap-2 rounded-full border border-[rgba(20,168,232,0.12)] bg-white/90 px-4 py-2 text-[14px] font-medium text-[#167DB0] shadow-[0_4px_14px_rgba(20,168,232,0.06)]"
+              >
+                <Icon size={16} />
+                {item.label}
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   </section>
 
 
   {/* UX ISSUES */}
-  <section className="mx-auto mt-36 max-w-[1120px] px-8">
+  <section className="px-6 py-28 lg:px-10">
+    <div className="mx-auto max-w-[1120px]">
 
-    <div className="mb-10 flex justify-center">
-      <div className="rounded-full bg-[#54CDF7] px-4 py-2 text-[12px] font-semibold text-[#061C2F]">
-        1. UX Issues
-      </div>
-    </div>
-
-    <h2 className="mx-auto max-w-[860px] text-center text-[64px] font-semibold leading-[1] tracking-[-0.06em] text-[#061C2F]">
-      Key problems hurting clarity and conversion
-    </h2>
-
-
-    {/* STACK */}
-    <div className="relative mt-16 space-y-5 overflow-hidden">
-
-      {/* CARD 1 */}
-      <div className="rounded-[32px] border border-[#E4E8EC] bg-white p-8 shadow-[0_8px_40px_rgba(0,0,0,0.03)]">
-
-        <div className="flex gap-6">
-          <div className="w-[34px] text-[36px] font-semibold text-[#D4D9DE]">
-            1
-          </div>
-
-          <div className="flex-1">
-
-            <div className="flex items-start justify-between gap-6">
-
-              <div>
-                <h3 className="text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                  Unclear primary CTA hierarchy
-                </h3>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <div className="rounded-full border border-[#E7EAEE] bg-[#FAFBFC] px-3 py-1 text-[12px] font-medium text-[#7D8A96]">
-                    Weak hierarchy
-                  </div>
-
-                  <div className="rounded-full border border-[#E7EAEE] bg-[#FAFBFC] px-3 py-1 text-[12px] font-medium text-[#7D8A96]">
-                    Weak CTA
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <div className="rounded-full border border-[#FFD9D9] bg-[#FFF5F5] px-3 py-2 text-[12px] font-semibold text-[#FF6B6B]">
-                  -15% clarity
-                </div>
-
-                <div className="rounded-full border border-[#FFD9D9] bg-[#FFF5F5] px-3 py-2 text-[12px] font-semibold text-[#FF6B6B]">
-                  -12% conversion
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 border-t border-[#EEF1F4] pt-6">
-              <p className="text-[15px] font-semibold text-[#061C2F]">
-                Why it works
-              </p>
-
-              <p className="mt-2 text-[17px] leading-8 text-[#7D8A96]">
-                Clear visual hierarchy helps users quickly identify the main action.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      {/* CARD 2 */}
-      <div className="relative overflow-hidden rounded-[32px] border border-[#E4E8EC] bg-white p-8 opacity-95">
-        <div className="flex gap-6">
-          <div className="w-[34px] text-[36px] font-semibold text-[#D4D9DE]">
-            2
-          </div>
-
-          <div className="flex-1">
-            <div className="flex items-start justify-between gap-6">
-              <div>
-                <h3 className="text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                  Navigation items lack visual separation
-                </h3>
-              </div>
-
-              <div className="rounded-full border border-[#FFD9D9] bg-[#FFF5F5] px-3 py-2 text-[12px] font-semibold text-[#FF6B6B]">
-                -8% navigation
-              </div>
-            </div>
-          </div>
+      <div className="text-center">
+        <div className="inline-flex rounded-full bg-[#DFF5FF] px-3 py-1 text-[12px] font-semibold text-[#1496CF]">
+          1. UX Issues
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[180px] bg-gradient-to-b from-transparent to-[#F5F7FA]" />
+        <h2 className="mx-auto mt-6 max-w-[760px] text-[54px] font-semibold leading-[1.02] tracking-[-0.05em] text-[#061C2F]">
+          Key problems hurting clarity and conversion
+        </h2>
+      </div>
+
+      <div className="mt-16 space-y-5">
+
+        {[1, 2, 3].map((item) => (
+          <div
+            key={item}
+            className="rounded-[32px] border border-[#E5EBF0] bg-white px-8 py-8 shadow-[0_12px_40px_rgba(6,28,47,0.04)]"
+          >
+            <div className="flex gap-6">
+
+              <div className="w-8 text-[32px] font-semibold tracking-[-0.04em] text-[#C8D0D7]">
+                {item}
+              </div>
+
+              <div className="flex-1">
+
+                <div className="flex items-start justify-between gap-6">
+
+                  <div>
+                    <h3 className="text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                      Unclear primary CTA hierarchy
+                    </h3>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="rounded-full bg-[#F4F7FA] px-3 py-1 text-[12px] font-medium text-[#73808C]">
+                        Weak hierarchy
+                      </div>
+
+                      <div className="rounded-full bg-[#F4F7FA] px-3 py-1 text-[12px] font-medium text-[#73808C]">
+                        Weak CTA
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[12px] font-semibold text-[#F15A5A]">
+                      +15% clarity
+                    </div>
+
+                    <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[12px] font-semibold text-[#F15A5A]">
+                      +18% conversion
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <p className="text-[15px] font-semibold text-[#061C2F]">
+                    Why it matters
+                  </p>
+
+                  <p className="mt-2 max-w-[760px] text-[16px] leading-7 text-[#73808C]">
+                    Users cannot immediately identify the main action,
+                    increasing hesitation and reducing conversion intent.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
 
-  {/* IMPROVEMENTS */}
-  <section className="mx-auto mt-44 max-w-[1120px] px-8">
+  {/* SUGGESTIONS */}
+  <section className="px-6 pb-28 lg:px-10">
+    <div className="mx-auto max-w-[1120px]">
 
-    <div className="mb-10 flex justify-center">
-      <div className="rounded-full bg-[#54CDF7] px-4 py-2 text-[12px] font-semibold text-[#061C2F]">
-        2. Suggested Improvements
+      <div className="text-center">
+        <div className="inline-flex rounded-full bg-[#DFF5FF] px-3 py-1 text-[12px] font-semibold text-[#1496CF]">
+          2. Suggested Improvements
+        </div>
+
+        <h2 className="mx-auto mt-6 max-w-[760px] text-[54px] font-semibold leading-[1.02] tracking-[-0.05em] text-[#061C2F]">
+          High-impact fixes to improve the experience
+        </h2>
       </div>
-    </div>
 
-    <h2 className="mx-auto max-w-[900px] text-center text-[64px] font-semibold leading-[1] tracking-[-0.06em] text-[#061C2F]">
-      High-impact fixes to improve the experience
-    </h2>
+      <div className="mt-16 space-y-5">
 
-    <div className="relative mt-16 space-y-5 overflow-hidden">
+        {[1, 2, 3].map((item) => (
+          <div
+            key={item}
+            className="rounded-[32px] border border-[#E5EBF0] bg-white px-8 py-8 shadow-[0_12px_40px_rgba(6,28,47,0.04)]"
+          >
+            <div className="flex gap-6">
 
-      <div className="rounded-[32px] border border-[#E4E8EC] bg-white p-8 shadow-[0_8px_40px_rgba(0,0,0,0.03)]">
-        <div className="flex gap-6">
-          <div className="w-[34px] text-[36px] font-semibold text-[#D4D9DE]">
-            1
-          </div>
-
-          <div className="flex-1">
-            <div className="flex items-start justify-between gap-6">
-              <div>
-                <p className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#9BA6B2]">
-                  Hero section
-                </p>
-
-                <h3 className="mt-3 text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                  Make the primary CTA more visually dominant
-                </h3>
-
-                <p className="mt-4 max-w-[760px] text-[18px] leading-8 text-[#7D8A96]">
-                  Increase contrast and visual emphasis to improve click-through rates.
-                </p>
+              <div className="w-8 text-[32px] font-semibold tracking-[-0.04em] text-[#C8D0D7]">
+                {item}
               </div>
 
-              <div className="rounded-full border border-[#D7F3DF] bg-[#F3FFF7] px-3 py-2 text-[12px] font-semibold text-[#2AA865]">
-                +16% conversion
+              <div className="flex-1">
+
+                <div className="flex items-start justify-between gap-6">
+
+                  <div>
+                    <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#8EA0AF]">
+                      Hero section
+                    </p>
+
+                    <h3 className="mt-2 max-w-[760px] text-[24px] font-medium leading-[1.5] text-[#061C2F]">
+                      Make the “Download” button more prominent as the primary CTA by increasing size and contrast.
+                    </h3>
+                  </div>
+
+                  <div className="rounded-full bg-[#EAFBF2] px-3 py-1 text-[12px] font-semibold text-[#21A366]">
+                    +16% conversion
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <p className="text-[15px] font-semibold text-[#061C2F]">
+                    Why it works
+                  </p>
+
+                  <p className="mt-2 max-w-[760px] text-[16px] leading-7 text-[#73808C]">
+                    Enhancing CTA visibility directs user focus and improves click-through rates.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-
-      <div className="relative overflow-hidden rounded-[32px] border border-[#E4E8EC] bg-white p-8 opacity-95">
-        <div className="flex gap-6">
-          <div className="w-[34px] text-[36px] font-semibold text-[#D4D9DE]">
-            2
-          </div>
-
-          <div className="flex-1">
-            <h3 className="text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-              Improve spacing rhythm in navigation
-            </h3>
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[180px] bg-gradient-to-b from-transparent to-[#F5F7FA]" />
+        ))}
       </div>
     </div>
   </section>
 
 
   {/* COPY */}
-  <section className="mx-auto mt-44 max-w-[1120px] px-8">
+  <section className="px-6 pb-32 lg:px-10">
+    <div className="mx-auto max-w-[1120px]">
 
-    <div className="mb-10 flex justify-center">
-      <div className="rounded-full bg-[#54CDF7] px-4 py-2 text-[12px] font-semibold text-[#061C2F]">
-        3. Copy Refinement
+      <div className="text-center">
+        <div className="inline-flex rounded-full bg-[#DFF5FF] px-3 py-1 text-[12px] font-semibold text-[#1496CF]">
+          3. Copy Refinement
+        </div>
+
+        <h2 className="mx-auto mt-6 max-w-[820px] text-[54px] font-semibold leading-[1.02] tracking-[-0.05em] text-[#061C2F]">
+          Stronger messaging for clearer, more persuasive communication
+        </h2>
       </div>
-    </div>
 
-    <h2 className="mx-auto max-w-[920px] text-center text-[64px] font-semibold leading-[1] tracking-[-0.06em] text-[#061C2F]">
-      Stronger messaging for clearer, more persuasive communication
-    </h2>
+      <div className="mt-16 space-y-5">
 
+        {[1, 2].map((item) => (
+          <div
+            key={item}
+            className="rounded-[32px] border border-[#E5EBF0] bg-white px-8 py-8 shadow-[0_12px_40px_rgba(6,28,47,0.04)]"
+          >
+            <div className="flex gap-6">
 
-    <div className="relative mt-16 space-y-5 overflow-hidden">
-
-      <div className="rounded-[32px] border border-[#E4E8EC] bg-white p-8 shadow-[0_8px_40px_rgba(0,0,0,0.03)]">
-
-        <div className="flex gap-6">
-          <div className="w-[34px] text-[36px] font-semibold text-[#D4D9DE]">
-            1
-          </div>
-
-          <div className="flex-1">
-
-            <div className="flex items-start justify-between gap-6">
-
-              <div>
-                <p className="text-[14px] font-medium uppercase tracking-[0.08em] text-[#9BA6B2]">
-                  Hero headline
-                </p>
-
-                <h3 className="mt-3 text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                  Improve clarity and conversion intent
-                </h3>
+              <div className="w-8 text-[32px] font-semibold tracking-[-0.04em] text-[#C8D0D7]">
+                {item}
               </div>
 
-              <div className="flex gap-2">
-                <div className="rounded-full border border-[#D7F3DF] bg-[#F3FFF7] px-3 py-2 text-[12px] font-semibold text-[#2AA865]">
-                  +15% clarity
-                </div>
+              <div className="flex-1">
 
-                <div className="rounded-full border border-[#D7F3DF] bg-[#F3FFF7] px-3 py-2 text-[12px] font-semibold text-[#2AA865]">
-                  +9% conversion
-                </div>
-              </div>
-            </div>
+                <div className="flex items-start justify-between gap-6">
 
+                  <div>
+                    <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#8EA0AF]">
+                      Hero headline
+                    </p>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-2">
-
-              {/* BEFORE */}
-              <div className="rounded-[22px] border border-[#E7EAEE] bg-[#FBFCFD] p-5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9AA5B1]">
-                  Before
-                </p>
-
-                <p className="mt-4 text-[20px] leading-8 text-[#7D8A96]">
-                  Turn waiting into watching.
-                </p>
-              </div>
-
-
-              {/* AFTER */}
-              <div className="rounded-[22px] border border-[#DDEFF7] bg-[#F7FCFF] p-5">
-
-                <div className="flex items-center justify-between gap-4">
-
-                  <div className="inline-flex items-center gap-2 rounded-full bg-[#E8F8FF] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#149AD6]">
-                    Improved
+                    <h3 className="mt-2 text-[24px] font-semibold leading-[1.4] text-[#061C2F]">
+                      Improve clarity and conversion intent
+                    </h3>
                   </div>
 
-                  <button className="flex h-10 w-10 items-center justify-center rounded-full border border-[#DCEAF2] bg-white text-[#061C2F] transition hover:bg-[#F3F7FA]">
-                    <RiFileCopyLine size={18} />
-                  </button>
+                  <div className="flex gap-2">
+                    <div className="rounded-full bg-[#EEF9FF] px-3 py-1 text-[12px] font-semibold text-[#1496CF]">
+                      +15% clarity
+                    </div>
+
+                    <div className="rounded-full bg-[#EEF9FF] px-3 py-1 text-[12px] font-semibold text-[#1496CF]">
+                      +18% conversion
+                    </div>
+                  </div>
                 </div>
 
-                <p className="mt-5 text-[20px] font-medium leading-8 text-[#061C2F]">
-                  Beautiful Mac screensavers that keep your screen alive.
+                <div className="mt-8 grid gap-4 lg:grid-cols-2">
+
+                  <div className="rounded-[24px] border border-[#E5EBF0] bg-[#FBFCFD] p-5">
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#8EA0AF]">
+                      Before
+                    </p>
+
+                    <p className="mt-4 text-[18px] leading-8 text-[#73808C]">
+                      Turn editing into wellbeing.
+                    </p>
+                  </div>
+
+                  <div className="rounded-[24px] border border-[#D8ECF6] bg-[#F5FCFF] p-5">
+
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2 rounded-full bg-[#E7F7FF] px-3 py-1 text-[12px] font-semibold text-[#1496CF]">
+                        Improved
+                      </div>
+
+                      <button className="rounded-lg p-2 text-[#1496CF] transition hover:bg-[#EAF7FF]">
+                        ⧉
+                      </button>
+                    </div>
+
+                    <p className="mt-5 text-[20px] font-medium leading-8 text-[#061C2F]">
+                      Beautiful Mac Screensavers That Keep Your Screen Alive.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <p className="text-[15px] font-semibold text-[#061C2F]">
+                    Why it works
+                  </p>
+
+                  <p className="mt-2 max-w-[760px] text-[16px] leading-7 text-[#73808C]">
+                    Explicitly states product and benefit, improving immediate comprehension.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  {/* CTA LIGHT */}
+  <section className="px-6 pb-12 lg:px-10">
+    <div className="mx-auto max-w-[1120px] overflow-hidden rounded-[40px] bg-[#54CDF7] px-8 py-20 text-center lg:px-16">
+
+      <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-[13px] font-medium text-[#061C2F] backdrop-blur-md">
+        <RiSparkling2Line size={15} />
+        AI-powered UX reviews
+      </div>
+
+      <h2 className="mx-auto mt-8 max-w-[760px] text-[60px] font-semibold leading-[0.98] tracking-[-0.05em] text-[#061C2F]">
+        Improve clarity before shipping your next release
+      </h2>
+
+      <p className="mx-auto mt-6 max-w-[720px] text-[20px] leading-8 text-[rgba(6,28,47,0.72)]">
+        Analyze your website with AI and uncover the UX issues reducing trust, engagement and conversion.
+      </p>
+
+      <div className="mt-10 flex flex-wrap justify-center gap-4">
+        <Link
+          href="/analyze"
+          className="rounded-full bg-[#061C2F] px-7 py-4 text-[16px] font-semibold text-white transition-all duration-200 hover:translate-y-[-1px]"
+        >
+          Start free audit
+        </Link>
+
+        <Link
+          href="/report/demo"
+          className="rounded-full border border-[rgba(6,28,47,0.08)] bg-white/70 px-7 py-4 text-[16px] font-semibold text-[#061C2F] backdrop-blur transition-all duration-200 hover:bg-white"
+        >
+          View sample report
+        </Link>
+      </div>
+    </div>
+  </section>
+
+
+  {/* CTA DARK */}
+  <section className="px-6 pb-24 lg:px-10">
+    <div className="relative mx-auto overflow-hidden rounded-[42px] bg-[#061C2F] px-8 py-20 lg:max-w-[1280px] lg:px-16">
+
+      {/* GLOW */}
+      <div className="absolute left-[-120px] top-[-120px] h-[420px] w-[420px] rounded-full bg-[#14A8E8]/30 blur-[120px]" />
+      <div className="absolute right-[-120px] bottom-[-120px] h-[360px] w-[360px] rounded-full bg-[#54CDF7]/20 blur-[120px]" />
+
+      <div className="relative z-10 grid items-center gap-16 lg:grid-cols-[0.95fr_1.05fr]">
+
+        {/* LEFT */}
+        <div>
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[13px] font-medium text-white/80 backdrop-blur-md">
+            <RiSparkling2Line size={15} />
+            AI UX intelligence
+          </div>
+
+          <h2 className="mt-8 max-w-[520px] text-left text-[64px] font-semibold leading-[0.96] tracking-[-0.06em] text-white">
+            Ship clearer experiences faster
+          </h2>
+
+          <p className="mt-7 max-w-[520px] text-left text-[20px] leading-8 text-[rgba(255,255,255,0.7)]">
+            Klynt helps product teams identify friction, improve clarity and optimize conversion before launch.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <Link
+              href="/analyze"
+              className="rounded-full bg-[#14A8E8] px-8 py-4 text-[16px] font-semibold text-[#061C2F] shadow-[0_18px_40px_rgba(20,168,232,0.35)] transition-all duration-200 hover:translate-y-[-2px]"
+            >
+              Start free audit
+            </Link>
+
+            <Link
+              href="/report/demo"
+              className="rounded-full border border-white/10 bg-white/5 px-7 py-4 text-[16px] font-semibold text-white backdrop-blur transition-all duration-200 hover:bg-white/10"
+            >
+              View sample report
+            </Link>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div className="relative">
+
+          <div className="absolute -top-8 right-8 rounded-full bg-[#14A8E8] px-5 py-3 text-[14px] font-semibold text-[#061C2F] shadow-[0_20px_40px_rgba(20,168,232,0.35)]">
+            +24% clarity
+          </div>
+
+          <div className="rotate-[-3deg] rounded-[34px] border border-white/10 bg-white/5 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+
+            <div className="rounded-[28px] bg-white p-6">
+
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-[14px] font-semibold text-[#8EA0AF]">
+                    UX Score
+                  </p>
+
+                  <p className="mt-1 text-[42px] font-semibold leading-none text-[#FF8A28]">
+                    82
+                  </p>
+                </div>
+
+                <div className="rounded-full bg-[#EAFBF2] px-3 py-1 text-[12px] font-semibold text-[#21A366]">
+                  Above average
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-[20px] border border-[#E5EBF0] bg-[#FBFCFD] p-4">
+                <p className="text-[14px] font-semibold text-[#061C2F]">
+                  Top recommendation
+                </p>
+
+                <p className="mt-2 text-[15px] leading-7 text-[#73808C]">
+                  Improve CTA specificity in the hero section to reduce hesitation and increase conversion intent.
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-
-      <div className="relative overflow-hidden rounded-[32px] border border-[#E4E8EC] bg-white p-8 opacity-95">
-        <div className="flex gap-6">
-          <div className="w-[34px] text-[36px] font-semibold text-[#D4D9DE]">
-            2
-          </div>
-
-          <div className="flex-1">
-            <h3 className="text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-              Clarify product outcome in CTA copy
-            </h3>
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[180px] bg-gradient-to-b from-transparent to-[#F5F7FA]" />
-      </div>
     </div>
   </section>
 
 
-  {/* DARK CTA */}
-  <section className="px-5 pb-6 pt-44">
+  {/* FOOTER */}
+  <footer className="border-t border-[rgba(6,28,47,0.06)] bg-white px-6 py-8 lg:px-10">
+    <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-6 lg:flex-row">
 
-    <div
-      className="
-        relative
-        mx-auto
-        grid
-        max-w-[1760px]
-        grid-cols-[1fr_520px]
-        overflow-hidden
-        rounded-[56px]
-        bg-[#071B2C]
-        px-[84px]
-        py-[84px]
-      "
-    >
+      <img
+        src="/klynt-logo-dark.svg"
+        alt="Klynt"
+        className="h-7 w-auto"
+      />
 
-      {/* GLOW */}
-      <div className="absolute left-[120px] top-[80px] h-[420px] w-[420px] rounded-full bg-[#14A8E8]/20 blur-[120px]" />
-
-      {/* LEFT */}
-      <div className="relative z-10 max-w-[760px]">
-
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/8 px-5 py-3 text-[15px] font-medium text-white backdrop-blur-sm">
-          <RiSparkling2Line size={16} />
-          AI-powered UX reviews
-        </div>
-
-        <h2 className="mt-10 text-[78px] font-semibold leading-[0.94] tracking-[-0.06em] text-white">
-          Improve clarity
-          <br />
-          before shipping
-        </h2>
-
-        <p className="mt-8 max-w-[640px] text-[24px] leading-[1.7] text-white/68">
-          Analyze your product with AI and uncover friction, hierarchy issues and weak conversion flows before launch.
-        </p>
-
-        <div className="mt-14">
-          <Link
-            href="/analyze"
-            className="
-              inline-flex
-              h-[74px]
-              items-center
-              justify-center
-              rounded-full
-              bg-[#14A8E8]
-              px-10
-              text-[22px]
-              font-semibold
-              text-white
-              shadow-[0_20px_80px_rgba(20,168,232,0.35)]
-              transition-all
-              duration-300
-              hover:translate-y-[-2px]
-              hover:bg-[#2CC2FF]
-            "
-          >
-            Start free audit
-          </Link>
-        </div>
-      </div>
-
-
-      {/* RIGHT FLOATING */}
-      <div className="relative flex items-center justify-end">
-
-        <div className="absolute right-[40px] top-[40px] h-[260px] w-[260px] rounded-full bg-[#14A8E8]/20 blur-[90px]" />
-
-        <div className="relative z-10 w-[480px] rotate-[5deg] overflow-hidden rounded-[32px] border border-white/10 bg-[#0F2436] shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
-          <img
-            src="/report-preview-dark.png"
-            alt="Report preview"
-            className="w-full opacity-95"
-          />
-        </div>
+      <div className="flex items-center gap-6 text-[14px] text-[#73808C]">
+        <Link href="#">Privacy</Link>
+        <Link href="#">Terms</Link>
+        <Link href="#">Contact</Link>
       </div>
     </div>
-  </section>
+  </footer>
 </main>
+
 
 );
 }
