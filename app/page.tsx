@@ -37,7 +37,7 @@ export default function Home() {
             {/* LOGO */}
             <div className="flex items-center gap-3">
               <img
-                src="/public/klynt-logo-dark.svg"
+                src="/klynt-logo-dark.svg"
                 alt="Klynt"
                 className="h-9 w-auto"
               />
@@ -46,7 +46,7 @@ export default function Home() {
             {/* NAV */}
             <div className="flex items-center gap-6 text-[14px] font-medium text-[#061C2F]">
               <a className="opacity-80 transition hover:opacity-100" href="#examples">
-                Examples
+                Sample report
               </a>
             </div>
           </div>
@@ -62,8 +62,6 @@ export default function Home() {
               items-center
               gap-2
               rounded-full
-              border
-              border-[rgba(6,28,47,0.08)]
               bg-white/30
               px-4
               py-2
@@ -133,26 +131,6 @@ export default function Home() {
               <RiArrowRightLine size={18} />
             </Link>
 
-            <button
-              className="
-                inline-flex
-                h-[56px]
-                items-center
-                rounded-full
-                border
-                border-[rgba(6,28,47,0.10)]
-                bg-white/50
-                px-7
-                text-[15px]
-                font-medium
-                text-[#061C2F]
-                backdrop-blur-md
-                transition-all
-                hover:bg-white/70
-              "
-            >
-              View sample report
-            </button>
           </div>
         </div>
       </section>
@@ -604,7 +582,7 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <img
-              src="/public/klynt-logo-dark.svg"
+              src="/klynt-logo-dark.svg"
               alt="Klynt"
               className="h-8 w-auto"
             />
