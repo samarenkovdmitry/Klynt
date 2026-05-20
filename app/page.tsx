@@ -328,7 +328,7 @@ export default function Home() {
 
       {/* FEATURES */}
       <section className="px-6 py-20">
-        <div className="mx-auto max-w-[1120px]">
+        <div className="mx-auto max-w-[920px]">
 
           <div className="mx-auto max-w-[760px] text-center">
             <div className="inline-flex rounded-full bg-[#DFF5FF] px-4 py-2 text-[12px] font-semibold text-[#0F7FB3]">
@@ -360,8 +360,6 @@ export default function Home() {
           py-8
           transition-all
           duration-200
-          hover:-translate-y-[2px]
-          hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)]
         "
       >
         <div className="flex gap-6">
