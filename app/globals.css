@@ -11,6 +11,11 @@
   --gray-soft: #EBEFF3;
 }
 
+::selection {
+  background: #10A6DA;
+  color: white; /* или любой другой цвет текста */
+}
+
 /* Убираем принудительный шрифт — теперь Tailwind font-sans = Familjen Grotesk */
 html {
   font-family: var(--font-familjen);
