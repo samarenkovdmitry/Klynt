@@ -644,7 +644,6 @@ export default function Home() {
                   Explicitly states product and benefit, improving immediate comprehension.
                 </p>
               </div>
-
             </div>
           </div>
         </div>
