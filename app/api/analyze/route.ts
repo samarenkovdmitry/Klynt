@@ -463,6 +463,33 @@ Prioritize:
 
 Avoid filler recommendations.
 
+COPY RULES:
+- Improve clarity over persuasion.
+- Avoid vague marketing language.
+- Avoid words like:
+  innovative,
+  smarter,
+  seamless,
+  powerful,
+  revolutionary,
+  next-generation,
+  empower,
+  transform.
+
+- Headlines must clearly explain:
+  - what the product is
+  - who it is for
+  - what outcome it provides
+
+- CTA buttons must be concrete and action-oriented.
+- Avoid generic CTA copy like:
+  - Learn more
+  - Get started today
+  - Discover more
+
+- Prefer specific product language over abstract slogans.
+
+
 `;
 
 const screenshotContent: any[] = [];
