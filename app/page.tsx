@@ -810,261 +810,110 @@ export default function Home() {
 
 
 
-      {/* SOCIAL PROOF */}
-      <section className="px-5 md:px-6 pt-10 md:pt-16">
-        <div className="mx-auto max-w-[1180px]">
+{/* CTA */}
+<section className="px-5 md:px-6 py-14 md:py-20">
+  <div
+    className="
+      relative
+      mx-auto
+      max-w-[1180px]
+      overflow-hidden
+      rounded-[32px] md:rounded-[40px]
+      bg-[#061C2F]
+      px-5
+      py-14
+      md:px-10
+      md:py-20
+    "
+  >
 
-          <div
+    {/* GLOW */}
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(83,194,238,0.28),transparent_55%)]" />
+    <div className="absolute -top-[120px] left-1/2 h-[320px] w-[320px] -translate-x-1/2 rounded-full bg-[#53C2EE]/20 blur-[120px]" />
+
+    <div className="relative z-10 grid gap-10 lg:grid-cols-[1fr_420px] lg:items-center">
+
+      {/* LEFT */}
+      <div className="max-w-[620px]">
+
+        <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-[13px] font-medium text-[#9FC6DB] backdrop-blur-md">
+          AI-powered UX reviews
+        </div>
+
+        <h2 className="mt-6 text-[38px] md:text-[58px] font-semibold leading-[0.92] tracking-[-0.06em] text-white">
+          Find what hurts your conversion
+        </h2>
+
+        <p className="mt-6 max-w-[560px] text-[17px] md:text-[19px] leading-8 text-[rgba(255,255,255,0.72)]">
+          Upload a screenshot or analyze a live website to uncover weak
+          UX, unclear messaging and conversion friction in seconds.
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <Link
+            href="/analyze"
             className="
-              relative
-              overflow-hidden
-              rounded-[28px]
-              border
-              border-[rgba(6,28,47,0.06)]
-              bg-white
-              px-5
-              py-6
-              md:px-8
-              md:py-7
-              shadow-[0_10px_30px_rgba(6,28,47,0.04)]
+              inline-flex
+              h-[54px]
+              md:h-[58px]
+              items-center
+              gap-2
+              rounded-full
+              bg-[#53C2EE]
+              px-7
+              text-[15px]
+              font-semibold
+              text-[#061C2F]
+              transition-all
+              duration-200
+              hover:-translate-y-[1px]
+              hover:shadow-[0_12px_30px_rgba(83,194,238,0.28)]
             "
           >
+            Start free audit
+            <RiArrowRightLine size={18} />
+          </Link>
+        </div>
 
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="mt-6 flex flex-wrap items-center gap-3 text-[13px] text-[rgba(255,255,255,0.52)]">
+          <div className="flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
+            No signup required
+          </div>
 
-              {/* LEFT */}
-              <div>
+          <div className="flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
+            Instant report
+          </div>
 
-                <div className="flex items-center -space-x-3">
-
-                  {[
-                    "/avatar-1.jpg",
-                    "/avatar-2.jpg",
-                    "/avatar-3.jpg",
-                  ].map((avatar, index) => (
-                    <img
-                      key={index}
-                      src={avatar}
-                      alt=""
-                      className="
-                        h-11
-                        w-11
-                        rounded-full
-                        border-2
-                        border-white
-                        object-cover
-                      "
-                    />
-                  ))}
-
-                </div>
-
-                <p className="mt-4 text-[22px] md:text-[28px] font-semibold tracking-[-0.04em] text-[#061C2F]">
-                  Used by designers, founders and product teams
-                </p>
-
-                <p className="mt-2 max-w-[640px] text-[15px] md:text-[17px] leading-7 text-[#6B7280]">
-                  Klynt helps teams quickly spot friction, improve messaging and
-                  ship clearer user experiences.
-                </p>
-              </div>
-
-              {/* QUOTE */}
-              <div
-                className="
-                  max-w-[340px]
-                  rounded-[24px]
-                  border
-                  border-[rgba(6,28,47,0.06)]
-                  bg-[#F7FAFC]
-                  p-5
-                "
-              >
-                <p className="text-[15px] leading-7 text-[#4B5563]">
-                  “The fastest way I’ve found to identify weak UX and rewrite
-                  unclear copy.”
-                </p>
-
-                <div className="mt-4 text-[14px] font-semibold text-[#061C2F]">
-                  Product Designer
-                </div>
-              </div>
-
-            </div>
+          <div className="flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
+            AI copy suggestions
           </div>
         </div>
-      </section>
+      </div>
 
-
-
-      {/* CTA */}
-      <section className="px-5 md:px-6 py-14 md:py-20">
-        <div
+      {/* RIGHT IMAGE */}
+      <div className="relative hidden lg:block">
+        <img
+          src="/your-image.png"
+          alt="Mockup"
           className="
-            relative
-            mx-auto
-            max-w-[1180px]
-            overflow-hidden
-            rounded-[32px] md:rounded-[40px]
-            bg-[#061C2F]
-            px-5
-            py-14
-            md:px-10
-            md:py-20
+            absolute
+            bottom-0
+            right-0
+            w-full
+            h-auto
+            object-contain
+            pointer-events-none
           "
-        >
+        />
+      </div>
 
-          {/* GLOW */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(83,194,238,0.28),transparent_55%)]" />
+    </div>
+  </div>
+</section>
 
-          <div className="absolute -top-[120px] left-1/2 h-[320px] w-[320px] -translate-x-1/2 rounded-full bg-[#53C2EE]/20 blur-[120px]" />
-
-          <div className="relative z-10 grid gap-10 lg:grid-cols-[1fr_420px] lg:items-center">
-
-            {/* LEFT */}
-            <div className="max-w-[620px]">
-
-              <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-[13px] font-medium text-[#9FC6DB] backdrop-blur-md">
-                AI-powered UX reviews
-              </div>
-
-              <h2 className="mt-6 text-[38px] md:text-[58px] font-semibold leading-[0.92] tracking-[-0.06em] text-white">
-                Find what hurts your conversion
-              </h2>
-
-              <p className="mt-6 max-w-[560px] text-[17px] md:text-[19px] leading-8 text-[rgba(255,255,255,0.72)]">
-                Upload a screenshot or analyze a live website to uncover weak
-                UX, unclear messaging and conversion friction in seconds.
-              </p>
-
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-
-                <Link
-                  href="/analyze"
-                  className="
-                    inline-flex
-                    h-[54px]
-                    md:h-[58px]
-                    items-center
-                    gap-2
-                    rounded-full
-                    bg-[#53C2EE]
-                    px-7
-                    text-[15px]
-                    font-semibold
-                    text-[#061C2F]
-                    transition-all
-                    duration-200
-                    hover:-translate-y-[1px]
-                    hover:shadow-[0_12px_30px_rgba(83,194,238,0.28)]
-                  "
-                >
-                  Start free audit
-                  <RiArrowRightLine size={18} />
-                </Link>
-
-              </div>
-
-              <div className="mt-6 flex flex-wrap items-center gap-3 text-[13px] text-[rgba(255,255,255,0.52)]">
-
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
-                  No signup required
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
-                  Instant report
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
-                  AI copy suggestions
-                </div>
-
-              </div>
-            </div>
-
-            {/* RIGHT MOCKUP */}
-            <div className="relative hidden lg:block">
-
-              <div
-                className="
-                  relative
-                  overflow-hidden
-                  rounded-[32px]
-                  border
-                  border-[rgba(255,255,255,0.08)]
-                  bg-white
-                  p-6
-                  shadow-[0_30px_80px_rgba(0,0,0,0.35)]
-                "
-              >
-
-                <div className="flex items-center justify-between">
-
-                  <div>
-                    <p className="text-[13px] font-medium text-[#8F99A2]">
-                      UX Score
-                    </p>
-
-                    <p className="mt-2 text-[44px] font-semibold leading-none tracking-[-0.05em] text-[#061C2F]">
-                      82
-                    </p>
-                  </div>
-
-                  <div className="rounded-full bg-[#EAF8EF] px-4 py-2 text-[13px] font-semibold text-[#2E7D4F]">
-                    +18% clarity
-                  </div>
-                </div>
-
-                <div className="mt-7 space-y-4">
-
-                  <div className="rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-[#F8FAFC] p-4">
-                    <div className="flex items-start justify-between gap-4">
-
-                      <div>
-                        <p className="text-[17px] font-semibold text-[#061C2F]">
-                          Weak CTA hierarchy
-                        </p>
-
-                        <p className="mt-2 text-[14px] leading-6 text-[#6B7280]">
-                          Main action blends into surrounding interface elements.
-                        </p>
-                      </div>
-
-                      <div className="rounded-full bg-[#FFF1F1] px-3 py-1 text-[12px] font-semibold text-[#D94848]">
-                        -14%
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-[20px] bg-[#EAF2FF] p-4">
-                    <div className="flex items-start justify-between gap-4">
-
-                      <div>
-                        <p className="text-[17px] font-semibold text-[#061C2F]">
-                          Improved headline
-                        </p>
-
-                        <p className="mt-2 text-[14px] leading-6 text-[#375BE7]">
-                          “Turn visitors into confident buyers.”
-                        </p>
-                      </div>
-
-                      <button className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#061C2F] shadow-sm">
-                        <RiFileCopyLine size={16} />
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
 
 
       {/* FOOTER */}
