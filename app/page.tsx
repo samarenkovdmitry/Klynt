@@ -224,7 +224,7 @@ export default function Home() {
         {/* DOWNLOAD */}
         <button
           className="
-            invisible md:visible
+            collapse md:visible
             inline-flex
             h-[48px]
             w-full
