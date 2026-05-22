@@ -490,7 +490,7 @@ export default function Home() {
         UX Issues
       </div>
 
-      <h2 className="mt-3 text-[22px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
+      <h2 className="mt-3 text-[32px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
         Key problems hurting clarity and conversion
       </h2>
     </div>
@@ -526,10 +526,10 @@ export default function Home() {
               </div>
 
               <div className="flex-1">
-                <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
 
                   <div>
-                    <h3 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                    <h3 className="text-[20px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
                       {item === 1
                         ? "Unclear primary CTA hierarchy"
                         : "Navigation menu lacks visual separation"}
@@ -558,7 +558,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="mt-7 border-t border-[#E5E7EB] pt-5">
+                <div className="mt-7 border-t border-[#E5E7EB] pt-4">
                   <p className="text-[15px] font-semibold text-[#061C2F]">
                     Why it matters
                   </p>
@@ -639,7 +639,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="mt-7 border-t border-[#E5E7EB] pt-5">
+                <div className="mt-7 border-t border-[#E5E7EB] pt-4">
                   <p className="text-[15px] font-semibold text-[#061C2F]">
                     Why it matters
                   </p>
@@ -685,7 +685,7 @@ export default function Home() {
             key={item}
             className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-6 py-6 md:px-10 md:py-10"
           >
-            <div className="flex flex-col md:flex-row gap-3 md:gap-6">
+            <div className="flex flex-col md:flex-row gap-2 md:gap-6">
 
               <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
@@ -694,7 +694,7 @@ export default function Home() {
               <div className="flex-1">
 
                 <div className="flex justify-between flex-wrap gap-4">
-                  <h3 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  <h3 className="text-[20px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
                     {item === 1 ? "Hero Headline" : "Subheadline"}
                   </h3>
 
