@@ -576,87 +576,91 @@ export default function Home() {
       </div>
     </div>
 
-    {/* SECTION 2 — Suggested Improvements */}
-    <div className="mx-auto max-w-[760px] text-center">
-      <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
-        Suggested Improvements
-      </div>
+ {/* SECTION 2 — Suggested Improvements */}
+<div className="mx-auto max-w-[760px] text-center">
+  <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
+    Suggested Improvements
+  </div>
 
-      <h2 className="mt-6 text-[22px] md:text-[32px] md:text-[32px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
-        High-impact fixes to improve the experience
-      </h2>
-    </div>
+  <h2 className="mt-3 text-[22px] md:text-[32px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
+    High-impact fixes to improve the experience
+  </h2>
+</div>
 
-    <div
-      className="
-        relative
-        max-h-[520px]
-        overflow-hidden
-        mt-14
-        [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
-      "
-    >
-      <div className="space-y-5">
+<div
+  className="
+    relative
+    max-h-[520px]
+    overflow-hidden
+    mt-10
+    [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
+  "
+>
+  <div className="space-y-5">
 
-        {[1, 2].map((item) => (
-          <div
-            key={item}
-            className="
-              rounded-[32px]
-              border
-              border-[rgba(6,28,47,0.06)]
-              bg-white
-              px-10
-              py-10
-              w-full
-            "
-          >
-            <div className="flex flex-col md:flex-row gap-3 md:gap-6">
+    {[1, 2].map((item) => (
+      <div
+        key={item}
+        className="
+          rounded-[28px]
+          border
+          border-[rgba(6,28,47,0.06)]
+          bg-white
+          px-6
+          py-6
+          md:px-10
+          md:py-10
+          w-full
+        "
+      >
+        <div className="flex flex-col md:flex-row gap-3 md:gap-6">
 
-              <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
-                {item}
+          {/* Number */}
+          <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+            {item}
+          </div>
+
+          <div className="flex-1">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+
+              {/* Title + description */}
+              <div>
+                <h3 className="text-[20px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  {item === 1 ? "Hero Section" : "Top Menu"}
+                </h3>
+
+                <p className="mt-4 text-[14px] md:text-[17px] text-[#6B7280] max-w-[620px] leading-[1.55] md:leading-[1.6]">
+                  {item === 1
+                    ? "Make the ‘Download’ button more prominent as the primary CTA by increasing size, contrast, or adding a visual indicator."
+                    : "Introduce visual separators or hover effects for menu items to clarify interactivity."}
+                </p>
               </div>
 
-              <div className="flex-1">
-                <div className="flex justify-between items-start gap-4">
-
-                  <div>
-                    <h3 className="text-[22px] md:text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                      {item === 1 ? "Hero Section" : "Top Menu"}
-                    </h3>
-
-                    <p className="mt-4 text-[17px] text-[#6B7280] max-w-[620px] leading-[1.6]">
-                      {item === 1
-                        ? "Make the ‘Download’ button more prominent as the primary CTA by increasing size, contrast, or adding a visual indicator."
-                        : "Introduce visual separators or hover effects for menu items to clarify interactivity."}
-                    </p>
-                  </div>
-
-                  <div className="rounded-full border border-[#C7EBD6] bg-[#E8F7EE] px-4 py-2 text-[14px] font-semibold text-[#2E7D4F]">
-                    {item === 1
-                      ? "+15% conversion"
-                      : "+10% navigation"}
-                  </div>
-                </div>
-
-                <div className="mt-7 border-t border-[#E5E7EB] pt-4">
-                  <p className="text-[15px] font-semibold text-[#061C2F]">
-                    Why it matters
-                  </p>
-
-                  <p className="mt-2 text-[16px] leading-7 text-[#6B7280] max-w-[620px]">
-                    {item === 1
-                      ? "Enhancing CTA visibility directs user focus and improves click-through rates."
-                      : "Clearer menu structure improves user orientation and reduces cognitive load."}
-                  </p>
-                </div>
+              {/* Green pill */}
+              <div className="rounded-full border border-[#C7EBD6] bg-[#E8F7EE] px-4 py-2 text-[13px] md:text-[14px] font-semibold text-[#2E7D4F] whitespace-nowrap">
+                {item === 1 ? "+15% conversion" : "+10% navigation"}
               </div>
             </div>
-          </div>
-        ))}
 
+            {/* Why it matters */}
+            <div className="mt-7 border-t border-[#E5E7EB] pt-4">
+              <p className="text-[15px] font-semibold text-[#061C2F]">
+                Why it matters
+              </p>
+
+              <p className="mt-2 text-[14px] md:text-[16px] leading-6 md:leading-7 text-[#6B7280] max-w-[620px]">
+                {item === 1
+                  ? "Enhancing CTA visibility directs user focus and improves click-through rates."
+                  : "Clearer menu structure improves user orientation and reduces cognitive load."}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    ))}
+
+  </div>
+</div>
 
     {/* SECTION 3 — Copy Refinement */}
     <div className="mx-auto max-w-[760px] text-center">
@@ -665,7 +669,7 @@ export default function Home() {
       </div>
 
 
-      <h2 className="mt-6 text-[22px] md:text-[28px] md:text-[34px] md:text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
+      <h2 className="mt-6 text-[28px] md:text-[42px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
         Stronger messaging for clearer communication
       </h2>
     </div>
