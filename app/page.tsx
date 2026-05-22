@@ -129,7 +129,7 @@ export default function Home() {
     className="
       relative
       mx-auto
-      max-w-[1120px]
+      max-w-[960px]
       overflow-hidden
       rounded-[28px] md:rounded-[40px]
       border
@@ -442,37 +442,113 @@ export default function Home() {
 
 
 {/* FEATURE PILLS */}
-<section className="px-6 pb-8 pt-14">
-  <div className="mx-auto flex max-w-[980px] flex-wrap gap-3 justify-center">
+<section className="relative px-6 pb-10 pt-14">
+
+  {/* subtle glow */}
+  <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[220px] max-w-[900px] rounded-full bg-[#53C2EE]/10 blur-3xl" />
+
+  <div className="relative mx-auto flex max-w-[980px] flex-wrap items-center justify-center gap-3">
 
     {[
-      "Prioritized UX issues",
-      "Full-page screenshot analysis",
-      "Conversion-focused insights",
-      "AI copy refinement",
-      "Fast visual audit",
-      "Designed for product teams",
+      {
+        icon: "✦",
+        label: "Prioritized UX issues",
+      },
+      {
+        icon: "◉",
+        label: "Full-page screenshot analysis",
+      },
+      {
+        icon: "↗",
+        label: "Conversion-focused insights",
+      },
+      {
+        icon: "✎",
+        label: "AI copy refinement",
+      },
+      {
+        icon: "⚡",
+        label: "Fast visual audit",
+      },
+      {
+        icon: "◎",
+        label: "Designed for product teams",
+      },
     ].map((item) => (
       <div
-        key={item}
+        key={item.label}
         className="
+          group
+          relative
+          overflow-hidden
           rounded-full
           border
           border-[rgba(6,28,47,0.06)]
-          bg-white
-          whitespace-nowrap
+          bg-white/92
+          backdrop-blur-md
           px-5
           py-3
-          text-[14px]
           md:px-6
           md:py-4
-          md:text-[16px]
-          font-medium
-          text-[#8F99A2]
-          shadow-[0_2px_10px_rgba(0,0,0,0.02)]
+          shadow-[0_4px_20px_rgba(6,28,47,0.04)]
+          transition-all
+          duration-300
+          hover:-translate-y-[2px]
+          hover:border-[rgba(83,194,238,0.24)]
+          hover:shadow-[0_12px_40px_rgba(83,194,238,0.14)]
         "
       >
-        {item}
+
+        {/* hover gradient */}
+        <div
+          className="
+            absolute
+            inset-0
+            opacity-0
+            transition-opacity
+            duration-300
+            group-hover:opacity-100
+            bg-[linear-gradient(180deg,rgba(83,194,238,0.06),transparent)]
+          "
+        />
+
+        <div className="relative flex items-center gap-3">
+
+          {/* icon */}
+          <div
+            className="
+              flex
+              h-7
+              w-7
+              items-center
+              justify-center
+              rounded-full
+              bg-[#EAF7FD]
+              text-[13px]
+              font-semibold
+              text-[#0F7FB3]
+            "
+          >
+            {item.icon}
+          </div>
+
+          {/* text */}
+          <span
+            className="
+              whitespace-nowrap
+              text-[14px]
+              md:text-[15px]
+              font-medium
+              tracking-[-0.01em]
+              text-[#5F6C78]
+              transition-colors
+              duration-200
+              group-hover:text-[#061C2F]
+            "
+          >
+            {item.label}
+          </span>
+        </div>
       </div>
     ))}
   </div>
@@ -482,7 +558,7 @@ export default function Home() {
 
 {/* FEATURES */}
 <section className="px-5 md:px-6 py-14 md:py-20">
-  <div className="mx-auto max-w-[920px]">
+  <div className="mx-auto max-w-[960px]">
 
     {/* SECTION 1 — UX Issues */}
     <div className="mx-auto max-w-[760px] text-center">
@@ -560,7 +636,7 @@ export default function Home() {
     </div>
 
     {/* SECTION 2 — Suggested Improvements */}
-    <div className="mx-auto max-w-[760px] text-center mt-[20px] md:mt-[60px]">
+    <div className="mx-auto max-w-[760px] text-center mt-[40px] md:mt-[120px]">
       <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
         Suggested Improvements
       </div>
@@ -626,7 +702,7 @@ export default function Home() {
     </div>
 
     {/* SECTION 3 — Copy Refinement */}
-    <div className="mx-auto max-w-[760px] text-center mt-[20px] md:mt-[60px]">
+    <div className="mx-auto max-w-[760px] text-center mt-[40px] md:mt-[120px]">
       <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
         Copy Refinement
       </div>
