@@ -893,26 +893,39 @@ export default function Home() {
         </div>
       </div>
 
-      {/* RIGHT IMAGE */}
+      {/* RIGHT IMAGE (как на макете) */}
       <div className="relative hidden lg:block">
-        <img
-          src="/bottomcta-preview.png"
-          alt="Mockup"
+        <div
           className="
             absolute
             bottom-0
             right-0
             w-full
-            h-auto
-            object-contain
-            pointer-events-none
+            overflow-hidden
+            rounded-[28px]
+            shadow-[0_30px_80px_rgba(0,0,0,0.35)]
+            border border-[rgba(255,255,255,0.08)]
+            bg-white
           "
-        />
+        >
+          <img
+            src="/clarity-report.png"
+            alt="Clarity Report"
+            className="
+              w-full
+              h-auto
+              object-cover
+              align-bottom
+              pointer-events-none
+            "
+          />
+        </div>
       </div>
 
     </div>
   </div>
 </section>
+
 
 
 
