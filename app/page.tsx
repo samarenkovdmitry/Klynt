@@ -490,7 +490,7 @@ export default function Home() {
         UX Issues
       </div>
 
-      <h2 className="mt-3 text-[32px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
+      <h2 className="mt-3 text-[22px] md:text-[32px] md:text-[32px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
         Key problems hurting clarity and conversion
       </h2>
     </div>
@@ -513,8 +513,8 @@ export default function Home() {
               border
               border-[rgba(6,28,47,0.06)]
               bg-white
-              px-4
-              py-4
+              px-6
+              py-6
               md:px-10
               md:py-10
             "
@@ -577,12 +577,12 @@ export default function Home() {
     </div>
 
     {/* SECTION 2 — Suggested Improvements */}
-    <div className="mt-20 md:mt-28 mx-auto max-w-[760px] text-center">
-      <div className="inline-flex rounded-full bg-[#DFF5FF] px-5 py-3 text-[16px] font-semibold text-[#0F7FB3]">
+    <div className="mx-auto max-w-[760px] text-center">
+      <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
         Suggested Improvements
       </div>
 
-      <h2 className="mt-6 text-[22px] md:text-[28px] md:text-[34px] md:text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
+      <h2 className="mt-6 text-[22px] md:text-[32px] md:text-[32px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
         High-impact fixes to improve the experience
       </h2>
     </div>
@@ -659,10 +659,11 @@ export default function Home() {
     </div>
 
     {/* SECTION 3 — Copy Refinement */}
-    <div className="mt-20 md:mt-28 mx-auto max-w-[760px] text-center">
-      <div className="inline-flex rounded-full bg-[#DFF5FF] px-5 py-3 text-[16px] font-semibold text-[#0F7FB3]">
+    <div className="mx-auto max-w-[760px] text-center">
+      <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
         Copy Refinement
       </div>
+
 
       <h2 className="mt-6 text-[22px] md:text-[28px] md:text-[34px] md:text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
         Stronger messaging for clearer communication
