@@ -312,7 +312,7 @@ export default function Home() {
             "
           >
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex gap-3 md:gap-6 sm:flex-row sm:items-center">
 
               {/* SCORE */}
               <div className="relative flex h-[110px] w-[110px] shrink-0 items-center justify-center md:h-[120px] md:w-[120px]">
@@ -361,7 +361,7 @@ export default function Home() {
                   className="
                     text-[14px]
                     font-medium
-                    leading-[1.2]
+                    leading-5
                     tracking-[-0.04em]
                     text-[#061C2F]
                     md:text-[24px]
