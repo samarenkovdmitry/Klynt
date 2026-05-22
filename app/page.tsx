@@ -811,42 +811,41 @@ export default function Home() {
 
 
 {/* CTA */}
-<section className="px-5 md:px-6 py-14 md:py-20">
+<section className="px-5 md:px-6 py-14 md:py-24">
   <div
     className="
       relative
       mx-auto
       max-w-[1180px]
       overflow-hidden
-      rounded-[32px] md:rounded-[40px]
+      rounded-[40px]
       bg-[#061C2F]
-      px-5
-      py-14
-      md:px-10
-      md:py-20
+      px-6
+      py-16
+      md:px-12
+      md:py-24
     "
   >
 
-    {/* GLOW */}
+    {/* Glow */}
     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(83,194,238,0.28),transparent_55%)]" />
-    <div className="absolute -top-[120px] left-1/2 h-[320px] w-[320px] -translate-x-1/2 rounded-full bg-[#53C2EE]/20 blur-[120px]" />
+    <div className="absolute -top-[140px] left-1/2 h-[360px] w-[360px] -translate-x-1/2 rounded-full bg-[#53C2EE]/20 blur-[140px]" />
 
-    <div className="relative z-10 grid gap-10 lg:grid-cols-[1fr_420px] lg:items-center">
+    <div className="relative z-10 grid gap-12 lg:grid-cols-[1fr_420px] lg:items-center">
 
       {/* LEFT */}
       <div className="max-w-[620px]">
 
-        <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-[13px] font-medium text-[#9FC6DB] backdrop-blur-md">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[13px] font-medium text-[#9FC6DB] backdrop-blur-md">
           AI-powered UX reviews
         </div>
 
-        <h2 className="mt-6 text-[38px] md:text-[58px] font-semibold leading-[0.92] tracking-[-0.06em] text-white">
+        <h2 className="mt-6 text-[40px] md:text-[58px] font-semibold leading-[0.92] tracking-[-0.06em] text-white">
           Find what hurts your conversion
         </h2>
 
-        <p className="mt-6 max-w-[560px] text-[17px] md:text-[19px] leading-8 text-[rgba(255,255,255,0.72)]">
-          Upload a screenshot or analyze a live website to uncover weak
-          UX, unclear messaging and conversion friction in seconds.
+        <p className="mt-6 max-w-[560px] text-[17px] md:text-[19px] leading-8 text-white/70">
+          Klynt helps product teams identify friction, improve clarity and optimize conversion before launch.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -854,13 +853,12 @@ export default function Home() {
             href="/analyze"
             className="
               inline-flex
-              h-[54px]
-              md:h-[58px]
+              h-[56px]
               items-center
               gap-2
               rounded-full
               bg-[#53C2EE]
-              px-7
+              px-8
               text-[15px]
               font-semibold
               text-[#061C2F]
@@ -873,27 +871,33 @@ export default function Home() {
             Start free audit
             <RiArrowRightLine size={18} />
           </Link>
+
+          <Link
+            href="/sample"
+            className="
+              inline-flex
+              h-[56px]
+              items-center
+              gap-2
+              rounded-full
+              bg-white/10
+              px-8
+              text-[15px]
+              font-semibold
+              text-white
+              backdrop-blur-md
+              transition-all
+              duration-200
+              hover:bg-white/20
+            "
+          >
+            View sample report
+          </Link>
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3 text-[13px] text-[rgba(255,255,255,0.52)]">
-          <div className="flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
-            No signup required
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
-            Instant report
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-[#53C2EE]" />
-            AI copy suggestions
-          </div>
-        </div>
       </div>
 
-      {/* RIGHT IMAGE (как на макете) */}
+      {/* RIGHT MOCKUP IMAGE */}
       <div className="relative hidden lg:block">
         <div
           className="
@@ -902,21 +906,21 @@ export default function Home() {
             right-0
             w-full
             overflow-hidden
-            rounded-[28px]
-            shadow-[0_30px_80px_rgba(0,0,0,0.35)]
-            border border-[rgba(255,255,255,0.08)]
+            rounded-[32px]
+            border border-white/10
             bg-white
+            shadow-[0_40px_90px_rgba(0,0,0,0.45)]
           "
         >
           <img
-            src="/clarity-report.png"
+            src="/cta-report.png"
             alt="Clarity Report"
             className="
               w-full
               h-auto
               object-cover
-              align-bottom
               pointer-events-none
+              align-bottom
             "
           />
         </div>
@@ -927,35 +931,25 @@ export default function Home() {
 </section>
 
 
+{/* FOOTER */}
+<footer className="bg-[#061C2F] py-10 px-6 md:px-12">
+  <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-6 md:flex-row">
 
+    {/* LEFT — LOGO */}
+    <div className="text-[18px] font-semibold tracking-[-0.03em] text-white">
+      Klynt
+    </div>
 
-      {/* FOOTER */}
-      <footer className="border-t border-[rgba(6,28,47,0.06)] px-6 py-8">
-        <div className="mx-auto flex flex-col md:flex-row max-w-[1180px] items-start md:items-center justify-between gap-6">
+    {/* RIGHT — LINKS */}
+    <div className="flex items-center gap-8 text-[14px] font-medium text-[#8F99A2]">
+      <Link href="/privacy" className="hover:text-white transition">Privacy</Link>
+      <Link href="/terms" className="hover:text-white transition">Terms</Link>
+      <Link href="/contact" className="hover:text-white transition">Contact</Link>
+    </div>
 
-          <div className="flex items-center gap-3">
-            <img
-              src="/klynt-logo-dark.svg"
-              alt="Klynt"
-              className="h-8 w-auto"
-            />
-          </div>
+  </div>
+</footer>
 
-          <div className="flex items-center gap-6 text-[14px] text-[#6B7280]">
-            <a className="transition hover:text-[#061C2F]" href="#">
-              Privacy
-            </a>
-
-            <a className="transition hover:text-[#061C2F]" href="#">
-              Terms
-            </a>
-
-            <a className="transition hover:text-[#061C2F]" href="#">
-              Contact
-            </a>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }
