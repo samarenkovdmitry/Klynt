@@ -484,80 +484,95 @@ export default function Home() {
 <section className="px-5 md:px-6 py-14 md:py-20">
   <div className="mx-auto max-w-[920px]">
 
-    {/* SECTION 1 — UX Issues */}
-    <div className="mx-auto max-w-[760px] text-center">
-      <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
-        UX Issues
-      </div>
+{/* SECTION 1 — UX Issues */}
+<div className="mx-auto max-w-[760px] text-center">
+  <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
+    UX Issues
+  </div>
 
-      <h2 className="mt-3 text-[28px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
-        Key problems hurting clarity and conversion
-      </h2>
-    </div>
+  <h2 className="mt-3 text-[28px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
+    Key problems hurting clarity and conversion
+  </h2>
+</div>
 
-    <div className="relative max-h-[520px] overflow-hidden [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
-      <div className="mt-8 space-y-5">
+<div className="relative max-h-[520px] overflow-hidden [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
+  <div className="mt-8 space-y-5">
 
-        {[1, 2].map((item) => (
-          <div
-            key={item}
-            className="rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-white px-6 py-6 md:px-10 md:py-10"
-          >
-            <div className="flex flex-col md:flex-row gap-3 md:gap-6">
+    {[1, 2].map((item) => (
+      <div
+        key={item}
+        className="
+          relative
+          rounded-[28px]
+          border
+          border-[rgba(6,28,47,0.06)]
+          bg-white
+          px-6
+          py-6
+          md:px-10
+          md:py-10
+        "
+      >
 
-              <div className="text-[22px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
-                {item}
-              </div>
+        {/* 🔥 Пилсы справа сверху — как в блоках 2 и 3 */}
+        <div className="absolute right-6 top-6 md:right-10 md:top-10 flex flex-wrap gap-2">
+          <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-3.5 py-1.5 text-[13px] md:text-[14px] font-semibold text-[#D94848]">
+            -16% clarity
+          </div>
 
-              <div className="flex-1">
-                <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-3.5 py-1.5 text-[13px] md:text-[14px] font-semibold text-[#D94848]">
+            -12% conversion
+          </div>
+        </div>
 
-                  <div>
-                    <h3 className="text-[20px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                      {item === 1
-                        ? "Unclear primary CTA hierarchy"
-                        : "Navigation menu lacks visual separation"}
-                    </h3>
+        <div className="flex flex-col md:flex-row gap-3 md:gap-6">
 
-                    <div className="mt-4 hidden md:flex flex-wrap gap-2">
-                      <div className="rounded-full border border-[#D8DEE4] bg-[#F5F7F9] px-4 py-2 text-[14px] font-medium text-[#667085]">
-                        Weak hierarchy
-                      </div>
+          {/* Number */}
+          <div className="text-[22px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+            {item}
+          </div>
 
-                      <div className="rounded-full border border-[#D8DEE4] bg-[#F5F7F9] px-4 py-2 text-[14px] font-medium text-[#667085]">
-                        Weak CTA
-                      </div>
-                    </div>
+          <div className="flex-1">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+
+              <div>
+                <h3 className="text-[20px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  {item === 1
+                    ? "Unclear primary CTA hierarchy"
+                    : "Navigation menu lacks visual separation"}
+                </h3>
+
+                <div className="mt-4 hidden md:flex flex-wrap gap-2">
+                  <div className="rounded-full border border-[#D8DEE4] bg-[#F5F7F9] px-4 py-2 text-[14px] font-medium text-[#667085]">
+                    Weak hierarchy
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-3.5 py-1.5 text-[13px] md:text-[14px] font-semibold text-[#D94848]">
-                      -16% clarity
-                    </div>
-
-                    <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-3.5 py-1.5 text-[13px] md:text-[14px] font-semibold text-[#D94848]">
-                      -12% conversion
-                    </div>
+                  <div className="rounded-full border border-[#D8DEE4] bg-[#F5F7F9] px-4 py-2 text-[14px] font-medium text-[#667085]">
+                    Weak CTA
                   </div>
                 </div>
-
-                <div className="mt-7 border-t border-[#E5E7EB] pt-4">
-                  <p className="text-[15px] font-semibold text-[#061C2F]">
-                    Why it matters
-                  </p>
-
-                  <p className="mt-2 max-w-[720px] text-[14px] md:text-[16px] leading-6 md:leading-7 text-[#6B7280]">
-                    Clear action hierarchy helps users instantly identify the main
-                    interaction and improves conversion confidence.
-                  </p>
-                </div>
               </div>
+
+            </div>
+
+            <div className="mt-7 border-t border-[#E5E7EB] pt-4">
+              <p className="text-[15px] font-semibold text-[#061C2F]">
+                Why it matters
+              </p>
+
+              <p className="mt-2 max-w-[720px] text-[14px] md:text-[16px] leading-6 md:leading-7 text-[#6B7280]">
+                Clear action hierarchy helps users instantly identify the main
+                interaction and improves conversion confidence.
+              </p>
             </div>
           </div>
-        ))}
-
+        </div>
       </div>
-    </div>
+    ))}
+
+  </div>
+</div>
+
 
     {/* SECTION 2 — Suggested Improvements */}
     <div className="mx-auto max-w-[760px] text-center mt-[20px] md:mt-[60px]">
