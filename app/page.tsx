@@ -162,7 +162,6 @@ export default function Home() {
                   <span>https://notion.so</span>
                   <span className="text-neutral-300">•</span>
                   <span>3 screenshots analyzed</span>
-                  md:<span>3 screenshots analyzed</span>
                   <span className="text-neutral-300">•</span>
                   <span>Generated May 19, 2026</span>
                 </div>
