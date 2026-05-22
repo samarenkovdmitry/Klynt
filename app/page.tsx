@@ -442,113 +442,97 @@ export default function Home() {
 
 
 {/* FEATURE PILLS */}
-<section className="relative px-6 pb-10 pt-14">
-
-  {/* subtle glow */}
-  <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[220px] max-w-[900px] rounded-full bg-[#53C2EE]/10 blur-3xl" />
-
-  <div className="relative mx-auto flex max-w-[980px] flex-wrap items-center justify-center gap-3">
-
+<section className="px-5 pb-10 pt-12 md:px-6 md:pb-8 md:pt-14">
+  <div
+    className="
+      mx-auto
+      flex
+      max-w-[1040px]
+      flex-wrap
+      items-center
+      justify-center
+      gap-2.5
+      md:gap-3
+    "
+  >
     {[
       {
-        icon: "✦",
+        icon: <RiSearchEyeLine size={15} />,
         label: "Prioritized UX issues",
       },
       {
-        icon: "◉",
-        label: "Full-page screenshot analysis",
-      },
-      {
-        icon: "↗",
-        label: "Conversion-focused insights",
-      },
-      {
-        icon: "✎",
+        icon: <RiSparkling2Line size={15} />,
         label: "AI copy refinement",
       },
       {
-        icon: "⚡",
-        label: "Fast visual audit",
+        icon: <RiBarChartBoxLine size={15} />,
+        label: "Conversion insights",
       },
       {
-        icon: "◎",
-        label: "Designed for product teams",
+        icon: <RiMagicLine size={15} />,
+        label: "Full-page analysis",
+      },
+      {
+        icon: <RiShieldCheckLine size={15} />,
+        label: "Built for product teams",
+      },
+      {
+        icon: <RiArrowRightLine size={15} />,
+        label: "Fast visual audit",
       },
     ].map((item) => (
       <div
         key={item.label}
         className="
           group
-          relative
-          overflow-hidden
+          inline-flex
+          items-center
+          gap-2
           rounded-full
           border
           border-[rgba(6,28,47,0.06)]
           bg-white/92
           backdrop-blur-md
-          px-5
-          py-3
-          md:px-6
-          md:py-4
-          shadow-[0_4px_20px_rgba(6,28,47,0.04)]
+          px-4
+          py-2.5
+          text-[13px]
+          font-medium
+          text-[#6B7280]
+          shadow-[0_6px_24px_rgba(6,28,47,0.04)]
           transition-all
-          duration-300
-          hover:-translate-y-[2px]
-          hover:border-[rgba(83,194,238,0.24)]
-          hover:shadow-[0_12px_40px_rgba(83,194,238,0.14)]
+          duration-200
+          hover:-translate-y-[1px]
+          hover:border-[rgba(83,194,238,0.28)]
+          hover:bg-white
+          hover:shadow-[0_10px_30px_rgba(83,194,238,0.12)]
+          md:px-5
+          md:py-3
+          md:text-[15px]
         "
       >
-
-        {/* hover gradient */}
         <div
           className="
-            absolute
-            inset-0
-            opacity-0
-            transition-opacity
-            duration-300
-            group-hover:opacity-100
-            bg-[linear-gradient(180deg,rgba(83,194,238,0.06),transparent)]
+            flex
+            h-6
+            w-6
+            items-center
+            justify-center
+            rounded-full
+            bg-[#E9F8FF]
+            text-[#1696C7]
+            transition-colors
+            group-hover:bg-[#53C2EE]
+            group-hover:text-white
+            md:h-7
+            md:w-7
           "
-        />
-
-        <div className="relative flex items-center gap-3">
-
-          {/* icon */}
-          <div
-            className="
-              flex
-              h-7
-              w-7
-              items-center
-              justify-center
-              rounded-full
-              bg-[#EAF7FD]
-              text-[13px]
-              font-semibold
-              text-[#0F7FB3]
-            "
-          >
-            {item.icon}
-          </div>
-
-          {/* text */}
-          <span
-            className="
-              whitespace-nowrap
-              text-[14px]
-              md:text-[15px]
-              font-medium
-              tracking-[-0.01em]
-              text-[#5F6C78]
-              transition-colors
-              duration-200
-              group-hover:text-[#061C2F]
-            "
-          >
-            {item.label}
-          </span>
+        >
+          {item.icon}
         </div>
+
+        <span className="whitespace-nowrap">
+          {item.label}
+        </span>
       </div>
     ))}
   </div>
