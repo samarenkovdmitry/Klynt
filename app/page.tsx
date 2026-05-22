@@ -256,8 +256,7 @@ export default function Home() {
           rounded-[24px]
           md:border
           md:border-[rgba(6,28,47,0.06)]
-          bg-[#FBFCFD]
-          p-2
+          bg-[#FFFFFF]
           md:p-4
           md:mt-8
           md:p-6
@@ -442,42 +441,43 @@ export default function Home() {
 </section>
 
 
-      {/* FEATURE PILLS */}
-      <section className="px-6 pb-8 pt-14">
-        <div className="mx-auto flex max-w-[980px] gap-3 overflow-x-auto pb-2 md:flex-wrap md:justify-center">
+{/* FEATURE PILLS */}
+<section className="px-6 pb-8 pt-14">
+  <div className="mx-auto flex max-w-[980px] flex-wrap gap-3 pb-2 justify-start md:justify-center">
 
-          {[
-            "Prioritized UX issues",
-            "Full-page screenshot analysis",
-            "Conversion-focused insights",
-            "AI copy refinement",
-            "Fast visual audit",
-            "Designed for product teams",
-          ].map((item) => (
-            <div
-              key={item}
-              className="
-                rounded-full
-                border
-                border-[rgba(6,28,47,0.06)]
-                bg-white
-                whitespace-nowrap
-                px-5
-                py-3
-                text-[14px]
-                md:px-6
-                md:py-4
-                md:text-[16px]
-                font-medium
-                text-[#8F99A2]
-                shadow-[0_2px_10px_rgba(0,0,0,0.02)]
-              "
-            >
-              {item}
-            </div>
-          ))}
-        </div>
-      </section>
+    {[
+      "Prioritized UX issues",
+      "Full-page screenshot analysis",
+      "Conversion-focused insights",
+      "AI copy refinement",
+      "Fast visual audit",
+      "Designed for product teams",
+    ].map((item) => (
+      <div
+        key={item}
+        className="
+          rounded-full
+          border
+          border-[rgba(6,28,47,0.06)]
+          bg-white
+          whitespace-nowrap
+          px-5
+          py-3
+          text-[14px]
+          md:px-6
+          md:py-4
+          md:text-[16px]
+          font-medium
+          text-[#8F99A2]
+          shadow-[0_2px_10px_rgba(0,0,0,0.02)]
+        "
+      >
+        {item}
+      </div>
+    ))}
+  </div>
+</section>
+
 
 
 {/* FEATURES */}
