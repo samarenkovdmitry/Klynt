@@ -31,19 +31,19 @@ export default function Home() {
     <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[#53C2EE] pb-[180px]">
+      <section className="relative overflow-hidden bg-[#53C2EE] pb-[120px] md:pb-[180px]">
 
 
         {/* NAVBAR */}
         <header className="relative z-20">
-          <div className="mx-auto flex h-[84px] max-w-[1240px] items-center justify-between px-6 lg:px-10">
+          <div className="mx-auto flex h-[72px] md:h-[84px] max-w-[1240px] items-center justify-between px-5 md:px-6 lg:px-10">
 
             {/* LOGO */}
             <div className="flex items-center gap-3">
               <img
                 src="/klynt-logo-dark.svg"
                 alt="Klynt"
-                className="h-[42px] w-auto"
+                className="h-[36px] md:h-[42px] w-auto"
               />
             </div>
 
@@ -57,20 +57,22 @@ export default function Home() {
         </header>
 
         {/* HERO CONTENT */}
-        <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-6 pt-16 text-center lg:px-0">
+        <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-5 pt-10 md:pt-16 text-center lg:px-0">
 
           {/* H1 */}
           <h1
             className="
-              mt-8
+              mt-6
               max-w-[860px]
-              text-[85px]
+              text-[54px]
+              md:text-[85px]
               font-semibold
-              leading-[0.85]
-              tracking-[-0.06em]
+              leading-[0.9]
+              md:leading-[0.85]
+              tracking-[-0.07em]
+              md:tracking-[-0.06em]
               text-[#061C2F]
-              text-[#061C2F]
-            "
+              "
           >
             Nothing but clarity
           </h1>
@@ -78,24 +80,25 @@ export default function Home() {
           {/* SUB */}
           <p
             className="
-              mt-8
-              max-w-[700px]
-              text-[22px]
+              mt-6
+              max-w-[640px]
+              text-[18px]
+              md:text-[22px]
               leading-[1.6]
               text-[rgba(6,28,47,0.72)]
-            "
+              "
           >
             AI that finds weak points in your UX and copy, explains them, and offers clear improvements.
           </p>
 
           {/* BUTTONS */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-3 md:gap-4">
 
             <Link
               href="/analyze"
               className="
                 inline-flex
-                h-[56px]
+                h-[52px] md:h-[56px]
                 items-center
                 gap-2
                 rounded-full
@@ -120,14 +123,14 @@ export default function Home() {
 
 
       {/* FLOATING REPORT */}
-      <section className="relative z-20 -mt-[120px] px-6">
+      <section className="relative z-20 -mt-[70px] md:-mt-[120px] px-5 md:px-6">
         <div
           className="
             relative
             mx-auto
             max-w-[1120px]
             overflow-hidden
-            rounded-[40px]
+            rounded-[28px] md:rounded-[40px]
             border
             border-[rgba(6,28,47,0.06)]
             bg-white
@@ -138,14 +141,14 @@ export default function Home() {
           {/* INNER LIGHT */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#F5FAFF_0%,transparent_60%)]" />
 
-          <div className="relative z-10 p-8 lg:p-10">
+          <div className="relative z-10 p-5 md:p-8 lg:p-10">
 
             {/* TOP */}
-            <div className="flex flex-wrap items-start justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:flex-wrap items-start justify-between gap-5 md:gap-6">
 
               <div>
                 <div className="flex items-center gap-3">
-                  <h2 className="text-[40px] font-semibold tracking-[-0.05em] text-[#061C2F]">
+                  <h2 className="text-[30px] md:text-[40px] font-semibold tracking-[-0.05em] text-[#061C2F]">
                     Clarity Report
                   </h2>
 
@@ -154,7 +157,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap items-center gap-3 text-[14px] text-[#6B7280]">
+                <div className="mt-4 flex flex-wrap items-center gap-2 md:gap-3 text-[13px] md:text-[14px] text-[#6B7280]">
                   <span>https://notion.so</span>
                   <span className="text-neutral-300">•</span>
                   <span>3 screenshots analyzed</span>
@@ -186,7 +189,7 @@ export default function Home() {
             </div>
 
             {/* SUMMARY */}
-            <div className="mt-8 rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-[#FBFCFD] p-6">
+            <div className="mt-8 rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-[#FBFCFD] p-4 md:p-6">
 
               <h3 className="text-[24px] font-semibold tracking-[-0.03em] text-[#061C2F]">
                 Summary
@@ -201,11 +204,11 @@ export default function Home() {
               <div className="mt-5 grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
 
                 {/* LEFT */}
-                <div className="rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white p-6">
-                  <div className="flex items-center gap-6">
+                <div className="rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white p-4 md:p-6">
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
 
                     {/* SCORE */}
-                    <div className="relative flex h-[120px] w-[120px] items-center justify-center">
+                    <div className="relative flex h-[110px] w-[110px] md:h-[120px] md:w-[120px] items-center justify-center">
 
                       <svg className="absolute inset-0 -rotate-90" viewBox="0 0 120 120">
 
@@ -236,7 +239,7 @@ export default function Home() {
                           UX Score
                         </p>
 
-                        <p className="mt-1 text-[40px] font-semibold leading-none text-[#FF7A00]">
+                        <p className="mt-1 text-[30px] md:text-[40px] font-semibold leading-none text-[#FF7A00]">
                           75
                         </p>
                       </div>
@@ -264,7 +267,7 @@ export default function Home() {
                 </div>
 
                 {/* RIGHT */}
-                <div className="rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white p-6">
+                <div className="rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white p-4 md:p-6">
                   <div className="flex h-full flex-col justify-between">
 
                     <div>
@@ -292,7 +295,7 @@ export default function Home() {
 
       {/* FEATURE PILLS */}
       <section className="px-6 pb-8 pt-14">
-        <div className="mx-auto flex max-w-[980px] flex-wrap items-center justify-center gap-3">
+        <div className="mx-auto flex max-w-[980px] gap-3 overflow-x-auto pb-2 md:flex-wrap md:justify-center">
 
           {[
             "Prioritized UX issues",
@@ -309,9 +312,13 @@ export default function Home() {
                 border
                 border-[rgba(6,28,47,0.06)]
                 bg-white
-                px-6
-                py-4
-                text-[16px]
+                whitespace-nowrap
+                px-5
+                py-3
+                text-[14px]
+                md:px-6
+                md:py-4
+                md:text-[16px]
                 font-medium
                 text-[#8F99A2]
                 shadow-[0_2px_10px_rgba(0,0,0,0.02)]
@@ -325,7 +332,7 @@ export default function Home() {
 
 
 {/* FEATURES */}
-<section className="px-6 py-20">
+<section className="px-5 md:px-6 py-14 md:py-20">
   <div className="mx-auto max-w-[920px]">
 
     {/* SECTION 1 — UX Signals */}
@@ -334,7 +341,7 @@ export default function Home() {
         UX Signals
       </div>
 
-      <h2 className="mt-6 text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
+      <h2 className="mt-6 text-[22px] md:text-[28px] md:text-[34px] md:text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
         Key problems hurting clarity and conversion
       </h2>
     </div>
@@ -361,9 +368,9 @@ export default function Home() {
               py-8
             "
           >
-            <div className="flex gap-6">
+            <div className="flex flex-col md:flex-row gap-5 md:gap-6">
 
-              <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
               </div>
 
@@ -371,7 +378,7 @@ export default function Home() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
 
                   <div>
-                    <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                    <h3 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
                       {item === 1
                         ? "Unclear primary CTA hierarchy"
                         : "Navigation menu lacks visual separation"}
@@ -418,12 +425,12 @@ export default function Home() {
     </div>
 
     {/* SECTION 2 — Suggested Improvements */}
-    <div className="mt-28 mx-auto max-w-[760px] text-center">
+    <div className="mt-20 md:mt-28 mx-auto max-w-[760px] text-center">
       <div className="inline-flex rounded-full bg-[#DFF5FF] px-5 py-3 text-[16px] font-semibold text-[#0F7FB3]">
         Suggested Improvements
       </div>
 
-      <h2 className="mt-6 text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
+      <h2 className="mt-6 text-[22px] md:text-[28px] md:text-[34px] md:text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
         High-impact fixes to improve the experience
       </h2>
     </div>
@@ -452,9 +459,9 @@ export default function Home() {
               w-full
             "
           >
-            <div className="flex gap-6">
+            <div className="flex flex-col md:flex-row gap-5 md:gap-6">
 
-              <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
               </div>
 
@@ -462,7 +469,7 @@ export default function Home() {
                 <div className="flex justify-between items-start gap-4">
 
                   <div>
-                    <h3 className="text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                    <h3 className="text-[22px] md:text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
                       {item === 1 ? "Hero Section" : "Top Menu"}
                     </h3>
 
@@ -500,12 +507,12 @@ export default function Home() {
     </div>
 
     {/* SECTION 3 — Copy Refinement */}
-    <div className="mt-28 mx-auto max-w-[760px] text-center">
+    <div className="mt-20 md:mt-28 mx-auto max-w-[760px] text-center">
       <div className="inline-flex rounded-full bg-[#DFF5FF] px-5 py-3 text-[16px] font-semibold text-[#0F7FB3]">
         Copy Refinement
       </div>
 
-      <h2 className="mt-6 text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
+      <h2 className="mt-6 text-[22px] md:text-[28px] md:text-[34px] md:text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
         Stronger messaging for clearer communication
       </h2>
     </div>
@@ -524,18 +531,18 @@ export default function Home() {
         {[1, 2].map((item) => (
           <div
             key={item}
-            className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-8 py-8"
+            className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-5 py-5 md:px-8 md:py-8"
           >
-            <div className="flex gap-6">
+            <div className="flex flex-col md:flex-row gap-5 md:gap-6">
 
-              <div className="text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
               </div>
 
               <div className="flex-1">
 
                 <div className="flex justify-between flex-wrap gap-4">
-                  <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  <h3 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
                     {item === 1 ? "Hero Headline" : "Subheadline"}
                   </h3>
 
@@ -637,17 +644,19 @@ export default function Home() {
 
 
       {/* CTA */}
-      <section className="px-6 py-20">
+      <section className="px-5 md:px-6 py-14 md:py-20">
         <div
           className="
             relative
             mx-auto
             max-w-[1180px]
             overflow-hidden
-            rounded-[40px]
+            rounded-[28px] md:rounded-[40px]
             bg-[#53C2EE]
-            px-8
-            py-20
+            px-5
+            py-14
+            md:px-8
+            md:py-20
             text-center
           "
         >
@@ -657,7 +666,7 @@ export default function Home() {
           <div className="relative z-10 mx-auto max-w-[760px]">
 
 
-            <h2 className="mt-7 text-[58px] font-semibold leading-[0.95] tracking-[-0.05em] text-[#061C2F]">
+            <h2 className="mt-7 text-[36px] md:text-[58px] font-semibold leading-[0.95] tracking-[-0.05em] text-[#061C2F]">
               Improve clarity before shipping your next release
             </h2>
 
@@ -671,7 +680,7 @@ export default function Home() {
                 href="/analyze"
                 className="
                   inline-flex
-                  h-[56px]
+                  h-[52px] md:h-[56px]
                   items-center
                   gap-2
                   rounded-full
@@ -693,7 +702,7 @@ export default function Home() {
               <button
                 className="
                   inline-flex
-                  h-[56px]
+                  h-[52px] md:h-[56px]
                   items-center
                   rounded-full
                   bg-white/40
@@ -714,7 +723,7 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="border-t border-[rgba(6,28,47,0.06)] px-6 py-8">
-        <div className="mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-6">
+        <div className="mx-auto flex flex-col md:flex-row max-w-[1180px] items-start md:items-center justify-between gap-6">
 
           <div className="flex items-center gap-3">
             <img
