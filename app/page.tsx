@@ -150,7 +150,7 @@ export default function Home() {
         {/* LEFT */}
         <div className="min-w-0">
 
-          <div className="flex flex-wrap items-center gap-3 md:gap-3">
+          <div className="flex flex-wrap items-center gap-3 md:gap-3 justify-between">
 
             <h2
               className="
@@ -224,6 +224,7 @@ export default function Home() {
         {/* DOWNLOAD */}
         <button
           className="
+            invisible md:visible
             inline-flex
             h-[48px]
             w-full
