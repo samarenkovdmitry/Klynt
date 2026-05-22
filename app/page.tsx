@@ -150,7 +150,7 @@ export default function Home() {
         {/* LEFT */}
         <div className="min-w-0">
 
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+          <div className="flex flex-wrap items-center gap-3 md:gap-3">
 
             <h2
               className="
@@ -252,12 +252,13 @@ export default function Home() {
       {/* SUMMARY */}
       <div
         className="
-          mt-6
+          mt-3
           rounded-[24px]
-          border
-          border-[rgba(6,28,47,0.06)]
+          md:border
+          md:border-[rgba(6,28,47,0.06)]
           bg-[#FBFCFD]
-          p-4
+          p-2
+          md:p-4
           md:mt-8
           md:p-6
         "
@@ -278,7 +279,7 @@ export default function Home() {
         {/* TEXT */}
         <div
           className="
-            mt-4
+            mt-2
             rounded-[20px]
             border
             border-[rgba(6,28,47,0.06)]
@@ -286,7 +287,7 @@ export default function Home() {
             px-4
             py-4
             text-[14px]
-            leading-7
+            leading-5
             text-[#4B5563]
             md:px-5
             md:text-[15px]
@@ -369,7 +370,7 @@ export default function Home() {
                   Above average UX quality with moderate conversion friction
                 </p>
 
-                <div className="mt-5 space-y-2 text-[14px] text-[#6B7280] md:text-[15px]">
+                <div className="mt-5 space-y-1 text-[14px] text-[#6B7280] md:text-[15px]">
 
                   <div>
                     <span className="font-semibold text-[#061C2F]">
@@ -428,7 +429,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <p className="mt-6 text-[14px] leading-7 text-[#6B7280] md:text-[15px]">
+              <p className="mt-4 text-[14px] leading-5 text-[#6B7280] md:text-[15px]">
                 CTA clarity and trust positioning reduce conversion confidence.
               </p>
             </div>
