@@ -515,6 +515,8 @@ export default function Home() {
               bg-white
               px-4
               py-4
+              md:px-10
+              md:py-10
             "
           >
             <div className="flex flex-col md:flex-row gap-5 md:gap-6">
@@ -533,7 +535,7 @@ export default function Home() {
                         : "Navigation menu lacks visual separation"}
                     </h3>
 
-                    <div className="mt-4 flex flex-wrap gap-2 hidden md:block">
+                    <div className="mt-4 flex flex-wrap gap-2 hidden md:hidden">
                       <div className="rounded-full border border-[#D8DEE4] bg-[#F5F7F9] px-4 py-2 text-[14px] font-medium text-[#667085]">
                         Weak hierarchy
                       </div>
@@ -560,7 +562,7 @@ export default function Home() {
                     Why it works
                   </p>
 
-                  <p className="mt-2 max-w-[720px] text-[14px] md:text-[16px] leading-4 text-[#6B7280]">
+                  <p className="mt-2 max-w-[720px] text-[14px] md:text-[16px] leading-4 md:leading-6 text-[#6B7280]">
                     Clear action hierarchy helps users instantly identify the main
                     interaction and improves conversion confidence.
                   </p>
