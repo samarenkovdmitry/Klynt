@@ -519,7 +519,7 @@ export default function Home() {
               md:py-10
             "
           >
-            <div className="flex flex-col md:flex-row gap-5 md:gap-6">
+            <div className="flex flex-col md:flex-row gap-3 md:gap-6">
 
               <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
@@ -560,10 +560,10 @@ export default function Home() {
 
                 <div className="mt-7 border-t border-[#E5E7EB] pt-5">
                   <p className="text-[15px] font-semibold text-[#061C2F]">
-                    Why it works
+                    Why it matters
                   </p>
 
-                  <p className="mt-2 max-w-[720px] text-[14px] md:text-[16px] leading-4 md:leading-6 text-[#6B7280]">
+                  <p className="mt-2 max-w-[720px] text-[14px] md:text-[16px] leading-6 md:leading-7 text-[#6B7280]">
                     Clear action hierarchy helps users instantly identify the main
                     interaction and improves conversion confidence.
                   </p>
@@ -611,7 +611,7 @@ export default function Home() {
               w-full
             "
           >
-            <div className="flex flex-col md:flex-row gap-5 md:gap-6">
+            <div className="flex flex-col md:flex-row gap-3 md:gap-6">
 
               <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
@@ -641,7 +641,7 @@ export default function Home() {
 
                 <div className="mt-7 border-t border-[#E5E7EB] pt-5">
                   <p className="text-[15px] font-semibold text-[#061C2F]">
-                    Why it works
+                    Why it matters
                   </p>
 
                   <p className="mt-2 text-[16px] leading-7 text-[#6B7280] max-w-[620px]">
@@ -683,9 +683,9 @@ export default function Home() {
         {[1, 2].map((item) => (
           <div
             key={item}
-            className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-5 py-5 md:px-8 md:py-8"
+            className="rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white px-6 py-6 md:px-10 md:py-10"
           >
-            <div className="flex flex-col md:flex-row gap-5 md:gap-6">
+            <div className="flex flex-col md:flex-row gap-3 md:gap-6">
 
               <div className="text-[22px] md:text-[28px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
