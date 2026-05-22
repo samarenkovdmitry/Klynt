@@ -896,7 +896,7 @@ export default function Home() {
       {/* RIGHT IMAGE */}
       <div className="relative hidden lg:block">
         <img
-          src="/public/bottomcta-preview.png"
+          src="/bottomcta-preview.png"
           alt="Mockup"
           className="
             absolute
