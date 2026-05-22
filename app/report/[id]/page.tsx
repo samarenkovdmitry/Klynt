@@ -317,7 +317,7 @@ export default function ReportPage() {
                       "
                     >
                       <RiDownload2Line size={18} className="shrink-0"/>
-                      <span>Export PDF</span>
+                      <span>Download PDF</span>
                     </button>
 
   </div>

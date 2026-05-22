@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   RiArrowRightLine,
+  RiDownload2Line,
   RiSparkling2Line,
   RiBarChartBoxLine,
   RiSearchEyeLine,
@@ -58,32 +59,12 @@ export default function Home() {
         {/* HERO CONTENT */}
         <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-6 pt-16 text-center lg:px-0">
 
-          {/* BADGE */}
-          <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-full
-              bg-white/30
-              px-4
-              py-2
-              text-[13px]
-              font-medium
-              text-[#061C2F]
-              backdrop-blur-md
-            "
-          >
-            <RiSparkling2Line size={16} />
-            AI-powered UX reviews
-          </div>
-
           {/* H1 */}
           <h1
             className="
               mt-8
               max-w-[860px]
-              text-[100px]
+              text-[85px]
               font-semibold
               leading-[0.85]
               tracking-[-0.06em]
@@ -91,7 +72,7 @@ export default function Home() {
               text-[#061C2F]
             "
           >
-            UX, decoded
+            Nothing but clarity
           </h1>
 
           {/* SUB */}
@@ -104,8 +85,7 @@ export default function Home() {
               text-[rgba(6,28,47,0.72)]
             "
           >
-            Klynt transforms screenshots and websites into structured UX findings
-            with prioritized improvements and measurable impact.
+            AI that finds weak points in your UX and copy, explains them, and offers clear improvements.
           </p>
 
           {/* BUTTONS */}
@@ -121,7 +101,7 @@ export default function Home() {
                 rounded-full
                 bg-[#061C2F]
                 px-7
-                text-[15px]
+                text-[18px]
                 font-semibold
                 text-white
                 transition-all
@@ -200,8 +180,9 @@ export default function Home() {
                   hover:bg-[#F8FAFC]
                 "
               >
-                Export PDF
-              </button>
+                  <RiDownload2Line size={18} className="shrink-0"/>
+                  <span>Download PDF</span>
+                  </button>
             </div>
 
             {/* SUMMARY */}
@@ -328,11 +309,11 @@ export default function Home() {
                 border
                 border-[rgba(6,28,47,0.06)]
                 bg-white
-                px-5
-                py-3
-                text-[14px]
+                px-6
+                py-4
+                text-[16px]
                 font-medium
-                text-[#061C2F]
+                text-[#8F99A2]
                 shadow-[0_2px_10px_rgba(0,0,0,0.02)]
               "
             >
@@ -349,7 +330,7 @@ export default function Home() {
 
     {/* SECTION 1 — UX Signals */}
     <div className="mx-auto max-w-[760px] text-center">
-      <div className="inline-flex rounded-full bg-[#DFF5FF] px-4 py-2 text-[12px] font-semibold text-[#0F7FB3]">
+      <div className="inline-flex rounded-full bg-[#DFF5FF] px-5 py-3 text-[16px] font-semibold text-[#0F7FB3]">
         UX Signals
       </div>
 
@@ -409,11 +390,11 @@ export default function Home() {
 
                   <div className="flex flex-wrap gap-2">
                     <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-4 py-2 text-[14px] font-semibold text-[#D94848]">
-                      +16% clarity
+                      -16% clarity
                     </div>
 
                     <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-4 py-2 text-[14px] font-semibold text-[#D94848]">
-                      +12% conversion
+                      -12% conversion
                     </div>
                   </div>
                 </div>
@@ -438,7 +419,7 @@ export default function Home() {
 
     {/* SECTION 2 — Suggested Improvements */}
     <div className="mt-28 mx-auto max-w-[760px] text-center">
-      <div className="inline-flex rounded-full bg-[#DFF5FF] px-4 py-2 text-[12px] font-semibold text-[#0F7FB3]">
+      <div className="inline-flex rounded-full bg-[#DFF5FF] px-5 py-3 text-[16px] font-semibold text-[#0F7FB3]">
         Suggested Improvements
       </div>
 
@@ -520,7 +501,7 @@ export default function Home() {
 
     {/* SECTION 3 — Copy Refinement */}
     <div className="mt-28 mx-auto max-w-[760px] text-center">
-      <div className="inline-flex rounded-full bg-[#DFF5FF] px-4 py-2 text-[12px] font-semibold text-[#0F7FB3]">
+      <div className="inline-flex rounded-full bg-[#DFF5FF] px-5 py-3 text-[16px] font-semibold text-[#0F7FB3]">
         Copy Refinement
       </div>
 
@@ -655,71 +636,6 @@ export default function Home() {
 
 
 
-      {/* WORKFLOW */}
-      <section className="px-6 py-20">
-        <div
-          className="
-            mx-auto
-            max-w-[1180px]
-            overflow-hidden
-            rounded-[40px]
-            bg-[#061C2F]
-            px-8
-            py-10
-            text-white
-            lg:px-12
-            lg:py-14
-          "
-        >
-
-          <div className="max-w-[720px]">
-            <div className="inline-flex rounded-full bg-white/10 px-4 py-2 text-[12px] font-semibold text-[#8EDCFF] backdrop-blur-md">
-              Workflow
-            </div>
-
-            <h2 className="mt-6 text-[54px] font-semibold leading-[1] tracking-[-0.05em]">
-              From screenshot to UX insights in minutes
-            </h2>
-          </div>
-
-          <div className="mt-14 grid gap-5 lg:grid-cols-3">
-
-            {[
-              {
-                title: "Submit website or screenshot",
-                text: "Paste a URL or upload a full-page screenshot for analysis.",
-              },
-              {
-                title: "AI analyzes UX patterns",
-                text: "Klynt detects friction points, weak hierarchy and unclear messaging.",
-              },
-              {
-                title: "Receive structured report",
-                text: "Get prioritized UX improvements with measurable impact.",
-              },
-            ].map((item, index) => (
-              <div
-                key={item.title}
-                className="rounded-[28px] border border-white/10 bg-white/5 p-7 backdrop-blur-md"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#53C2EE] text-[18px] font-semibold text-[#061C2F]">
-                  {index + 1}
-                </div>
-
-                <h3 className="mt-7 text-[24px] font-semibold leading-[1.2] tracking-[-0.03em]">
-                  {item.title}
-                </h3>
-
-                <p className="mt-4 text-[16px] leading-8 text-white/70">
-                  {item.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
       {/* CTA */}
       <section className="px-6 py-20">
         <div
@@ -740,10 +656,6 @@ export default function Home() {
 
           <div className="relative z-10 mx-auto max-w-[760px]">
 
-            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(6,28,47,0.08)] bg-white/20 px-4 py-2 text-[13px] font-medium text-[#061C2F] backdrop-blur-md">
-              <RiSparkling2Line size={16} />
-              AI-powered UX reviews
-            </div>
 
             <h2 className="mt-7 text-[58px] font-semibold leading-[0.95] tracking-[-0.05em] text-[#061C2F]">
               Improve clarity before shipping your next release
@@ -784,8 +696,6 @@ export default function Home() {
                   h-[56px]
                   items-center
                   rounded-full
-                  border
-                  border-[rgba(6,28,47,0.10)]
                   bg-white/40
                   px-7
                   text-[15px]
