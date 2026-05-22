@@ -123,175 +123,322 @@ export default function Home() {
       </section>
 
 
-      {/* FLOATING REPORT */}
-      <section className="relative z-20 -mt-[70px] md:-mt-[120px] px-5 md:px-6">
+{/* FLOATING REPORT */}
+<section className="relative z-20 -mt-[70px] md:-mt-[120px] px-4 md:px-6">
+  <div
+    className="
+      relative
+      mx-auto
+      max-w-[1120px]
+      overflow-hidden
+      rounded-[30px] md:rounded-[40px]
+      border
+      border-[rgba(6,28,47,0.06)]
+      bg-white
+      shadow-[0_30px_80px_rgba(6,28,47,0.12)]
+    "
+  >
+
+    {/* LIGHT */}
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#F5FAFF_0%,transparent_60%)]" />
+
+    <div className="relative z-10 p-4 md:p-8 lg:p-10">
+
+      {/* TOP */}
+      <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+
+        {/* LEFT */}
+        <div className="min-w-0">
+
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+
+            <h2
+              className="
+                text-[28px]
+                leading-none
+                tracking-[-0.05em]
+                text-[#061C2F]
+                md:text-[40px]
+                font-semibold
+              "
+            >
+              Clarity Report
+            </h2>
+
+            <div
+              className="
+                inline-flex
+                h-[28px]
+                items-center
+                rounded-full
+                bg-[#EEF2FF]
+                px-3
+                text-[11px]
+                font-semibold
+                text-[#5B5BD6]
+                md:h-[32px]
+                md:px-4
+                md:text-[12px]
+              "
+            >
+              AI Generated
+            </div>
+          </div>
+
+          {/* META */}
+          <div
+            className="
+              mt-4
+              flex
+              flex-wrap
+              items-center
+              gap-x-3
+              gap-y-2
+              text-[12px]
+              text-[#6B7280]
+              md:text-[14px]
+            "
+          >
+
+            <div className="flex items-center gap-2">
+
+              <img
+                src="https://www.google.com/s2/favicons?domain=notion.so&sz=64"
+                alt=""
+                className="h-4 w-4 rounded-sm"
+              />
+
+              <span>https://notion.so</span>
+            </div>
+
+            <span className="hidden md:block text-neutral-300">•</span>
+
+            <span>3 screenshots analyzed</span>
+
+            <span className="hidden md:block text-neutral-300">•</span>
+
+            <span>Generated May 19, 2026</span>
+          </div>
+        </div>
+
+        {/* DOWNLOAD */}
+        <button
+          className="
+            inline-flex
+            h-[48px]
+            w-full
+            shrink-0
+            items-center
+            justify-center
+            gap-2
+            rounded-full
+            border
+            border-[rgba(6,28,47,0.08)]
+            bg-white
+            px-5
+            text-[14px]
+            font-medium
+            text-[#061C2F]
+            transition-all
+            hover:bg-[#F8FAFC]
+            md:w-auto
+          "
+        >
+          <RiDownload2Line size={18} />
+          <span>Download PDF</span>
+        </button>
+      </div>
+
+      {/* SUMMARY */}
+      <div
+        className="
+          mt-6
+          rounded-[24px]
+          border
+          border-[rgba(6,28,47,0.06)]
+          bg-[#FBFCFD]
+          p-4
+          md:mt-8
+          md:p-6
+        "
+      >
+
+        <h3
+          className="
+            text-[20px]
+            font-semibold
+            tracking-[-0.03em]
+            text-[#061C2F]
+            md:text-[24px]
+          "
+        >
+          Summary
+        </h3>
+
+        {/* TEXT */}
         <div
           className="
-            relative
-            mx-auto
-            max-w-[1120px]
-            overflow-hidden
-            rounded-[28px] md:rounded-[40px]
+            mt-4
+            rounded-[20px]
             border
             border-[rgba(6,28,47,0.06)]
             bg-white
-            shadow-[0_40px_120px_rgba(6,28,47,0.12)]
+            px-4
+            py-4
+            text-[14px]
+            leading-7
+            text-[#4B5563]
+            md:px-5
+            md:text-[15px]
           "
         >
+          Clear visual structure and modern presentation, but weak CTA specificity
+          reduces conversion confidence in the first screen experience.
+        </div>
 
-          {/* INNER LIGHT */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#F5FAFF_0%,transparent_60%)]" />
+        {/* GRID */}
+        <div className="mt-4 grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
 
-          <div className="relative z-10 p-5 md:p-8 lg:p-10">
+          {/* LEFT CARD */}
+          <div
+            className="
+              rounded-[24px]
+              border
+              border-[rgba(6,28,47,0.06)]
+              bg-white
+              p-4
+              md:p-6
+            "
+          >
 
-            {/* TOP */}
-            <div className="flex flex-col md:flex-row md:flex-wrap items-start justify-between gap-5 md:gap-6">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
 
-              <div>
-                <div className="flex items-center gap-3">
-                  <h2 className="text-[30px] md:text-[40px] font-semibold tracking-[-0.05em] text-[#061C2F]">
-                    Clarity Report
-                  </h2>
+              {/* SCORE */}
+              <div className="relative flex h-[110px] w-[110px] shrink-0 items-center justify-center md:h-[120px] md:w-[120px]">
 
-                  <div className="inline-flex items-center gap-2 rounded-full bg-[#EEF2FF] px-3 py-1 text-[12px] font-semibold text-[#5B5BD6]">
-                    AI Generated
-                  </div>
-                </div>
+                <svg
+                  className="absolute inset-0 -rotate-90"
+                  viewBox="0 0 120 120"
+                >
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="52"
+                    stroke="#E5E7EB"
+                    strokeWidth="8"
+                    fill="none"
+                  />
 
-                <div className="mt-4 flex flex-wrap items-center gap-2 md:gap-3 text-[13px] md:text-[14px] text-[#6B7280]">
-                  <span>https://notion.so</span>
-                  <span className="text-neutral-300">•</span>
-                  <span>3 screenshots analyzed</span>
-                  <span className="text-neutral-300">•</span>
-                  <span>Generated May 19, 2026</span>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="52"
+                    stroke="#FF7A00"
+                    strokeWidth="8"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={327}
+                    strokeDashoffset={82}
+                  />
+                </svg>
+
+                <div className="text-center">
+                  <p className="text-[12px] font-semibold text-[#061C2F]">
+                    UX Score
+                  </p>
+
+                  <p className="mt-1 text-[34px] font-semibold leading-none text-[#FF7A00] md:text-[40px]">
+                    75
+                  </p>
                 </div>
               </div>
 
-              <button
-                className="
-                  inline-flex
-                  h-[44px]
-                  items-center
-                  gap-2
-                  rounded-full
-                  border
-                  border-[rgba(6,28,47,0.08)]
-                  px-5
-                  text-[14px]
-                  font-medium
-                  text-[#061C2F]
-                  transition-all
-                  hover:bg-[#F8FAFC]
-                "
-              >
-                  <RiDownload2Line size={18} className="shrink-0"/>
-                  <span>Download PDF</span>
-                  </button>
-            </div>
+              {/* CONTENT */}
+              <div className="min-w-0">
 
-            {/* SUMMARY */}
-            <div className="mt-8 rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-[#FBFCFD] p-4 md:p-6">
+                <p
+                  className="
+                    text-[22px]
+                    font-semibold
+                    leading-[1.2]
+                    tracking-[-0.04em]
+                    text-[#061C2F]
+                    md:text-[24px]
+                  "
+                >
+                  Above average UX quality with moderate conversion friction
+                </p>
 
-              <h3 className="text-[24px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-                Summary
-              </h3>
+                <div className="mt-5 space-y-2 text-[14px] text-[#6B7280] md:text-[15px]">
 
-              <div className="mt-5 rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white px-5 py-4 text-[15px] leading-7 text-[#4B5563]">
-                Clear visual structure and modern presentation, but weak CTA specificity
-                reduces conversion confidence in the first screen experience.
-              </div>
-
-              {/* GRID */}
-              <div className="mt-5 grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-
-                {/* LEFT */}
-                <div className="rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white p-4 md:p-6">
-                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-
-                    {/* SCORE */}
-                    <div className="relative flex h-[110px] w-[110px] md:h-[120px] md:w-[120px] items-center justify-center">
-
-                      <svg className="absolute inset-0 -rotate-90" viewBox="0 0 120 120">
-
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="52"
-                          stroke="#E5E7EB"
-                          strokeWidth="8"
-                          fill="none"
-                        />
-
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="52"
-                          stroke="#FF7A00"
-                          strokeWidth="8"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeDasharray={327}
-                          strokeDashoffset={82}
-                        />
-                      </svg>
-
-                      <div className="text-center">
-                        <p className="text-[13px] font-semibold text-[#061C2F]">
-                          UX Score
-                        </p>
-
-                        <p className="mt-1 text-[30px] md:text-[40px] font-semibold leading-none text-[#FF7A00]">
-                          75
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* CONTENT */}
-                    <div>
-                      <p className="max-w-[420px] text-[24px] font-semibold leading-[1.3] tracking-[-0.03em] text-[#061C2F]">
-                        Above average UX quality with moderate conversion friction
-                      </p>
-
-                      <div className="mt-5 space-y-2 text-[15px] text-[#6B7280]">
-                        <div>
-                          <span className="font-semibold text-[#061C2F]">Best:</span>{" "}
-                          Navigation clarity
-                        </div>
-
-                        <div>
-                          <span className="font-semibold text-[#061C2F]">Risk:</span>{" "}
-                          Trust positioning
-                        </div>
-                      </div>
-                    </div>
+                  <div>
+                    <span className="font-semibold text-[#061C2F]">
+                      Best:
+                    </span>{" "}
+                    Navigation clarity
                   </div>
-                </div>
 
-                {/* RIGHT */}
-                <div className="rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white p-4 md:p-6">
-                  <div className="flex h-full flex-col justify-between">
-
-                    <div>
-                      <p className="text-[15px] font-semibold text-[#061C2F]">
-                        Conversion Health
-                      </p>
-
-                      <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#FFF1F1] px-3 py-1 text-[13px] font-semibold text-[#E45454]">
-                        <div className="h-2 w-2 rounded-full bg-[#FF5A5A]" />
-                        Fair
-                      </div>
-                    </div>
-
-                    <p className="mt-6 text-[15px] leading-7 text-[#6B7280]">
-                      CTA clarity and trust positioning reduce conversion confidence.
-                    </p>
+                  <div>
+                    <span className="font-semibold text-[#061C2F]">
+                      Risk:
+                    </span>{" "}
+                    Trust positioning
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* RIGHT CARD */}
+          <div
+            className="
+              rounded-[24px]
+              border
+              border-[rgba(6,28,47,0.06)]
+              bg-white
+              p-4
+              md:p-6
+            "
+          >
+            <div className="flex h-full flex-col justify-between">
+
+              <div>
+
+                <p className="text-[15px] font-semibold text-[#061C2F]">
+                  Conversion Health
+                </p>
+
+                <div
+                  className="
+                    mt-4
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    bg-[#FFF1F1]
+                    px-3
+                    py-1
+                    text-[13px]
+                    font-semibold
+                    text-[#E45454]
+                  "
+                >
+                  <div className="h-2 w-2 rounded-full bg-[#FF5A5A]" />
+                  Fair
+                </div>
+              </div>
+
+              <p className="mt-6 text-[14px] leading-7 text-[#6B7280] md:text-[15px]">
+                CTA clarity and trust positioning reduce conversion confidence.
+              </p>
+            </div>
+          </div>
+
         </div>
-      </section>
+      </div>
+    </div>
+  </div>
+</section>
 
 
       {/* FEATURE PILLS */}
