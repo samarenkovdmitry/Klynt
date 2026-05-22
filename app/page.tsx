@@ -131,7 +131,7 @@ export default function Home() {
       mx-auto
       max-w-[1120px]
       overflow-hidden
-      rounded-[30px] md:rounded-[40px]
+      rounded-[28px] md:rounded-[40px]
       border
       border-[rgba(6,28,47,0.06)]
       bg-white
@@ -443,7 +443,7 @@ export default function Home() {
 
 {/* FEATURE PILLS */}
 <section className="px-6 pb-8 pt-14">
-  <div className="mx-auto flex max-w-[980px] flex-wrap gap-3 pb-2 justify-start md:justify-center">
+  <div className="mx-auto flex max-w-[980px] flex-wrap gap-3 justify-center">
 
     {[
       "Prioritized UX issues",
@@ -484,13 +484,13 @@ export default function Home() {
 <section className="px-5 md:px-6 py-14 md:py-20">
   <div className="mx-auto max-w-[920px]">
 
-    {/* SECTION 1 — UX Signals */}
+    {/* SECTION 1 — UX Issues */}
     <div className="mx-auto max-w-[760px] text-center">
-      <div className="inline-flex rounded-full bg-[#DFF5FF] px-5 py-3 text-[16px] font-semibold text-[#0F7FB3]">
-        UX Signals
+      <div className="inline-flex text-[16px] font-semibold text-[#0F7FB3]">
+        UX Issues
       </div>
 
-      <h2 className="mt-6 text-[22px] md:text-[28px] md:text-[34px] md:text-[52px] font-semibold leading-[1] tracking-[-0.05em] text-[#061C2F]">
+      <h2 className="mt-3 text-[22px] md:text-[42px] font-semibold leading-[1.05] tracking-[-0.05em] text-[#061C2F]">
         Key problems hurting clarity and conversion
       </h2>
     </div>
@@ -503,18 +503,18 @@ export default function Home() {
         [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]
       "
     >
-      <div className="mt-14 space-y-5">
+      <div className="mt-8 space-y-5">
 
         {[1, 2].map((item) => (
           <div
             key={item}
             className="
-              rounded-[32px]
+              rounded-[28px]
               border
               border-[rgba(6,28,47,0.06)]
               bg-white
-              px-8
-              py-8
+              px-4
+              py-4
             "
           >
             <div className="flex flex-col md:flex-row gap-5 md:gap-6">
@@ -533,7 +533,7 @@ export default function Home() {
                         : "Navigation menu lacks visual separation"}
                     </h3>
 
-                    <div className="mt-4 flex flex-wrap gap-2">
+                    <div className="mt-4 flex flex-wrap gap-2 hidden md:block">
                       <div className="rounded-full border border-[#D8DEE4] bg-[#F5F7F9] px-4 py-2 text-[14px] font-medium text-[#667085]">
                         Weak hierarchy
                       </div>
@@ -545,11 +545,11 @@ export default function Home() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-4 py-2 text-[14px] font-semibold text-[#D94848]">
+                    <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-3.5 py-1.5 text-[13px] md:text-[14px] font-semibold text-[#D94848]">
                       -16% clarity
                     </div>
 
-                    <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-4 py-2 text-[14px] font-semibold text-[#D94848]">
+                    <div className="rounded-full border border-[#FFD6D6] bg-[#FFF3F3] px-3.5 py-1.5 text-[13px] md:text-[14px] font-semibold text-[#D94848]">
                       -12% conversion
                     </div>
                   </div>
@@ -560,7 +560,7 @@ export default function Home() {
                     Why it works
                   </p>
 
-                  <p className="mt-2 max-w-[720px] text-[16px] leading-8 text-[#6B7280]">
+                  <p className="mt-2 max-w-[720px] text-[14px] md:text-[16px] leading-4 text-[#6B7280]">
                     Clear action hierarchy helps users instantly identify the main
                     interaction and improves conversion confidence.
                   </p>
