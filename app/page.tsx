@@ -601,7 +601,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="mt-7 border-t border-[#E5E7EB] pt-4">
+                <div className="1 border-t border-[#FFFFFF] md:border-[#E5E7EB] pt-4">
                   <p className="text-[15px] font-semibold text-[#061C2F]">
                     Why it matters
                   </p>
@@ -650,7 +650,7 @@ export default function Home() {
       </h2>
     </div>
 
-    <div className="relative max-h-[520px] overflow-hidden mt-10 [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
+    <div className="relative max-h-[520px] overflow-hidden mt-8 [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
       <div className="space-y-5">
 
         {[1].map((item) => (
@@ -666,7 +666,7 @@ export default function Home() {
 
             <div className="flex flex-col md:flex-row gap-3 md:gap-6">
 
-              <div className="text-[22px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              <div className="hidden md:flex text-[22px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
               </div>
 
@@ -686,7 +686,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="mt-7 border-t border-[#E5E7EB] pt-4">
+                <div className="mt-1 border-t border-[#FFFFFF] md:border-[#E5E7EB] pt-4">
                   <p className="text-[15px] font-semibold text-[#061C2F]">
                     Why it matters
                   </p>
@@ -723,7 +723,7 @@ export default function Home() {
       </h2>
     </div>
 
-    <div className="relative max-h-[520px] overflow-hidden mt-10 [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
+    <div className="relative max-h-[520px] overflow-hidden mt-8 [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
       <div className="space-y-5">
 
         {[1].map((item) => (
@@ -739,7 +739,7 @@ export default function Home() {
 
             <div className="flex flex-col md:flex-row gap-3 md:gap-6">
 
-              <div className="text-[22px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
+              <div className="hidden md:flex text-[22px] md:text-[34px] font-semibold leading-none tracking-[-0.05em] text-[#D1D5DB]">
                 {item}
               </div>
 
@@ -752,7 +752,7 @@ export default function Home() {
                 </div>
 
                 {/* BEFORE / AFTER */}
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-2">
 
                   {/* BEFORE */}
                   <div className="rounded-2xl bg-[#F3F5F7] p-4 md:p-5">
@@ -814,7 +814,7 @@ export default function Home() {
                 </div>
 
                 {/* WHY */}
-                <div className="mt-7 border-t border-[#E5E7EB] pt-5">
+                <div className="mt-1 border-t border-[#FFFFFF] md:border-[#E5E7EB] pt-5">
                   <p className="text-[15px] font-semibold text-[#061C2F]">
                     Why it works
                   </p>
