@@ -558,7 +558,7 @@ export default function Home() {
     <div className="relative max-h-[520px] overflow-hidden [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
       <div className="mt-8 space-y-5">
 
-        {[1, 2].map((item) => (
+        {[1].map((item) => (
           <div
             key={item}
             className="rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-white px-6 py-6 md:px-10 md:py-10"
@@ -616,6 +616,26 @@ export default function Home() {
           </div>
         ))}
 
+{/* MORE PILL */}
+<div className="flex justify-center pt-2">
+  <button
+    className="
+      rounded-full
+      bg-[#F3F4F6]
+      px-5
+      py-2.5
+      text-[14px]
+      font-semibold
+      text-[#4B5563]
+      hover:bg-[#E5E7EB]
+      transition
+    "
+  >
+    +4 issues
+  </button>
+</div>
+
+
       </div>
     </div>
 
@@ -633,7 +653,7 @@ export default function Home() {
     <div className="relative max-h-[520px] overflow-hidden mt-10 [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
       <div className="space-y-5">
 
-        {[1, 2].map((item) => (
+        {[1].map((item) => (
           <div
             key={item}
             className="relative rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-white px-6 py-6 md:px-10 md:py-10"
@@ -682,6 +702,13 @@ export default function Home() {
           </div>
         ))}
 
+<div className="flex justify-center pt-2">
+  <button className="rounded-full bg-[#F3F4F6] px-5 py-2.5 text-[14px] font-semibold text-[#4B5563] hover:bg-[#E5E7EB] transition">
+    +5 improvements
+  </button>
+</div>
+
+
       </div>
     </div>
 
@@ -699,7 +726,7 @@ export default function Home() {
     <div className="relative max-h-[520px] overflow-hidden mt-10 [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]">
       <div className="space-y-5">
 
-        {[1, 2].map((item) => (
+        {[1].map((item) => (
           <div
             key={item}
             className="relative rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-white px-6 py-6 md:px-10 md:py-10"
@@ -801,6 +828,13 @@ export default function Home() {
             </div>
           </div>
         ))}
+
+        <div className="flex justify-center pt-2">
+  <button className="rounded-full bg-[#F3F4F6] px-5 py-2.5 text-[14px] font-semibold text-[#4B5563] hover:bg-[#E5E7EB] transition">
+    +3 refinements
+  </button>
+</div>
+
 
       </div>
     </div>
