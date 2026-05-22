@@ -67,7 +67,7 @@ export default function Home() {
               text-[54px]
               md:text-[85px]
               font-semibold
-              leading-[0.9]
+              leading-[1.05]
               md:leading-[0.85]
               tracking-[-0.07em]
               md:tracking-[-0.06em]
@@ -84,7 +84,8 @@ export default function Home() {
               max-w-[640px]
               text-[18px]
               md:text-[22px]
-              leading-[1.6]
+              leading-[1.5]
+              md:leading-[1.6]
               text-[rgba(6,28,47,0.72)]
               "
           >
@@ -152,7 +153,7 @@ export default function Home() {
                     Clarity Report
                   </h2>
 
-                  <div className="rounded-full bg-[#EEF2FF] px-3 py-1 text-[12px] font-semibold text-[#5B5BD6]">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-[#EEF2FF] px-3 py-1 text-[12px] font-semibold text-[#5B5BD6]">
                     AI Generated
                   </div>
                 </div>
@@ -161,6 +162,7 @@ export default function Home() {
                   <span>https://notion.so</span>
                   <span className="text-neutral-300">•</span>
                   <span>3 screenshots analyzed</span>
+                  md:<span>3 screenshots analyzed</span>
                   <span className="text-neutral-300">•</span>
                   <span>Generated May 19, 2026</span>
                 </div>
