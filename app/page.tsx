@@ -224,7 +224,6 @@ export default function Home() {
         {/* DOWNLOAD */}
         <button
           className="
-            md:block
             inline-flex
             h-[48px]
             w-full
@@ -313,7 +312,7 @@ export default function Home() {
             "
           >
 
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 
               {/* SCORE */}
               <div className="relative flex h-[110px] w-[110px] shrink-0 items-center justify-center md:h-[120px] md:w-[120px]">
@@ -327,7 +326,7 @@ export default function Home() {
                     cy="60"
                     r="52"
                     stroke="#E5E7EB"
-                    strokeWidth="8"
+                    strokeWidth="6"
                     fill="none"
                   />
 
@@ -336,7 +335,7 @@ export default function Home() {
                     cy="60"
                     r="52"
                     stroke="#FF7A00"
-                    strokeWidth="8"
+                    strokeWidth="6"
                     fill="none"
                     strokeLinecap="round"
                     strokeDasharray={327}
@@ -360,8 +359,8 @@ export default function Home() {
 
                 <p
                   className="
-                    text-[22px]
-                    font-semibold
+                    text-[14px]
+                    font-medium
                     leading-[1.2]
                     tracking-[-0.04em]
                     text-[#061C2F]
@@ -371,7 +370,7 @@ export default function Home() {
                   Above average UX quality with moderate conversion friction
                 </p>
 
-                <div className="mt-5 space-y-1 text-[14px] text-[#6B7280] md:text-[15px]">
+                <div className="mt-5 space-y-1 text-[11px] text-[#6B7280] md:text-[15px]">
 
                   <div>
                     <span className="font-semibold text-[#061C2F]">
@@ -412,7 +411,7 @@ export default function Home() {
 
                 <div
                   className="
-                    mt-4
+                    mt-3
                     inline-flex
                     items-center
                     gap-2
