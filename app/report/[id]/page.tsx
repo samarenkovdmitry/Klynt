@@ -8,7 +8,8 @@ import {
   RiCheckLine,
   RiShareForwardLine,
   RiRefreshLine,
-  RiArrowRightUpLine
+  RiArrowRightUpLine,
+  RiSettings3Line
 } from "@remixicon/react";
 
 export default function ReportPage() {
@@ -401,11 +402,77 @@ export default function ReportPage() {
                       md:text-[18px]
                     "
                   >
-                    Clear visual structure and modern presentation, but weak
-                    CTA specificity reduces conversion confidence in the first
-                    screen experience.
+                    {data.summary}
                   </p>
                 </div>
+
+{/* KEY OBSERVATION */}
+<div
+  className="
+    mt-5
+    rounded-[24px]
+    border
+    border-amber-200
+    bg-amber-50
+    px-6
+    py-5
+  "
+>
+  <div className="flex items-start gap-4">
+
+    <div
+      className="
+        mt-0.5
+        flex
+        h-10
+        w-10
+        shrink-0
+        items-center
+        justify-center
+        rounded-full
+        bg-white
+        border
+        border-amber-200
+      "
+    >
+      <RiSettings3Line
+        size={18}
+        className="text-amber-600"
+      />
+    </div>
+
+    <div>
+
+      <p
+        className="
+          text-[13px]
+          font-semibold
+          uppercase
+          tracking-[0.08em]
+          text-amber-700
+        "
+      >
+        Key Observation
+      </p>
+
+      <p
+        className="
+          mt-2
+          max-w-[760px]
+          text-[17px]
+          leading-7
+          font-medium
+          tracking-[-0.01em]
+          text-[var(--ink-primary)]
+        "
+      >
+        {data.key_observation}
+      </p>
+
+    </div>
+  </div>
+</div>
+
 
                 {/* GRID */}
                 <div
@@ -504,8 +571,7 @@ export default function ReportPage() {
                             md:text-[24px]
                           "
                         >
-                          Above average UX quality with moderate conversion
-                          friction
+                          {data.verdict}
                         </p>
 
                         {/* META */}
@@ -609,6 +675,46 @@ export default function ReportPage() {
                         </span>
                       </div>
                     </div>
+                    
+                    {/* CONFIDENCE */}
+<div className="mt-7 border-t border-neutral-100 pt-5">
+
+  <div className="flex items-center justify-between">
+
+    <p className="text-[14px] font-medium text-neutral-500">
+      AI confidence
+    </p>
+
+    <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
+      {data.confidence}%
+    </p>
+
+  </div>
+
+  <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100">
+
+    <div
+      className="
+        h-full
+        rounded-full
+        bg-[#061C2F]
+        transition-all
+        duration-700
+      "
+      style={{
+        width: `${data.confidence}%`,
+      }}
+    />
+
+  </div>
+
+  <p className="mt-3 text-[13px] leading-5 text-neutral-500">
+    Based on visible UI structure, messaging clarity and conversion signals.
+  </p>
+
+</div>
+
+
                   </div>
                 </div>
 

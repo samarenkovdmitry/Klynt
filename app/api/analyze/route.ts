@@ -375,8 +375,18 @@ No comments.
 JSON FORMAT:
 {
   "url": "string",
+
   "score": number,
+
   "risk": "low" | "medium" | "high",
+
+  "summary": "string",
+
+  "verdict": "string",
+
+  "key_observation": "string",
+
+  "confidence": number,
 
   "issues": [
     {
@@ -441,6 +451,56 @@ JSON FORMAT:
     "conversion": number
   }
 }
+
+SUMMARY RULES:
+- summary MUST describe the REAL interface quality.
+- summary MUST reference actual observed UX patterns.
+- summary should feel like a senior UX audit conclusion.
+- summary length: 14-24 words.
+- avoid generic wording.
+- avoid repeating issue titles.
+- mention the strongest friction point.
+
+Examples:
+GOOD:
+- "Strong visual polish and hierarchy, but vague product messaging weakens first-screen conversion clarity."
+- "Clean SaaS presentation with solid structure, though CTA intent and differentiation remain unclear."
+- "Clear navigation and modern UI improve usability, but dense content blocks create scanning friction."
+
+BAD:
+- "The interface has some good and bad UX decisions."
+- "Modern design with room for improvement."
+
+VERDICT RULES:
+- verdict MUST summarize overall UX quality.
+- verdict should sound concise and strategic.
+- verdict length: 6-12 words.
+- avoid generic scoring language.
+
+GOOD:
+- "Strong visual UX with moderate conversion friction"
+- "Clear structure but weak positioning clarity"
+- "Polished interface with low CTA confidence"
+
+BAD:
+- "Good website overall"
+- "Average UX"
+
+KEY OBSERVATION RULES:
+- key_observation MUST describe the SINGLE most important UX insight.
+- focus on the main conversion or clarity bottleneck.
+- max 16 words.
+- must feel sharp and high-signal.
+
+GOOD:
+- "Users may struggle to understand the product value within the first 5 seconds."
+- "Primary CTA lacks specificity and reduces interaction confidence."
+- "Visual hierarchy prioritizes aesthetics over conversion guidance."
+
+CONFIDENCE RULES:
+- confidence must be integer from 70 to 98.
+- higher confidence only if screenshots clearly expose structure and messaging.
+- lower confidence if UI visibility is limited or ambiguous.
 
 GLOBAL RULES:
 - Analyze REAL visible UI only.
@@ -692,6 +752,26 @@ if (screenshotsBase64[2]) {
     const raw = response.output_text;
 
     const json = extractJSON(raw);
+    json.summary =
+    typeof json.summary === "string"
+    ? json.summary
+    : "Interface clarity and conversion experience require improvement.";
+
+    json.verdict =
+    typeof json.verdict === "string"
+    ? json.verdict
+    : "Moderate UX friction detected";
+
+    json.key_observation =
+    typeof json.key_observation === "string"
+    ? json.key_observation
+    : "Primary messaging lacks clarity.";
+
+    json.confidence = clampPercent(json.confidence || 82);
+
+    if (json.confidence < 70) {
+    json.confidence = 70;
+    }
 
     if (!json.breakdown || typeof json.breakdown !== "object") {
       json.breakdown = {
