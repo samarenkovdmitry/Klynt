@@ -12,6 +12,7 @@ import {
 import { FormLabel } from "@/components/ui/FormLabel";
 import { Button } from "@/components/ui/Button";
 import { AppHeader } from "@/components/AppHeader";
+import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
 
 type FlatIssue = {
   category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
@@ -138,28 +139,30 @@ export default function Analyze() {
         body: form,
       });
 
-      if (!res.ok) {
-        console.error("Backend error:", await res.text());
+      const json = await res.json().catch(() => null);
 
+      if (!res.ok || !json) {
         clearInterval(interval);
         setLoading(false);
-
+        setError(
+          json?.error ||
+            "Something went wrong during analysis. Please try again."
+        );
         return;
       }
 
-      const json = await res.json();
-
-      if (!res.ok) {
-        setLoading(false);
+      if (!isValidAuditResponse(json)) {
         clearInterval(interval);
-
-        setError(json?.error || "Something went wrong during analysis.");
-
+        setLoading(false);
+        setError(
+          json?.error ||
+            "Analysis returned an incomplete report. Please try again."
+        );
         return;
       }
 
       const flat: AuditResponseFlat = {
-        url: json.url ?? "",
+        url: json.url ?? url ?? "",
         score: json.score ?? 0,
         risk: json.risk ?? "low",
         summary: json.summary ?? "",
@@ -181,11 +184,20 @@ export default function Analyze() {
 
       const reportId = crypto.randomUUID();
 
-      localStorage.setItem(`report-${reportId}`, JSON.stringify(flat));
+      try {
+        saveReport(reportId, flat);
+      } catch {
+        clearInterval(interval);
+        setLoading(false);
+        setError(
+          "Could not save the report in this browser. Try again or free up storage."
+        );
+        return;
+      }
 
       setProgress(100);
-
       clearInterval(interval);
+      setLoading(false);
 
       router.push(`/report/${reportId}`);
     } catch (error: any) {
@@ -194,6 +206,7 @@ export default function Analyze() {
           "Something went wrong while analyzing the website."
       );
     } finally {
+      setLoading(false);
     }
   }
 

@@ -13,6 +13,7 @@ import {
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
+import { isValidAuditResponse, loadReport } from "@/lib/report-storage";
 
 export default function ReportPage() {
   const params = useParams();
@@ -26,6 +27,9 @@ export default function ReportPage() {
   // =========================
 
   const [data, setData] = useState<any>(null);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "missing">(
+    "loading"
+  );
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -163,33 +167,70 @@ export default function ReportPage() {
   // =========================
 
   useEffect(() => {
-  const stored = localStorage.getItem(`report-${reportId}`);
+    if (!reportId) return;
 
-  if (!stored) {
-    router.push("/analyze");
-    return;
-  }
+    const stored = loadReport(reportId);
 
-  try {
-    setData(JSON.parse(stored));
-  } catch {
-    router.push("/analyze");
-  }
-}, [params.id, router]);
+    if (!stored) {
+      setLoadState("missing");
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(stored);
+
+      if (!isValidAuditResponse(parsed)) {
+        setLoadState("missing");
+        return;
+      }
+
+      setData(parsed);
+      setLoadState("ready");
+    } catch {
+      setLoadState("missing");
+    }
+  }, [reportId]);
 
   // =========================
   // LOADING
   // =========================
 
-  if (!data) {
+  if (loadState === "loading") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#F5F7FA] px-6">
-        <div className="rounded-3xl border border-neutral-200 bg-white px-8 py-6 shadow-sm">
-          <p className="text-[15px] text-[var(--ink-secondary)]">
-            Loading report...
-          </p>
-        </div>
-      </main>
+      <>
+        <AppHeader />
+        <main className="flex min-h-[calc(100dvh-64px)] items-center justify-center bg-[#F5F7FA] px-6 md:min-h-[calc(100dvh-72px)]">
+          <div className="rounded-3xl border border-neutral-200 bg-white px-8 py-6 shadow-sm">
+            <p className="text-[15px] text-[var(--ink-secondary)]">
+              Loading report...
+            </p>
+          </div>
+        </main>
+      </>
+    );
+  }
+
+  if (loadState === "missing" || !data) {
+    return (
+      <>
+        <AppHeader />
+        <main className="flex min-h-[calc(100dvh-64px)] items-center justify-center bg-[#F5F7FA] px-6 md:min-h-[calc(100dvh-72px)]">
+          <div className="max-w-[440px] rounded-3xl border border-neutral-200 bg-white px-8 py-8 text-center shadow-sm">
+            <p className="text-[20px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)]">
+              Report not available
+            </p>
+            <p className="mt-3 text-[15px] leading-7 text-[var(--ink-secondary)]">
+              This report is stored only in the browser where the analysis was
+              run. Open the link from the same device or run a new analysis.
+            </p>
+            <div className="mt-6">
+              <Button href="/analyze" fullWidth={false} className="px-8">
+                Run new analysis
+              </Button>
+            </div>
+          </div>
+        </main>
+      </>
     );
   }
 
