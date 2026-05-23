@@ -347,9 +347,8 @@ export default function ReportPage() {
                       border-neutral-200
                       bg-white
                       px-5
-                      py-5
-                      md:px-6
-                      md:py-5
+                      py-6
+                      md:px-7
                     "
                   >
                     {/* Score + verdict + top insight */}
@@ -357,18 +356,15 @@ export default function ReportPage() {
                       className="
                         flex
                         flex-col
-                        gap-4
+                        gap-6
                         sm:flex-row
                         sm:items-start
-                        sm:gap-5
                       "
                     >
-                      <div className="relative mx-auto flex h-[108px] w-[108px] shrink-0 items-center justify-center sm:mx-0">
+                      <div className="relative mx-auto flex h-[132px] w-[132px] shrink-0 items-center justify-center sm:mx-0">
                         {(() => {
                           const score = Number(data?.score ?? 0);
-                          const size = 108;
-                          const center = size / 2;
-                          const radius = 44;
+                          const radius = 54;
                           const circumference = 2 * Math.PI * radius;
                           const progress =
                             circumference - (score / 100) * circumference;
@@ -377,24 +373,24 @@ export default function ReportPage() {
                             <>
                               <svg
                                 className="-rotate-90"
-                                width={size}
-                                height={size}
+                                width="132"
+                                height="132"
                                 aria-hidden
                               >
                                 <circle
-                                  cx={center}
-                                  cy={center}
+                                  cx="66"
+                                  cy="66"
                                   r={radius}
                                   stroke="#E5E7EB"
-                                  strokeWidth="6"
+                                  strokeWidth="8"
                                   fill="transparent"
                                 />
                                 <circle
-                                  cx={center}
-                                  cy={center}
+                                  cx="66"
+                                  cy="66"
                                   r={radius}
                                   stroke="#FF7A00"
-                                  strokeWidth="6"
+                                  strokeWidth="8"
                                   fill="transparent"
                                   strokeLinecap="round"
                                   strokeDasharray={circumference}
@@ -404,10 +400,10 @@ export default function ReportPage() {
                               </svg>
 
                               <div className="absolute text-center">
-                                <p className="text-[11px] font-medium text-neutral-500">
+                                <p className="text-[13px] font-semibold text-[var(--ink-primary)]">
                                   UX Score
                                 </p>
-                                <p className="mt-0.5 text-[32px] leading-none font-semibold text-[#FF7A00]">
+                                <p className="text-[40px] leading-none font-semibold text-[#FF7A00]">
                                   {score}
                                 </p>
                               </div>
@@ -416,23 +412,23 @@ export default function ReportPage() {
                         })()}
                       </div>
 
-                      <div className="min-w-0 flex-1 sm:pt-0.5">
+                      <div className="min-w-0 flex-1">
                         <p
                           className="
                             text-center
-                            text-[17px]
-                            leading-[1.4]
+                            text-[20px]
+                            leading-[1.35]
                             font-semibold
-                            tracking-[-0.02em]
+                            tracking-[-0.03em]
                             text-[var(--ink-primary)]
                             sm:text-left
-                            md:text-[18px]
+                            md:text-[24px]
                           "
                         >
                           {data.verdict || "UX assessment complete"}
                         </p>
 
-                        <p className="mt-3 text-center text-[11px] font-medium uppercase tracking-[0.07em] text-neutral-400 sm:mt-3 sm:text-left">
+                        <p className="mt-3 text-center text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-400 sm:mt-3.5 sm:text-left">
                           Top insight
                         </p>
 
@@ -440,11 +436,11 @@ export default function ReportPage() {
                           className="
                             mt-1
                             text-center
-                            text-[14px]
-                            leading-[1.6]
-                            font-normal
+                            text-[15px]
+                            leading-[1.65]
                             text-[var(--ink-secondary)]
                             sm:text-left
+                            md:text-[16px]
                           "
                         >
                           {data.summary || "No summary generated."}
@@ -453,54 +449,69 @@ export default function ReportPage() {
                     </div>
 
                     {/* Key observation — grows to match health card height */}
-                    <div className="mt-5 flex min-h-0 flex-1 flex-col">
+                    <div
+                      className="
+                        mt-6
+                        flex
+                        min-h-0
+                        flex-1
+                        flex-col
+                      "
+                    >
                       <div
                         className="
                           flex
                           h-full
                           flex-1
                           flex-col
-                          justify-start
-                          rounded-[18px]
+                          justify-center
+                          rounded-[20px]
                           border
-                          border-amber-100
-                          bg-amber-50/60
+                          border-amber-200/80
+                          bg-gradient-to-br
+                          from-amber-50
+                          to-[#FFFBF5]
                           px-4
-                          py-3.5
+                          py-4
+                          md:px-5
+                          md:py-4
                         "
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-3.5">
                           <div
                             className="
+                              mt-0.5
                               flex
-                              h-8
-                              w-8
+                              h-9
+                              w-9
                               shrink-0
                               items-center
                               justify-center
                               rounded-full
                               border
-                              border-amber-100
-                              bg-white/90
+                              border-amber-200
+                              bg-white
                             "
                           >
                             <RiLightbulbLine
-                              size={15}
-                              className="text-amber-600/90"
+                              size={17}
+                              className="text-amber-600"
                             />
                           </div>
 
                           <div className="min-w-0 flex-1">
-                            <p className="text-[11px] font-medium uppercase tracking-[0.07em] text-amber-700/90">
+                            <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
                               Key observation
                             </p>
                             <p
                               className="
-                                mt-1
-                                text-[14px]
+                                mt-1.5
+                                text-[15px]
                                 leading-[1.55]
-                                font-normal
+                                font-medium
+                                tracking-[-0.01em]
                                 text-[var(--ink-primary)]
+                                md:text-[16px]
                               "
                             >
                               {data.key_observation ||
@@ -542,7 +553,7 @@ export default function ReportPage() {
                     </div>
 
                     {/* QUICK STATS */}
-                    <div className="mt-4 flex min-h-0 flex-1 flex-col justify-center space-y-2.5">
+                    <div className="mt-3 flex min-h-0 flex-1 flex-col justify-center space-y-2">
                       {(
                         [
                           ["Clarity", data.breakdown?.clarity],
@@ -565,7 +576,7 @@ export default function ReportPage() {
                                 {score}
                               </span>
                             </div>
-                            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+                            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-neutral-100">
                               <div
                                 className="h-full rounded-full bg-[#FF7A00] transition-all duration-700"
                                 style={{ width: `${score}%` }}
@@ -577,7 +588,7 @@ export default function ReportPage() {
                     </div>
 
                     {/* CONFIDENCE */}
-                    <div className="mt-auto border-t border-neutral-100 pt-4">
+                    <div className="mt-auto border-t border-neutral-100 pt-3.5">
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-[12px] font-medium text-neutral-500">
                           AI confidence
@@ -601,33 +612,12 @@ export default function ReportPage() {
                           }}
                         />
                       </div>
+
+                      <p className="mt-2 text-[11px] leading-[1.45] text-neutral-500">
+                        Based on visible UI structure, messaging clarity and
+                        conversion signals.
+                      </p>
                     </div>
-                  </div>
-                </div>
-
-                {/* QUICK INFO */}
-                <div
-                  className="
-                    mt-5
-                    flex
-                    flex-wrap
-                    items-center
-                    justify-center
-                    gap-3
-                    text-[13px]
-                    text-neutral-500
-                  "
-                >
-                  <div className="rounded-full bg-[#F5F7FA] px-3 py-1">
-                    AI-generated insights
-                  </div>
-
-                  <div className="rounded-full bg-[#F5F7FA] px-3 py-1">
-                    Conversion analysis
-                  </div>
-
-                  <div className="rounded-full bg-[#F5F7FA] px-3 py-1">
-                    UX clarity scoring
                   </div>
                 </div>
               </div>

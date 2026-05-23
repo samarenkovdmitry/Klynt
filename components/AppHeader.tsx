@@ -30,7 +30,7 @@ export function AppHeader() {
       <div className="mx-auto flex h-[64px] max-w-[1180px] items-center justify-between gap-4 px-4 md:h-[72px] md:px-6">
         <Link
           href="/"
-          className="flex min-w-0 items-center gap-2.5 sm:gap-3"
+          className="flex min-w-0 items-center gap-3.5 sm:gap-4 md:gap-5"
           aria-label="Klynt — home"
         >
           <img
