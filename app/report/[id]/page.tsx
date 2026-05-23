@@ -83,9 +83,11 @@ export default function ReportPage() {
   function ImpactBadges({
     entries,
     variant,
+    className = "",
   }: {
     entries: ImpactEntry[];
     variant: "negative" | "positive" | "sky";
+    className?: string;
   }) {
     if (entries.length === 0) return null;
 
@@ -97,7 +99,9 @@ export default function ReportPage() {
           : "border-sky-200 bg-sky-50 text-sky-700";
 
     return (
-      <div className="mt-3 flex w-full max-w-full flex-wrap gap-2">
+      <div
+        className={`flex max-w-full flex-wrap gap-2 lg:justify-end ${className}`}
+      >
         {entries.map((entry, i) => (
           <div
             key={i}
@@ -735,29 +739,48 @@ export default function ReportPage() {
 
                         {/* CONTENT */}
                         <div className="min-w-0 flex-1">
-                          <div className="mb-3 flex items-center gap-3 md:hidden">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
-                              {index + 1}
-                            </div>
-                          </div>
-
-                          <p
+                          <div
                             className="
-                              text-[20px]
-                              font-semibold
-                              leading-[1.3]
-                              tracking-[-0.02em]
-                              text-[var(--ink-primary)]
-                              md:text-[22px]
+                              flex flex-col gap-3
+                              lg:flex-row lg:items-start lg:justify-between
                             "
                           >
-                            {issue.title}
-                          </p>
+                            <div className="min-w-0 flex-1">
+                              <div className="mb-3 flex items-center gap-3 md:hidden">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
+                                  {index + 1}
+                                </div>
+                              </div>
 
-                          <ImpactBadges
-                            entries={impactEntries}
-                            variant="negative"
-                          />
+                              <p
+                                className="
+                                  text-[20px]
+                                  font-semibold
+                                  leading-[1.3]
+                                  tracking-[-0.02em]
+                                  text-[var(--ink-primary)]
+                                  md:text-[22px]
+                                "
+                              >
+                                {issue.title}
+                              </p>
+
+                              <div className="lg:hidden">
+                                <ImpactBadges
+                                  entries={impactEntries}
+                                  variant="negative"
+                                  className="mt-3"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="hidden shrink-0 lg:block">
+                              <ImpactBadges
+                                entries={impactEntries}
+                                variant="negative"
+                              />
+                            </div>
+                          </div>
 
                           {/* TAGS */}
                           <div className="mt-4 flex flex-wrap gap-2">
@@ -848,29 +871,48 @@ export default function ReportPage() {
 
                           {/* CONTENT */}
                           <div className="min-w-0 flex-1">
-                            <div className="mb-3 flex items-center gap-3 md:hidden">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
-                                {index + 1}
-                              </div>
-                            </div>
-
-                            <p
+                            <div
                               className="
-                                text-[20px]
-                                leading-[1.3]
-                                font-semibold
-                                tracking-[-0.02em]
-                                text-[var(--ink-primary)]
-                                md:text-[22px]
+                                flex flex-col gap-3
+                                lg:flex-row lg:items-start lg:justify-between
                               "
                             >
-                              {item.section}
-                            </p>
+                              <div className="min-w-0 flex-1">
+                                <div className="mb-3 flex items-center gap-3 md:hidden">
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
+                                    {index + 1}
+                                  </div>
+                                </div>
 
-                            <ImpactBadges
-                              entries={impactEntries}
-                              variant="positive"
-                            />
+                                <p
+                                  className="
+                                    text-[20px]
+                                    leading-[1.3]
+                                    font-semibold
+                                    tracking-[-0.02em]
+                                    text-[var(--ink-primary)]
+                                    md:text-[22px]
+                                  "
+                                >
+                                  {item.section}
+                                </p>
+
+                                <div className="lg:hidden">
+                                  <ImpactBadges
+                                    entries={impactEntries}
+                                    variant="positive"
+                                    className="mt-3"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="hidden shrink-0 lg:block">
+                                <ImpactBadges
+                                  entries={impactEntries}
+                                  variant="positive"
+                                />
+                              </div>
+                            </div>
 
                             <p
                               className="
@@ -947,20 +989,42 @@ export default function ReportPage() {
 
                           {/* CONTENT */}
                           <div className="min-w-0 flex-1">
-                            <p
+                            <div
                               className="
-                                text-[20px]
-                                leading-[1.3]
-                                font-semibold
-                                tracking-[-0.02em]
-                                text-[var(--ink-primary)]
-                                md:text-[22px]
+                                flex flex-col gap-3
+                                lg:flex-row lg:items-start lg:justify-between
                               "
                             >
-                              {item.section}
-                            </p>
+                              <div className="min-w-0 flex-1">
+                                <p
+                                  className="
+                                    text-[20px]
+                                    leading-[1.3]
+                                    font-semibold
+                                    tracking-[-0.02em]
+                                    text-[var(--ink-primary)]
+                                    md:text-[22px]
+                                  "
+                                >
+                                  {item.section}
+                                </p>
 
-                            <ImpactBadges entries={impactEntries} variant="sky" />
+                                <div className="lg:hidden">
+                                  <ImpactBadges
+                                    entries={impactEntries}
+                                    variant="sky"
+                                    className="mt-3"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="hidden shrink-0 lg:block">
+                                <ImpactBadges
+                                  entries={impactEntries}
+                                  variant="sky"
+                                />
+                              </div>
+                            </div>
 
                             {/* BEFORE AFTER */}
                             <div className="mt-6 grid gap-4 lg:grid-cols-2">
