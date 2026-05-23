@@ -85,7 +85,7 @@ export default function Home() {
               href="/analyze"
               icon={<RiArrowRightLine size={18} />}
               fullWidth={false}
-              className="px-8"
+              className="h-[58px] min-h-[58px] px-8 text-[17px]"
             >
               Start free audit
             </Button>

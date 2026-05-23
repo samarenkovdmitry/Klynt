@@ -500,7 +500,7 @@ export default function Analyze() {
                     variant="accent"
                     disabled={isButtonDisabled}
                     onClick={handleAnalyze}
-                    className="w-full"
+                    className="h-[58px] min-h-[58px] w-full text-[17px]"
                   >
                     Analyze UX
                   </Button>
