@@ -52,11 +52,10 @@ export default function Home() {
   ];
 
   const avatars = [
-  "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg",
-  "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
-  "https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg",
+  "/avatars/user1.jpg",
+  "/avatars/user2.jpg",
+  "/avatars/user3.jpg",
   ];
-
 
 
   return (
