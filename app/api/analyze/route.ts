@@ -767,11 +767,10 @@ if (screenshotsBase64[2]) {
     ? json.key_observation
     : "Primary messaging lacks clarity.";
 
-    json.confidence = clampPercent(json.confidence || 82);
-
-    if (json.confidence < 70) {
-    json.confidence = 70;
-    }
+    json.confidence =
+    typeof json.confidence === "number"
+    ? json.confidence
+    : 82;
 
     if (!json.breakdown || typeof json.breakdown !== "object") {
       json.breakdown = {
