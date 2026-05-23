@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-
 import {
   RiArrowRightLine,
   RiDownload2Line,
@@ -11,28 +9,11 @@ import {
   RiMagicLine,
   RiShieldCheckLine,
   RiBarChartBoxLine,
-  RiFileCopyLine,
-  RiCheckLine,
-  RiAlertLine,
-  RiLightbulbLine,
-  RiQuillPenLine,
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 
 export default function Home() {
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-
-  async function handleCopy(text: string, index: number) {
-    await navigator.clipboard.writeText(text);
-
-    setCopiedIndex(index);
-
-    setTimeout(() => {
-      setCopiedIndex(null);
-    }, 1500);
-  }
-
   const pills = [
     {
       icon: <RiSearchEyeLine size={18} className="text-[#1696C7]" />,
@@ -486,52 +467,42 @@ export default function Home() {
                 bg-white
               "
             >
+              <div className="flex flex-1 flex-col p-6 pb-5">
+                <div className="inline-flex w-fit rounded-full bg-[#FFF3F3] px-3 py-1 text-[12px] font-semibold text-[#D94848]">
+                  UX Issues
+                </div>
+
+                <h3 className="mt-4 text-[22px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#061C2F]">
+                  See what slows users down
+                </h3>
+
+                <p className="mt-3 text-[15px] leading-7 text-[#6B7280]">
+                  Klynt flags problems in hierarchy, navigation, trust, and
+                  conversion — each with a short explanation of why it matters
+                  for your specific page.
+                </p>
+              </div>
+
               <div
                 className="
-                  relative
+                  flex
                   h-[148px]
-                  overflow-hidden
-                  bg-gradient-to-br
-                  from-[#FFF5F5]
-                  via-[#FFFAFA]
-                  to-[#F5F7FA]
-                  p-5
+                  items-center
+                  justify-center
+                  bg-red-100
+                  px-5
                 "
               >
                 <div
                   className="
-                    absolute
-                    right-4
-                    top-4
-                    flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    border
-                    border-[#FFD9D6]
-                    bg-white
-                    text-[#E45454]
-                    shadow-sm
-                  "
-                >
-                  <RiAlertLine size={20} />
-                </div>
-
-                <div
-                  className="
-                    absolute
-                    bottom-4
-                    left-4
-                    right-4
+                    w-full
+                    max-w-[260px]
                     rounded-2xl
                     border
                     border-[rgba(6,28,47,0.06)]
-                    bg-white/90
+                    bg-white
                     p-3.5
-                    shadow-[0_8px_24px_rgba(6,28,47,0.06)]
-                    backdrop-blur-sm
+                    shadow-sm
                   "
                 >
                   <div className="h-2 w-16 rounded-full bg-[#E5E7EB]" />
@@ -545,22 +516,6 @@ export default function Home() {
                     </span>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex flex-1 flex-col p-6 pt-5">
-                <div className="inline-flex w-fit rounded-full bg-[#FFF3F3] px-3 py-1 text-[12px] font-semibold text-[#D94848]">
-                  UX Issues
-                </div>
-
-                <h3 className="mt-4 text-[22px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#061C2F]">
-                  See what slows users down
-                </h3>
-
-                <p className="mt-3 flex-1 text-[15px] leading-7 text-[#6B7280]">
-                  Klynt flags problems in hierarchy, navigation, trust, and
-                  conversion — each with a short explanation of why it matters
-                  for your specific page.
-                </p>
               </div>
             </article>
 
@@ -576,40 +531,33 @@ export default function Home() {
                 bg-white
               "
             >
-              <div
-                className="
-                  relative
-                  h-[148px]
-                  overflow-hidden
-                  bg-gradient-to-br
-                  from-[#EDFAF2]
-                  via-[#F7FCF9]
-                  to-[#F5F7FA]
-                  p-5
-                "
-              >
-                <div
-                  className="
-                    absolute
-                    right-4
-                    top-4
-                    flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    border
-                    border-[#C8EBD4]
-                    bg-white
-                    text-[#2E7D4F]
-                    shadow-sm
-                  "
-                >
-                  <RiLightbulbLine size={20} />
+              <div className="flex flex-1 flex-col p-6 pb-5">
+                <div className="inline-flex w-fit rounded-full bg-[#E8F7EE] px-3 py-1 text-[12px] font-semibold text-[#2E7D4F]">
+                  Improvements
                 </div>
 
-                <div className="absolute bottom-4 left-4 right-4 space-y-2">
+                <h3 className="mt-4 text-[22px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#061C2F]">
+                  Know what to fix first
+                </h3>
+
+                <p className="mt-3 text-[15px] leading-7 text-[#6B7280]">
+                  Get prioritized recommendations tied to real sections of
+                  your UI — layout, CTA placement, trust blocks — with estimated
+                  impact on clarity and conversion.
+                </p>
+              </div>
+
+              <div
+                className="
+                  flex
+                  h-[148px]
+                  items-center
+                  justify-center
+                  bg-emerald-100
+                  px-5
+                "
+              >
+                <div className="w-full max-w-[260px] space-y-2">
                   <div
                     className="
                       flex
@@ -618,14 +566,13 @@ export default function Home() {
                       rounded-xl
                       border
                       border-[rgba(6,28,47,0.05)]
-                      bg-white/90
+                      bg-white
                       px-3
                       py-2.5
                       shadow-sm
-                      backdrop-blur-sm
                     "
                   >
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8F7EE] text-[10px] font-bold text-[#2E7D4F]">
+                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">
                       1
                     </div>
                     <div className="min-w-0 flex-1">
@@ -643,32 +590,24 @@ export default function Home() {
                       gap-2.5
                       rounded-xl
                       border
-                      border-dashed
-                      border-[#C8EBD4]
-                      bg-white/60
+                      border-[rgba(6,28,47,0.05)]
+                      bg-white
                       px-3
-                      py-2
+                      py-2.5
+                      shadow-sm
                     "
                   >
-                    <div className="h-2 flex-1 rounded-full bg-[#E5E7EB]/80" />
+                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">
+                      2
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="h-2 w-full max-w-[100px] rounded-full bg-[#E5E7EB]" />
+                    </div>
+                    <span className="shrink-0 text-[10px] font-semibold text-emerald-600">
+                      +15%
+                    </span>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex flex-1 flex-col p-6 pt-5">
-                <div className="inline-flex w-fit rounded-full bg-[#E8F7EE] px-3 py-1 text-[12px] font-semibold text-[#2E7D4F]">
-                  Improvements
-                </div>
-
-                <h3 className="mt-4 text-[22px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#061C2F]">
-                  Know what to fix first
-                </h3>
-
-                <p className="mt-3 flex-1 text-[15px] leading-7 text-[#6B7280]">
-                  Get prioritized recommendations tied to real sections of
-                  your UI — layout, CTA placement, trust blocks — with estimated
-                  impact on clarity and conversion.
-                </p>
               </div>
             </article>
 
@@ -684,62 +623,8 @@ export default function Home() {
                 bg-white
               "
             >
-              <div
-                className="
-                  relative
-                  h-[148px]
-                  overflow-hidden
-                  bg-gradient-to-br
-                  from-[#EEF4FF]
-                  via-[#F8FAFF]
-                  to-[#F5F7FA]
-                  p-5
-                "
-              >
-                <div
-                  className="
-                    absolute
-                    right-4
-                    top-4
-                    flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    border
-                    border-[#D4E2FF]
-                    bg-white
-                    text-[#375BE7]
-                    shadow-sm
-                  "
-                >
-                  <RiQuillPenLine size={20} />
-                </div>
-
-                <div className="absolute bottom-3 left-4 right-4 space-y-1.5">
-                  <div className="rounded-xl border border-[rgba(6,28,47,0.06)] bg-white/80 px-3 py-2 backdrop-blur-sm">
-                    <p className="text-[9px] font-semibold uppercase tracking-wide text-[#9AA3AC]">
-                      Before
-                    </p>
-                    <p className="mt-0.5 truncate text-[11px] text-[#667085]">
-                      Turn waiting into watching.
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-[#D4E2FF] bg-[#EAF2FF]/90 px-3 py-2 backdrop-blur-sm">
-                    <p className="text-[9px] font-semibold uppercase tracking-wide text-[#375BE7]">
-                      After
-                    </p>
-                    <p className="mt-0.5 truncate text-[11px] font-medium text-[#061C2F]">
-                      Mac screensavers that keep your display alive.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-1 flex-col p-6 pt-5">
-                <div className="inline-flex w-fit rounded-full bg-[#EAF2FF] px-3 py-1 text-[12px] font-semibold text-[#375BE7]">
+              <div className="flex flex-1 flex-col p-6 pb-5">
+                <div className="inline-flex w-fit rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[12px] font-semibold text-sky-700">
                   Copy Refinement
                 </div>
 
@@ -747,45 +632,47 @@ export default function Home() {
                   Rewrite vague copy
                 </h3>
 
-                <p className="mt-3 flex-1 text-[15px] leading-7 text-[#6B7280]">
+                <p className="mt-3 text-[15px] leading-7 text-[#6B7280]">
                   Headlines, CTAs, and section text get before/after suggestions
                   that explain what you sell, who it&apos;s for, and what to do
                   next — without generic marketing fluff.
                 </p>
+              </div>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleCopy(
-                      "Mac screensavers that keep your display alive.",
-                      1
-                    )
-                  }
-                  className="
-                    mt-4
-                    inline-flex
-                    w-fit
-                    items-center
-                    gap-1.5
-                    text-[13px]
-                    font-medium
-                    text-[#375BE7]
-                    transition
-                    hover:text-[#2448C7]
-                  "
-                >
-                  {copiedIndex === 1 ? (
-                    <>
-                      <RiCheckLine size={16} />
-                      Copied example
-                    </>
-                  ) : (
-                    <>
-                      <RiFileCopyLine size={16} />
-                      Copy example rewrite
-                    </>
-                  )}
-                </button>
+              <div
+                className="
+                  flex
+                  h-[148px]
+                  items-center
+                  justify-center
+                  bg-sky-100
+                  px-5
+                "
+              >
+                <div className="flex w-full max-w-[260px] flex-col justify-center gap-2">
+                  <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
+                      Before
+                    </p>
+                    <p className="mt-1 text-[11px] leading-snug text-neutral-600">
+                      Turn waiting into watching.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-sky-200 bg-sky-50/70 px-3 py-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-sky-700">
+                        After
+                      </p>
+                      <span className="shrink-0 rounded-full border border-sky-200 bg-white px-2 py-0.5 text-[10px] font-semibold text-sky-700">
+                        +15% clarity
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] font-medium leading-snug text-[var(--ink-primary)]">
+                      Mac screensavers that keep your display alive.
+                    </p>
+                  </div>
+                </div>
               </div>
             </article>
           </div>
