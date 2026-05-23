@@ -752,18 +752,7 @@ if (screenshotsBase64[2]) {
     const raw = response.output_text;
 
     const json = extractJSON(raw);
-
-    if (!json.breakdown || typeof json.breakdown !== "object") {
-      json.breakdown = {
-        clarity: 0,
-        navigation: 0,
-        visuals: 0,
-        trust: 0,
-        conversion: 0,
-      };
-    }
-
-json.summary =
+    json.summary =
   typeof json.summary === "string"
     ? json.summary
     : "Interface clarity and conversion experience require improvement.";
@@ -784,7 +773,16 @@ if (json.confidence < 70) {
   json.confidence = 70;
 }
 
-    
+    if (!json.breakdown || typeof json.breakdown !== "object") {
+      json.breakdown = {
+        clarity: 0,
+        navigation: 0,
+        visuals: 0,
+        trust: 0,
+        conversion: 0,
+      };
+    }
+
     json.breakdown = {
       clarity: clampPercent(json.breakdown.clarity),
       navigation: clampPercent(json.breakdown.navigation),
