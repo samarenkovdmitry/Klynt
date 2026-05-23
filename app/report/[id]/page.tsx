@@ -54,6 +54,75 @@ export default function ReportPage() {
     return risk;
   }
 
+  type ImpactEntry = { key: string; value: number };
+
+  function getImpactEntries(item: {
+    impact_metric_1?: string;
+    impact_value_1?: unknown;
+    impact_metric_2?: string;
+    impact_value_2?: unknown;
+  }): ImpactEntry[] {
+    return [
+      { key: item.impact_metric_1, value: item.impact_value_1 },
+      { key: item.impact_metric_2, value: item.impact_value_2 },
+    ]
+      .map((entry) => ({
+        key: String(entry.key ?? "").trim(),
+        value:
+          typeof entry.value === "number"
+            ? entry.value
+            : Number(entry.value),
+      }))
+      .filter(
+        (entry) =>
+          entry.key && Number.isFinite(entry.value) && entry.value !== 0
+      )
+      .slice(0, 2);
+  }
+
+  function ImpactBadges({
+    entries,
+    variant,
+  }: {
+    entries: ImpactEntry[];
+    variant: "negative" | "positive" | "sky";
+  }) {
+    if (entries.length === 0) return null;
+
+    const variantClass =
+      variant === "negative"
+        ? "border-red-200 bg-red-50 text-red-500"
+        : variant === "positive"
+          ? "border-emerald-200 bg-emerald-50 text-emerald-600"
+          : "border-sky-200 bg-sky-50 text-sky-700";
+
+    return (
+      <div className="mt-3 flex w-full max-w-full flex-wrap gap-2">
+        {entries.map((entry, i) => (
+          <div
+            key={i}
+            className={`
+              inline-flex
+              shrink-0
+              items-center
+              rounded-full
+              border
+              px-3.5
+              py-2
+              text-[12px]
+              font-semibold
+              md:text-[13px]
+              ${variantClass}
+            `}
+          >
+            {variant === "negative" ? "-" : "+"}
+            {Math.abs(entry.value)}% {entry.key}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   async function handleCopy(text: string, index: number) {
     await navigator.clipboard.writeText(text);
 
@@ -638,23 +707,7 @@ export default function ReportPage() {
 
               <div className="space-y-4">
                 {data.issues?.map((issue: any, index: number) => {
-                  const impactEntries = [
-                    {
-                      key: issue.impact_metric_1,
-                      value: issue.impact_value_1,
-                    },
-                    {
-                      key: issue.impact_metric_2,
-                      value: issue.impact_value_2,
-                    },
-                  ]
-                    .filter(
-                      (e) =>
-                        e.key &&
-                        typeof e.value === "number" &&
-                        e.value !== 0
-                    )
-                    .slice(0, 2);
+                  const impactEntries = getImpactEntries(issue);
 
                   return (
                     <div
@@ -681,53 +734,30 @@ export default function ReportPage() {
                         </div>
 
                         {/* CONTENT */}
-                        <div className="flex-1">
-                          {/* TOP */}
-                          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                            <div className="flex-1">
-                              <div className="mb-3 flex items-center gap-3 md:hidden">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
-                                  {index + 1}
-                                </div>
-                              </div>
-
-                              <p
-                                className="
-                                  text-[20px]
-                                  font-semibold
-                                  leading-[1.3]
-                                  tracking-[-0.02em]
-                                  text-[var(--ink-primary)]
-                                  md:text-[22px]
-                                "
-                              >
-                                {issue.title}
-                              </p>
-                            </div>
-
-                            {/* BADGES */}
-                            <div className="flex flex-wrap gap-2">
-                              {impactEntries.map((entry, i) => (
-                                <div
-                                  key={i}
-                                  className="
-                                    rounded-full
-                                    border
-                                    border-red-200
-                                    bg-red-50
-                                    px-3.5
-                                    py-2
-                                    text-[12px]
-                                    font-semibold
-                                    text-red-500
-                                    md:text-[13px]
-                                  "
-                                >
-                                  -{Math.abs(entry.value)}% {entry.key}
-                                </div>
-                              ))}
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-3 flex items-center gap-3 md:hidden">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
+                              {index + 1}
                             </div>
                           </div>
+
+                          <p
+                            className="
+                              text-[20px]
+                              font-semibold
+                              leading-[1.3]
+                              tracking-[-0.02em]
+                              text-[var(--ink-primary)]
+                              md:text-[22px]
+                            "
+                          >
+                            {issue.title}
+                          </p>
+
+                          <ImpactBadges
+                            entries={impactEntries}
+                            variant="negative"
+                          />
 
                           {/* TAGS */}
                           <div className="mt-4 flex flex-wrap gap-2">
@@ -789,23 +819,7 @@ export default function ReportPage() {
 
                 <div className="space-y-4">
                   {data.suggestions.map((item: any, index: number) => {
-                    const impactEntries = [
-                      {
-                        key: item.impact_metric_1,
-                        value: item.impact_value_1,
-                      },
-                      {
-                        key: item.impact_metric_2,
-                        value: item.impact_value_2,
-                      },
-                    ]
-                      .filter(
-                        (e) =>
-                          e.key &&
-                          typeof e.value === "number" &&
-                          e.value !== 0
-                      )
-                      .slice(0, 2);
+                    const impactEntries = getImpactEntries(item);
 
                     return (
                       <div
@@ -833,65 +847,42 @@ export default function ReportPage() {
                           </div>
 
                           {/* CONTENT */}
-                          <div className="flex-1">
-                            {/* TOP */}
-                            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                              <div className="flex-1">
-                                <div className="mb-3 flex items-center gap-3 md:hidden">
-                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
-                                    {index + 1}
-                                  </div>
-                                </div>
-
-                                <p
-                                  className="
-                                    text-[20px]
-                                    leading-[1.3]
-                                    font-semibold
-                                    tracking-[-0.02em]
-                                    text-[var(--ink-primary)]
-                                    md:text-[22px]
-                                  "
-                                >
-                                  {item.section}
-                                </p>
-
-                                <p
-                                  className="
-                                    mt-3
-                                    text-[16px]
-                                    leading-7
-                                    text-[var(--ink-primary)]
-                                    md:text-[18px]
-                                  "
-                                >
-                                  {item.recommendation}
-                                </p>
-                              </div>
-
-                              {/* BADGES */}
-                              <div className="flex flex-wrap gap-2">
-                                {impactEntries.map((entry, i) => (
-                                  <div
-                                    key={i}
-                                    className="
-                                      rounded-full
-                                      border
-                                      border-emerald-200
-                                      bg-emerald-50
-                                      px-3.5
-                                      py-2
-                                      text-[12px]
-                                      font-semibold
-                                      text-emerald-600
-                                      md:text-[13px]
-                                    "
-                                  >
-                                    +{Math.abs(entry.value)}% {entry.key}
-                                  </div>
-                                ))}
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-3 flex items-center gap-3 md:hidden">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
+                                {index + 1}
                               </div>
                             </div>
+
+                            <p
+                              className="
+                                text-[20px]
+                                leading-[1.3]
+                                font-semibold
+                                tracking-[-0.02em]
+                                text-[var(--ink-primary)]
+                                md:text-[22px]
+                              "
+                            >
+                              {item.section}
+                            </p>
+
+                            <ImpactBadges
+                              entries={impactEntries}
+                              variant="positive"
+                            />
+
+                            <p
+                              className="
+                                mt-3
+                                text-[16px]
+                                leading-7
+                                text-[var(--ink-primary)]
+                                md:text-[18px]
+                              "
+                            >
+                              {item.recommendation}
+                            </p>
 
                             {/* WHY */}
                             {item.why && (
@@ -927,23 +918,7 @@ export default function ReportPage() {
 
                 <div className="space-y-4">
                   {data.copy.map((item: any, index: number) => {
-                    const impactEntries = [
-                      {
-                        key: item.impact_metric_1,
-                        value: item.impact_value_1,
-                      },
-                      {
-                        key: item.impact_metric_2,
-                        value: item.impact_value_2,
-                      },
-                    ]
-                      .filter(
-                        (e) =>
-                          e.key &&
-                          typeof e.value === "number" &&
-                          e.value !== 0
-                      )
-                      .slice(0, 2);
+                    const impactEntries = getImpactEntries(item);
 
                     return (
                       <div
@@ -971,47 +946,21 @@ export default function ReportPage() {
                           </div>
 
                           {/* CONTENT */}
-                          <div className="flex-1">
-                            {/* TOP */}
-                            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                              <div className="flex-1">
-                                <p
-                                  className="
-                                    text-[20px]
-                                    leading-[1.3]
-                                    font-semibold
-                                    tracking-[-0.02em]
-                                    text-[var(--ink-primary)]
-                                    md:text-[22px]
-                                  "
-                                >
-                                  {item.section}
-                                </p>
-                              </div>
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className="
+                                text-[20px]
+                                leading-[1.3]
+                                font-semibold
+                                tracking-[-0.02em]
+                                text-[var(--ink-primary)]
+                                md:text-[22px]
+                              "
+                            >
+                              {item.section}
+                            </p>
 
-                              {/* BADGES */}
-                              <div className="flex flex-wrap gap-2">
-                                {impactEntries.map((entry, i) => (
-                                  <div
-                                    key={i}
-                                    className="
-                                      rounded-full
-                                      border
-                                      border-sky-200
-                                      bg-sky-50
-                                      px-3.5
-                                      py-2
-                                      text-[12px]
-                                      font-semibold
-                                      text-sky-700
-                                      md:text-[13px]
-                                    "
-                                  >
-                                    +{Math.abs(entry.value)}% {entry.key}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
+                            <ImpactBadges entries={impactEntries} variant="sky" />
 
                             {/* BEFORE AFTER */}
                             <div className="mt-6 grid gap-4 lg:grid-cols-2">
