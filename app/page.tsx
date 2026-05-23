@@ -13,6 +13,9 @@ import {
   RiBarChartBoxLine,
   RiFileCopyLine,
   RiCheckLine,
+  RiAlertLine,
+  RiLightbulbLine,
+  RiQuillPenLine,
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
@@ -464,204 +467,327 @@ export default function Home() {
                 text-[#6B7280]
               "
             >
-              Detect UX friction, improve messaging and prioritize the changes
-              that impact clarity and conversion.
+              Every report breaks your page into three parts — what&apos;s wrong,
+              what to change, and how to rewrite the words.
             </p>
           </div>
 
-          {/* GRID */}
-          <div className="mt-14 grid gap-5 lg:grid-cols-3">
-            {/* CARD 1 */}
-            <div
+          {/* BENTO GRID */}
+          <div className="mt-14 grid gap-4 md:grid-cols-3">
+            {/* UX ISSUES */}
+            <article
               className="
+                flex
+                flex-col
+                overflow-hidden
                 rounded-[28px]
                 border
                 border-[rgba(6,28,47,0.06)]
                 bg-white
-                p-6
               "
             >
               <div
                 className="
-                  inline-flex
-                  rounded-full
-                  bg-[#FFF3F3]
-                  px-3
-                  py-1
-                  text-[12px]
-                  font-semibold
-                  text-[#D94848]
+                  relative
+                  h-[148px]
+                  overflow-hidden
+                  bg-gradient-to-br
+                  from-[#FFF5F5]
+                  via-[#FFFAFA]
+                  to-[#F5F7FA]
+                  p-5
                 "
               >
-                UX Issues
-              </div>
-
-              <h3
-                className="
-                  mt-5
-                  text-[24px]
-                  font-semibold
-                  leading-[1.08]
-                  tracking-[-0.04em]
-                  text-[#061C2F]
-                "
-              >
-                Weak CTA hierarchy
-              </h3>
-
-              <p className="mt-4 text-[15px] leading-7 text-[#6B7280]">
-                Users may struggle to identify the main action because the
-                visual hierarchy lacks emphasis.
-              </p>
-
-              <div className="mt-6 flex flex-wrap gap-2">
-                <div className="rounded-full bg-[#F3F4F6] px-3 py-1 text-[12px] font-medium text-[#667085]">
-                  Clarity
+                <div
+                  className="
+                    absolute
+                    right-4
+                    top-4
+                    flex
+                    h-10
+                    w-10
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    border
+                    border-[#FFD9D6]
+                    bg-white
+                    text-[#E45454]
+                    shadow-sm
+                  "
+                >
+                  <RiAlertLine size={20} />
                 </div>
 
-                <div className="rounded-full bg-[#F3F4F6] px-3 py-1 text-[12px] font-medium text-[#667085]">
-                  Conversion
+                <div
+                  className="
+                    absolute
+                    bottom-4
+                    left-4
+                    right-4
+                    rounded-2xl
+                    border
+                    border-[rgba(6,28,47,0.06)]
+                    bg-white/90
+                    p-3.5
+                    shadow-[0_8px_24px_rgba(6,28,47,0.06)]
+                    backdrop-blur-sm
+                  "
+                >
+                  <div className="h-2 w-16 rounded-full bg-[#E5E7EB]" />
+                  <div className="mt-2.5 h-2.5 w-[85%] rounded-full bg-[#E5E7EB]" />
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-500">
+                      -12% conversion
+                    </span>
+                    <span className="rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[10px] font-medium text-[#667085]">
+                      Weak CTA
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* CARD 2 */}
-            <div
+              <div className="flex flex-1 flex-col p-6 pt-5">
+                <div className="inline-flex w-fit rounded-full bg-[#FFF3F3] px-3 py-1 text-[12px] font-semibold text-[#D94848]">
+                  UX Issues
+                </div>
+
+                <h3 className="mt-4 text-[22px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#061C2F]">
+                  See what slows users down
+                </h3>
+
+                <p className="mt-3 flex-1 text-[15px] leading-7 text-[#6B7280]">
+                  Klynt flags problems in hierarchy, navigation, trust, and
+                  conversion — each with a short explanation of why it matters
+                  for your specific page.
+                </p>
+              </div>
+            </article>
+
+            {/* IMPROVEMENTS */}
+            <article
               className="
+                flex
+                flex-col
+                overflow-hidden
                 rounded-[28px]
                 border
                 border-[rgba(6,28,47,0.06)]
                 bg-white
-                p-6
               "
             >
               <div
                 className="
-                  inline-flex
-                  rounded-full
-                  bg-[#E8F7EE]
-                  px-3
-                  py-1
-                  text-[12px]
-                  font-semibold
-                  text-[#2E7D4F]
+                  relative
+                  h-[148px]
+                  overflow-hidden
+                  bg-gradient-to-br
+                  from-[#EDFAF2]
+                  via-[#F7FCF9]
+                  to-[#F5F7FA]
+                  p-5
                 "
               >
-                Improvements
-              </div>
-
-              <h3
-                className="
-                  mt-5
-                  text-[24px]
-                  font-semibold
-                  leading-[1.08]
-                  tracking-[-0.04em]
-                  text-[#061C2F]
-                "
-              >
-                Increase CTA contrast
-              </h3>
-
-              <p className="mt-4 text-[15px] leading-7 text-[#6B7280]">
-                Stronger contrast and spacing improve focus and make the primary
-                action easier to notice.
-              </p>
-
-              <div
-                className="
-                  mt-8
-                  rounded-2xl
-                  bg-[#F7FAF8]
-                  px-4
-                  py-4
-                  text-[14px]
-                  font-medium
-                  text-[#2E7D4F]
-                "
-              >
-                Estimated impact: +15% conversion
-              </div>
-            </div>
-
-            {/* CARD 3 */}
-            <div
-              className="
-                rounded-[28px]
-                border
-                border-[rgba(6,28,47,0.06)]
-                bg-white
-                p-6
-              "
-            >
-              <div
-                className="
-                  inline-flex
-                  rounded-full
-                  bg-[#EAF2FF]
-                  px-3
-                  py-1
-                  text-[12px]
-                  font-semibold
-                  text-[#375BE7]
-                "
-              >
-                Copy Refinement
-              </div>
-
-              <h3
-                className="
-                  mt-5
-                  text-[24px]
-                  font-semibold
-                  leading-[1.08]
-                  tracking-[-0.04em]
-                  text-[#061C2F]
-                "
-              >
-                Clearer headline messaging
-              </h3>
-
-              <div className="mt-5 space-y-3">
-                <div className="rounded-2xl bg-[#F3F5F7] p-4">
-                  <p className="text-[13px] font-medium text-[#667085]">
-                    Original
-                  </p>
-
-                  <p className="mt-3 text-[14px] leading-6 text-[#667085]">
-                    Turn waiting into watching.
-                  </p>
+                <div
+                  className="
+                    absolute
+                    right-4
+                    top-4
+                    flex
+                    h-10
+                    w-10
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    border
+                    border-[#C8EBD4]
+                    bg-white
+                    text-[#2E7D4F]
+                    shadow-sm
+                  "
+                >
+                  <RiLightbulbLine size={20} />
                 </div>
 
-                <div className="rounded-2xl bg-[#EAF2FF] p-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-[13px] font-semibold text-[#375BE7]">
-                      AI Suggestion
-                    </p>
-
-                    <button
-                      onClick={() =>
-                        handleCopy(
-                          "Beautiful Mac Screensavers That Keep Your Screen Alive.",
-                          1
-                        )
-                      }
-                      className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-white/60"
-                    >
-                      {copiedIndex === 1 ? (
-                        <RiCheckLine size={16} />
-                      ) : (
-                        <RiFileCopyLine size={16} />
-                      )}
-                    </button>
+                <div className="absolute bottom-4 left-4 right-4 space-y-2">
+                  <div
+                    className="
+                      flex
+                      items-center
+                      gap-2.5
+                      rounded-xl
+                      border
+                      border-[rgba(6,28,47,0.05)]
+                      bg-white/90
+                      px-3
+                      py-2.5
+                      shadow-sm
+                      backdrop-blur-sm
+                    "
+                  >
+                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8F7EE] text-[10px] font-bold text-[#2E7D4F]">
+                      1
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="h-2 w-full max-w-[120px] rounded-full bg-[#E5E7EB]" />
+                    </div>
+                    <span className="shrink-0 text-[10px] font-semibold text-emerald-600">
+                      +15%
+                    </span>
                   </div>
 
-                  <p className="mt-3 text-[14px] font-medium leading-6 text-[#061C2F]">
-                    Beautiful Mac Screensavers That Keep Your Screen Alive.
-                  </p>
+                  <div
+                    className="
+                      flex
+                      items-center
+                      gap-2.5
+                      rounded-xl
+                      border
+                      border-dashed
+                      border-[#C8EBD4]
+                      bg-white/60
+                      px-3
+                      py-2
+                    "
+                  >
+                    <div className="h-2 flex-1 rounded-full bg-[#E5E7EB]/80" />
+                  </div>
                 </div>
               </div>
-            </div>
+
+              <div className="flex flex-1 flex-col p-6 pt-5">
+                <div className="inline-flex w-fit rounded-full bg-[#E8F7EE] px-3 py-1 text-[12px] font-semibold text-[#2E7D4F]">
+                  Improvements
+                </div>
+
+                <h3 className="mt-4 text-[22px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#061C2F]">
+                  Know what to fix first
+                </h3>
+
+                <p className="mt-3 flex-1 text-[15px] leading-7 text-[#6B7280]">
+                  Get prioritized recommendations tied to real sections of
+                  your UI — layout, CTA placement, trust blocks — with estimated
+                  impact on clarity and conversion.
+                </p>
+              </div>
+            </article>
+
+            {/* COPY REFINEMENT */}
+            <article
+              className="
+                flex
+                flex-col
+                overflow-hidden
+                rounded-[28px]
+                border
+                border-[rgba(6,28,47,0.06)]
+                bg-white
+              "
+            >
+              <div
+                className="
+                  relative
+                  h-[148px]
+                  overflow-hidden
+                  bg-gradient-to-br
+                  from-[#EEF4FF]
+                  via-[#F8FAFF]
+                  to-[#F5F7FA]
+                  p-5
+                "
+              >
+                <div
+                  className="
+                    absolute
+                    right-4
+                    top-4
+                    flex
+                    h-10
+                    w-10
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    border
+                    border-[#D4E2FF]
+                    bg-white
+                    text-[#375BE7]
+                    shadow-sm
+                  "
+                >
+                  <RiQuillPenLine size={20} />
+                </div>
+
+                <div className="absolute bottom-3 left-4 right-4 space-y-1.5">
+                  <div className="rounded-xl border border-[rgba(6,28,47,0.06)] bg-white/80 px-3 py-2 backdrop-blur-sm">
+                    <p className="text-[9px] font-semibold uppercase tracking-wide text-[#9AA3AC]">
+                      Before
+                    </p>
+                    <p className="mt-0.5 truncate text-[11px] text-[#667085]">
+                      Turn waiting into watching.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-[#D4E2FF] bg-[#EAF2FF]/90 px-3 py-2 backdrop-blur-sm">
+                    <p className="text-[9px] font-semibold uppercase tracking-wide text-[#375BE7]">
+                      After
+                    </p>
+                    <p className="mt-0.5 truncate text-[11px] font-medium text-[#061C2F]">
+                      Mac screensavers that keep your display alive.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-1 flex-col p-6 pt-5">
+                <div className="inline-flex w-fit rounded-full bg-[#EAF2FF] px-3 py-1 text-[12px] font-semibold text-[#375BE7]">
+                  Copy Refinement
+                </div>
+
+                <h3 className="mt-4 text-[22px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#061C2F]">
+                  Rewrite vague copy
+                </h3>
+
+                <p className="mt-3 flex-1 text-[15px] leading-7 text-[#6B7280]">
+                  Headlines, CTAs, and section text get before/after suggestions
+                  that explain what you sell, who it&apos;s for, and what to do
+                  next — without generic marketing fluff.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleCopy(
+                      "Mac screensavers that keep your display alive.",
+                      1
+                    )
+                  }
+                  className="
+                    mt-4
+                    inline-flex
+                    w-fit
+                    items-center
+                    gap-1.5
+                    text-[13px]
+                    font-medium
+                    text-[#375BE7]
+                    transition
+                    hover:text-[#2448C7]
+                  "
+                >
+                  {copiedIndex === 1 ? (
+                    <>
+                      <RiCheckLine size={16} />
+                      Copied example
+                    </>
+                  ) : (
+                    <>
+                      <RiFileCopyLine size={16} />
+                      Copy example rewrite
+                    </>
+                  )}
+                </button>
+              </div>
+            </article>
           </div>
         </div>
       </section>
