@@ -15,13 +15,15 @@ import {
 export default function ReportPage() {
   const params = useParams();
   const router = useRouter();
+  const reportId = Array.isArray(params.id)
+  ? params.id[0]
+  : params.id;
 
   // =========================
   // STATE
   // =========================
 
   const [data, setData] = useState<any>(null);
-  console.log(data);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -86,12 +88,19 @@ export default function ReportPage() {
   // =========================
 
   useEffect(() => {
-    const stored = localStorage.getItem(`report-${params.id}`);
+  const stored = localStorage.getItem(`report-${reportId}`);
 
-    if (stored) {
-      setData(JSON.parse(stored));
-    }
-  }, [params.id]);
+  if (!stored) {
+    router.push("/analyze");
+    return;
+  }
+
+  try {
+    setData(JSON.parse(stored));
+  } catch {
+    router.push("/analyze");
+  }
+}, [params.id, router]);
 
   // =========================
   // LOADING
@@ -280,7 +289,7 @@ export default function ReportPage() {
                     <div className="flex min-w-0 items-center gap-2">
                       {data.url && (
                         <img
-                          src={`https://www.google.com/s2/favicons?domain=${data.url}&sz=32`}
+                          src={`https://www.google.com/s2/favicons?domain_url=${data.url}&sz=32`}
                           alt="favicon"
                           className="h-4 w-4 rounded-sm"
                         />
@@ -403,7 +412,7 @@ export default function ReportPage() {
                       md:text-[18px]
                     "
                   >
-                    {data.summary}
+                    {data.summary || "No summary generated."}
                   </p>
                 </div>
 
@@ -467,7 +476,7 @@ export default function ReportPage() {
           text-[var(--ink-primary)]
         "
       >
-        {data.key_observation}
+        {data.key_observation || "No key observation available."}
       </p>
 
     </div>
@@ -508,8 +517,11 @@ export default function ReportPage() {
                       {/* SCORE */}
                       <div className="relative mx-auto flex h-[132px] w-[132px] items-center justify-center sm:mx-0">
                         {(() => {
+                          const score = Number(data?.score ?? 0);
+
                           const radius = 54;
                           const circumference = 2 * Math.PI * radius;
+
                           const progress =
                             circumference -
                             (data.score / 100) * circumference;
@@ -550,7 +562,7 @@ export default function ReportPage() {
                                 </p>
 
                                 <p className="text-[40px] leading-none font-semibold text-[#FF7A00]">
-                                  {data.score}
+                                  {score}
                                 </p>
                               </div>
                             </>
@@ -652,7 +664,7 @@ export default function ReportPage() {
                         </span>
 
                         <span className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                          {data.clarity}/100
+                          {data.breakdown?.clarity ?? 0}/100
                         </span>
                       </div>
 
@@ -662,7 +674,7 @@ export default function ReportPage() {
                         </span>
 
                         <span className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                          {data.trust}/100
+                          {data.breakdown?.trust ?? 0}/100
                         </span>
                       </div>
 
@@ -672,7 +684,7 @@ export default function ReportPage() {
                         </span>
 
                         <span className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                          {data.conversion}/100
+                          {data.breakdown?.conversion ?? 0}/100
                         </span>
                       </div>
                     </div>
@@ -703,7 +715,7 @@ export default function ReportPage() {
         duration-700
       "
       style={{
-        width: `${data.confidence}%`,
+        width: `${Math.max(0, Math.min(100, Number(data.confidence ?? 0)))}%`,
       }}
     />
 

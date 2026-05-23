@@ -329,63 +329,39 @@ export async function POST(req: Request) {
     }
 
 const basePrompt = `
-You are a senior SaaS UX auditor and conversion strategist.
+You are a senior SaaS UX auditor focused on clarity, conversion and product positioning.
 
-Your job is to identify:
-- clarity problems
-- conversion friction
-- weak positioning
-- poor visual hierarchy
-- weak CTA communication
-- trust gaps
-- cognitive overload
+Analyze ONLY visible UI from screenshots.
 
-You analyze interfaces like a senior product designer, UX strategist and SaaS copywriter.
+Your job:
+- identify UX friction
+- identify weak messaging
+- identify unclear hierarchy
+- identify weak CTAs
+- identify trust gaps
+- identify conversion blockers
+
+Use concise, high-signal UX language.
 
 IMPORTANT:
-- Analyze ONLY visible UI from screenshots.
-- Never invent sections or interface elements.
-- Every issue must reference observable interface evidence.
+- Never invent UI sections.
+- Never assume hidden functionality.
+- Every observation must be visually supported.
 - Avoid generic UX advice.
-- Avoid filler recommendations.
 - Prioritize clarity over aesthetics.
-- Prioritize specificity over persuasion.
-
-A strong interface:
-- explains what the product is
-- explains who it is for
-- explains why it matters
-- reduces cognitive load
-- makes next actions obvious
-
-A weak interface:
-- relies on vague marketing language
-- hides important actions
-- overloads users with competing elements
-- lacks visual hierarchy
-- creates ambiguity or friction
-
-Analyze the FULL webpage screenshots carefully.
+- Prefer specificity over persuasion.
 
 Return ONLY valid JSON.
-No markdown.
-No explanations.
-No comments.
 
 JSON FORMAT:
 {
   "url": "string",
-
   "score": number,
-
   "risk": "low" | "medium" | "high",
 
   "summary": "string",
-
   "verdict": "string",
-
   "key_observation": "string",
-
   "confidence": number,
 
   "issues": [
@@ -453,231 +429,57 @@ JSON FORMAT:
 }
 
 SUMMARY RULES:
-- summary MUST describe the REAL interface quality.
-- summary MUST reference actual observed UX patterns.
-- summary should feel like a senior UX audit conclusion.
-- summary length: 14-24 words.
-- avoid generic wording.
-- avoid repeating issue titles.
-- mention the strongest friction point.
-
-Examples:
-GOOD:
-- "Strong visual polish and hierarchy, but vague product messaging weakens first-screen conversion clarity."
-- "Clean SaaS presentation with solid structure, though CTA intent and differentiation remain unclear."
-- "Clear navigation and modern UI improve usability, but dense content blocks create scanning friction."
-
-BAD:
-- "The interface has some good and bad UX decisions."
-- "Modern design with room for improvement."
+- 14-24 words
+- describe REAL interface quality
+- mention strongest UX friction
+- avoid generic wording
 
 VERDICT RULES:
-- verdict MUST summarize overall UX quality.
-- verdict should sound concise and strategic.
-- verdict length: 6-12 words.
-- avoid generic scoring language.
-
-GOOD:
-- "Strong visual UX with moderate conversion friction"
-- "Clear structure but weak positioning clarity"
-- "Polished interface with low CTA confidence"
-
-BAD:
-- "Good website overall"
-- "Average UX"
+- 6-12 words
+- strategic UX conclusion
+- concise and specific
 
 KEY OBSERVATION RULES:
-- key_observation MUST describe the SINGLE most important UX insight.
-- focus on the main conversion or clarity bottleneck.
-- max 16 words.
-- must feel sharp and high-signal.
-
-GOOD:
-- "Users may struggle to understand the product value within the first 5 seconds."
-- "Primary CTA lacks specificity and reduces interaction confidence."
-- "Visual hierarchy prioritizes aesthetics over conversion guidance."
+- single strongest UX insight
+- max 16 words
+- conversion-focused
 
 CONFIDENCE RULES:
-- confidence must be integer from 70 to 98.
-- higher confidence only if screenshots clearly expose structure and messaging.
-- lower confidence if UI visibility is limited or ambiguous.
-
-GLOBAL RULES:
-- Analyze REAL visible UI only.
-- Detect hierarchy problems.
-- Detect unclear messaging.
-- Detect CTA weaknesses.
-- Detect layout inconsistencies.
-- Detect readability problems.
-- Detect trust weaknesses.
-- Detect conversion friction.
-- Detect cognitive overload.
-- Use concise product/UX language.
-- Use high-confidence observations only.
-- Avoid generic recommendations.
-- Avoid repeating the same issue in different wording.
-- All numbers must be integers.
-- Breakdown values must be between 0 and 100.
+- integer 70-98
+- higher only if screenshots clearly expose structure and messaging
 
 ISSUE RULES:
-- Generate 3–5 issues.
-- Issues must be specific and evidence-based.
-- Issues must explain WHY the problem matters.
-- Issues use NEGATIVE impact values.
+- 3-5 issues
+- evidence-based
+- explain why the issue matters
+- use negative impact values
 
 SUGGESTION RULES:
-- Generate 3–5 suggestions.
-- Suggestions must feel actionable and product-specific.
-- Suggestions use POSITIVE impact values.
-- Avoid generic advice like:
-  - "improve spacing"
-  - "make CTA stronger"
-  - "enhance readability"
-
-- Explain WHAT should change and WHY.
-- Reference real visible UI elements whenever possible.
-
-COPY EVALUATION LOGIC:
-
-Treat vague marketing language as a UX problem.
-
-Low-clarity copy usually:
-- uses abstract business language
-- sounds interchangeable with competitors
-- hides what the product actually does
-- relies on emotional persuasion instead of specificity
-
-Examples of weak copy:
-- "Innovate. Differentiate. Grow."
-- "Empower your business"
-- "Transform your workflow"
-- "Unlock smarter growth"
-
-Strong copy:
-- explains the product concretely
-- identifies the target audience
-- communicates a specific outcome
-- reduces ambiguity within 3 seconds
-
-When rewriting copy:
-- prefer clarity over cleverness
-- prefer specificity over emotional language
-- prefer product positioning over slogans
+- 3-5 suggestions
+- actionable and product-specific
+- avoid generic advice
+- explain what should change and why
+- use positive impact values
 
 COPY RULES:
-- Generate EXACTLY 3 copy improvements.
-- Every improvement MUST target a different section.
-- Never repeat the same section twice.
-- Prioritize conversion-critical sections first.
+- EXACTLY 3 copy improvements
+- different sections only
+- improve clarity, not marketing tone
+- avoid vague SaaS buzzwords
+- preserve brand positioning
 
-IMPORTANT:
-Copy must improve CLARITY, not sound more "marketing".
+Strong copy:
+- explains what the product is
+- explains who it is for
+- explains the outcome quickly
 
-Avoid vague marketing language like:
-- innovative
-- smarter
-- seamless
-- powerful
-- revolutionary
-- next-generation
-- cutting-edge
-- world-class
-- transform
-- elevate
-- empower
+Weak copy:
+- vague slogans
+- abstract positioning
+- unclear CTA intent
 
-Do NOT generate vague B2B slogans.
-
-Bad examples:
-- "Transform your workflow"
-- "Empower your business"
-- "Unlock smarter growth"
-
-Good copy:
-- clearly explains what the product does
-- clearly explains who it is for
-- clearly explains the outcome
-- reduces ambiguity
-- sounds concrete and product-specific
-
-Do not rewrite strong, clear or already effective copy.
-
-Only suggest rewrites when:
-- clarity is weak
-- positioning is vague
-- the value proposition is ambiguous
-- CTA intent is unclear
-
-Preserve the brand tone and market positioning.
-
-Do not turn premium brands into generic startup copy.
-
-Improve clarity while maintaining the perceived sophistication of the brand.
-
-For every copy rewrite:
-- identify WHY the original copy is weak
-- explain what ambiguity was reduced
-- explain what became more concrete
-
-Headline rewrites should follow this structure whenever possible:
-
-[what the product is]
-+
-[who it is for]
-+
-[main outcome/value]
-
-Example:
-"Banking infrastructure for fintech teams"
-
-NOT:
-"Empower smarter financial growth"
-
-CTA RULES:
-- CTA buttons must be concrete and action-oriented.
-- Avoid weak CTA copy like:
-  - Learn more
-  - Get started today
-  - Discover more
-
-Prefer:
-- See the platform
-- View live demo
-- Explore reports
-- Start free audit
-- See how it works
-
-CTA copy should:
-- reduce ambiguity
-- communicate clear intent
-- increase confidence before click
-
-Allowed sections:
-Hero Headline,
-Hero Subheadline,
-Primary CTA,
-Feature Section,
-Feature Highlights,
-Benefits Section,
-Trust Section,
-Testimonials,
-Social Proof,
-Pricing Section,
-Navigation,
-Footer CTA,
-About Section,
-Onboarding Section,
-Value Proposition,
-Integration Section.
-
-If a section is already strong, do not invent problems.
-
-Prioritize:
-- clarity
-- specificity
-- usability
-- conversion confidence
-- reduced cognitive load
+All numbers must be integers.
+Breakdown values must be 0-100.
 `;
 
 const screenshotContent: any[] = [];
@@ -725,7 +527,7 @@ if (screenshotsBase64[2]) {
 }
 
     const response = await client.responses.create({
-      model: "gpt-4.1-mini",
+      model: "gpt-4.1-nano",
       temperature: 0.2,
       input: [
         {
@@ -752,6 +554,11 @@ if (screenshotsBase64[2]) {
     const raw = response.output_text;
 
     const json = extractJSON(raw);
+    console.log("AI RAW:");
+    console.log(raw);
+
+    console.log("AI JSON:");
+    console.log(JSON.stringify(json, null, 2));
 
 
 // -----------------------------
