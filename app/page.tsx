@@ -51,6 +51,13 @@ export default function Home() {
     },
   ];
 
+  const avatars = [
+  "https://api.dicebear.com/9.x/thumbs/svg?seed=alex",
+  "https://api.dicebear.com/9.x/thumbs/svg?seed=marcus",
+  "https://api.dicebear.com/9.x/thumbs/svg?seed=sofia",
+  ];
+
+
   return (
     <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
       {/* HERO */}
@@ -718,18 +725,23 @@ export default function Home() {
         >
           <div className="flex flex-col items-center text-center">
             <div className="flex -space-x-3">
-              {[1, 2, 3].map((item) => (
+              {avatars.map((src, i) => (
                 <div
-                  key={item}
+                  key={i}
                   className="
                     h-12
                     w-12
                     rounded-full
                     border-2
                     border-white
-                    bg-[#D9EAF3]
                   "
-                />
+                >
+                    <img
+                      src={src}
+                      alt="avatar"
+                      className="h-full w-full object-cover"
+                    />
+             </div>
               ))}
             </div>
 
