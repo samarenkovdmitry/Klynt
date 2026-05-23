@@ -4,7 +4,10 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   RiUpload2Line,
-  RiCheckLine
+  RiCheckLine,
+  RiTimerFlashLine,
+  RiFilePdfLine,
+  RiUserSmileLine,
 } from "@remixicon/react";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { Button } from "@/components/ui/Button";
@@ -62,6 +65,7 @@ type AuditResponseFlat = {
     trust: number;
     conversion: number;
   };
+  generatedAt: string;
 };
 
 export default function Analyze() {
@@ -172,6 +176,7 @@ export default function Analyze() {
           trust: json.breakdown?.trust ?? 0,
           conversion: json.breakdown?.conversion ?? 0,
         },
+        generatedAt: new Date().toISOString(),
       };
 
       const reportId = crypto.randomUUID();
@@ -242,31 +247,31 @@ export default function Analyze() {
               <h1
                 className="
                   mt-4
-                  text-[34px]
-                  leading-[1.02]
-                  tracking-[-0.06em]
+                  text-[30px]
+                  leading-[1.05]
+                  tracking-[-0.05em]
                   font-semibold
                   text-[#061C2F]
-                  sm:text-[42px]
-                  md:text-[56px]
+                  sm:text-[36px]
+                  md:text-[44px]
                 "
               >
-                Analyze your website clarity and UX
+                Check your site&apos;s UX in minutes
               </h1>
 
               <p
                 className="
-                  mt-4
+                  mt-3
                   mx-auto
-                  max-w-[620px]
+                  max-w-[520px]
                   text-[15px]
                   leading-7
                   text-[#6B7280]
-                  md:text-[18px]
+                  md:text-[17px]
                 "
               >
-                Get AI-powered insights about friction points, weak messaging,
-                trust issues and conversion opportunities.
+                AI spots friction, weak copy, and trust gaps — with clear fixes
+                you can ship.
               </p>
 
               {/* FEATURE PILLS */}
@@ -630,21 +635,21 @@ export default function Analyze() {
   >
 
     <div className="flex items-center gap-2">
-      <div className="h-1.5 w-1.5 rounded-full bg-[#14A8E8]" />
+      <RiUserSmileLine size={16} className="shrink-0 text-[#14A8E8]" />
       <span>No signup required</span>
     </div>
 
     <div className="hidden md:block h-1 w-1 rounded-full bg-[#D5DDE5]" />
 
     <div className="flex items-center gap-2">
-      <div className="h-1.5 w-1.5 rounded-full bg-[#14A8E8]" />
+      <RiFilePdfLine size={16} className="shrink-0 text-[#14A8E8]" />
       <span>PDF export</span>
     </div>
 
     <div className="hidden md:block h-1 w-1 rounded-full bg-[#D5DDE5]" />
 
     <div className="flex items-center gap-2">
-      <div className="h-1.5 w-1.5 rounded-full bg-[#14A8E8]" />
+      <RiTimerFlashLine size={16} className="shrink-0 text-[#14A8E8]" />
       <span>AI-generated in ~15–25 sec</span>
     </div>
 

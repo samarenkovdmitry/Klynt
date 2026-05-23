@@ -14,6 +14,8 @@ import {
   RiFileCopyLine,
   RiCheckLine,
 } from "@remixicon/react";
+import { AppHeader } from "@/components/AppHeader";
+import { Button } from "@/components/ui/Button";
 
 export default function Home() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -30,31 +32,31 @@ export default function Home() {
 
   const pills = [
     {
-      icon: <RiSearchEyeLine size={14} />,
+      icon: <RiSearchEyeLine size={18} className="text-[#1696C7]" />,
       label: "UX issues",
     },
     {
-      icon: <RiSparkling2Line size={14} />,
+      icon: <RiSparkling2Line size={18} className="text-[#1696C7]" />,
       label: "Copy refinement",
     },
     {
-      icon: <RiBarChartBoxLine size={14} />,
+      icon: <RiBarChartBoxLine size={18} className="text-[#1696C7]" />,
       label: "Conversion insights",
     },
     {
-      icon: <RiMagicLine size={14} />,
+      icon: <RiMagicLine size={18} className="text-[#1696C7]" />,
       label: "Full-page analysis",
     },
     {
-      icon: <RiShieldCheckLine size={14} />,
+      icon: <RiShieldCheckLine size={18} className="text-[#1696C7]" />,
       label: "Product teams",
     },
   ];
 
   const avatars = [
-  "/avatars/user1.jpg",
-  "/avatars/user2.jpg",
-  "/avatars/user3.jpg",
+    "/avatars/user1.svg",
+    "/avatars/user2.svg",
+    "/avatars/user3.svg",
   ];
 
 
@@ -62,23 +64,7 @@ export default function Home() {
     <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
       {/* HERO */}
       <section className="relative overflow-hidden bg-[#53C2EE] pb-[120px] md:pb-[180px]">
-        {/* NAVBAR */}
-        <header className="relative z-20">
-          <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between px-5 md:h-[84px] md:px-6">
-            <img
-              src="/klynt-logo-dark.svg"
-              alt="Klynt"
-              className="h-[36px] w-auto md:h-[42px]"
-            />
-
-            <a
-              href="#report"
-              className="text-[14px] font-medium text-[#061C2F]/75 transition hover:text-[#061C2F]"
-            >
-              Sample report
-            </a>
-          </div>
-        </header>
+        <AppHeader variant="landing" />
 
         {/* HERO CONTENT */}
         <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-5 pt-10 text-center md:pt-16">
@@ -111,27 +97,14 @@ export default function Home() {
           </p>
 
           <div className="mt-8 flex items-center justify-center">
-            <Link
+            <Button
               href="/analyze"
-              className="
-                inline-flex
-                h-[54px]
-                items-center
-                gap-2
-                rounded-full
-                bg-[#061C2F]
-                px-7
-                text-[15px]
-                font-semibold
-                text-white
-                transition-all
-                duration-200
-                hover:-translate-y-[1px]
-              "
+              icon={<RiArrowRightLine size={18} />}
+              fullWidth={false}
+              className="px-8"
             >
               Start free audit
-              <RiArrowRightLine size={18} />
-            </Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -451,21 +424,7 @@ export default function Home() {
                 md:text-[14px]
               "
             >
-              <div
-                className="
-                  flex
-                  h-5
-                  w-5
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-[#E9F8FF]
-                  text-[#1696C7]
-                "
-              >
-                {item.icon}
-              </div>
-
+              {item.icon}
               {item.label}
             </div>
           ))}
@@ -800,49 +759,19 @@ export default function Home() {
             with AI-powered insights.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <Link
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button
               href="/analyze"
-              className="
-                inline-flex
-                h-[56px]
-                items-center
-                gap-2
-                rounded-full
-                bg-[#061C2F]
-                px-8
-                text-[15px]
-                font-semibold
-                text-white
-                transition-all
-                duration-200
-                hover:-translate-y-[1px]
-              "
+              icon={<RiArrowRightLine size={18} />}
+              fullWidth={false}
+              className="px-8"
             >
               Start free audit
-              <RiArrowRightLine size={18} />
-            </Link>
+            </Button>
 
-            <Link
-              href="/sample"
-              className="
-                inline-flex
-                h-[56px]
-                items-center
-                rounded-full
-                bg-white
-                px-8
-                text-[15px]
-                font-semibold
-                text-[#061C2F]
-                ring-1
-                ring-[rgba(6,28,47,0.08)]
-                transition
-                hover:bg-[#F8FAFC]
-              "
-            >
-              View sample report
-            </Link>
+            <Button href="#report" variant="secondary" fullWidth={false} className="px-8">
+              View demo
+            </Button>
           </div>
         </div>
       </section>

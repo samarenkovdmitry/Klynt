@@ -12,6 +12,7 @@ import {
   RiLightbulbLine,
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
+import { Button } from "@/components/ui/Button";
 
 export default function ReportPage() {
   const params = useParams();
@@ -218,42 +219,41 @@ export default function ReportPage() {
                       flex-wrap
                       items-center
                       gap-x-3
-                      gap-y-2
+                      gap-y-1
                       text-[13px]
                       text-[var(--ink-secondary)]
                       md:text-[14px]
                     "
                   >
-                    {/* DOMAIN */}
                     <div className="flex min-w-0 items-center gap-2">
                       {data.url && (
                         <img
                           src={`https://www.google.com/s2/favicons?domain_url=${data.url}&sz=32`}
-                          alt="favicon"
-                          className="h-4 w-4 rounded-sm"
+                          alt=""
+                          className="h-4 w-4 shrink-0 rounded-sm"
                         />
                       )}
 
                       <span className="truncate">{data.url}</span>
                     </div>
 
-                    <span className="hidden text-neutral-300 md:block">
-                      •
-                    </span>
+                    <span className="hidden text-neutral-300 sm:block">•</span>
 
-                    <span>AI UX analysis</span>
-
-                    <span className="hidden text-neutral-300 md:block">
-                      •
-                    </span>
-
-                    <span>
-                      Generated{" "}
-                      {new Date().toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                    <span className="shrink-0">
+                      {data.generatedAt
+                        ? new Date(data.generatedAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )
+                        : new Date().toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
                     </span>
                   </div>
                 </div>
@@ -723,7 +723,7 @@ export default function ReportPage() {
                                     md:text-[13px]
                                   "
                                 >
-                                  {entry.value}% {entry.key}
+                                  -{Math.abs(entry.value)}% {entry.key}
                                 </div>
                               ))}
                             </div>
@@ -777,12 +777,12 @@ export default function ReportPage() {
             {/* IMPROVEMENTS */}
             {data?.suggestions && data.suggestions.length > 0 && (
               <section>
-                <div className="mb-5 flex items-center justify-between">
-                  <h3 className={styles.titleSection}>
+                <div className="mb-5 flex items-center justify-between gap-3">
+                  <h3 className={`${styles.titleSection} min-w-0 shrink`}>
                     Suggested Improvements
                   </h3>
 
-                  <div className="rounded-full bg-white px-3 py-1 text-[13px] font-medium text-neutral-500">
+                  <div className="max-w-[46%] shrink-0 truncate rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-500 sm:max-w-none sm:px-3 sm:text-[13px]">
                     {data.suggestions.length} recommendations
                   </div>
                 </div>
@@ -975,13 +975,8 @@ export default function ReportPage() {
                             {/* TOP */}
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                               <div className="flex-1">
-                                <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-400">
-                                  {item.section}
-                                </p>
-
                                 <p
                                   className="
-                                    mt-2
                                     text-[20px]
                                     leading-[1.3]
                                     font-semibold
@@ -990,7 +985,7 @@ export default function ReportPage() {
                                     md:text-[22px]
                                   "
                                 >
-                                  Improve copy clarity and conversion intent
+                                  {item.section}
                                 </p>
                               </div>
 
@@ -1245,57 +1240,24 @@ export default function ReportPage() {
                     sm:flex-row
                   "
                 >
-                  <button
+                  <Button
                     onClick={handleRerun}
-                    className="
-                      flex
-                      w-full
-                      items-center
-                      justify-center
-                      gap-2
-                      rounded-2xl
-                      bg-[#061C2F]
-                      px-6
-                      py-4
-                      text-[15px]
-                      font-semibold
-                      text-white
-                      transition
-                      hover:opacity-90
-                      sm:w-auto
-                    "
+                    icon={<RiArrowRightUpLine size={18} />}
+                    fullWidth={false}
+                    className="w-full sm:w-auto"
                   >
                     Re-run analysis
+                  </Button>
 
-                    <RiArrowRightUpLine size={18} />
-                  </button>
-
-                  <button
+                  <Button
                     onClick={() => window.print()}
-                    className="
-                      flex
-                      w-full
-                      items-center
-                      justify-center
-                      gap-2
-                      rounded-2xl
-                      border
-                      border-[rgba(6,28,47,0.08)]
-                      bg-white
-                      px-6
-                      py-4
-                      text-[15px]
-                      font-semibold
-                      text-[var(--ink-primary)]
-                      transition
-                      hover:bg-[#F8FBFF]
-                      sm:w-auto
-                    "
+                    variant="secondary"
+                    icon={<RiDownload2Line size={18} />}
+                    fullWidth={false}
+                    className="w-full sm:w-auto"
                   >
-                    <RiDownload2Line size={18} />
-
                     Export PDF
-                  </button>
+                  </Button>
                 </div>
 
                 {/* BOTTOM META */}

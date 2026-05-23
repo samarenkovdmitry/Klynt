@@ -1,52 +1,61 @@
+import Link from "next/link";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+
+type ButtonVariant = "primary" | "secondary";
+
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant;
+  icon?: ReactNode;
+  href?: string;
+  fullWidth?: boolean;
+};
+
+const variantStyles: Record<ButtonVariant, string> = {
+  primary:
+    "bg-[#061C2F] text-white border border-transparent hover:opacity-90",
+  secondary:
+    "bg-white text-[var(--ink-primary)] border border-[rgba(6,28,47,0.08)] hover:bg-[#F8FBFF]",
+};
+
 export function Button({
   children,
   disabled,
   className = "",
+  variant = "primary",
+  icon,
+  href,
+  fullWidth = true,
+  type = "button",
   ...props
-}: any) {
-  return (
-    <button
-      {...props}
-      disabled={disabled}
-      className={`
-        inline-flex
-        items-center
-        justify-center
-        h-[56px]
-        w-full
-        rounded-2xl
-        px-6
-        text-[15px]
-        font-semibold
-        leading-none
-        text-white
+}: ButtonProps) {
+  const classes = [
+    "inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4",
+    "text-[15px] font-semibold leading-none transition",
+    fullWidth ? "w-full sm:w-auto" : "w-auto",
+    disabled
+      ? "cursor-not-allowed border-transparent bg-[#DCE2E7] text-white opacity-60"
+      : variantStyles[variant],
+    className,
+  ].join(" ");
 
-        transition-all
-        duration-200
-
-        shadow-[0_10px_30px_rgba(0,0,0,0.10)]
-
-        ${disabled
-          ? "bg-[#DCE2E7] opacity-60 cursor-not-allowed"
-          : `
-            bg-[#14A8E8]
-                  px-7
-                  py-4
-                  text-[15px]
-                  font-semibold
-                  text-white
-                  transition-all
-                  duration-200
-                  hover:-translate-y-[1px]
-                  hover:bg-[#1198D2]
-                  hover:shadow-[0_14px_34px_rgba(20,168,232,0.24)]
-          `
-        }
-
-        ${className}
-      `}
-    >
+  const content = (
+    <>
+      {icon}
       {children}
+    </>
+  );
+
+  if (href && !disabled) {
+    return (
+      <Link href={href} className={classes}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button type={type} disabled={disabled} className={classes} {...props}>
+      {content}
     </button>
   );
 }
