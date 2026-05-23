@@ -47,14 +47,20 @@ type AuditResponseFlat = {
   url: string;
   score: number;
   risk: "low" | "medium" | "high";
+  summary: string;
+  verdict: string;
+  key_observation: string;
+  confidence: number;
   issues: FlatIssue[];
   suggestions: FlatSuggestion[];
   copy: FlatCopy[];
-  clarity: number;
-  navigation: number;
-  visuals: number;
-  trust: number;
-  conversion: number;
+  breakdown: {
+    clarity: number;
+    navigation: number;
+    visuals: number;
+    trust: number;
+    conversion: number;
+  };
 };
 
 export default function Analyze() {
@@ -151,14 +157,20 @@ export default function Analyze() {
         url: json.url ?? "",
         score: json.score ?? 0,
         risk: json.risk ?? "low",
+        summary: json.summary ?? "",
+        verdict: json.verdict ?? "",
+        key_observation: json.key_observation ?? "",
+        confidence: json.confidence ?? 0,
         issues: json.issues ?? [],
         suggestions: json.suggestions ?? [],
         copy: json.copy ?? [],
-        clarity: json.breakdown?.clarity ?? 0,
-        navigation: json.breakdown?.navigation ?? 0,
-        visuals: json.breakdown?.visuals ?? 0,
-        trust: json.breakdown?.trust ?? 0,
-        conversion: json.breakdown?.conversion ?? 0,
+        breakdown: {
+          clarity: json.breakdown?.clarity ?? 0,
+          navigation: json.breakdown?.navigation ?? 0,
+          visuals: json.breakdown?.visuals ?? 0,
+          trust: json.breakdown?.trust ?? 0,
+          conversion: json.breakdown?.conversion ?? 0,
+        },
       };
 
       const reportId = crypto.randomUUID();
