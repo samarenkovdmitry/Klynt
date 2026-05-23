@@ -752,25 +752,54 @@ if (screenshotsBase64[2]) {
     const raw = response.output_text;
 
     const json = extractJSON(raw);
-json.summary =
-  typeof json.summary === "string"
-    ? json.summary
-    : "";
 
-json.verdict =
-  typeof json.verdict === "string"
-    ? json.verdict
-    : "";
 
-json.key_observation =
-  typeof json.key_observation === "string"
-    ? json.key_observation
-    : "";
+// -----------------------------
+// FALLBACKS
+// -----------------------------
+
+if (
+  typeof json.summary !== "string" ||
+  json.summary.trim().length < 10
+) {
+  const topIssue = json.issues?.[0]?.title || "conversion clarity";
+
+  json.summary =
+    `Strong visual presentation, but ${topIssue.toLowerCase()} reduces overall conversion confidence.`;
+}
+
+if (
+  typeof json.verdict !== "string" ||
+  json.verdict.trim().length < 6
+) {
+  if (json.score >= 80) {
+    json.verdict =
+      "Strong UX with minor conversion friction";
+  } else if (json.score >= 60) {
+    json.verdict =
+      "Clear structure with moderate UX friction";
+  } else {
+    json.verdict =
+      "Weak clarity and conversion communication";
+  }
+}
+
+if (
+  typeof json.key_observation !== "string" ||
+  json.key_observation.trim().length < 8
+) {
+  const topIssue =
+    json.issues?.[0]?.title ||
+    "Primary messaging lacks clarity";
+
+  json.key_observation = topIssue;
+}
 
 json.confidence = Math.max(
   70,
   Math.min(98, Number(json.confidence ?? 82))
 );
+
 
     if (!json.breakdown || typeof json.breakdown !== "object") {
       json.breakdown = {
