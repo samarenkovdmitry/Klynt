@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
+import sharp from "sharp";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -20,10 +21,26 @@ async function blobToBase64(blob: Blob) {
 
 async function jumpTo(page: any, y: number) {
   await page.evaluate((scrollY: number) => {
-    window.scrollTo(0, scrollY);
+    window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
   }, y);
 
-  await new Promise((r) => setTimeout(r, 250));
+  await new Promise((r) => setTimeout(r, 80));
+}
+
+const TRACKER_PATTERN =
+  /google-analytics|googletagmanager|facebook\.net|hotjar|segment\.(com|io)|intercom|clarity\.ms|doubleclick|sentry\.io|mixpanel|amplitude/i;
+
+async function optimizeScreenshotBase64(base64: string) {
+  const optimized = await sharp(Buffer.from(base64, "base64"))
+    .resize(768, null, { withoutEnlargement: true })
+    .jpeg({ quality: 48, mozjpeg: true })
+    .toBuffer();
+
+  return optimized.toString("base64");
+}
+
+async function optimizeScreenshots(base64List: string[]) {
+  return Promise.all(base64List.map((shot) => optimizeScreenshotBase64(shot)));
 }
 
 function extractJSON(text: string) {
@@ -202,8 +219,9 @@ async function captureWebsiteScreenshots(url: string) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
-      width: 900,
-      height: 760,
+      width: 800,
+      height: 700,
+      deviceScaleFactor: 1,
     },
     executablePath: await chromium.executablePath(),
     headless: true,
@@ -216,16 +234,19 @@ async function captureWebsiteScreenshots(url: string) {
 
 page.on("request", (req) => {
   const type = req.resourceType();
+  const requestUrl = req.url();
 
   if (
     type === "font" ||
     type === "media" ||
-    type === "websocket"
+    type === "websocket" ||
+    TRACKER_PATTERN.test(requestUrl)
   ) {
     req.abort();
-  } else {
-    req.continue();
+    return;
   }
+
+  req.continue();
 });
 
     await page.setUserAgent(
@@ -234,56 +255,31 @@ page.on("request", (req) => {
 
     await page.goto(url, {
       waitUntil: "domcontentloaded",
-      timeout: 10000,
+      timeout: 8000,
     });
 
-
-    const screenshots: string[] = [];
-
-    // 1) Считаем высоту страницы
-    const bodyHeight = await page.evaluate(() => {
-      return document.body.scrollHeight;
-    });
+    const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
 
     const heroY = 0;
-    const midY = 1200;
-    const footerY = Math.max(bodyHeight - 1600, 0);
+    const midY = Math.min(1100, Math.max(0, Math.floor(bodyHeight * 0.42)));
+    const footerY = Math.max(bodyHeight - 1400, 0);
 
-    // 2) Скроллим последовательно в нужные зоны (быстро)
-    console.log("START SCREENSHOTS");
+    const shotOptions = { type: "jpeg" as const, quality: 48 };
+
     await jumpTo(page, heroY);
+    const hero = await page.screenshot(shotOptions);
+
     await jumpTo(page, midY);
+    const mid = await page.screenshot(shotOptions);
+
     await jumpTo(page, footerY);
+    const footer = await page.screenshot(shotOptions);
 
-
-    // 3) Делаем три скриншота ПАРАЛЛЕЛЬНО
-await jumpTo(page, heroY);
-
-const hero = await page.screenshot({
-  type: "jpeg",
-  quality: 55,
-});
-
-await jumpTo(page, midY);
-
-const mid = await page.screenshot({
-  type: "jpeg",
-  quality: 55,
-});
-
-await jumpTo(page, footerY);
-
-const footer = await page.screenshot({
-  type: "jpeg",
-  quality: 55,
-});
-
-screenshots.push(Buffer.from(hero as Buffer).toString("base64"));
-screenshots.push(Buffer.from(mid as Buffer).toString("base64"));
-screenshots.push(Buffer.from(footer as Buffer).toString("base64"));
-console.log("SCREENSHOTS DONE");
-
-    return screenshots;
+    return [
+      Buffer.from(hero as Buffer).toString("base64"),
+      Buffer.from(mid as Buffer).toString("base64"),
+      Buffer.from(footer as Buffer).toString("base64"),
+    ];
   } finally {
     await browser.close();
   }
@@ -328,159 +324,51 @@ export async function POST(req: Request) {
       );
     }
 
-const basePrompt = `
-You are a senior SaaS UX auditor focused on clarity, conversion and product positioning.
+    screenshotsBase64 = await optimizeScreenshots(screenshotsBase64);
 
-Analyze ONLY visible UI from screenshots.
+    const basePrompt = `You are a senior SaaS UX auditor (clarity, conversion, positioning).
 
-Your job:
-- identify UX friction
-- identify weak messaging
-- identify unclear hierarchy
-- identify weak CTAs
-- identify trust gaps
-- identify conversion blockers
+Analyze ONLY what is visible in the screenshot(s). Never invent UI. No generic advice — name the actual element/section.
 
-Use concise, high-signal UX language.
+Return ONLY valid JSON (no markdown):
 
-IMPORTANT:
-- Never invent UI sections.
-- Never assume hidden functionality.
-- Every observation must be visually supported.
-- Avoid generic UX advice.
-- Prioritize clarity over aesthetics.
-- Prefer specificity over persuasion.
-
-Return ONLY valid JSON.
-
-JSON FORMAT:
 {
   "url": "string",
   "score": number,
-  "risk": "low" | "medium" | "high",
-
+  "risk": "low"|"medium"|"high",
   "summary": "string",
   "verdict": "string",
   "key_observation": "string",
   "confidence": number,
-
-  "issues": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "title": "string",
-      "description": "string",
-      "impact": {
-        "clarity"?: number,
-        "navigation"?: number,
-        "visuals"?: number,
-        "trust"?: number,
-        "conversion"?: number,
-        "cta"?: number
-      },
-      "bullets": ["string"],
-      "why": "string"
-    }
-  ],
-
-  "suggestions": [
-    {
-      "category": "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion",
-      "section": "string",
-      "recommendation": "string",
-      "impact": {
-        "clarity"?: number,
-        "navigation"?: number,
-        "visuals"?: number,
-        "trust"?: number,
-        "conversion"?: number,
-        "cta"?: number
-      },
-      "bullets": ["string"],
-      "why": "string"
-    }
-  ],
-
-  "copy": [
-    {
-      "section": "string",
-      "before": "string",
-      "after": "string",
-      "problem": "string",
-      "reasoning": "string",
-      "impact": {
-        "clarity"?: number,
-        "navigation"?: number,
-        "visuals"?: number,
-        "trust"?: number,
-        "conversion"?: number,
-        "cta"?: number
-      },
-      "why": "string"
-    }
-  ],
-
-  "breakdown": {
-    "clarity": number,
-    "navigation": number,
-    "visuals": number,
-    "trust": number,
-    "conversion": number
-  }
+  "issues": [{
+    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
+    "title": "string",
+    "bullets": ["2-3 short evidence tags"],
+    "why": "string",
+    "impact": { "clarity"?: int, "navigation"?: int, "visuals"?: int, "trust"?: int, "conversion"?: int, "cta"?: int }
+  }],
+  "suggestions": [{
+    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
+    "section": "string",
+    "recommendation": "string",
+    "why": "string",
+    "impact": { ...same keys, positive ints only }
+  }],
+  "copy": [{
+    "section": "string",
+    "before": "exact visible copy",
+    "after": "clearer rewrite",
+    "why": "string",
+    "impact": { ...same keys, positive ints only }
+  }],
+  "breakdown": { "clarity": int, "navigation": int, "visuals": int, "trust": int, "conversion": int }
 }
 
-SUMMARY RULES:
-- 14-24 words
-- describe REAL interface quality
-- mention strongest UX friction
-- avoid generic wording
-
-VERDICT RULES:
-- 6-12 words
-- strategic UX conclusion
-- concise and specific
-
-KEY OBSERVATION RULES:
-- single strongest UX insight
-- max 16 words
-- conversion-focused
-
-CONFIDENCE RULES:
-- integer 70-98
-- higher only if screenshots clearly expose structure and messaging
-
-ISSUE RULES:
-- 3-5 issues
-- evidence-based
-- explain why the issue matters
-- use negative impact values
-
-SUGGESTION RULES:
-- 3-5 suggestions
-- actionable and product-specific
-- avoid generic advice
-- explain what should change and why
-- use positive impact values
-
-COPY RULES:
-- EXACTLY 3 copy improvements
-- different sections only
-- improve clarity, not marketing tone
-- avoid vague SaaS buzzwords
-- preserve brand positioning
-
-Strong copy:
-- explains what the product is
-- explains who it is for
-- explains the outcome quickly
-
-Weak copy:
-- vague slogans
-- abstract positioning
-- unclear CTA intent
-
-All numbers must be integers.
-Breakdown values must be 0-100.
-`;
+Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
+Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; why fields max 28 words each.
+Impact: issues use negative ints (-5 to -25); suggestions/copy use positive (5-20). Pick top 1-2 impact keys per item.
+confidence: integer 70-98. breakdown: integers 0-100. score: integer 0-100 aligned with breakdown.
+Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
 
 const screenshotContent: any[] = [];
 
@@ -529,6 +417,7 @@ if (screenshotsBase64[2]) {
     const response = await client.responses.create({
       model: "gpt-4.1-nano",
       temperature: 0.2,
+      max_output_tokens: 2200,
       input: [
         {
           role: "user",
@@ -554,12 +443,6 @@ if (screenshotsBase64[2]) {
     const raw = response.output_text;
 
     const json = extractJSON(raw);
-    console.log("AI RAW:");
-    console.log(raw);
-
-    console.log("AI JSON:");
-    console.log(JSON.stringify(json, null, 2));
-
 
 // -----------------------------
 // FALLBACKS
@@ -625,11 +508,11 @@ json.confidence = Number.isFinite(Number(json.confidence))
       conversion: clampPercent(json.breakdown.conversion),
     };
 
-    json.issues = Array.isArray(json.issues) ? json.issues : [];
+    json.issues = Array.isArray(json.issues) ? json.issues.slice(0, 4) : [];
     json.suggestions = Array.isArray(json.suggestions)
-      ? json.suggestions
+      ? json.suggestions.slice(0, 3)
       : [];
-    json.copy = Array.isArray(json.copy) ? json.copy : [];
+    json.copy = Array.isArray(json.copy) ? json.copy.slice(0, 3) : [];
 
     json.issues = json.issues.map((item: any) => ({
      ...item,

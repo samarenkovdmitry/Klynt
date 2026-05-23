@@ -645,7 +645,7 @@ export default function Analyze() {
 
     <div className="flex items-center gap-2">
       <div className="h-1.5 w-1.5 rounded-full bg-[#14A8E8]" />
-      <span>AI-generated in ~30 sec</span>
+      <span>AI-generated in ~15–25 sec</span>
     </div>
 
   </div>
