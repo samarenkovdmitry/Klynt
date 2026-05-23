@@ -274,35 +274,7 @@ export default function Analyze() {
                 you can ship.
               </p>
 
-              {/* FEATURE PILLS */}
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-2 md:gap-3">
-
-                {[
-                  "AI UX analysis",
-                  "Full-page screenshots",
-                  "Conversion insights",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="
-                      rounded-full
-                      border
-                      border-[rgba(6,28,47,0.06)]
-                      bg-[#F8FAFC]
-                      px-3
-                      py-1.5
-                      text-[12px]
-                      font-medium
-                      text-[#6B7280]
-                      md:px-4
-                      md:py-2
-                      md:text-[13px]
-                    "
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+              
             </div>
 
             {/* FORM */}
@@ -512,6 +484,7 @@ export default function Analyze() {
                 {!loading ? (
                   <Button
                     type="button"
+                    variant="accent"
                     disabled={isButtonDisabled}
                     onClick={handleAnalyze}
                     className="w-full"

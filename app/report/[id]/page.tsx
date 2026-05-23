@@ -237,7 +237,7 @@ export default function ReportPage() {
                       <span className="truncate">{data.url}</span>
                     </div>
 
-                    <span className="hidden text-neutral-300 sm:block">•</span>
+                    <span className="text-neutral-300">•</span>
 
                     <span className="shrink-0">
                       {data.generatedAt
@@ -782,7 +782,7 @@ export default function ReportPage() {
                     Suggested Improvements
                   </h3>
 
-                  <div className="max-w-[46%] shrink-0 truncate rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-500 sm:max-w-none sm:px-3 sm:text-[13px]">
+                  <div className="max-w-[46%] shrink-0 truncate rounded-full bg-white px-3 py-1 text-[13px] font-medium leading-none text-neutral-500 sm:max-w-none">
                     {data.suggestions.length} recommendations
                   </div>
                 </div>

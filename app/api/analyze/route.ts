@@ -261,24 +261,22 @@ page.on("request", (req) => {
     const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
 
     const heroY = 0;
-    const midY = Math.min(1100, Math.max(0, Math.floor(bodyHeight * 0.42)));
-    const footerY = Math.max(bodyHeight - 1400, 0);
+    const lowerY =
+      bodyHeight <= 900
+        ? Math.max(0, bodyHeight - 650)
+        : Math.max(Math.floor(bodyHeight * 0.52), bodyHeight - 1300);
 
     const shotOptions = { type: "jpeg" as const, quality: 48 };
 
     await jumpTo(page, heroY);
     const hero = await page.screenshot(shotOptions);
 
-    await jumpTo(page, midY);
-    const mid = await page.screenshot(shotOptions);
-
-    await jumpTo(page, footerY);
-    const footer = await page.screenshot(shotOptions);
+    await jumpTo(page, lowerY);
+    const lower = await page.screenshot(shotOptions);
 
     return [
       Buffer.from(hero as Buffer).toString("base64"),
-      Buffer.from(mid as Buffer).toString("base64"),
-      Buffer.from(footer as Buffer).toString("base64"),
+      Buffer.from(lower as Buffer).toString("base64"),
     ];
   } finally {
     await browser.close();
@@ -386,30 +384,16 @@ if (screenshotsBase64[0]) {
   );
 }
 
-// MID
+// LOWER PAGE
 if (screenshotsBase64[1]) {
   screenshotContent.push(
     {
       type: "input_text",
-      text: "Screenshot 2 — Mid-page features, product explanation and content hierarchy",
+      text: "Screenshot 2 — Lower page: features, trust signals, CTAs and footer",
     },
     {
       type: "input_image",
       image_url: `data:image/jpeg;base64,${screenshotsBase64[1]}`,
-    }
-  );
-}
-
-// FOOTER
-if (screenshotsBase64[2]) {
-  screenshotContent.push(
-    {
-      type: "input_text",
-      text: "Screenshot 3 — Bottom sections, trust signals, CTA repetition and footer",
-    },
-    {
-      type: "input_image",
-      image_url: `data:image/jpeg;base64,${screenshotsBase64[2]}`,
     }
   );
 }
