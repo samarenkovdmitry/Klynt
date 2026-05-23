@@ -11,6 +11,7 @@ import {
   RiArrowRightUpLine,
   RiLightbulbLine,
 } from "@remixicon/react";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function ReportPage() {
   const params = useParams();
@@ -120,74 +121,12 @@ export default function ReportPage() {
 
   return (
     <>
-      {/* TOP NAVBAR */}
-      <header
-        className="
-          sticky
-          top-0
-          z-50
-          w-full
-          border-b
-          border-[rgba(0,0,0,0.06)]
-          bg-white/92
-          backdrop-blur-xl
-        "
-      >
-        <div
-          className="
-            mx-auto
-            flex
-            h-[68px]
-            max-w-[1280px]
-            items-center
-            justify-between
-            px-4
-            md:h-[72px]
-            md:px-8
-          "
-        >
-          {/* LOGO */}
-          <div className="flex items-center gap-3">
-            <svg
-              width="118"
-              height="44"
-              viewBox="0 0 118 44"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-[34px] w-auto md:h-[40px]"
-            >
-              <rect
-                x="0.5"
-                y="2.5"
-                width="39"
-                height="39"
-                rx="9.5"
-                stroke="#DCE2E7"
-              />
-              <path
-                d="M25.6568 30.4854L19.9999 36.1422L20 24.8285L25.6568 30.4854ZM34.1421 22.0001L27.5426 28.5995L20.9433 22.0001L27.5427 15.4006L34.1421 22.0001ZM17.1715 33.3138L5.85791 22L17.1716 10.6863L17.1715 33.3138ZM25.6569 13.5148L20 19.1716L20 7.85786L25.6569 13.5148Z"
-                fill="#061C2F"
-              />
-            </svg>
-          </div>
-
-          {/* RIGHT */}
-          <div className="hidden sm:flex flex-col leading-none">
-            <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]">
-              UX Clarity Analyzer
-            </span>
-
-            <span className="mt-1 text-[11px] text-[var(--ink-secondary)]">
-              AI-powered website review
-            </span>
-          </div>
-        </div>
-      </header>
+      <AppHeader />
 
       {/* MAIN */}
       <main
         className="
-          min-h-[calc(100dvh-68px)]
+          min-h-[calc(100dvh-64px)] md:min-h-[calc(100dvh-72px)]
           bg-[#F5F7FA]
           px-4
           pb-12
@@ -408,8 +347,9 @@ export default function ReportPage() {
                       border-neutral-200
                       bg-white
                       px-5
-                      py-6
-                      md:px-7
+                      py-5
+                      md:px-6
+                      md:py-5
                     "
                   >
                     {/* Score + verdict + top insight */}
@@ -417,15 +357,18 @@ export default function ReportPage() {
                       className="
                         flex
                         flex-col
-                        gap-6
+                        gap-4
                         sm:flex-row
                         sm:items-start
+                        sm:gap-5
                       "
                     >
-                      <div className="relative mx-auto flex h-[132px] w-[132px] shrink-0 items-center justify-center sm:mx-0">
+                      <div className="relative mx-auto flex h-[108px] w-[108px] shrink-0 items-center justify-center sm:mx-0">
                         {(() => {
                           const score = Number(data?.score ?? 0);
-                          const radius = 54;
+                          const size = 108;
+                          const center = size / 2;
+                          const radius = 44;
                           const circumference = 2 * Math.PI * radius;
                           const progress =
                             circumference - (score / 100) * circumference;
@@ -434,24 +377,24 @@ export default function ReportPage() {
                             <>
                               <svg
                                 className="-rotate-90"
-                                width="132"
-                                height="132"
+                                width={size}
+                                height={size}
                                 aria-hidden
                               >
                                 <circle
-                                  cx="66"
-                                  cy="66"
+                                  cx={center}
+                                  cy={center}
                                   r={radius}
                                   stroke="#E5E7EB"
-                                  strokeWidth="8"
+                                  strokeWidth="6"
                                   fill="transparent"
                                 />
                                 <circle
-                                  cx="66"
-                                  cy="66"
+                                  cx={center}
+                                  cy={center}
                                   r={radius}
                                   stroke="#FF7A00"
-                                  strokeWidth="8"
+                                  strokeWidth="6"
                                   fill="transparent"
                                   strokeLinecap="round"
                                   strokeDasharray={circumference}
@@ -461,10 +404,10 @@ export default function ReportPage() {
                               </svg>
 
                               <div className="absolute text-center">
-                                <p className="text-[13px] font-semibold text-[var(--ink-primary)]">
+                                <p className="text-[11px] font-medium text-neutral-500">
                                   UX Score
                                 </p>
-                                <p className="text-[40px] leading-none font-semibold text-[#FF7A00]">
+                                <p className="mt-0.5 text-[32px] leading-none font-semibold text-[#FF7A00]">
                                   {score}
                                 </p>
                               </div>
@@ -473,35 +416,35 @@ export default function ReportPage() {
                         })()}
                       </div>
 
-                      <div className="min-w-0 flex-1">
+                      <div className="min-w-0 flex-1 sm:pt-0.5">
                         <p
                           className="
                             text-center
-                            text-[20px]
-                            leading-[1.35]
+                            text-[17px]
+                            leading-[1.4]
                             font-semibold
-                            tracking-[-0.03em]
+                            tracking-[-0.02em]
                             text-[var(--ink-primary)]
                             sm:text-left
-                            md:text-[24px]
+                            md:text-[18px]
                           "
                         >
                           {data.verdict || "UX assessment complete"}
                         </p>
 
-                        <p className="mt-1 text-center text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-400 sm:text-left">
+                        <p className="mt-3 text-center text-[11px] font-medium uppercase tracking-[0.07em] text-neutral-400 sm:mt-3 sm:text-left">
                           Top insight
                         </p>
 
                         <p
                           className="
-                            mt-2
+                            mt-1
                             text-center
-                            text-[15px]
-                            leading-[1.65]
+                            text-[14px]
+                            leading-[1.6]
+                            font-normal
                             text-[var(--ink-secondary)]
                             sm:text-left
-                            md:text-[16px]
                           "
                         >
                           {data.summary || "No summary generated."}
@@ -510,76 +453,61 @@ export default function ReportPage() {
                     </div>
 
                     {/* Key observation — grows to match health card height */}
-                    <div
-                      className="
-                        mt-6
-                        flex
-                        min-h-0
-                        flex-1
-                        flex-col
-                      "
-                    >
+                    <div className="mt-5 flex min-h-0 flex-1 flex-col">
                       <div
                         className="
                           flex
                           h-full
                           flex-1
                           flex-col
-                          justify-center
-                          rounded-[20px]
+                          justify-start
+                          rounded-[18px]
                           border
-                          border-amber-200/80
-                          bg-gradient-to-br
-                          from-amber-50
-                          to-[#FFFBF5]
+                          border-amber-100
+                          bg-amber-50/60
                           px-4
-                          py-4
-                          md:px-5
-                          md:py-4
+                          py-3.5
                         "
                       >
-                      <div className="flex items-start gap-3.5">
-                        <div
-                          className="
-                            mt-0.5
-                            flex
-                            h-9
-                            w-9
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-full
-                            border
-                            border-amber-200
-                            bg-white
-                          "
-                        >
-                          <RiLightbulbLine
-                            size={17}
-                            className="text-amber-600"
-                          />
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
-                            Key observation
-                          </p>
-                          <p
+                        <div className="flex items-start gap-3">
+                          <div
                             className="
-                              mt-1.5
-                              text-[15px]
-                              leading-[1.55]
-                              font-medium
-                              tracking-[-0.01em]
-                              text-[var(--ink-primary)]
-                              md:text-[16px]
+                              flex
+                              h-8
+                              w-8
+                              shrink-0
+                              items-center
+                              justify-center
+                              rounded-full
+                              border
+                              border-amber-100
+                              bg-white/90
                             "
                           >
-                            {data.key_observation ||
-                              "No key observation available."}
-                          </p>
+                            <RiLightbulbLine
+                              size={15}
+                              className="text-amber-600/90"
+                            />
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[11px] font-medium uppercase tracking-[0.07em] text-amber-700/90">
+                              Key observation
+                            </p>
+                            <p
+                              className="
+                                mt-1
+                                text-[14px]
+                                leading-[1.55]
+                                font-normal
+                                text-[var(--ink-primary)]
+                              "
+                            >
+                              {data.key_observation ||
+                                "No key observation available."}
+                            </p>
+                          </div>
                         </div>
-                      </div>
                       </div>
                     </div>
                   </div>

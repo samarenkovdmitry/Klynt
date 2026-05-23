@@ -8,6 +8,7 @@ import {
 } from "@remixicon/react";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { Button } from "@/components/ui/Button";
+import { AppHeader } from "@/components/AppHeader";
 
 type FlatIssue = {
   category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
@@ -193,31 +194,7 @@ export default function Analyze() {
 
   return (
     <>
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-50 w-full border-b border-[rgba(6,28,47,0.06)] bg-white/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-[64px] md:h-[72px] max-w-[1180px] items-center justify-between px-4 md:px-6">
-
-          {/* LOGO */}
-          <div className="flex items-center gap-3">
-            <img
-              src="/klynt-logo-dark.svg"
-              alt="Klynt"
-              className="h-[34px] md:h-[40px] w-auto"
-            />
-          </div>
-
-          {/* RIGHT */}
-          <div className="hidden sm:flex flex-col leading-none text-right">
-            <span className="text-[12px] md:text-[13px] font-semibold tracking-[-0.02em] text-[#061C2F]">
-              UX Clarity Analyzer
-            </span>
-
-            <span className="mt-1 text-[11px] text-[#8F99A2]">
-              AI-powered website review
-            </span>
-          </div>
-        </div>
-      </header>
+      <AppHeader />
 
       {/* MAIN */}
       <main className="min-h-[calc(100dvh-64px)] bg-[#F5F7FA] px-4 py-5 md:px-6 md:py-8">
