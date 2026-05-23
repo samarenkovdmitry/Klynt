@@ -392,6 +392,7 @@ export default function ReportPage() {
                   className="
                     mt-5
                     grid
+                    items-stretch
                     gap-4
                     lg:grid-cols-[1.6fr_0.7fr]
                   "
@@ -399,6 +400,9 @@ export default function ReportPage() {
                   {/* SCORE CARD */}
                   <div
                     className="
+                      flex
+                      h-full
+                      flex-col
                       rounded-[28px]
                       border
                       border-neutral-200
@@ -505,22 +509,35 @@ export default function ReportPage() {
                       </div>
                     </div>
 
-                    {/* Key observation */}
+                    {/* Key observation — grows to match health card height */}
                     <div
                       className="
                         mt-6
-                        rounded-[20px]
-                        border
-                        border-amber-200/80
-                        bg-gradient-to-br
-                        from-amber-50
-                        to-[#FFFBF5]
-                        px-4
-                        py-4
-                        md:px-5
-                        md:py-4
+                        flex
+                        min-h-0
+                        flex-1
+                        flex-col
                       "
                     >
+                      <div
+                        className="
+                          flex
+                          h-full
+                          flex-1
+                          flex-col
+                          justify-center
+                          rounded-[20px]
+                          border
+                          border-amber-200/80
+                          bg-gradient-to-br
+                          from-amber-50
+                          to-[#FFFBF5]
+                          px-4
+                          py-4
+                          md:px-5
+                          md:py-4
+                        "
+                      >
                       <div className="flex items-start gap-3.5">
                         <div
                           className="
@@ -563,98 +580,86 @@ export default function ReportPage() {
                           </p>
                         </div>
                       </div>
+                      </div>
                     </div>
                   </div>
 
                   {/* HEALTH CARD */}
                   <div
                     className="
+                      flex
+                      h-full
+                      flex-col
                       rounded-[28px]
                       border
                       border-neutral-200
                       bg-white
                       px-5
-                      py-6
-                      md:px-7
+                      py-5
+                      md:px-6
+                      md:py-5
                     "
                   >
-                    <p className="text-[14px] font-semibold text-[var(--ink-primary)]">
-                      Conversion Health
-                    </p>
-
-                    <div className="mt-4 flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full bg-[#FF5A4F]" />
-
-                      <p
-                        className="
-                          text-[22px]
-                          font-semibold
-                          tracking-[-0.02em]
-                          text-[#FF5A4F]
-                        "
-                      >
-                        {normalizeRisk(data.risk ?? "")}
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-[14px] font-semibold text-[var(--ink-primary)]">
+                        Conversion Health
                       </p>
-                    </div>
 
-                    <p
-                      className="
-                        mt-5
-                        text-[14px]
-                        leading-6
-                        text-[var(--ink-secondary)]
-                      "
-                    >
-                      CTA clarity and trust positioning reduce conversion
-                      confidence.
-                    </p>
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <div className="h-2 w-2 rounded-full bg-[#FF5A4F]" />
+                        <p className="text-[15px] font-semibold tracking-[-0.02em] text-[#FF5A4F]">
+                          {normalizeRisk(data.risk ?? "")}
+                        </p>
+                      </div>
+                    </div>
 
                     {/* QUICK STATS */}
-                    <div className="mt-6 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[13px] text-neutral-500">
-                          Clarity
-                        </span>
+                    <div className="mt-4 flex min-h-0 flex-1 flex-col justify-center space-y-2.5">
+                      {(
+                        [
+                          ["Clarity", data.breakdown?.clarity],
+                          ["Trust", data.breakdown?.trust],
+                          ["Conversion", data.breakdown?.conversion],
+                        ] as const
+                      ).map(([label, value]) => {
+                        const score = Math.max(
+                          0,
+                          Math.min(100, Number(value ?? 0))
+                        );
 
-                        <span className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                          {data.breakdown?.clarity ?? 0}/100
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-[13px] text-neutral-500">
-                          Trust
-                        </span>
-
-                        <span className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                          {data.breakdown?.trust ?? 0}/100
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-[13px] text-neutral-500">
-                          Conversion
-                        </span>
-
-                        <span className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                          {data.breakdown?.conversion ?? 0}/100
-                        </span>
-                      </div>
+                        return (
+                          <div key={label}>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-[12px] text-neutral-500">
+                                {label}
+                              </span>
+                              <span className="text-[12px] font-semibold tabular-nums text-[var(--ink-primary)]">
+                                {score}
+                              </span>
+                            </div>
+                            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+                              <div
+                                className="h-full rounded-full bg-[#FF7A00] transition-all duration-700"
+                                style={{ width: `${score}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    
+
                     {/* CONFIDENCE */}
-                    <div className="mt-7 border-t border-neutral-100 pt-5">
-                      <div className="flex items-center justify-between">
-                        <p className="text-[14px] font-medium text-neutral-500">
+                    <div className="mt-auto border-t border-neutral-100 pt-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[12px] font-medium text-neutral-500">
                           AI confidence
                         </p>
-
-                        <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
+                        <p className="text-[14px] font-semibold tabular-nums text-[var(--ink-primary)]">
                           {data.confidence}%
                         </p>
                       </div>
 
-                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100">
+                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-neutral-100">
                         <div
                           className="
                             h-full
@@ -668,11 +673,6 @@ export default function ReportPage() {
                           }}
                         />
                       </div>
-
-                      <p className="mt-3 text-[13px] leading-5 text-neutral-500">
-                        Based on visible UI structure, messaging clarity and
-                        conversion signals.
-                      </p>
                     </div>
                   </div>
                 </div>
