@@ -14,7 +14,6 @@ import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { useEffect } from "react";
 
-
 export default function Home() {
   const pills = [
     {
