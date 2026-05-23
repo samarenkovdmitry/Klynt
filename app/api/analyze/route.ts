@@ -725,7 +725,7 @@ if (screenshotsBase64[2]) {
 }
 
     const response = await client.responses.create({
-      model: "gpt-4.1-nano",
+      model: "gpt-4.1-mini",
       temperature: 0.2,
       input: [
         {
@@ -795,10 +795,9 @@ if (
   json.key_observation = topIssue;
 }
 
-json.confidence = Math.max(
-  70,
-  Math.min(98, Number(json.confidence ?? 82))
-);
+json.confidence = Number.isFinite(Number(json.confidence))
+  ? Math.max(70, Math.min(98, Number(json.confidence)))
+  : 82;
 
 
     if (!json.breakdown || typeof json.breakdown !== "object") {
