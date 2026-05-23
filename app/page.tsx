@@ -52,9 +52,9 @@ export default function Home() {
   ];
 
   const avatars = [
-  "https://uifaces.co/our-content/donated/1H_7AxP0.jpg",
-  "https://uifaces.co/our-content/donated/UKdP0jzY.jpg",
-  "https://uifaces.co/our-content/donated/6MWH9Xi_.jpg",
+  "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg",
+  "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
+  "https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg",
   ];
 
 
