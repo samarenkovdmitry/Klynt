@@ -9,7 +9,7 @@ import {
   RiShareForwardLine,
   RiRefreshLine,
   RiArrowRightUpLine,
-  RiSettings3Line
+  RiLightbulbLine,
 } from "@remixicon/react";
 
 export default function ReportPage() {
@@ -388,103 +388,6 @@ export default function ReportPage() {
               <div className="mt-8">
                 <h2 className={styles.titleSection}>Summary</h2>
 
-                {/* TOP INSIGHT */}
-                <div
-                  className="
-                    mt-5
-                    rounded-[24px]
-                    border
-                    border-neutral-200
-                    bg-[#F8FAFC]
-                    px-5
-                    py-5
-                    md:px-6
-                  "
-                >
-                  <p
-                    className="
-                      max-w-[980px]
-                      text-[16px]
-                      leading-[1.6]
-                      font-medium
-                      tracking-[-0.01em]
-                      text-[var(--ink-primary)]
-                      md:text-[18px]
-                    "
-                  >
-                    {data.summary || "No summary generated."}
-                  </p>
-                </div>
-
-{/* KEY OBSERVATION */}
-<div
-  className="
-    mt-5
-    rounded-[24px]
-    border
-    border-amber-200
-    bg-amber-50
-    px-6
-    py-5
-  "
->
-  <div className="flex items-start gap-4">
-
-    <div
-      className="
-        mt-0.5
-        flex
-        h-10
-        w-10
-        shrink-0
-        items-center
-        justify-center
-        rounded-full
-        bg-white
-        border
-        border-amber-200
-      "
-    >
-      <RiSettings3Line
-        size={18}
-        className="text-amber-600"
-      />
-    </div>
-
-    <div>
-
-      <p
-        className="
-          text-[13px]
-          font-semibold
-          uppercase
-          tracking-[0.08em]
-          text-amber-700
-        "
-      >
-        Key Observation
-      </p>
-
-      <p
-        className="
-          mt-2
-          max-w-[760px]
-          text-[17px]
-          leading-7
-          font-medium
-          tracking-[-0.01em]
-          text-[var(--ink-primary)]
-        "
-      >
-        {data.key_observation || "No key observation available."}
-      </p>
-
-    </div>
-  </div>
-</div>
-
-
-                {/* GRID */}
                 <div
                   className="
                     mt-5
@@ -505,26 +408,23 @@ export default function ReportPage() {
                       md:px-7
                     "
                   >
+                    {/* Score + verdict + top insight */}
                     <div
                       className="
                         flex
                         flex-col
                         gap-6
                         sm:flex-row
-                        sm:items-center
+                        sm:items-start
                       "
                     >
-                      {/* SCORE */}
-                      <div className="relative mx-auto flex h-[132px] w-[132px] items-center justify-center sm:mx-0">
+                      <div className="relative mx-auto flex h-[132px] w-[132px] shrink-0 items-center justify-center sm:mx-0">
                         {(() => {
                           const score = Number(data?.score ?? 0);
-
                           const radius = 54;
                           const circumference = 2 * Math.PI * radius;
-
                           const progress =
-                            circumference -
-                            (data.score / 100) * circumference;
+                            circumference - (score / 100) * circumference;
 
                           return (
                             <>
@@ -532,6 +432,7 @@ export default function ReportPage() {
                                 className="-rotate-90"
                                 width="132"
                                 height="132"
+                                aria-hidden
                               >
                                 <circle
                                   cx="66"
@@ -541,7 +442,6 @@ export default function ReportPage() {
                                   strokeWidth="8"
                                   fill="transparent"
                                 />
-
                                 <circle
                                   cx="66"
                                   cy="66"
@@ -560,7 +460,6 @@ export default function ReportPage() {
                                 <p className="text-[13px] font-semibold text-[var(--ink-primary)]">
                                   UX Score
                                 </p>
-
                                 <p className="text-[40px] leading-none font-semibold text-[#FF7A00]">
                                   {score}
                                 </p>
@@ -570,8 +469,7 @@ export default function ReportPage() {
                         })()}
                       </div>
 
-                      {/* CONTENT */}
-                      <div className="flex-1">
+                      <div className="min-w-0 flex-1">
                         <p
                           className="
                             text-center
@@ -584,30 +482,85 @@ export default function ReportPage() {
                             md:text-[24px]
                           "
                         >
-                          {data.verdict}
+                          {data.verdict || "UX assessment complete"}
                         </p>
 
-                        {/* META */}
-                        <div className="mt-5 space-y-3">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[14px] font-medium text-neutral-500">
-                              Best:
-                            </span>
+                        <p className="mt-1 text-center text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-400 sm:text-left">
+                          Top insight
+                        </p>
 
-                            <span className="text-[14px] text-[var(--ink-secondary)]">
-                              Navigation clarity
-                            </span>
-                          </div>
+                        <p
+                          className="
+                            mt-2
+                            text-center
+                            text-[15px]
+                            leading-[1.65]
+                            text-[var(--ink-secondary)]
+                            sm:text-left
+                            md:text-[16px]
+                          "
+                        >
+                          {data.summary || "No summary generated."}
+                        </p>
+                      </div>
+                    </div>
 
-                          <div className="flex items-center gap-2">
-                            <span className="text-[14px] font-medium text-neutral-500">
-                              Risk:
-                            </span>
+                    {/* Key observation */}
+                    <div
+                      className="
+                        mt-6
+                        rounded-[20px]
+                        border
+                        border-amber-200/80
+                        bg-gradient-to-br
+                        from-amber-50
+                        to-[#FFFBF5]
+                        px-4
+                        py-4
+                        md:px-5
+                        md:py-4
+                      "
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <div
+                          className="
+                            mt-0.5
+                            flex
+                            h-9
+                            w-9
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-full
+                            border
+                            border-amber-200
+                            bg-white
+                          "
+                        >
+                          <RiLightbulbLine
+                            size={17}
+                            className="text-amber-600"
+                          />
+                        </div>
 
-                            <span className="text-[14px] text-[var(--ink-secondary)]">
-                              Trust positioning
-                            </span>
-                          </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
+                            Key observation
+                          </p>
+                          <p
+                            className="
+                              mt-1.5
+                              text-[15px]
+                              leading-[1.55]
+                              font-medium
+                              tracking-[-0.01em]
+                              text-[var(--ink-primary)]
+                              md:text-[16px]
+                            "
+                          >
+                            {data.key_observation ||
+                              "No key observation available."}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -690,44 +643,37 @@ export default function ReportPage() {
                     </div>
                     
                     {/* CONFIDENCE */}
-<div className="mt-7 border-t border-neutral-100 pt-5">
+                    <div className="mt-7 border-t border-neutral-100 pt-5">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[14px] font-medium text-neutral-500">
+                          AI confidence
+                        </p>
 
-  <div className="flex items-center justify-between">
+                        <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
+                          {data.confidence}%
+                        </p>
+                      </div>
 
-    <p className="text-[14px] font-medium text-neutral-500">
-      AI confidence
-    </p>
+                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100">
+                        <div
+                          className="
+                            h-full
+                            rounded-full
+                            bg-[#061C2F]
+                            transition-all
+                            duration-700
+                          "
+                          style={{
+                            width: `${Math.max(0, Math.min(100, Number(data.confidence ?? 0)))}%`,
+                          }}
+                        />
+                      </div>
 
-    <p className="text-[15px] font-semibold text-[var(--ink-primary)]">
-      {data.confidence}%
-    </p>
-
-  </div>
-
-  <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100">
-
-    <div
-      className="
-        h-full
-        rounded-full
-        bg-[#061C2F]
-        transition-all
-        duration-700
-      "
-      style={{
-        width: `${Math.max(0, Math.min(100, Number(data.confidence ?? 0)))}%`,
-      }}
-    />
-
-  </div>
-
-  <p className="mt-3 text-[13px] leading-5 text-neutral-500">
-    Based on visible UI structure, messaging clarity and conversion signals.
-  </p>
-
-</div>
-
-
+                      <p className="mt-3 text-[13px] leading-5 text-neutral-500">
+                        Based on visible UI structure, messaging clarity and
+                        conversion signals.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
