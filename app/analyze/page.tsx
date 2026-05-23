@@ -622,6 +622,47 @@ export default function Analyze() {
                 )}
               </div>
 
+
+{/* TRUST META */}
+{!loading && (
+  <div
+    className="
+      mt-5
+      flex
+      flex-wrap
+      items-center
+      justify-center
+      gap-x-5
+      gap-y-2
+      text-[12px]
+      md:text-[13px]
+      text-[#8E99A2]
+    "
+  >
+
+    <div className="flex items-center gap-2">
+      <div className="h-1.5 w-1.5 rounded-full bg-[#14A8E8]" />
+      <span>No signup required</span>
+    </div>
+
+    <div className="hidden md:block h-1 w-1 rounded-full bg-[#D5DDE5]" />
+
+    <div className="flex items-center gap-2">
+      <div className="h-1.5 w-1.5 rounded-full bg-[#14A8E8]" />
+      <span>PDF export</span>
+    </div>
+
+    <div className="hidden md:block h-1 w-1 rounded-full bg-[#D5DDE5]" />
+
+    <div className="flex items-center gap-2">
+      <div className="h-1.5 w-1.5 rounded-full bg-[#14A8E8]" />
+      <span>AI-generated in ~30 sec</span>
+    </div>
+
+  </div>
+)}
+
+
               {/* ERROR */}
               {error && (
                 <div
