@@ -52,10 +52,11 @@ export default function Home() {
   ];
 
   const avatars = [
-  "https://api.dicebear.com/9.x/thumbs/svg?seed=alex",
-  "https://api.dicebear.com/9.x/thumbs/svg?seed=marcus",
-  "https://api.dicebear.com/9.x/thumbs/svg?seed=sofia",
+  "https://uifaces.co/our-content/donated/1H_7AxP0.jpg",
+  "https://uifaces.co/our-content/donated/UKdP0jzY.jpg",
+  "https://uifaces.co/our-content/donated/6MWH9Xi_.jpg",
   ];
+
 
 
   return (
@@ -734,6 +735,8 @@ export default function Home() {
                     rounded-full
                     border-2
                     border-white
+                    overflow-hidden
+                    bg-gray-100
                   "
                 >
                     <img
