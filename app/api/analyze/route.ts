@@ -752,25 +752,6 @@ if (screenshotsBase64[2]) {
     const raw = response.output_text;
 
     const json = extractJSON(raw);
-    json.summary =
-    typeof json.summary === "string"
-    ? json.summary
-    : "Interface clarity and conversion experience require improvement.";
-
-    json.verdict =
-    typeof json.verdict === "string"
-    ? json.verdict
-    : "Moderate UX friction detected";
-
-    json.key_observation =
-    typeof json.key_observation === "string"
-    ? json.key_observation
-    : "Primary messaging lacks clarity.";
-
-    json.confidence =
-    typeof json.confidence === "number"
-    ? json.confidence
-    : 82;
 
     if (!json.breakdown || typeof json.breakdown !== "object") {
       json.breakdown = {
@@ -782,6 +763,28 @@ if (screenshotsBase64[2]) {
       };
     }
 
+json.summary =
+  typeof json.summary === "string"
+    ? json.summary
+    : "Interface clarity and conversion experience require improvement.";
+
+json.verdict =
+  typeof json.verdict === "string"
+    ? json.verdict
+    : "Moderate UX friction detected";
+
+json.key_observation =
+  typeof json.key_observation === "string"
+    ? json.key_observation
+    : "Primary messaging lacks clarity.";
+
+json.confidence = clampPercent(json.confidence || 82);
+
+if (json.confidence < 70) {
+  json.confidence = 70;
+}
+
+    
     json.breakdown = {
       clarity: clampPercent(json.breakdown.clarity),
       navigation: clampPercent(json.breakdown.navigation),
