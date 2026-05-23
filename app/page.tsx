@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
 import {
   RiArrowRightLine,
@@ -13,47 +12,10 @@ import {
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
+import { useEffect } from "react";
 
-const LANDING_HERO_BG = "#53C2EE";
 
 export default function Home() {
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    const prevHtmlBg = html.style.backgroundColor;
-    const prevBodyBg = body.style.backgroundColor;
-
-    let themeMeta = document.querySelector(
-      'meta[name="theme-color"]'
-    ) as HTMLMetaElement | null;
-    const createdMeta = !themeMeta;
-
-    if (!themeMeta) {
-      themeMeta = document.createElement("meta");
-      themeMeta.name = "theme-color";
-      document.head.appendChild(themeMeta);
-    }
-
-    const prevTheme = themeMeta.getAttribute("content");
-
-    html.style.backgroundColor = LANDING_HERO_BG;
-    body.style.backgroundColor = LANDING_HERO_BG;
-    themeMeta.setAttribute("content", LANDING_HERO_BG);
-
-    return () => {
-      html.style.backgroundColor = prevHtmlBg;
-      body.style.backgroundColor = prevBodyBg;
-
-      if (createdMeta) {
-        themeMeta?.remove();
-      } else if (prevTheme) {
-        themeMeta?.setAttribute("content", prevTheme);
-      } else {
-        themeMeta?.removeAttribute("content");
-      }
-    };
-  }, []);
-
   const pills = [
     {
       icon: <RiSearchEyeLine size={18} className="text-[#1696C7]" />,
@@ -87,16 +49,7 @@ export default function Home() {
   return (
     <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
       {/* HERO */}
-      <section
-        className="
-          relative
-          overflow-hidden
-          bg-[#53C2EE]
-          pb-[120px]
-          pt-[env(safe-area-inset-top,0px)]
-          md:pb-[180px]
-        "
-      >
+      <section className="relative overflow-hidden bg-[#53C2EE] pb-[120px] md:pb-[180px]">
         <AppHeader variant="landing" />
 
         {/* HERO CONTENT */}
