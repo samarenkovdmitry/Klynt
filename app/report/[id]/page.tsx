@@ -21,6 +21,7 @@ export default function ReportPage() {
   // =========================
 
   const [data, setData] = useState<any>(null);
+  console.log(data);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
 
