@@ -9,6 +9,7 @@ export const metadata = {
 
 export const viewport: Viewport = {
   viewportFit: "cover",
+  themeColor: "#EBEFF3",
 };
 
 const familjen = Familjen_Grotesk({

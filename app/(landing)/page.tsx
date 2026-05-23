@@ -12,7 +12,6 @@ import {
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
-import { useEffect } from "react";
 
 export default function Home() {
   const pills = [
@@ -48,7 +47,16 @@ export default function Home() {
   return (
     <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[#53C2EE] pb-[120px] md:pb-[180px]">
+      <section
+        className="
+          relative
+          overflow-hidden
+          bg-[#53C2EE]
+          pb-[120px]
+          pt-[env(safe-area-inset-top,0px)]
+          md:pb-[180px]
+        "
+      >
         <AppHeader variant="landing" />
 
         {/* HERO CONTENT */}
