@@ -86,6 +86,32 @@ export default function ReportPage() {
     return getTierColor(getScoreTier(score));
   }
 
+  function getSeverityIndicator(score: number): {
+    label: string;
+    pillClass: string;
+  } {
+    const tier = getScoreTier(score);
+
+    if (tier === "healthy") {
+      return {
+        label: "Healthy Conversion Flow",
+        pillClass: "border-amber-200/90 bg-amber-50 text-amber-800",
+      };
+    }
+
+    if (tier === "medium") {
+      return {
+        label: "Moderate UX Friction",
+        pillClass: "border-orange-200/90 bg-orange-50 text-orange-700",
+      };
+    }
+
+    return {
+      label: "High Conversion Friction",
+      pillClass: "border-red-200/90 bg-red-50 text-red-700",
+    };
+  }
+
   type ImpactEntry = { key: string; value: number };
 
   function getImpactEntries(item: {
@@ -319,9 +345,9 @@ export default function ReportPage() {
                         text-[34px]
                         leading-none
                         font-semibold
-                        tracking-[-0.05em]
+                        tracking-[-0.04em]
                         text-[var(--ink-primary)]
-                        md:text-[48px]
+                        md:text-[42px]
                       "
                     >
                       Clarity Report
@@ -329,15 +355,23 @@ export default function ReportPage() {
 
                     <div
                       className="
+                        inline-flex
+                        items-center
                         rounded-full
                         border
-                        border-[#DCE7F8]
-                        bg-[#F4F8FF]
+                        border-[#B8D4F8]/80
+                        bg-gradient-to-r
+                        from-[#EEF5FF]
+                        via-[#F4F8FF]
+                        to-[#E3F2FF]
                         px-3
                         py-1
-                        text-[12px]
+                        text-[11px]
                         font-semibold
-                        text-[#2F6FED]
+                        uppercase
+                        tracking-[0.06em]
+                        text-[#2563EB]
+                        shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]
                       "
                     >
                       AI Generated
@@ -481,11 +515,11 @@ export default function ReportPage() {
                         sm:items-start
                       "
                     >
-                      <div className="relative mx-auto flex h-[185px] w-[185px] shrink-0 items-center justify-center sm:mx-0">
+                      <div className="relative mx-auto flex h-[176px] w-[176px] shrink-0 items-center justify-center sm:mx-0">
                         {(() => {
                           const score = Number(data?.score ?? 0);
-                          const size = 185;
-                          const radius = 78;
+                          const size = 176;
+                          const radius = 74;
                           const strokeWidth = 6;
                           const center = size / 2;
                           const circumference = 2 * Math.PI * radius;
@@ -547,6 +581,33 @@ export default function ReportPage() {
                       </div>
 
                       <div className="min-w-0 flex-1">
+                        {(() => {
+                          const score = Number(data?.score ?? 0);
+                          const severity = getSeverityIndicator(score);
+
+                          return (
+                            <div className="mb-3 flex justify-center sm:justify-start">
+                              <div
+                                className={`
+                                  inline-flex
+                                  items-center
+                                  rounded-full
+                                  border
+                                  px-2.5
+                                  py-1
+                                  text-[10px]
+                                  font-semibold
+                                  uppercase
+                                  tracking-[0.08em]
+                                  ${severity.pillClass}
+                                `}
+                              >
+                                {severity.label}
+                              </div>
+                            </div>
+                          );
+                        })()}
+
                         <p
                           className="
                             text-center
