@@ -69,6 +69,42 @@ type AuditResponseFlat = {
   generatedAt: string;
 };
 
+/** Target duration for UX copy (~15–25 sec); progress eases toward cap over this window. */
+const ESTIMATED_ANALYSIS_MS = 22_000;
+const MAX_PROGRESS_WHILE_WAITING = 92;
+const PROGRESS_TICK_MS = 50;
+const FINISH_ANIMATION_MS = 450;
+
+function getTimeBasedProgress(elapsedMs: number): number {
+  const tau = ESTIMATED_ANALYSIS_MS / 2.8;
+  const value =
+    MAX_PROGRESS_WHILE_WAITING * (1 - Math.exp(-elapsedMs / tau));
+  return Math.min(MAX_PROGRESS_WHILE_WAITING, value);
+}
+
+function animateProgressTo100(
+  from: number,
+  onUpdate: (value: number) => void
+): Promise<void> {
+  return new Promise((resolve) => {
+    const start = performance.now();
+
+    function tick(now: number) {
+      const t = Math.min(1, (now - start) / FINISH_ANIMATION_MS);
+      const eased = 1 - Math.pow(1 - t, 3);
+      onUpdate(from + (100 - from) * eased);
+
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        resolve();
+      }
+    }
+
+    requestAnimationFrame(tick);
+  });
+}
+
 export default function Analyze() {
   const [data, setData] = useState<AuditResponseFlat | null>(null);
   const [loading, setLoading] = useState(false);
@@ -110,6 +146,16 @@ export default function Analyze() {
   }
 
   async function handleAnalyze() {
+    let progressTimer: ReturnType<typeof setInterval> | null = null;
+    let latestProgress = 0;
+
+    const stopProgressTimer = () => {
+      if (progressTimer) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+    };
+
     try {
       if (!url && !uploadedImage) return;
 
@@ -118,12 +164,11 @@ export default function Analyze() {
       setProgress(0);
       setError(null);
 
-      const interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 95) return prev;
-          return prev + Math.random() * 8;
-        });
-      }, 250);
+      const startedAt = performance.now();
+      progressTimer = setInterval(() => {
+        latestProgress = getTimeBasedProgress(performance.now() - startedAt);
+        setProgress(latestProgress);
+      }, PROGRESS_TICK_MS);
 
       const screenshotToSend = uploadedImage;
 
@@ -142,7 +187,8 @@ export default function Analyze() {
       const json = await res.json().catch(() => null);
 
       if (!res.ok || !json) {
-        clearInterval(interval);
+        stopProgressTimer();
+        setProgress(0);
         setLoading(false);
         setError(
           json?.error ||
@@ -152,7 +198,8 @@ export default function Analyze() {
       }
 
       if (!isValidAuditResponse(json)) {
-        clearInterval(interval);
+        stopProgressTimer();
+        setProgress(0);
         setLoading(false);
         setError(
           json?.error ||
@@ -187,7 +234,8 @@ export default function Analyze() {
       try {
         saveReport(reportId, flat);
       } catch {
-        clearInterval(interval);
+        stopProgressTimer();
+        setProgress(0);
         setLoading(false);
         setError(
           "Could not save the report in this browser. Try again or free up storage."
@@ -195,12 +243,14 @@ export default function Analyze() {
         return;
       }
 
-      setProgress(100);
-      clearInterval(interval);
-      setLoading(false);
+      stopProgressTimer();
+      latestProgress = getTimeBasedProgress(performance.now() - startedAt);
+      await animateProgressTo100(latestProgress, setProgress);
 
       router.push(`/report/${reportId}`);
     } catch (error: any) {
+      stopProgressTimer();
+      setProgress(0);
       setError(
         error?.message ||
           "Something went wrong while analyzing the website."
