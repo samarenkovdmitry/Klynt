@@ -8,11 +8,15 @@ import {
   RiTimerFlashLine,
   RiFilePdfLine,
   RiUserSmileLine,
+  RiCloseLine,
 } from "@remixicon/react";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { Button } from "@/components/ui/Button";
+import { BrandPill } from "@/components/ui/BrandPill";
+import { inputFieldClass } from "@/components/ui/inputClasses";
 import { AppHeader } from "@/components/AppHeader";
 import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
+import { validateWebsiteUrl } from "@/lib/validate-website-url";
 
 type FlatIssue = {
   category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
@@ -129,7 +133,9 @@ export default function Analyze() {
     setImageSize(`${(file.size / 1024 / 1024).toFixed(1)} MB`);
   }
 
-  const isButtonDisabled = !url && !uploadedImage;
+  const urlError = url.trim() ? validateWebsiteUrl(url) : null;
+  const isButtonDisabled =
+    (!url.trim() && !uploadedImage) || Boolean(url.trim() && urlError);
 
   const steps = [
     { threshold: 10, label: "Scanning layout…" },
@@ -157,7 +163,8 @@ export default function Analyze() {
     };
 
     try {
-      if (!url && !uploadedImage) return;
+      if (!url.trim() && !uploadedImage) return;
+      if (url.trim() && validateWebsiteUrl(url)) return;
 
       setLoading(true);
       setData(null);
@@ -287,25 +294,7 @@ export default function Analyze() {
             {/* HERO */}
             <div className="mx-auto max-w-[700px] text-center">
 
-              <div
-                className="
-                  mx-auto
-                  inline-flex
-                  items-center
-                  rounded-full
-                  border
-                  border-[#DCE7F8]
-                  bg-[#F4F8FF]
-                  px-3
-                  py-1
-                  text-[11px]
-                  md:text-[12px]
-                  font-semibold
-                  text-[#2F6FED]
-                "
-              >
-                AI UX Review
-              </div>
+              <BrandPill>AI UX Review</BrandPill>
 
               <h1
                 className="
@@ -347,37 +336,58 @@ export default function Analyze() {
               <div>
                 <FormLabel>Website URL</FormLabel>
 
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://stripe.com"
-                  disabled={loading}
-                  className={`
-                    mt-3
-                    h-[54px]
-                    md:h-[58px]
-                    w-full
-                    rounded-2xl
-                    border
-                    border-[#D8E0E7]
-                    bg-[#FCFDFD]
-                    px-5
-                    text-[15px]
-                    md:text-[16px]
-                    text-[#061C2F]
-                    shadow-[0_1px_2px_rgba(0,0,0,0.02)]
-                    transition-all
-                    duration-200
-                    placeholder:text-[#9AA3AC]
-                    focus:outline-none
-                    ${
-                      loading
-                        ? "cursor-not-allowed opacity-60"
-                        : "focus:border-[#14A8E8]"
-                    }
-                  `}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="https://stripe.com"
+                    disabled={loading}
+                    aria-invalid={urlError ? true : undefined}
+                    aria-describedby={urlError ? "url-error" : undefined}
+                    className={`${inputFieldClass({
+                      disabled: loading,
+                      error: Boolean(urlError),
+                      withClearButton: url.length > 0,
+                    })} h-[54px] md:h-[58px]`}
+                  />
+
+                  {url.length > 0 && !loading && (
+                    <button
+                      type="button"
+                      onClick={() => setUrl("")}
+                      aria-label="Clear URL"
+                      className="
+                        absolute
+                        right-4
+                        top-1/2
+                        flex
+                        h-8
+                        w-8
+                        -translate-y-1/2
+                        items-center
+                        justify-center
+                        rounded-full
+                        text-[#8E99A2]
+                        transition-colors
+                        hover:bg-[#EBEFF3]
+                        hover:text-[#061C2F]
+                      "
+                    >
+                      <RiCloseLine size={18} />
+                    </button>
+                  )}
+                </div>
+
+                {urlError && (
+                  <p
+                    id="url-error"
+                    role="alert"
+                    className="mt-2 text-[13px] text-[#D14343]"
+                  >
+                    {urlError}
+                  </p>
+                )}
               </div>
 
               {/* DIVIDER */}

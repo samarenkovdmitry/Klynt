@@ -5,31 +5,8 @@ import { RiArrowRightLine } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { FormLabel } from "@/components/ui/FormLabel";
-
-function fieldClass(disabled: boolean) {
-  return `
-    mt-3
-    w-full
-    rounded-2xl
-    border
-    border-[#D8E0E7]
-    bg-[#FCFDFD]
-    px-5
-    text-[15px]
-    md:text-[16px]
-    text-[#061C2F]
-    shadow-[0_1px_2px_rgba(0,0,0,0.02)]
-    transition-all
-    duration-200
-    placeholder:text-[#9AA3AC]
-    focus:outline-none
-    ${
-      disabled
-        ? "cursor-not-allowed opacity-60"
-        : "focus:border-[#14A8E8]"
-    }
-  `;
-}
+import { BrandPill } from "@/components/ui/BrandPill";
+import { inputFieldClass } from "@/components/ui/inputClasses";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -101,25 +78,7 @@ export default function ContactPage() {
             "
           >
             <div className="mx-auto max-w-[700px] text-center">
-              <div
-                className="
-                  mx-auto
-                  inline-flex
-                  items-center
-                  rounded-full
-                  border
-                  border-[#DCE7F8]
-                  bg-[#F4F8FF]
-                  px-3
-                  py-1
-                  text-[11px]
-                  font-semibold
-                  text-[#2F6FED]
-                  md:text-[12px]
-                "
-              >
-                Contact
-              </div>
+              <BrandPill>Contact</BrandPill>
 
               <h1
                 className="
@@ -203,7 +162,7 @@ export default function ContactPage() {
                     placeholder="Your name"
                     disabled={submitting}
                     autoComplete="name"
-                    className={`${fieldClass(submitting)} h-[54px] md:h-[58px]`}
+                    className={`${inputFieldClass({ disabled: submitting })} h-[54px] md:h-[58px]`}
                   />
                 </div>
 
@@ -217,7 +176,7 @@ export default function ContactPage() {
                     placeholder="you@company.com"
                     disabled={submitting}
                     autoComplete="email"
-                    className={`${fieldClass(submitting)} h-[54px] md:h-[58px]`}
+                    className={`${inputFieldClass({ disabled: submitting })} h-[54px] md:h-[58px]`}
                   />
                 </div>
 
@@ -230,7 +189,7 @@ export default function ContactPage() {
                     placeholder="How can we help?"
                     disabled={submitting}
                     rows={5}
-                    className={`${fieldClass(submitting)} min-h-[140px] resize-y py-4 leading-relaxed`}
+                    className={`${inputFieldClass({ disabled: submitting })} min-h-[140px] resize-y py-4 leading-relaxed`}
                   />
                 </div>
 

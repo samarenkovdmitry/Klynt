@@ -9,6 +9,11 @@
 
   --stroke-light: #DCE2E7;
   --gray-soft: #EBEFF3;
+
+  --nordic: #10a6da;
+  --nordic-text: #0f7fb3;
+  --nordic-border: rgba(16, 166, 218, 0.28);
+  --nordic-bg: rgba(16, 166, 218, 0.08);
 }
 
 ::selection {
@@ -31,6 +36,12 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+.brand-pill {
+  border: 1px solid var(--nordic-border);
+  background: var(--nordic-bg);
+  color: var(--nordic-text);
 }
 
 .bg-pattern {

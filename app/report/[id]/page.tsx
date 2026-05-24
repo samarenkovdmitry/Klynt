@@ -13,6 +13,7 @@ import {
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
+import { BrandPill } from "@/components/ui/BrandPill";
 import { isValidAuditResponse, loadReport } from "@/lib/report-storage";
 
 export default function ReportPage() {
@@ -1218,24 +1219,7 @@ export default function ReportPage() {
               "
             >
               <div className="mx-auto max-w-[760px]">
-                <div
-                  className="
-                    mx-auto
-                    inline-flex
-                    items-center
-                    rounded-full
-                    border
-                    border-[#DCE7F8]
-                    bg-[#F4F8FF]
-                    px-3
-                    py-1
-                    text-[12px]
-                    font-semibold
-                    text-[#2F6FED]
-                  "
-                >
-                  Next Step
-                </div>
+                <BrandPill className="text-[12px]">Next Step</BrandPill>
 
                 <h3
                   className="
