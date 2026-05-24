@@ -11,8 +11,6 @@ import {
   RiUserSmileLine,
   RiFilePdfLine,
   RiTimerFlashLine,
-  RiLinkM,
-  RiFileList3Line,
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
@@ -44,26 +42,23 @@ export default function Home() {
   ];
 
   const avatars = [
-    "/avatars/user1.jpeg",
-    "/avatars/user2.jpeg",
-    "/avatars/user3.jpeg",
+    "/avatars/user1.jpg",
+    "/avatars/user2.jpg",
+    "/avatars/user3.jpg",
   ];
 
   const howItWorksSteps = [
     {
-      icon: <RiLinkM size={22} className="text-[#1696C7]" />,
       title: "Paste your URL",
       description:
         "Enter any live landing page or marketing site. Klynt captures the visible UI and copy — no install or account needed.",
     },
     {
-      icon: <RiSparkling2Line size={22} className="text-[#1696C7]" />,
       title: "AI scans the page",
       description:
         "The model reviews hierarchy, messaging, trust signals, and conversion patterns to spot friction across the full page.",
     },
     {
-      icon: <RiFileList3Line size={22} className="text-[#1696C7]" />,
       title: "Review your report",
       description:
         "Get UX issues, prioritized improvements, and copy rewrites in one shareable clarity report — ready to export as PDF.",
@@ -94,9 +89,10 @@ export default function Home() {
               text-[56px]
               font-semibold
               leading-[0.95]
-              tracking-[-0.08em]
+              tracking-[-0.05em]
               text-[#061C2F]
               md:text-[84px]
+              md:tracking-[-0.04em]
             "
           >
             Clarity drives conversion
@@ -177,7 +173,7 @@ export default function Home() {
       </section>
 
       {/* FEATURE PILLS */}
-      <section className="px-5 pb-6 pt-10 md:px-6 md:pb-10 md:pt-14">
+      <section className="px-5 pt-12 md:px-6 md:pt-20">
         <div
           className="
             mx-auto
@@ -216,8 +212,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ANALYSIS */}
-      <section className="px-5 py-14 md:px-6 md:py-24">
+      {/* ANALYSIS + SOCIAL PROOF + HOW IT WORKS */}
+      <section className="px-5 pt-12 pb-12 md:px-6 md:pt-24 md:pb-28">
         <div className="mx-auto max-w-[1040px]">
           {/* HEADER */}
           <div className="mx-auto max-w-[760px] text-center">
@@ -255,7 +251,7 @@ export default function Home() {
           </div>
 
           {/* BENTO GRID */}
-          <div className="mt-14 grid gap-4 md:grid-cols-3">
+          <div className="mt-12 grid gap-4 md:mt-16 md:grid-cols-3">
             {/* UX ISSUES */}
             <article
               className="
@@ -478,8 +474,68 @@ export default function Home() {
             </article>
           </div>
 
+          {/* SOCIAL PROOF */}
+          <div
+            className="
+              mt-12
+              rounded-[32px]
+              border
+              border-[rgba(6,28,47,0.06)]
+              bg-white
+              px-6
+              py-8
+              md:mt-24
+              md:px-10
+              md:py-10
+            "
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="flex -space-x-3">
+                {avatars.map((src, i) => (
+                  <div
+                    key={i}
+                    className="
+                      h-12
+                      w-12
+                      overflow-hidden
+                      rounded-full
+                      border-2
+                      border-white
+                      bg-gray-100
+                    "
+                  >
+                    <img
+                      src={src}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <p className="mt-6 text-[15px] font-medium text-[#0F7FB3]">
+                Used by designers, founders and product teams
+              </p>
+
+              <p
+                className="
+                  mt-4
+                  max-w-[620px]
+                  text-[24px]
+                  font-semibold
+                  leading-[1.2]
+                  tracking-[-0.04em]
+                  text-[#061C2F]
+                  md:text-[32px]
+                "
+              >
+                &ldquo;The fastest way to spot UX problems before launch.&rdquo;
+              </p>
+            </div>
+          </div>
+
           {/* HOW IT WORKS */}
-          <div className="mt-20 md:mt-28">
+          <div className="mt-12 md:mt-24">
             <div className="mx-auto max-w-[760px] text-center">
               <div className="text-[14px] font-semibold text-[#0F7FB3] md:text-[15px]">
                 How it works
@@ -531,11 +587,7 @@ export default function Home() {
                     {index + 1}
                   </div>
 
-                  <div className="mt-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F5F7FA]">
-                    {step.icon}
-                  </div>
-
-                  <h3 className="mt-5 text-[20px] font-semibold leading-[1.2] tracking-[-0.03em] text-[#061C2F] md:text-[22px]">
+                  <h3 className="mt-4 text-[20px] font-semibold leading-[1.2] tracking-[-0.03em] text-[#061C2F] md:text-[22px]">
                     {step.title}
                   </h3>
 
@@ -549,70 +601,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SOCIAL PROOF */}
-      <section className="px-5 py-6 md:px-6 md:py-12">
-        <div
-          className="
-            mx-auto
-            max-w-[920px]
-            rounded-[32px]
-            border
-            border-[rgba(6,28,47,0.06)]
-            bg-white
-            px-6
-            py-8
-            md:px-10
-            md:py-10
-          "
-        >
-          <div className="flex flex-col items-center text-center">
-            <div className="flex -space-x-3">
-              {avatars.map((src, i) => (
-                <div
-                  key={i}
-                  className="
-                    h-12
-                    w-12
-                    rounded-full
-                    border-2
-                    border-white
-                    overflow-hidden
-                    bg-gray-100
-                  "
-                >
-                    <img
-                      src={src}
-                      alt="avatar"
-                      className="h-full w-full object-cover"
-                    />
-             </div>
-              ))}
-            </div>
-
-            <p className="mt-6 text-[15px] font-medium text-[#0F7FB3]">
-              Used by designers, founders and product teams
-            </p>
-
-            <p
-              className="
-                mt-4
-                max-w-[620px]
-                text-[24px]
-                font-semibold
-                leading-[1.2]
-                tracking-[-0.04em]
-                text-[#061C2F]
-                md:text-[32px]
-              "
-            >
-              “The fastest way to spot UX problems before launch.”
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
-      <section className="px-5 py-14 md:px-6 md:py-24">
+      <section className="px-5 py-12 md:px-6 md:py-28">
         <div className="mx-auto max-w-[860px] text-center">
           <h2
             className="
