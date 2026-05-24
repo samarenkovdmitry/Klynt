@@ -3,15 +3,18 @@
 import Link from "next/link";
 import {
   RiArrowRightLine,
-  RiDownload2Line,
   RiSearchEyeLine,
   RiSparkling2Line,
   RiMagicLine,
   RiShieldCheckLine,
   RiBarChartBoxLine,
+  RiUserSmileLine,
+  RiFilePdfLine,
+  RiTimerFlashLine,
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
+import { LandingReportMockup } from "@/components/LandingReportMockup";
 
 export default function Home() {
   const pills = [
@@ -89,7 +92,7 @@ export default function Home() {
             and suggests clearer improvements.
           </p>
 
-          <div className="mt-8 flex items-center justify-center">
+          <div className="mt-8 flex flex-col items-center justify-center">
             <Button
               href="/analyze"
               icon={<RiArrowRightLine size={18} />}
@@ -98,290 +101,56 @@ export default function Home() {
             >
               Start free audit
             </Button>
+
+            <div
+              className="
+                mt-5
+                flex
+                flex-wrap
+                items-center
+                justify-center
+                gap-x-5
+                gap-y-2
+                text-[12px]
+                text-[#061C2F]/72
+                md:text-[13px]
+              "
+            >
+              <div className="flex items-center gap-2">
+                <RiUserSmileLine
+                  size={16}
+                  className="shrink-0 text-[#0B6FA0]"
+                />
+                <span>No signup required</span>
+              </div>
+
+              <div className="hidden h-1 w-1 rounded-full bg-[#061C2F]/25 md:block" />
+
+              <div className="flex items-center gap-2">
+                <RiFilePdfLine size={16} className="shrink-0 text-[#0B6FA0]" />
+                <span>PDF export</span>
+              </div>
+
+              <div className="hidden h-1 w-1 rounded-full bg-[#061C2F]/25 md:block" />
+
+              <div className="flex items-center gap-2">
+                <RiTimerFlashLine
+                  size={16}
+                  className="shrink-0 text-[#0B6FA0]"
+                />
+                <span>AI-generated in ~15–25 sec</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* FLOATING REPORT */}
+      {/* DEMO REPORT */}
       <section
         id="report"
         className="relative z-20 -mt-[70px] px-4 md:-mt-[120px] md:px-6"
       >
-        <div
-          className="
-            relative
-            mx-auto
-            max-w-[960px]
-            overflow-hidden
-            rounded-[28px]
-            border
-            border-[rgba(6,28,47,0.06)]
-            bg-white
-            shadow-[0_20px_60px_rgba(6,28,47,0.08)]
-            md:rounded-[40px]
-          "
-        >
-          <div className="relative z-10 p-4 md:p-8 lg:p-10">
-            {/* TOP */}
-            <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2
-                    className="
-                      text-[28px]
-                      font-semibold
-                      leading-none
-                      tracking-[-0.05em]
-                      text-[#061C2F]
-                      md:text-[40px]
-                    "
-                  >
-                    Clarity Report
-                  </h2>
-
-                  <div
-                    className="
-                      inline-flex
-                      h-[30px]
-                      items-center
-                      rounded-full
-                      bg-[#EEF2FF]
-                      px-3
-                      text-[11px]
-                      font-semibold
-                      text-[#5B5BD6]
-                    "
-                  >
-                    AI Generated
-                  </div>
-                </div>
-
-                <div
-                  className="
-                    mt-4
-                    flex
-                    flex-wrap
-                    items-center
-                    gap-x-3
-                    gap-y-2
-                    text-[12px]
-                    text-[#6B7280]
-                    md:text-[14px]
-                  "
-                >
-                  <div className="flex items-center gap-2">
-                    <img
-                      src="https://www.google.com/s2/favicons?domain=notion.so&sz=64"
-                      alt=""
-                      className="h-4 w-4 rounded-sm"
-                    />
-
-                    <span>https://notion.so</span>
-                  </div>
-
-                  <span className="hidden text-neutral-300 md:block">•</span>
-
-                  <span>3 screens</span>
-
-                  <span className="hidden text-neutral-300 md:block">•</span>
-
-                  <span>May 19</span>
-                </div>
-              </div>
-
-              <button
-                className="
-                  inline-flex
-                  h-[48px]
-                  w-full
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-full
-                  border
-                  border-[rgba(6,28,47,0.08)]
-                  bg-white
-                  px-5
-                  text-[14px]
-                  font-medium
-                  text-[#061C2F]
-                  transition
-                  hover:bg-[#F8FAFC]
-                  md:w-auto
-                "
-              >
-                <RiDownload2Line size={18} />
-                Download PDF
-              </button>
-            </div>
-
-            {/* SUMMARY */}
-            <div className="mt-4 rounded-[24px] bg-[#FBFCFD] p-0 md:mt-8 md:border md:border-[rgba(6,28,47,0.06)] md:p-6">
-              <h3
-                className="
-                  text-[20px]
-                  font-semibold
-                  tracking-[-0.03em]
-                  text-[#061C2F]
-                  md:text-[24px]
-                "
-              >
-                Summary
-              </h3>
-
-              <div
-                className="
-                  mt-3
-                  rounded-[20px]
-                  border
-                  border-[rgba(6,28,47,0.06)]
-                  bg-white
-                  px-4
-                  py-4
-                  text-[14px]
-                  leading-7
-                  text-[#4B5563]
-                  md:px-5
-                  md:text-[16px]
-                "
-              >
-                Clear visual structure and modern presentation, but weak CTA
-                specificity reduces conversion confidence in the first screen
-                experience.
-              </div>
-
-              <div className="mt-4 grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-                {/* LEFT */}
-                <div
-                  className="
-                    rounded-[24px]
-                    border
-                    border-[rgba(6,28,47,0.06)]
-                    bg-white
-                    p-4
-                    md:p-6
-                  "
-                >
-                  <div className="flex gap-4 md:gap-6">
-                    <div className="relative flex h-[110px] w-[110px] shrink-0 items-center justify-center">
-                      <svg
-                        className="absolute inset-0 -rotate-90"
-                        viewBox="0 0 120 120"
-                      >
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="52"
-                          stroke="#E5E7EB"
-                          strokeWidth="6"
-                          fill="none"
-                        />
-
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="52"
-                          stroke="#FF7A00"
-                          strokeWidth="6"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeDasharray={327}
-                          strokeDashoffset={82}
-                        />
-                      </svg>
-
-                      <div className="text-center">
-                        <p className="text-[12px] font-semibold text-[#061C2F]">
-                          UX Score
-                        </p>
-
-                        <p className="mt-1 text-[34px] font-semibold leading-none text-[#FF7A00]">
-                          75
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="min-w-0">
-                      <p
-                        className="
-                          text-[18px]
-                          font-semibold
-                          leading-[1.2]
-                          tracking-[-0.04em]
-                          text-[#061C2F]
-                          md:text-[24px]
-                        "
-                      >
-                        Above average UX quality with moderate conversion
-                        friction
-                      </p>
-
-                      <div className="mt-5 space-y-1 text-[13px] text-[#6B7280] md:text-[15px]">
-                        <div>
-                          <span className="font-semibold text-[#061C2F]">
-                            Best:
-                          </span>{" "}
-                          Navigation clarity
-                        </div>
-
-                        <div>
-                          <span className="font-semibold text-[#061C2F]">
-                            Risk:
-                          </span>{" "}
-                          Trust positioning
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* RIGHT */}
-                <div
-                  className="
-                    rounded-[24px]
-                    border
-                    border-[rgba(6,28,47,0.06)]
-                    bg-white
-                    p-4
-                    md:p-6
-                  "
-                >
-                  <div className="flex h-full flex-col justify-between">
-                    <div>
-                      <p className="text-[15px] font-semibold text-[#061C2F]">
-                        Conversion Health
-                      </p>
-
-                      <div
-                        className="
-                          mt-3
-                          inline-flex
-                          items-center
-                          gap-2
-                          rounded-full
-                          bg-[#FFF1F1]
-                          px-3
-                          py-1
-                          text-[13px]
-                          font-semibold
-                          text-[#E45454]
-                        "
-                      >
-                        <div className="h-2 w-2 rounded-full bg-[#FF5A5A]" />
-                        Fair
-                      </div>
-                    </div>
-
-                    <p className="mt-5 text-[14px] leading-6 text-[#6B7280] md:text-[15px]">
-                      CTA clarity and trust positioning reduce conversion
-                      confidence.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <LandingReportMockup />
       </section>
 
       {/* FEATURE PILLS */}
@@ -791,7 +560,7 @@ export default function Home() {
               Start free audit
             </Button>
 
-            <Button href="#report" variant="secondary" fullWidth={false} className="px-8">
+            <Button href="/#report" variant="secondary" fullWidth={false} className="px-8">
               View demo
             </Button>
           </div>

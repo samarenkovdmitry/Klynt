@@ -14,12 +14,13 @@ type NavItem = {
 const appNav: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/analyze", label: "Analyze" },
+  { href: "/#report", label: "View demo" },
 ];
 
 const landingNav: NavItem[] = [
   { href: "/", label: "Home", isActive: (p) => p === "/" },
   { href: "/analyze", label: "Analyze" },
-  { href: "#report", label: "View demo" },
+  { href: "/#report", label: "View demo" },
 ];
 
 function navLinkClass(isActive: boolean, variant: HeaderVariant) {

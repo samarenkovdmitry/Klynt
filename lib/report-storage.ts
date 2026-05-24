@@ -1,3 +1,7 @@
+import { DEMO_REPORT_ID, getDemoReportJson } from "./demo-report";
+
+export { DEMO_REPORT_ID } from "./demo-report";
+
 export function saveReport(reportId: string, data: object) {
   const payload = JSON.stringify(data);
   const key = `report-${reportId}`;
@@ -12,6 +16,10 @@ export function saveReport(reportId: string, data: object) {
 }
 
 export function loadReport(reportId: string): string | null {
+  if (reportId === DEMO_REPORT_ID) {
+    return getDemoReportJson();
+  }
+
   const key = `report-${reportId}`;
 
   return sessionStorage.getItem(key) ?? localStorage.getItem(key);
