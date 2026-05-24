@@ -614,48 +614,112 @@ export default function Home() {
 
       {/* CTA */}
       <section className="px-5 py-12 md:px-6 md:py-28">
-        <div className="mx-auto max-w-[860px] text-center">
-          <h2
-            className="
-              text-[42px]
-              font-semibold
-              leading-[0.95]
-              tracking-[-0.06em]
-              text-[#061C2F]
-              md:text-[72px]
-            "
-          >
-            Improve clarity before shipping
-          </h2>
+        <div
+          className="
+            relative
+            mx-auto
+            max-w-[1040px]
+            overflow-hidden
+            rounded-[28px]
+            bg-[#53C2EE]
+            px-5
+            py-12
+            md:rounded-[36px]
+            md:px-10
+            md:py-16
+          "
+        >
+          <LandingHeroPattern />
 
-          <p
-            className="
-              mx-auto
-              mt-6
-              max-w-[620px]
-              text-[17px]
-              leading-8
-              text-[#6B7280]
-              md:text-[19px]
-            "
-          >
-            Analyze your interface, uncover UX friction and improve conversion
-            with AI-powered insights.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button
-              href="/analyze"
-              icon={<RiArrowRightLine size={18} />}
-              fullWidth={false}
-              className="px-8"
+          <div className="relative z-10 mx-auto max-w-[760px] text-center">
+            <h2
+              className="
+                text-[42px]
+                font-semibold
+                leading-[0.95]
+                tracking-[-0.06em]
+                text-[#061C2F]
+                md:text-[72px]
+              "
             >
-              Start free audit
-            </Button>
+              Improve clarity before shipping
+            </h2>
 
-            <Button href={DEMO_REPORT_PATH} variant="secondary" fullWidth={false} className="px-8">
-              View demo
-            </Button>
+            <p
+              className="
+                mx-auto
+                mt-6
+                max-w-[620px]
+                text-[17px]
+                leading-8
+                text-[#061C2F]/72
+                md:text-[19px]
+              "
+            >
+              Analyze your interface, uncover UX friction and improve conversion
+              with AI-powered insights.
+            </p>
+
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button
+                href="/analyze"
+                variant="accent"
+                icon={<RiArrowRightLine size={18} />}
+                fullWidth={false}
+                className="h-[58px] min-h-[58px] px-8 text-[17px]"
+              >
+                Start free audit
+              </Button>
+
+              <Button
+                href={DEMO_REPORT_PATH}
+                variant="secondary"
+                fullWidth={false}
+                className="h-[58px] min-h-[58px] px-8 text-[17px]"
+              >
+                View demo
+              </Button>
+            </div>
+
+            <div
+              className="
+                mt-5
+                flex
+                flex-wrap
+                items-center
+                justify-center
+                gap-x-3
+                gap-y-2
+                text-[12px]
+                text-[#061C2F]/72
+                md:text-[13px]
+              "
+            >
+              <div className="flex items-center gap-2">
+                <RiUserSmileLine
+                  size={16}
+                  className="shrink-0 text-[#0B6FA0]"
+                />
+                <span>No signup required</span>
+              </div>
+
+              <div className="hidden h-1 w-1 rounded-full bg-[#061C2F]/25 md:block" />
+
+              <div className="flex items-center gap-2">
+                <RiFilePdfLine size={16} className="shrink-0 text-[#0B6FA0]" />
+                <span>PDF export</span>
+              </div>
+
+              <div className="hidden h-1 w-1 rounded-full bg-[#061C2F]/25 md:block" />
+
+              <div className="flex items-center gap-2">
+                <RiTimerFlashLine
+                  size={16}
+                  className="shrink-0 text-[#0B6FA0]"
+                />
+                <span>AI-generated in ~15–25 sec</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -663,9 +727,13 @@ export default function Home() {
       {/* FOOTER */}
       <footer className="border-t border-[rgba(6,28,47,0.06)] px-6 py-8">
         <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-5 md:flex-row">
-          <div className="text-[18px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-            Klynt
-          </div>
+          <Link href="/" className="shrink-0" aria-label="Klynt — home">
+            <img
+              src="/klynt-logo-dark.svg"
+              alt=""
+              className="h-[34px] w-auto md:h-[40px]"
+            />
+          </Link>
 
           <div className="flex items-center gap-7 text-[14px] font-medium text-[#8F99A2]">
             <Link href="/privacy" className="transition hover:text-[#061C2F]">
