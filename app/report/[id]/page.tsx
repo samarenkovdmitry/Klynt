@@ -481,11 +481,11 @@ export default function ReportPage() {
                         sm:items-start
                       "
                     >
-                      <div className="relative mx-auto flex h-[185px] w-[185px] shrink-0 items-center justify-center sm:mx-0">
+                      <div className="relative mx-auto flex h-[172px] w-[172px] shrink-0 items-center justify-center sm:mx-0">
                         {(() => {
                           const score = Number(data?.score ?? 0);
-                          const size = 185;
-                          const radius = 78;
+                          const size = 172;
+                          const radius = 73;
                           const strokeWidth = 6;
                           const center = size / 2;
                           const circumference = 2 * Math.PI * radius;
@@ -678,69 +678,57 @@ export default function ReportPage() {
                   </div>
                 </div>
 
-                {/* KEY OBSERVATION */}
-                <div className="mt-6 border-t border-[var(--stroke-light)] pt-6 md:mt-8 md:pt-8">
-                  <div className="flex items-start gap-3.5">
-                    <RiLightbulbLine
-                      size={20}
-                      className="mt-0.5 shrink-0 text-amber-600"
-                    />
+              </div>
 
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
-                        Key observation
-                      </p>
-                      <p
-                        className="
-                          mt-1.5
-                          text-[15px]
-                          leading-[1.55]
-                          font-medium
-                          tracking-[-0.01em]
-                          text-[var(--ink-primary)]
-                          md:text-[16px]
-                        "
-                      >
-                        {data.key_observation ||
-                          "No key observation available."}
-                      </p>
-                    </div>
+              {/* KEY OBSERVATION */}
+              <div className="bg-[#FFFBF5] px-5 py-5 md:px-10 md:py-6">
+                <div className="flex items-start gap-3.5">
+                  <RiLightbulbLine
+                    size={20}
+                    className="mt-0.5 shrink-0 text-amber-600"
+                  />
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
+                      Key observation
+                    </p>
+                    <p
+                      className="
+                        mt-1.5
+                        text-[15px]
+                        leading-[1.55]
+                        font-medium
+                        tracking-[-0.01em]
+                        text-[var(--ink-primary)]
+                        md:text-[16px]
+                      "
+                    >
+                      {data.key_observation ||
+                        "No key observation available."}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          {/* LOWER CONTENT */}
-          <div className="mt-8 space-y-8">
+
             {/* UX ISSUES */}
-            <section>
-              <div className="mb-5 flex items-center justify-between">
+            <div className="border-t border-[var(--stroke-light)]">
+              <div className="flex items-center justify-between px-5 py-6 md:px-10 md:py-8">
                 <h3 className={styles.titleSection}>UX Issues</h3>
 
-                <div className="rounded-full bg-white px-3 py-1 text-[13px] font-medium text-neutral-500">
+                <div className="rounded-full bg-[#F5F7FA] px-3 py-1 text-[13px] font-medium text-neutral-500">
                   {data.issues?.length || 0} findings
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="divide-y divide-[var(--stroke-light)]">
                 {data.issues?.map((issue: any, index: number) => {
                   const impactEntries = getImpactEntries(issue);
 
                   return (
                     <div
                       key={index}
-                      className="
-                        rounded-[28px]
-                        border
-                        border-[var(--stroke-light)]
-                        bg-white
-                        px-5
-                        py-6
-                        transition-all
-                        hover:-translate-y-[1px]
-                        hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)]
-                        md:px-8
-                      "
+                      className="px-5 py-6 md:px-10 md:py-7"
                     >
                       <div className="flex flex-col gap-5 md:flex-row md:gap-6">
                         {/* NUMBER */}
@@ -822,7 +810,7 @@ export default function ReportPage() {
 
                           {/* WHY */}
                           {issue.why && (
-                            <div className="mt-6 border-t border-neutral-100 pt-5">
+                            <div className="mt-6 border-t border-[var(--stroke-light)] pt-5">
                               <p className="text-[14px] font-semibold text-[var(--ink-primary)]">
                                 Why it matters
                               </p>
@@ -838,8 +826,11 @@ export default function ReportPage() {
                   );
                 })}
               </div>
-            </section>
+            </div>
+          </div>
 
+          {/* LOWER CONTENT */}
+          <div className="mt-8 space-y-8">
             {/* IMPROVEMENTS */}
             {data?.suggestions && data.suggestions.length > 0 && (
               <section>
