@@ -16,6 +16,9 @@ import {
 const titleSection =
   "text-[24px] md:text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]";
 
+const mobileClamp =
+  "line-clamp-2 md:line-clamp-none";
+
 const SCORE_SIZE = 176;
 const SCORE_RADIUS = 74;
 const SCORE_STROKE = 6;
@@ -37,9 +40,10 @@ export function LandingReportMockup() {
         max-w-[1040px]
         overflow-hidden
         rounded-[28px]
-        bg-white/75
+        border
+        border-[var(--stroke-light)]
+        bg-white
         shadow-[0_20px_60px_rgba(6,28,47,0.1)]
-        backdrop-blur-xl
         md:rounded-[36px]
       "
       role="img"
@@ -47,17 +51,9 @@ export function LandingReportMockup() {
       onCopy={(event) => event.preventDefault()}
     >
       <div
-        className="
-          pointer-events-none
-          select-none
-          px-4
-          py-4
-          md:px-6
-          md:py-6
-        "
+        className="pointer-events-none select-none"
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
       >
-        <div className="overflow-hidden rounded-[28px] border border-[var(--stroke-light)] bg-white md:rounded-[36px]">
           <div className="flex flex-col gap-6 px-5 py-6 md:px-10 md:py-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <div className="flex flex-nowrap items-center gap-2 md:gap-3">
@@ -79,7 +75,7 @@ export function LandingReportMockup() {
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-[var(--ink-secondary)] md:text-[14px]">
+              <div className="mt-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-[var(--ink-secondary)] md:gap-x-3 md:text-[14px]">
                 <div className="flex min-w-0 items-center gap-2">
                   <img
                     src={`https://www.google.com/s2/favicons?domain_url=${data.url}&sz=32`}
@@ -100,11 +96,11 @@ export function LandingReportMockup() {
             </div>
 
             <div className="flex w-full gap-2 sm:w-auto">
-              <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 py-3 text-[14px] font-medium text-[var(--ink-primary)] md:flex-none md:rounded-full md:px-5">
+              <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 py-2.5 text-[14px] font-medium text-[var(--ink-primary)] md:flex-none md:rounded-full md:px-5 md:py-3">
                 <RiDownload2Line size={18} />
                 <span>Export PDF</span>
               </div>
-              <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 py-3 text-[14px] font-medium text-[var(--ink-primary)] md:flex-none md:rounded-full md:px-5">
+              <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 py-2.5 text-[14px] font-medium text-[var(--ink-primary)] md:flex-none md:rounded-full md:px-5 md:py-3">
                 <RiShareForwardLine size={18} />
                 <span>Share</span>
               </div>
@@ -158,13 +154,17 @@ export function LandingReportMockup() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="text-left text-[16px] font-semibold leading-[1.35] tracking-[-0.03em] text-[var(--ink-primary)] md:text-[24px]">
+                      <p
+                        className={`text-left text-[16px] font-semibold leading-[1.35] tracking-[-0.03em] text-[var(--ink-primary)] md:text-[24px] ${mobileClamp}`}
+                      >
                         {data.verdict}
                       </p>
                       <p className="mt-3 text-left text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400 md:mt-4 md:text-[12px]">
                         Top insight
                       </p>
-                      <p className="mt-1 text-left text-[13px] leading-[1.55] text-[var(--ink-secondary)] md:text-[16px] md:leading-[1.65]">
+                      <p
+                        className={`mt-1 text-left text-[13px] leading-[1.55] text-[var(--ink-secondary)] md:text-[16px] md:leading-[1.65] ${mobileClamp}`}
+                      >
                         {data.summary}
                       </p>
                     </div>
@@ -260,7 +260,9 @@ export function LandingReportMockup() {
                     <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
                       Key observation
                     </p>
-                    <p className="mt-1.5 text-[15px] font-medium leading-[1.55] tracking-[-0.01em] text-[var(--ink-primary)] md:text-[16px]">
+                    <p
+                      className={`mt-1.5 text-[15px] font-medium leading-[1.55] tracking-[-0.01em] text-[var(--ink-primary)] md:text-[16px] ${mobileClamp}`}
+                    >
                       {data.key_observation}
                     </p>
                   </div>
@@ -268,7 +270,6 @@ export function LandingReportMockup() {
               </div>
             </div>
           </div>
-        </div>
       </div>
 
       <div className="absolute inset-0 z-10 cursor-default" aria-hidden />
