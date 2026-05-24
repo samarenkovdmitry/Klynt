@@ -1,11 +1,9 @@
 const CONTACT_TO = "hello@klynt.one";
-const MAX_SCREENSHOT_BYTES = 20 * 1024 * 1024;
 
 type ContactPayload = {
   name: string;
   email: string;
   message: string;
-  screenshot?: File | null;
 };
 
 function isValidEmail(value: string) {
@@ -32,35 +30,13 @@ export function validateContactPayload(payload: ContactPayload) {
     };
   }
 
-  const screenshot = payload.screenshot;
-  if (screenshot && screenshot.size > 0) {
-    if (!screenshot.type.startsWith("image/")) {
-      return {
-        ok: false as const,
-        error: "Screenshot must be a PNG or JPG image.",
-      };
-    }
-
-    if (screenshot.size > MAX_SCREENSHOT_BYTES) {
-      return {
-        ok: false as const,
-        error: "Screenshot must be 20 MB or smaller.",
-      };
-    }
-  }
-
   return {
     ok: true as const,
-    data: { name, email, message, screenshot },
+    data: { name, email, message },
   };
 }
 
-export async function sendContactEmail(payload: {
-  name: string;
-  email: string;
-  message: string;
-  screenshot?: File | null;
-}) {
+export async function sendContactEmail(payload: ContactPayload) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new Error(
@@ -72,17 +48,6 @@ export async function sendContactEmail(payload: {
   const from =
     process.env.CONTACT_FROM_EMAIL?.trim() ||
     "Klynt Contact <onboarding@resend.dev>";
-
-  const attachments: { filename: string; content: string }[] = [];
-  const screenshot = payload.screenshot;
-
-  if (screenshot && screenshot.size > 0) {
-    const buffer = Buffer.from(await screenshot.arrayBuffer());
-    attachments.push({
-      filename: screenshot.name || "screenshot.jpg",
-      content: buffer.toString("base64"),
-    });
-  }
 
   const text = [
     `Name: ${payload.name}`,
@@ -103,7 +68,6 @@ export async function sendContactEmail(payload: {
       reply_to: payload.email,
       subject: `Klynt contact — ${payload.name}`,
       text,
-      ...(attachments.length > 0 ? { attachments } : {}),
     }),
   });
 

@@ -1,11 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import {
-  RiArrowRightLine,
-  RiCheckLine,
-  RiUpload2Line,
-} from "@remixicon/react";
+import { useState } from "react";
+import { RiArrowRightLine } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { FormLabel } from "@/components/ui/FormLabel";
@@ -39,23 +35,9 @@ export default function ContactPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [imageName, setImageName] = useState("");
-  const [imageSize, setImageSize] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadedImage(file);
-    setImageName(file.name);
-    setImageSize(`${(file.size / 1024 / 1024).toFixed(1)} MB`);
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -68,9 +50,6 @@ export default function ContactPage() {
     form.append("name", name);
     form.append("email", email);
     form.append("message", message);
-    if (uploadedImage) {
-      form.append("screenshot", uploadedImage);
-    }
 
     try {
       const res = await fetch("/api/contact", {
@@ -89,12 +68,6 @@ export default function ContactPage() {
       setName("");
       setEmail("");
       setMessage("");
-      setUploadedImage(null);
-      setImageName("");
-      setImageSize("");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
     } catch {
       setError("Failed to send message. Please try again.");
     } finally {
@@ -258,81 +231,6 @@ export default function ContactPage() {
                     disabled={submitting}
                     rows={5}
                     className={`${fieldClass(submitting)} min-h-[140px] resize-y py-4 leading-relaxed`}
-                  />
-                </div>
-
-                <div className="mt-6">
-                  <label className="text-[14px] font-medium text-[#6B7280]">
-                    Upload screenshot{" "}
-                    <span className="font-normal text-[#9AA3AC]">
-                      (optional)
-                    </span>
-                  </label>
-
-                  <div
-                    onClick={() =>
-                      !submitting && fileInputRef.current?.click()
-                    }
-                    className={`
-                      mt-3
-                      cursor-pointer
-                      rounded-[24px]
-                      border-2
-                      border-dashed
-                      transition-all
-                      duration-200
-                      ${
-                        uploadedImage
-                          ? "border-[#BFE7F8] bg-[#F7FCFF]"
-                          : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]"
-                      }
-                      ${submitting ? "cursor-not-allowed opacity-50" : ""}
-                    `}
-                  >
-                    {!uploadedImage ? (
-                      <div className="flex flex-col items-center justify-center px-5 py-8 text-center md:px-6 md:py-10">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F3F9FC] md:h-14 md:w-14">
-                          <RiUpload2Line
-                            size={24}
-                            className="text-[#14A8E8]"
-                          />
-                        </div>
-                        <p className="mt-4 text-[15px] font-medium text-[#061C2F]">
-                          Click to upload screenshot
-                        </p>
-                        <p className="mt-1 text-[13px] text-[#8F99A2] md:text-[14px]">
-                          PNG, JPG up to 20 MB
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between gap-4 px-4 py-4 md:px-6 md:py-5">
-                        <div className="flex min-w-0 items-center gap-4">
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#14A8E8]">
-                            <RiCheckLine size={20} className="text-white" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="truncate text-[14px] font-semibold text-[#061C2F] md:text-[15px]">
-                              {imageName}
-                            </p>
-                            <p className="mt-1 text-[12px] text-[#14A8E8] md:text-[13px]">
-                              {imageSize}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="shrink-0 rounded-full border border-[#D9EAF3] bg-white px-3 py-1.5 text-[12px] font-medium text-[#061C2F] md:text-[13px]">
-                          Replace
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={submitting}
                   />
                 </div>
 

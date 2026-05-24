@@ -13,17 +13,11 @@ export async function POST(req: Request) {
     const name = String(formData.get("name") ?? "");
     const email = String(formData.get("email") ?? "");
     const message = String(formData.get("message") ?? "");
-    const screenshotEntry = formData.get("screenshot");
-    const screenshot =
-      screenshotEntry instanceof File && screenshotEntry.size > 0
-        ? screenshotEntry
-        : null;
 
     const validated = validateContactPayload({
       name,
       email,
       message,
-      screenshot,
     });
 
     if (!validated.ok) {
