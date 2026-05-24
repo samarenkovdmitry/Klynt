@@ -38,9 +38,9 @@ export default function Home() {
   ];
 
   const avatars = [
-    "/avatars/user1.jpg",
-    "/avatars/user2.jpg",
-    "/avatars/user3.jpg",
+    "/avatars/user1.jpeg",
+    "/avatars/user2.jpeg",
+    "/avatars/user3.jpeg",
   ];
 
 
