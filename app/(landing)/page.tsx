@@ -112,7 +112,7 @@ export default function Home() {
               md:text-[21px]
             "
           >
-            Klynt finds confusing UX, weak positioning and conversion friction across your website.
+            Klynt finds confusing UX, weak positioning and conversion friction on landing pages.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center">
