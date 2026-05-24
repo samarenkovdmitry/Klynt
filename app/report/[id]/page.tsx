@@ -86,32 +86,6 @@ export default function ReportPage() {
     return getTierColor(getScoreTier(score));
   }
 
-  function getSeverityIndicator(score: number): {
-    label: string;
-    pillClass: string;
-  } {
-    const tier = getScoreTier(score);
-
-    if (tier === "healthy") {
-      return {
-        label: "Healthy Conversion Flow",
-        pillClass: "bg-emerald-50 text-emerald-600",
-      };
-    }
-
-    if (tier === "medium") {
-      return {
-        label: "Moderate UX Friction",
-        pillClass: "bg-orange-50 text-orange-600",
-      };
-    }
-
-    return {
-      label: "High Conversion Friction",
-      pillClass: "bg-red-50 text-red-600",
-    };
-  }
-
   type ImpactEntry = { key: string; value: number };
 
   function getImpactEntries(item: {
@@ -308,7 +282,7 @@ export default function ReportPage() {
           md:pt-6
         "
       >
-        <div className="mx-auto max-w-[1180px]">
+        <div className="mx-auto max-w-[1040px]">
           {/* HERO */}
           <div
             className="
@@ -573,21 +547,6 @@ export default function ReportPage() {
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        {(() => {
-                          const score = Number(data?.score ?? 0);
-                          const severity = getSeverityIndicator(score);
-
-                          return (
-                            <div className="mb-3 flex justify-center sm:justify-start">
-                              <div
-                                className={`rounded-full px-3 py-1 text-[13px] font-medium ${severity.pillClass}`}
-                              >
-                                {severity.label}
-                              </div>
-                            </div>
-                          );
-                        })()}
-
                         <p
                           className="
                             text-center
@@ -603,7 +562,7 @@ export default function ReportPage() {
                           {data.verdict || "UX assessment complete"}
                         </p>
 
-                        <p className="mt-3 text-center text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-400 sm:mt-3.5 sm:text-left">
+                        <p className="mt-4 text-center text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-400 sm:text-left">
                           Top insight
                         </p>
 
@@ -755,13 +714,7 @@ export default function ReportPage() {
           <div className="mt-8 space-y-8">
             {/* UX ISSUES */}
             <section>
-              <div className="mb-5 flex items-center justify-between">
-                <h3 className={styles.titleSection}>UX Issues</h3>
-
-                <div className="rounded-full bg-white px-3 py-1 text-[13px] font-medium text-neutral-500">
-                  {data.issues?.length || 0} findings
-                </div>
-              </div>
+              <h3 className={`${styles.titleSection} mb-5`}>UX Issues</h3>
 
               <div className="space-y-4">
                 {data.issues?.map((issue: any, index: number) => {
@@ -785,10 +738,10 @@ export default function ReportPage() {
                     >
                       <div className="flex flex-col gap-5 md:flex-row md:gap-6">
                         {/* NUMBER */}
-                        <div className="hidden md:flex items-start justify-center pt-1">
-                          <span className="text-[38px] leading-none font-medium text-neutral-300">
+                        <div className="hidden md:flex items-start justify-center pt-0.5">
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
                             {index + 1}
-                          </span>
+                          </div>
                         </div>
 
                         {/* CONTENT */}
@@ -801,7 +754,7 @@ export default function ReportPage() {
                           >
                             <div className="min-w-0 flex-1">
                               <div className="mb-3 flex items-center gap-3 md:hidden">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
                                   {index + 1}
                                 </div>
                               </div>
@@ -868,7 +821,7 @@ export default function ReportPage() {
                                 Why it matters
                               </p>
 
-                              <p className="mt-2 text-[15px] leading-7 text-[var(--ink-secondary)]">
+                              <p className="mt-1 text-[15px] leading-7 text-[var(--ink-secondary)]">
                                 {issue.why}
                               </p>
                             </div>
@@ -884,15 +837,9 @@ export default function ReportPage() {
             {/* IMPROVEMENTS */}
             {data?.suggestions && data.suggestions.length > 0 && (
               <section>
-                <div className="mb-5 flex items-center justify-between gap-3">
-                  <h3 className={`${styles.titleSection} min-w-0 shrink`}>
+                <h3 className={`${styles.titleSection} mb-5 min-w-0 shrink`}>
                     Suggested Improvements
                   </h3>
-
-                  <div className="max-w-[46%] shrink-0 truncate rounded-full bg-white px-3 py-1 text-[13px] font-medium leading-none text-neutral-500 sm:max-w-none">
-                    {data.suggestions.length} recommendations
-                  </div>
-                </div>
 
                 <div className="space-y-4">
                   {data.suggestions.map((item: any, index: number) => {
@@ -917,10 +864,10 @@ export default function ReportPage() {
                       >
                         <div className="flex flex-col gap-5 md:flex-row md:gap-6">
                           {/* NUMBER */}
-                          <div className="hidden md:flex items-start justify-center pt-1">
-                            <span className="text-[38px] leading-none font-medium text-neutral-300">
+                          <div className="hidden md:flex items-start justify-center pt-0.5">
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
                               {index + 1}
-                            </span>
+                            </div>
                           </div>
 
                           {/* CONTENT */}
@@ -933,7 +880,7 @@ export default function ReportPage() {
                             >
                               <div className="min-w-0 flex-1">
                                 <div className="mb-3 flex items-center gap-3 md:hidden">
-                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5F7FA] text-[14px] font-semibold text-neutral-500">
+                                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
                                     {index + 1}
                                   </div>
                                 </div>
@@ -987,7 +934,7 @@ export default function ReportPage() {
                                   Why it works
                                 </p>
 
-                                <p className="mt-2 text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                <p className="mt-1 text-[15px] leading-7 text-[var(--ink-secondary)]">
                                   {item.why}
                                 </p>
                               </div>
@@ -1004,13 +951,7 @@ export default function ReportPage() {
             {/* COPY REFINEMENT */}
             {data?.copy && data.copy.length > 0 && (
               <section>
-                <div className="mb-5 flex items-center justify-between">
-                  <h3 className={styles.titleSection}>Copy Refinement</h3>
-
-                  <div className="rounded-full bg-white px-3 py-1 text-[13px] font-medium text-neutral-500">
-                    AI rewrites
-                  </div>
-                </div>
+                <h3 className={`${styles.titleSection} mb-5`}>Copy Refinement</h3>
 
                 <div className="space-y-4">
                   {data.copy.map((item: any, index: number) => {
@@ -1035,10 +976,10 @@ export default function ReportPage() {
                       >
                         <div className="flex flex-col gap-5 md:flex-row md:gap-6">
                           {/* NUMBER */}
-                          <div className="hidden md:flex items-start justify-center pt-1">
-                            <span className="text-[38px] leading-none font-medium text-neutral-300">
+                          <div className="hidden md:flex items-start justify-center pt-0.5">
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
                               {index + 1}
-                            </span>
+                            </div>
                           </div>
 
                           {/* CONTENT */}
@@ -1220,7 +1161,7 @@ export default function ReportPage() {
                                   Why it works
                                 </p>
 
-                                <p className="mt-2 text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                <p className="mt-1 text-[15px] leading-7 text-[var(--ink-secondary)]">
                                   {item.why}
                                 </p>
                               </div>
