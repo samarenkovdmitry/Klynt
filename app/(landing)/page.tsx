@@ -15,6 +15,7 @@ import {
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LandingReportMockup } from "@/components/LandingReportMockup";
+import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 export default function Home() {
   const pills = [
@@ -560,7 +561,7 @@ export default function Home() {
               Start free audit
             </Button>
 
-            <Button href="/#report" variant="secondary" fullWidth={false} className="px-8">
+            <Button href={DEMO_REPORT_PATH} variant="secondary" fullWidth={false} className="px-8">
               View demo
             </Button>
           </div>

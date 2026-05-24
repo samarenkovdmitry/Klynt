@@ -77,12 +77,12 @@ export function LandingReportMockup() {
       className="
         relative
         mx-auto
-        max-w-[960px]
+        max-w-[1040px]
         overflow-hidden
         rounded-[28px]
         border
-        border-[rgba(6,28,47,0.08)]
-        bg-white
+        border-[var(--stroke-light)]
+        bg-[#F5F7FA]
         shadow-[0_20px_60px_rgba(6,28,47,0.1)]
         md:rounded-[36px]
       "
@@ -90,29 +90,18 @@ export function LandingReportMockup() {
       aria-label="Demo clarity report preview"
       onCopy={(event) => event.preventDefault()}
     >
-      {/* Browser chrome */}
-      <div className="flex items-center gap-2 border-b border-[var(--stroke-light)] bg-[#F8FAFC] px-4 py-3 md:px-5">
-        <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#28CA41]" />
-        <div className="ml-2 hidden flex-1 rounded-md bg-white px-3 py-1 text-[11px] text-neutral-400 sm:block">
-          klynt.app/report/demo
-        </div>
-      </div>
-
       <div
         className="
           pointer-events-none
-          max-h-[520px]
+          h-[760px]
           select-none
           overflow-hidden
-          bg-[#F5F7FA]
-          px-3
+          px-4
           pb-0
-          pt-3
-          md:max-h-[580px]
-          md:px-4
-          md:pt-4
+          pt-4
+          md:h-[820px]
+          md:px-6
+          md:pt-6
         "
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
       >
@@ -310,7 +299,7 @@ export function LandingReportMockup() {
                   </div>
                 </div>
 
-                <div className="bg-[#FFFBF5] px-5 py-5 md:px-10 md:py-6">
+                <div className="mt-6 border-t border-[var(--stroke-light)] pt-6 md:mt-8 md:pt-8">
                   <div className="flex items-start gap-3.5">
                     <RiLightbulbLine
                       size={20}

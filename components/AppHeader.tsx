@@ -11,16 +11,18 @@ type NavItem = {
   isActive?: (pathname: string) => boolean;
 };
 
+import { DEMO_REPORT_PATH } from "@/lib/demo-report";
+
 const appNav: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/analyze", label: "Analyze" },
-  { href: "/#report", label: "View demo" },
+  { href: DEMO_REPORT_PATH, label: "View demo" },
 ];
 
 const landingNav: NavItem[] = [
   { href: "/", label: "Home", isActive: (p) => p === "/" },
   { href: "/analyze", label: "Analyze" },
-  { href: "/#report", label: "View demo" },
+  { href: DEMO_REPORT_PATH, label: "View demo" },
 ];
 
 function navLinkClass(isActive: boolean, variant: HeaderVariant) {

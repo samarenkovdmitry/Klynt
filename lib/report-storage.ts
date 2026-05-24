@@ -1,6 +1,6 @@
-import { DEMO_REPORT_ID, getDemoReportJson } from "./demo-report";
+import { DEMO_REPORT_ID, getDemoReportJson, DEMO_REPORT_PATH } from "./demo-report";
 
-export { DEMO_REPORT_ID } from "./demo-report";
+export { DEMO_REPORT_ID, DEMO_REPORT_PATH } from "./demo-report";
 
 export function saveReport(reportId: string, data: object) {
   const payload = JSON.stringify(data);
