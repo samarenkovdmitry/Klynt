@@ -336,7 +336,7 @@ export default function Analyze() {
               <div>
                 <FormLabel>Website URL</FormLabel>
 
-                <div className="relative">
+                <div className="relative mt-3">
                   <input
                     type="text"
                     value={url}
@@ -349,6 +349,7 @@ export default function Analyze() {
                       disabled: loading,
                       error: Boolean(urlError),
                       withClearButton: url.length > 0,
+                      withMargin: false,
                     })} h-[54px] md:h-[58px]`}
                   />
 
@@ -359,12 +360,10 @@ export default function Analyze() {
                       aria-label="Clear URL"
                       className="
                         absolute
+                        inset-y-0
                         right-4
-                        top-1/2
                         flex
-                        h-8
                         w-8
-                        -translate-y-1/2
                         items-center
                         justify-center
                         rounded-full
