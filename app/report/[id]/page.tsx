@@ -255,42 +255,30 @@ export default function ReportPage() {
           {/* HERO */}
           <div
             className="
-              relative
               overflow-hidden
               rounded-[28px]
               border
-              border-[rgba(6,28,47,0.05)]
+              border-[var(--stroke-light)]
               bg-white
-              px-5
-              py-6
-              shadow-[0_10px_40px_rgba(0,0,0,0.03)]
               md:rounded-[36px]
-              md:px-10
-              md:py-8
             "
           >
-            {/* TOP LIGHT */}
+
+            {/* HEADER */}
             <div
               className="
-                pointer-events-none
-                absolute
-                inset-0
-                bg-[radial-gradient(circle_at_top,#F7FBFF_0%,transparent_72%)]
+                flex
+                flex-col
+                gap-6
+                px-5
+                py-6
+                md:px-10
+                md:py-8
+                lg:flex-row
+                lg:items-start
+                lg:justify-between
               "
-            />
-
-            <div className="relative z-10">
-              {/* HEADER */}
-              <div
-                className="
-                  flex
-                  flex-col
-                  gap-6
-                  lg:flex-row
-                  lg:items-start
-                  lg:justify-between
-                "
-              >
+            >
                 {/* LEFT */}
                 <div className="min-w-0">
                   {/* TITLE */}
@@ -384,16 +372,16 @@ export default function ReportPage() {
                       gap-2
                       rounded-2xl
                       border
-                      border-[rgba(6,28,47,0.08)]
+                      border-[var(--stroke-light)]
                       bg-white
                       px-4
                       py-3
                       text-[14px]
                       font-medium
                       text-[var(--ink-primary)]
-                      transition-all
+                      transition-colors
                       duration-200
-                      hover:border-[rgba(20,168,232,0.18)]
+                      hover:border-[rgba(20,168,232,0.25)]
                       hover:bg-[#F8FBFF]
                       md:flex-none
                       md:rounded-full
@@ -414,16 +402,16 @@ export default function ReportPage() {
                       gap-2
                       rounded-2xl
                       border
-                      border-[rgba(6,28,47,0.08)]
+                      border-[var(--stroke-light)]
                       bg-white
                       px-4
                       py-3
                       text-[14px]
                       font-medium
                       text-[var(--ink-primary)]
-                      transition-all
+                      transition-colors
                       duration-200
-                      hover:border-[rgba(20,168,232,0.18)]
+                      hover:border-[rgba(20,168,232,0.25)]
                       hover:bg-[#F8FBFF]
                       md:flex-none
                       md:rounded-full
@@ -437,35 +425,22 @@ export default function ReportPage() {
                 </div>
               </div>
 
-              {/* SUMMARY */}
-              <div className="mt-8">
+            {/* SUMMARY */}
+            <div className="border-t border-[var(--stroke-light)]">
+              <div className="px-5 py-6 md:px-10 md:py-8">
                 <h2 className={styles.titleSection}>Summary</h2>
 
                 <div
                   className="
                     mt-5
-                    grid
-                    items-stretch
-                    gap-4
+                    lg:grid
                     lg:grid-cols-[1.6fr_0.7fr]
+                    lg:divide-x
+                    lg:divide-[var(--stroke-light)]
                   "
                 >
-                  {/* SCORE CARD */}
-                  <div
-                    className="
-                      flex
-                      h-full
-                      flex-col
-                      rounded-[28px]
-                      border
-                      border-neutral-200
-                      bg-white
-                      px-5
-                      py-6
-                      md:px-7
-                    "
-                  >
-                    {/* Score + verdict + top insight */}
+                  {/* SCORE + VERDICT */}
+                  <div className="pb-6 lg:pr-8 lg:pb-0">
                     <div
                       className="
                         flex
@@ -561,98 +536,10 @@ export default function ReportPage() {
                         </p>
                       </div>
                     </div>
-
-                    {/* Key observation — grows to match health card height */}
-                    <div
-                      className="
-                        mt-6
-                        flex
-                        min-h-0
-                        flex-1
-                        flex-col
-                      "
-                    >
-                      <div
-                        className="
-                          flex
-                          h-full
-                          flex-1
-                          flex-col
-                          justify-center
-                          rounded-[20px]
-                          border
-                          border-amber-200/80
-                          bg-gradient-to-br
-                          from-amber-50
-                          to-[#FFFBF5]
-                          px-4
-                          py-4
-                          md:px-5
-                          md:py-4
-                        "
-                      >
-                        <div className="flex items-start gap-3.5">
-                          <div
-                            className="
-                              mt-0.5
-                              flex
-                              h-9
-                              w-9
-                              shrink-0
-                              items-center
-                              justify-center
-                              rounded-full
-                              border
-                              border-amber-200
-                              bg-white
-                            "
-                          >
-                            <RiLightbulbLine
-                              size={17}
-                              className="text-amber-600"
-                            />
-                          </div>
-
-                          <div className="min-w-0 flex-1">
-                            <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
-                              Key observation
-                            </p>
-                            <p
-                              className="
-                                mt-1.5
-                                text-[15px]
-                                leading-[1.55]
-                                font-medium
-                                tracking-[-0.01em]
-                                text-[var(--ink-primary)]
-                                md:text-[16px]
-                              "
-                            >
-                              {data.key_observation ||
-                                "No key observation available."}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
 
-                  {/* HEALTH CARD */}
-                  <div
-                    className="
-                      flex
-                      h-full
-                      flex-col
-                      rounded-[28px]
-                      border
-                      border-neutral-200
-                      bg-white
-                      px-5
-                      py-5
-                      md:px-6
-                      md:py-5
-                    "
-                  >
+                  {/* CONVERSION HEALTH */}
+                  <div className="border-t border-[var(--stroke-light)] pt-6 lg:border-t-0 lg:pl-8 lg:pt-0">
                     <div className="flex items-start justify-between gap-3">
                       <p className="text-[14px] font-semibold text-[var(--ink-primary)]">
                         Conversion Health
@@ -666,8 +553,7 @@ export default function ReportPage() {
                       </div>
                     </div>
 
-                    {/* QUICK STATS */}
-                    <div className="mt-3 flex min-h-0 flex-1 flex-col justify-center space-y-2">
+                    <div className="mt-3 space-y-2">
                       {(
                         [
                           ["Clarity", data.breakdown?.clarity],
@@ -701,8 +587,7 @@ export default function ReportPage() {
                       })}
                     </div>
 
-                    {/* CONFIDENCE */}
-                    <div className="mt-auto border-t border-neutral-100 pt-3.5">
+                    <div className="mt-4 border-t border-[var(--stroke-light)] pt-4">
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-[12px] font-medium text-neutral-500">
                           AI confidence
@@ -734,10 +619,39 @@ export default function ReportPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* KEY OBSERVATION */}
+                <div className="mt-6 border-t border-[var(--stroke-light)] pt-6 md:mt-8 md:pt-8">
+                  <div className="flex items-start gap-3.5">
+                    <RiLightbulbLine
+                      size={20}
+                      className="mt-0.5 shrink-0 text-amber-600"
+                    />
+
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
+                        Key observation
+                      </p>
+                      <p
+                        className="
+                          mt-1.5
+                          text-[15px]
+                          leading-[1.55]
+                          font-medium
+                          tracking-[-0.01em]
+                          text-[var(--ink-primary)]
+                          md:text-[16px]
+                        "
+                      >
+                        {data.key_observation ||
+                          "No key observation available."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
           {/* LOWER CONTENT */}
           <div className="mt-8 space-y-8">
             {/* UX ISSUES */}
