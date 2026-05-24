@@ -11,72 +11,60 @@ export function LandingHeroPattern() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Light cyan layer — bottom-left */}
+        {/* Top-left */}
         <path
-          d="M-80 520 L420 900 L-80 900 Z"
+          d="M0 26 Q0 0 26 0 L292 0 L0 278 Z"
           fill="#D4F2FC"
-          fillOpacity={0.55}
+          fillOpacity={0.52}
         />
+
+        {/* Top-right */}
         <path
-          d="M0 680 L280 900 L0 900 Z"
+          d="M1414 0 Q1440 0 1440 26 L1440 268 L1162 0 Z"
+          fill="#B8E8F8"
+          fillOpacity={0.48}
+        />
+
+        {/* Top-center — points down */}
+        <path
+          d="M608 0 L832 0 L720 76 Q718 80 716 76 Z"
+          fill="#FFFFFF"
+          fillOpacity={0.1}
+        />
+
+        {/* Left — points right */}
+        <path
+          d="M0 396 Q0 378 14 382 L98 450 L14 518 Q0 522 0 504 L0 396 Z"
+          fill="#0F7FB3"
+          fillOpacity={0.11}
+        />
+
+        {/* Right — points left */}
+        <path
+          d="M1440 384 Q1440 366 1426 370 L1342 448 L1426 526 Q1440 530 1440 512 L1440 384 Z"
           fill="#FFFFFF"
           fillOpacity={0.12}
         />
 
-        {/* Deep teal parallelogram — left edge */}
+        {/* Bottom-left */}
         <path
-          d="M-40 120 L220 120 L120 420 L-140 420 Z"
+          d="M0 874 Q0 900 26 900 L348 900 L0 598 Z"
           fill="#0B6FA0"
-          fillOpacity={0.14}
-        />
-
-        {/* Large triangle — top-right */}
-        <path
-          d="M920 0 L1440 0 L1440 380 L1080 0 Z"
-          fill="#B8E8F8"
-          fillOpacity={0.45}
-        />
-
-        {/* Parallelogram — top-right */}
-        <path
-          d="M1120 -40 L1520 180 L1380 420 L980 200 Z"
-          fill="#0F7FB3"
           fillOpacity={0.1}
         />
 
-        {/* Diagonal slash — center-right */}
+        {/* Bottom-right */}
         <path
-          d="M1180 280 L1520 520 L1420 680 L1080 440 Z"
-          fill="#FFFFFF"
-          fillOpacity={0.14}
-        />
-
-        {/* Triangle — bottom-right */}
-        <path
-          d="M1320 620 L1520 900 L1120 900 Z"
-          fill="#0B6FA0"
-          fillOpacity={0.08}
-        />
-
-        {/* Small accent — mid left */}
-        <path
-          d="M180 240 L320 240 L250 380 Z"
-          fill="#061C2F"
-          fillOpacity={0.05}
-        />
-
-        {/* Parallelogram — bottom center */}
-        <path
-          d="M520 720 L880 900 L760 900 L400 720 Z"
+          d="M1440 874 Q1440 900 1414 900 L1068 900 L1440 588 Z"
           fill="#D4F2FC"
-          fillOpacity={0.35}
+          fillOpacity={0.42}
         />
 
-        {/* Thin diagonal cut — upper center */}
+        {/* Bottom-center — points up */}
         <path
-          d="M640 80 L920 80 L780 220 L500 220 Z"
-          fill="#FFFFFF"
-          fillOpacity={0.08}
+          d="M564 900 L876 900 L720 824 Q718 820 716 824 Z"
+          fill="#B8E8F8"
+          fillOpacity={0.28}
         />
       </svg>
     </div>
