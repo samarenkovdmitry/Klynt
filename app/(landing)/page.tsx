@@ -490,24 +490,34 @@ export default function Home() {
             "
           >
             <div className="flex flex-col items-center text-center">
-              <div className="flex -space-x-3">
+              <div className="relative z-10 flex -space-x-3">
                 {avatars.map((src, i) => (
                   <div
-                    key={i}
+                    key={src}
                     className="
+                      relative
                       h-12
                       w-12
+                      shrink-0
                       overflow-hidden
                       rounded-full
                       border-2
                       border-white
-                      bg-gray-100
+                      bg-[#E8F0F5]
+                      ring-1
+                      ring-[rgba(6,28,47,0.06)]
                     "
+                    style={{ zIndex: avatars.length - i }}
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src}
                       alt=""
-                      className="h-full w-full object-cover"
+                      width={48}
+                      height={48}
+                      className="block h-full w-full object-cover"
+                      loading="eager"
+                      decoding="async"
                     />
                   </div>
                 ))}
