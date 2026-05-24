@@ -95,20 +95,20 @@ export default function ReportPage() {
     if (tier === "healthy") {
       return {
         label: "Healthy Conversion Flow",
-        pillClass: "border-amber-200/90 bg-amber-50 text-amber-800",
+        pillClass: "bg-emerald-50 text-emerald-600",
       };
     }
 
     if (tier === "medium") {
       return {
         label: "Moderate UX Friction",
-        pillClass: "border-orange-200/90 bg-orange-50 text-orange-700",
+        pillClass: "bg-orange-50 text-orange-600",
       };
     }
 
     return {
       label: "High Conversion Friction",
-      pillClass: "border-red-200/90 bg-red-50 text-red-700",
+      pillClass: "bg-red-50 text-red-600",
     };
   }
 
@@ -355,23 +355,15 @@ export default function ReportPage() {
 
                     <div
                       className="
-                        inline-flex
-                        items-center
                         rounded-full
                         border
-                        border-[#B8D4F8]/80
-                        bg-gradient-to-r
-                        from-[#EEF5FF]
-                        via-[#F4F8FF]
-                        to-[#E3F2FF]
+                        border-[#DCE7F8]
+                        bg-[#F4F8FF]
                         px-3
                         py-1
-                        text-[11px]
+                        text-[12px]
                         font-semibold
-                        uppercase
-                        tracking-[0.06em]
-                        text-[#2563EB]
-                        shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]
+                        text-[#2F6FED]
                       "
                     >
                       AI Generated
@@ -588,19 +580,7 @@ export default function ReportPage() {
                           return (
                             <div className="mb-3 flex justify-center sm:justify-start">
                               <div
-                                className={`
-                                  inline-flex
-                                  items-center
-                                  rounded-full
-                                  border
-                                  px-2.5
-                                  py-1
-                                  text-[10px]
-                                  font-semibold
-                                  uppercase
-                                  tracking-[0.08em]
-                                  ${severity.pillClass}
-                                `}
+                                className={`rounded-full px-3 py-1 text-[13px] font-medium ${severity.pillClass}`}
                               >
                                 {severity.label}
                               </div>
