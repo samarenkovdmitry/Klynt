@@ -117,7 +117,7 @@ export function AppHeader({ variant = "app" }: AppHeaderProps) {
           >
             <img
               src="/klynt-logo-dark.svg"
-              alt=""
+              alt="Klynt"
               className="h-[34px] w-auto shrink-0 md:h-[40px]"
             />
             <span className={subtitleClass}>UX Clarity Analyzer</span>

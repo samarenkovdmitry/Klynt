@@ -729,7 +729,7 @@ export default function Home() {
           <Link href="/" className="shrink-0" aria-label="Klynt — home">
             <img
               src="/klynt-logo-dark.svg"
-              alt=""
+              alt="Klynt"
               className="h-[34px] w-auto md:h-[40px]"
             />
           </Link>
