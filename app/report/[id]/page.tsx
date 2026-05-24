@@ -481,12 +481,12 @@ export default function ReportPage() {
                         sm:items-start
                       "
                     >
-                      <div className="relative mx-auto flex h-[148px] w-[148px] shrink-0 items-center justify-center sm:mx-0">
+                      <div className="relative mx-auto flex h-[185px] w-[185px] shrink-0 items-center justify-center sm:mx-0">
                         {(() => {
                           const score = Number(data?.score ?? 0);
-                          const radius = 62;
+                          const size = 185;
+                          const radius = 78;
                           const strokeWidth = 6;
-                          const size = 148;
                           const center = size / 2;
                           const circumference = 2 * Math.PI * radius;
                           const progress =
@@ -528,7 +528,14 @@ export default function ReportPage() {
                                   UX Score
                                 </p>
                                 <p
-                                  className="text-[52px] leading-none font-semibold md:text-[56px]"
+                                  className="
+                                    text-[44px]
+                                    leading-none
+                                    font-semibold
+                                    tracking-[-0.04em]
+                                    md:text-[48px]
+                                    md:tracking-[-0.06em]
+                                  "
                                   style={{ color: scoreColor }}
                                 >
                                   {score}
