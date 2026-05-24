@@ -34,95 +34,93 @@ export function LandingHeroPattern() {
           </filter>
         </defs>
 
-        {/* Staggered horizontal bands — motion blur on X only */}
         <g filter="url(#hero-motion-blur)">
           <rect
             x={-120}
-            y={48}
+            y={32}
             width={820}
-            height={128}
+            height={192}
             rx={4}
             fill="#D4F2FC"
-            fillOpacity={0.9}
-          />
-          <rect
-            x={520}
-            y={148}
-            width={1040}
-            height={112}
-            rx={4}
-            fill="#FFFFFF"
             fillOpacity={0.42}
           />
           <rect
+            x={520}
+            y={152}
+            width={1040}
+            height={168}
+            rx={4}
+            fill="#FFFFFF"
+            fillOpacity={0.2}
+          />
+          <rect
             x={-80}
-            y={248}
+            y={272}
             width={760}
-            height={120}
+            height={180}
             fill="#B8E8F8"
-            fillOpacity={0.85}
+            fillOpacity={0.38}
           />
           <rect
             x={420}
-            y={358}
+            y={392}
             width={1120}
-            height={136}
+            height={204}
             rx={4}
             fill="#3AA8D8"
-            fillOpacity={0.55}
+            fillOpacity={0.26}
           />
           <rect
             x={-100}
-            y={488}
+            y={528}
             width={680}
-            height={108}
+            height={162}
             fill="#E8F6FC"
-            fillOpacity={0.75}
+            fillOpacity={0.34}
           />
           <rect
             x={640}
-            y={588}
+            y={648}
             width={920}
-            height={124}
+            height={186}
             rx={4}
             fill="#0B6FA0"
-            fillOpacity={0.22}
+            fillOpacity={0.1}
           />
           <rect
             x={80}
-            y={708}
+            y={768}
             width={880}
-            height={118}
+            height={177}
             fill="#FFFFFF"
-            fillOpacity={0.28}
+            fillOpacity={0.14}
           />
         </g>
 
-        {/* Soft accent streaks — lighter blur for depth */}
         <g filter="url(#hero-motion-blur-soft)">
           <rect
             x={280}
-            y={108}
+            y={96}
             width={640}
-            height={72}
+            height={108}
             fill="#0F7FB3"
-            fillOpacity={0.12}
+            fillOpacity={0.07}
           />
           <rect
             x={-60}
-            y={428}
+            y={448}
             width={520}
-            height={64}
+            height={96}
             fill="#061C2F"
-            fillOpacity={0.06}
+            fillOpacity={0.04}
           />
           <rect
             x={900}
-            y={668}
+            y={688}
             width={620}
-            height={80}
+            height={120}
             fill="#D4F2FC"
-            fillOpacity={0.5}
+            fillOpacity={0.22}
           />
         </g>
       </svg>
