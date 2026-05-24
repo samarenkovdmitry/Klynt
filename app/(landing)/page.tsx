@@ -663,7 +663,6 @@ export default function Home() {
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button
                 href="/analyze"
-                variant="accent"
                 icon={<RiArrowRightLine size={18} />}
                 fullWidth={false}
                 className="h-[58px] min-h-[58px] px-8 text-[17px]"
@@ -675,7 +674,7 @@ export default function Home() {
                 href={DEMO_REPORT_PATH}
                 variant="secondary"
                 fullWidth={false}
-                className="h-[58px] min-h-[58px] px-8 text-[17px]"
+                className="h-[58px] min-h-[58px] border-0 px-8 text-[17px]"
               >
                 View demo
               </Button>
