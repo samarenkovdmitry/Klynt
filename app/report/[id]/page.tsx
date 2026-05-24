@@ -739,7 +739,7 @@ export default function ReportPage() {
                       <div className="flex flex-col gap-5 md:flex-row md:gap-6">
                         {/* NUMBER */}
                         <div className="hidden md:flex items-start justify-center pt-0.5">
-                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[15px] font-semibold text-neutral-400">
                             {index + 1}
                           </div>
                         </div>
@@ -754,7 +754,7 @@ export default function ReportPage() {
                           >
                             <div className="min-w-0 flex-1">
                               <div className="mb-3 flex items-center gap-3 md:hidden">
-                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F7FA] text-[15px] font-semibold text-neutral-400">
                                   {index + 1}
                                 </div>
                               </div>
@@ -821,7 +821,7 @@ export default function ReportPage() {
                                 Why it matters
                               </p>
 
-                              <p className="mt-1 text-[15px] leading-7 text-[var(--ink-secondary)]">
+                              <p className="mt-1 text-[15px] leading-6 text-[var(--ink-secondary)]">
                                 {issue.why}
                               </p>
                             </div>
@@ -865,7 +865,7 @@ export default function ReportPage() {
                         <div className="flex flex-col gap-5 md:flex-row md:gap-6">
                           {/* NUMBER */}
                           <div className="hidden md:flex items-start justify-center pt-0.5">
-                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[15px] font-semibold text-neutral-400">
                               {index + 1}
                             </div>
                           </div>
@@ -880,7 +880,7 @@ export default function ReportPage() {
                             >
                               <div className="min-w-0 flex-1">
                                 <div className="mb-3 flex items-center gap-3 md:hidden">
-                                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
+                                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F7FA] text-[15px] font-semibold text-neutral-400">
                                     {index + 1}
                                   </div>
                                 </div>
@@ -934,7 +934,7 @@ export default function ReportPage() {
                                   Why it works
                                 </p>
 
-                                <p className="mt-1 text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                <p className="mt-1 text-[15px] leading-6 text-[var(--ink-secondary)]">
                                   {item.why}
                                 </p>
                               </div>
@@ -977,7 +977,7 @@ export default function ReportPage() {
                         <div className="flex flex-col gap-5 md:flex-row md:gap-6">
                           {/* NUMBER */}
                           <div className="hidden md:flex items-start justify-center pt-0.5">
-                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[12px] font-semibold text-neutral-400">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F5F7FA] text-[15px] font-semibold text-neutral-400">
                               {index + 1}
                             </div>
                           </div>
@@ -991,6 +991,12 @@ export default function ReportPage() {
                               "
                             >
                               <div className="min-w-0 flex-1">
+                                <div className="mb-3 flex items-center gap-3 md:hidden">
+                                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F7FA] text-[15px] font-semibold text-neutral-400">
+                                    {index + 1}
+                                  </div>
+                                </div>
+
                                 <p
                                   className="
                                     text-[20px]
@@ -1161,7 +1167,7 @@ export default function ReportPage() {
                                   Why it works
                                 </p>
 
-                                <p className="mt-1 text-[15px] leading-7 text-[var(--ink-secondary)]">
+                                <p className="mt-1 text-[15px] leading-6 text-[var(--ink-secondary)]">
                                   {item.why}
                                 </p>
                               </div>
