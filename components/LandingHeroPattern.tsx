@@ -37,90 +37,74 @@ export function LandingHeroPattern() {
         <g filter="url(#hero-motion-blur)">
           <rect
             x={-120}
-            y={32}
+            y={0}
             width={820}
-            height={192}
+            height={384}
             rx={4}
             fill="#D4F2FC"
-            fillOpacity={0.42}
+            fillOpacity={0.28}
           />
           <rect
             x={520}
-            y={152}
+            y={120}
             width={1040}
-            height={168}
+            height={336}
             rx={4}
             fill="#FFFFFF"
-            fillOpacity={0.2}
+            fillOpacity={0.12}
           />
           <rect
             x={-80}
-            y={272}
+            y={260}
             width={760}
-            height={180}
+            height={360}
             fill="#B8E8F8"
-            fillOpacity={0.38}
+            fillOpacity={0.25}
           />
           <rect
             x={420}
-            y={392}
+            y={400}
             width={1120}
-            height={204}
+            height={408}
             rx={4}
             fill="#3AA8D8"
-            fillOpacity={0.26}
+            fillOpacity={0.17}
           />
           <rect
             x={-100}
-            y={528}
+            y={560}
             width={680}
-            height={162}
+            height={324}
             fill="#E8F6FC"
-            fillOpacity={0.34}
+            fillOpacity={0.22}
           />
           <rect
             x={640}
-            y={648}
+            y={680}
             width={920}
-            height={186}
+            height={372}
             rx={4}
             fill="#0B6FA0"
-            fillOpacity={0.1}
-          />
-          <rect
-            x={80}
-            y={768}
-            width={880}
-            height={177}
-            fill="#FFFFFF"
-            fillOpacity={0.14}
+            fillOpacity={0.06}
           />
         </g>
 
         <g filter="url(#hero-motion-blur-soft)">
           <rect
             x={280}
-            y={96}
+            y={64}
             width={640}
-            height={108}
+            height={216}
             fill="#0F7FB3"
-            fillOpacity={0.07}
-          />
-          <rect
-            x={-60}
-            y={448}
-            width={520}
-            height={96}
-            fill="#061C2F"
-            fillOpacity={0.04}
+            fillOpacity={0.045}
           />
           <rect
             x={900}
-            y={688}
+            y={520}
             width={620}
-            height={120}
+            height={240}
             fill="#D4F2FC"
-            fillOpacity={0.22}
+            fillOpacity={0.14}
           />
         </g>
       </svg>

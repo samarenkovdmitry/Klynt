@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 
-const HERO_BG = "#53C2EE";
 const APP_CHROME = "#FFFFFF";
 
 export function LandingBodyColor() {
@@ -13,9 +12,9 @@ export function LandingBodyColor() {
       'meta[name="theme-color"]'
     ) as HTMLMetaElement | null;
 
-    html.style.backgroundColor = HERO_BG;
-    body.style.backgroundColor = HERO_BG;
-    themeMeta?.setAttribute("content", HERO_BG);
+    html.style.backgroundColor = "transparent";
+    body.style.backgroundColor = "transparent";
+    themeMeta?.setAttribute("content", "transparent");
 
     return () => {
       html.style.backgroundColor = "";

@@ -76,7 +76,6 @@ export default function Home() {
           overflow-hidden
           bg-[#53C2EE]
           pb-[120px]
-          pt-[env(safe-area-inset-top,0px)]
           md:pb-[180px]
         "
       >

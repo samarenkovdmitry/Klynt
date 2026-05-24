@@ -40,8 +40,6 @@ export function LandingReportMockup() {
         max-w-[1040px]
         overflow-hidden
         rounded-[28px]
-        border
-        border-[var(--stroke-light)]
         bg-white
         shadow-[0_20px_60px_rgba(6,28,47,0.1)]
         md:rounded-[36px]

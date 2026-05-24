@@ -2,10 +2,9 @@ import type { Viewport } from "next";
 
 import { LandingBodyColor } from "./LandingBodyColor";
 
-const HERO_BG = "#53C2EE";
-
 export const viewport: Viewport = {
-  themeColor: HERO_BG,
+  viewportFit: "cover",
+  themeColor: "transparent",
 };
 
 export default function LandingLayout({

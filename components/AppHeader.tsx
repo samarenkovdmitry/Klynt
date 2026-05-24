@@ -97,7 +97,7 @@ export function AppHeader({ variant = "app" }: AppHeaderProps) {
 
   const headerClass =
     variant === "landing"
-      ? "relative z-50 w-full border-b border-transparent bg-transparent"
+      ? "relative z-50 w-full border-b border-transparent bg-transparent pt-[env(safe-area-inset-top,0px)]"
       : "sticky top-0 z-50 w-full border-b border-[rgba(6,28,47,0.06)] bg-white";
 
   const subtitleClass =
@@ -181,7 +181,7 @@ export function AppHeader({ variant = "app" }: AppHeaderProps) {
             className="
               fixed
               right-4
-              top-[72px]
+              top-[calc(64px+env(safe-area-inset-top,0px)+8px)]
               z-50
               min-w-[200px]
               rounded-2xl
