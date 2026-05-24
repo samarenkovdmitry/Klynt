@@ -99,7 +99,7 @@ export default function Home() {
               md:text-[84px]
             "
           >
-            Nothing but clarity
+            Clarity drives conversion
           </h1>
 
           <p
@@ -112,8 +112,7 @@ export default function Home() {
               md:text-[21px]
             "
           >
-            AI that finds weak points in your UX and copy, explains them,
-            and suggests clearer improvements.
+            Klynt finds confusing UX, weak positioning and conversion friction across your website.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center">
