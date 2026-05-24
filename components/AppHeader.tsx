@@ -167,48 +167,50 @@ export function AppHeader({ variant = "app" }: AppHeaderProps) {
         </div>
       </header>
 
-      {menuOpen && (
-        <div className="md:hidden">
-          <button
-            type="button"
-            className="fixed inset-0 z-40 bg-[#061C2F]/45 backdrop-blur-[2px]"
-            aria-label="Close menu"
-            onClick={() => setMenuOpen(false)}
-          />
+      <div className="md:hidden" aria-hidden={!menuOpen}>
+        <button
+          type="button"
+          className={`fixed inset-0 z-40 bg-[#061C2F]/40 ${menuOpen ? "" : "pointer-events-none invisible"}`}
+          aria-label="Close menu"
+          tabIndex={menuOpen ? 0 : -1}
+          onClick={() => setMenuOpen(false)}
+        />
 
-          <nav
-            id="mobile-nav-menu"
-            className="
-              fixed
-              right-4
-              top-[calc(64px+env(safe-area-inset-top,0px)+8px)]
-              z-50
-              min-w-[200px]
-              rounded-2xl
-              border
-              border-[rgba(6,28,47,0.08)]
-              bg-white
-              p-2
-              shadow-[0_16px_48px_rgba(6,28,47,0.14)]
-            "
-            aria-label="Main mobile"
-          >
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={mobileNavLinkClass(
-                  isNavActive(item, pathname),
-                  variant
-                )}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
+        <nav
+          id="mobile-nav-menu"
+          className={`
+            fixed
+            right-4
+            top-[calc(64px+env(safe-area-inset-top,0px)+8px)]
+            z-50
+            min-w-[200px]
+            rounded-2xl
+            border
+            border-[rgba(6,28,47,0.08)]
+            bg-white
+            p-2
+            shadow-[0_16px_48px_rgba(6,28,47,0.14)]
+            ${menuOpen ? "" : "pointer-events-none invisible"}
+          `}
+          aria-label="Main mobile"
+          aria-hidden={!menuOpen}
+        >
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              tabIndex={menuOpen ? 0 : -1}
+              className={mobileNavLinkClass(
+                isNavActive(item, pathname),
+                variant
+              )}
+              onClick={() => setMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
     </>
   );
 }
