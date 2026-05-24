@@ -58,6 +58,34 @@ export default function ReportPage() {
     return risk;
   }
 
+  type HealthTier = "healthy" | "medium" | "critical";
+
+  function getScoreTier(score: number): HealthTier {
+    if (score >= 70) return "healthy";
+    if (score >= 40) return "medium";
+    return "critical";
+  }
+
+  function getRiskTier(risk: string): HealthTier {
+    const r = risk.toLowerCase();
+
+    if (r === "low") return "healthy";
+    if (r === "medium") return "medium";
+    if (r === "high") return "critical";
+
+    return "medium";
+  }
+
+  function getTierColor(tier: HealthTier): string {
+    if (tier === "healthy") return "#10B981";
+    if (tier === "medium") return "#FF7A00";
+    return "#FF5A4F";
+  }
+
+  function getScoreColor(score: number): string {
+    return getTierColor(getScoreTier(score));
+  }
+
   type ImpactEntry = { key: string; value: number };
 
   function getImpactEntries(item: {
@@ -233,6 +261,9 @@ export default function ReportPage() {
       </>
     );
   }
+
+  const riskTier = getRiskTier(data.risk ?? "");
+  const riskColor = getTierColor(riskTier);
 
   return (
     <>
@@ -450,36 +481,40 @@ export default function ReportPage() {
                         sm:items-start
                       "
                     >
-                      <div className="relative mx-auto flex h-[132px] w-[132px] shrink-0 items-center justify-center sm:mx-0">
+                      <div className="relative mx-auto flex h-[148px] w-[148px] shrink-0 items-center justify-center sm:mx-0">
                         {(() => {
                           const score = Number(data?.score ?? 0);
-                          const radius = 54;
+                          const radius = 62;
+                          const strokeWidth = 6;
+                          const size = 148;
+                          const center = size / 2;
                           const circumference = 2 * Math.PI * radius;
                           const progress =
                             circumference - (score / 100) * circumference;
+                          const scoreColor = getScoreColor(score);
 
                           return (
                             <>
                               <svg
                                 className="-rotate-90"
-                                width="132"
-                                height="132"
+                                width={size}
+                                height={size}
                                 aria-hidden
                               >
                                 <circle
-                                  cx="66"
-                                  cy="66"
+                                  cx={center}
+                                  cy={center}
                                   r={radius}
                                   stroke="#E5E7EB"
-                                  strokeWidth="8"
+                                  strokeWidth={strokeWidth}
                                   fill="transparent"
                                 />
                                 <circle
-                                  cx="66"
-                                  cy="66"
+                                  cx={center}
+                                  cy={center}
                                   r={radius}
-                                  stroke="#FF7A00"
-                                  strokeWidth="8"
+                                  stroke={scoreColor}
+                                  strokeWidth={strokeWidth}
                                   fill="transparent"
                                   strokeLinecap="round"
                                   strokeDasharray={circumference}
@@ -489,10 +524,13 @@ export default function ReportPage() {
                               </svg>
 
                               <div className="absolute text-center">
-                                <p className="text-[13px] font-semibold text-[var(--ink-primary)]">
+                                <p className="text-[12px] font-semibold text-[var(--ink-primary)]">
                                   UX Score
                                 </p>
-                                <p className="text-[40px] leading-none font-semibold text-[#FF7A00]">
+                                <p
+                                  className="text-[52px] leading-none font-semibold md:text-[56px]"
+                                  style={{ color: scoreColor }}
+                                >
                                   {score}
                                 </p>
                               </div>
@@ -546,8 +584,14 @@ export default function ReportPage() {
                       </p>
 
                       <div className="flex shrink-0 items-center gap-1.5">
-                        <div className="h-2 w-2 rounded-full bg-[#FF5A4F]" />
-                        <p className="text-[15px] font-semibold tracking-[-0.02em] text-[#FF5A4F]">
+                        <div
+                          className="h-2 w-2 rounded-full"
+                          style={{ backgroundColor: riskColor }}
+                        />
+                        <p
+                          className="text-[15px] font-semibold tracking-[-0.02em]"
+                          style={{ color: riskColor }}
+                        >
                           {normalizeRisk(data.risk ?? "")}
                         </p>
                       </div>
@@ -565,6 +609,7 @@ export default function ReportPage() {
                           0,
                           Math.min(100, Number(value ?? 0))
                         );
+                        const barColor = getScoreColor(score);
 
                         return (
                           <div key={label}>
@@ -572,14 +617,20 @@ export default function ReportPage() {
                               <span className="text-[12px] text-neutral-500">
                                 {label}
                               </span>
-                              <span className="text-[12px] font-semibold tabular-nums text-[var(--ink-primary)]">
+                              <span
+                                className="text-[12px] font-semibold tabular-nums"
+                                style={{ color: barColor }}
+                              >
                                 {score}
                               </span>
                             </div>
                             <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-neutral-100">
                               <div
-                                className="h-full rounded-full bg-[#FF7A00] transition-all duration-700"
-                                style={{ width: `${score}%` }}
+                                className="h-full rounded-full transition-all duration-700"
+                                style={{
+                                  width: `${score}%`,
+                                  backgroundColor: barColor,
+                                }}
                               />
                             </div>
                           </div>
