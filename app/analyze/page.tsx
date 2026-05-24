@@ -121,6 +121,7 @@ export default function Analyze() {
   const [imageSize, setImageSize] = useState("");
   const [url, setUrl] = useState("");
   const [progress, setProgress] = useState(0);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -133,9 +134,9 @@ export default function Analyze() {
     setImageSize(`${(file.size / 1024 / 1024).toFixed(1)} MB`);
   }
 
-  const urlError = url.trim() ? validateWebsiteUrl(url) : null;
-  const isButtonDisabled =
-    (!url.trim() && !uploadedImage) || Boolean(url.trim() && urlError);
+  const urlValidationError = url.trim() ? validateWebsiteUrl(url) : null;
+  const showUrlError = formSubmitted && Boolean(urlValidationError);
+  const isButtonDisabled = !url.trim() && !uploadedImage;
 
   const steps = [
     { threshold: 10, label: "Scanning layout…" },
@@ -163,6 +164,8 @@ export default function Analyze() {
     };
 
     try {
+      setFormSubmitted(true);
+
       if (!url.trim() && !uploadedImage) return;
       if (url.trim() && validateWebsiteUrl(url)) return;
 
@@ -343,11 +346,11 @@ export default function Analyze() {
                     onChange={(e) => setUrl(e.target.value)}
                     placeholder="https://stripe.com"
                     disabled={loading}
-                    aria-invalid={urlError ? true : undefined}
-                    aria-describedby={urlError ? "url-error" : undefined}
+                    aria-invalid={showUrlError ? true : undefined}
+                    aria-describedby={showUrlError ? "url-error" : undefined}
                     className={`${inputFieldClass({
                       disabled: loading,
-                      error: Boolean(urlError),
+                      error: showUrlError,
                       withClearButton: url.length > 0,
                       withMargin: false,
                     })} h-[54px] md:h-[58px]`}
@@ -360,10 +363,13 @@ export default function Analyze() {
                       aria-label="Clear URL"
                       className="
                         absolute
-                        inset-y-0
                         right-4
+                        top-1/2
                         flex
+                        h-8
                         w-8
+                        shrink-0
+                        -translate-y-1/2
                         items-center
                         justify-center
                         rounded-full
@@ -373,18 +379,18 @@ export default function Analyze() {
                         hover:text-[#061C2F]
                       "
                     >
-                      <RiCloseLine size={18} />
+                      <RiCloseLine size={18} className="shrink-0" />
                     </button>
                   )}
                 </div>
 
-                {urlError && (
+                {showUrlError && urlValidationError && (
                   <p
                     id="url-error"
                     role="alert"
                     className="mt-2 text-[13px] text-[#D14343]"
                   >
-                    {urlError}
+                    {urlValidationError}
                   </p>
                 )}
               </div>
