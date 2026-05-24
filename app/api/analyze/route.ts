@@ -210,6 +210,41 @@ function normalizeSignals(signals: string[] = []) {
   return Array.from(tags).slice(0, 3);
 }
 
+function isAbstractIssueTitle(title: string): boolean {
+  const t = title.trim();
+  if (!t) return true;
+
+  const looksLikeSentence =
+    /[.!?]$/.test(t) ||
+    /\b(don't|doesn't|can't|cannot|isn't|aren't|because|so users|so visitors|which makes|which means|before they|when they)\b/i.test(
+      t
+    );
+
+  if (looksLikeSentence && t.split(/\s+/).length >= 8) return false;
+
+  const abstractLabel =
+    /^(weak|low|missing|poor|unclear|navigation|messaging|cta|visual|conversion|trust|clarity|overloaded|generic)\b/i.test(
+      t
+    ) ||
+    /\b(issues?|gap|friction|hierarchy|optimization|clarity problems?)\b/i.test(t);
+
+  return abstractLabel || t.split(/\s+/).length <= 6;
+}
+
+function normalizeIssueTitle(item: {
+  title?: unknown;
+  why?: unknown;
+}): string {
+  const title = String(item.title ?? "").trim();
+  const why = String(item.why ?? "").trim();
+
+  if (!isAbstractIssueTitle(title)) return title;
+  if (why.length < 20) return title;
+
+  const firstSentence = why.match(/^[^.!?]+[.!?]/)?.[0]?.trim();
+  return firstSentence || why;
+}
+
 
 
 // -----------------------------
@@ -340,7 +375,7 @@ Return ONLY valid JSON (no markdown):
   "confidence": number,
   "issues": [{
     "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
-    "title": "string",
+    "title": "one concrete sentence",
     "bullets": ["2-3 short evidence tags"],
     "why": "string",
     "impact": { "clarity"?: int, "navigation"?: int, "visuals"?: int, "trust"?: int, "conversion"?: int, "cta"?: int }
@@ -364,6 +399,9 @@ Return ONLY valid JSON (no markdown):
 
 Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
 Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; why fields max 28 words each.
+issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
+Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
+Bad title: "Weak visual hierarchy"
 Impact: issues use negative ints (-5 to -25); suggestions/copy use positive (5-20). Pick top 1-2 impact keys per item.
 confidence: integer 70-98. breakdown: integers 0-100. score: integer 0-100 aligned with breakdown.
 Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
@@ -500,6 +538,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
 
     json.issues = json.issues.map((item: any) => ({
      ...item,
+     title: normalizeIssueTitle(item),
      bullets: normalizeSignals(item.bullets || []),
      ...mapImpact(item.impact || {}),
      }));
