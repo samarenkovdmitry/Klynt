@@ -11,6 +11,8 @@ import {
   RiUserSmileLine,
   RiFilePdfLine,
   RiTimerFlashLine,
+  RiLinkM,
+  RiFileList3Line,
 } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
@@ -45,6 +47,27 @@ export default function Home() {
     "/avatars/user1.jpeg",
     "/avatars/user2.jpeg",
     "/avatars/user3.jpeg",
+  ];
+
+  const howItWorksSteps = [
+    {
+      icon: <RiLinkM size={22} className="text-[#1696C7]" />,
+      title: "Paste your URL",
+      description:
+        "Enter any live landing page or marketing site. Klynt captures the visible UI and copy — no install or account needed.",
+    },
+    {
+      icon: <RiSparkling2Line size={22} className="text-[#1696C7]" />,
+      title: "AI scans the page",
+      description:
+        "The model reviews hierarchy, messaging, trust signals, and conversion patterns to spot friction across the full page.",
+    },
+    {
+      icon: <RiFileList3Line size={22} className="text-[#1696C7]" />,
+      title: "Review your report",
+      description:
+        "Get UX issues, prioritized improvements, and copy rewrites in one shareable clarity report — ready to export as PDF.",
+    },
   ];
 
 
@@ -110,7 +133,7 @@ export default function Home() {
                 flex-wrap
                 items-center
                 justify-center
-                gap-x-5
+                gap-x-3
                 gap-y-2
                 text-[12px]
                 text-[#061C2F]/72
@@ -454,6 +477,75 @@ export default function Home() {
                 </div>
               </div>
             </article>
+          </div>
+
+          {/* HOW IT WORKS */}
+          <div className="mt-20 md:mt-28">
+            <div className="mx-auto max-w-[760px] text-center">
+              <div className="text-[14px] font-semibold text-[#0F7FB3] md:text-[15px]">
+                How it works
+              </div>
+
+              <h2
+                className="
+                  mt-4
+                  text-[34px]
+                  font-semibold
+                  leading-[0.98]
+                  tracking-[-0.06em]
+                  text-[#061C2F]
+                  md:text-[48px]
+                "
+              >
+                Three steps to a clearer page
+              </h2>
+
+              <p
+                className="
+                  mx-auto
+                  mt-5
+                  max-w-[620px]
+                  text-[16px]
+                  leading-8
+                  text-[#6B7280]
+                "
+              >
+                No setup, no signup. Paste a URL and get a structured report in
+                under a minute.
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-4 md:grid-cols-3">
+              {howItWorksSteps.map((step, index) => (
+                <article
+                  key={step.title}
+                  className="
+                    rounded-[28px]
+                    border
+                    border-[rgba(6,28,47,0.06)]
+                    bg-white
+                    p-6
+                    md:p-7
+                  "
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8F6FC] text-[15px] font-semibold text-[#0F7FB3]">
+                    {index + 1}
+                  </div>
+
+                  <div className="mt-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F5F7FA]">
+                    {step.icon}
+                  </div>
+
+                  <h3 className="mt-5 text-[20px] font-semibold leading-[1.2] tracking-[-0.03em] text-[#061C2F] md:text-[22px]">
+                    {step.title}
+                  </h3>
+
+                  <p className="mt-3 text-[15px] leading-7 text-[#6B7280]">
+                    {step.description}
+                  </p>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>

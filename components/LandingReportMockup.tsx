@@ -75,7 +75,7 @@ export function LandingReportMockup() {
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-[var(--ink-secondary)] md:gap-x-3 md:text-[14px]">
+              <div className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1 text-[13px] text-[var(--ink-secondary)] md:gap-x-2 md:text-[14px]">
                 <div className="flex min-w-0 items-center gap-2">
                   <img
                     src={`https://www.google.com/s2/favicons?domain_url=${data.url}&sz=32`}
@@ -155,7 +155,7 @@ export function LandingReportMockup() {
 
                     <div className="min-w-0 flex-1">
                       <p
-                        className={`text-left text-[16px] font-semibold leading-[1.35] tracking-[-0.03em] text-[var(--ink-primary)] md:text-[24px] ${mobileClamp}`}
+                        className={`text-left text-[16px] font-medium leading-[1.35] tracking-[-0.03em] text-[var(--ink-primary)] md:text-[24px] ${mobileClamp}`}
                       >
                         {data.verdict}
                       </p>
@@ -252,10 +252,9 @@ export function LandingReportMockup() {
 
               <div className="mt-6 border-t border-[var(--stroke-light)] pt-6 md:mt-8 md:pt-8">
                 <div className="flex items-start gap-3.5">
-                  <RiLightbulbLine
-                    size={20}
-                    className="mt-0.5 shrink-0 text-amber-600"
-                  />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFF7ED]">
+                    <RiLightbulbLine size={18} className="text-amber-600" />
+                  </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
                       Key observation

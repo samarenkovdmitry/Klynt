@@ -612,7 +612,7 @@ export default function Analyze() {
       flex-wrap
       items-center
       justify-center
-      gap-x-5
+      gap-x-3
       gap-y-2
       text-[12px]
       md:text-[13px]
