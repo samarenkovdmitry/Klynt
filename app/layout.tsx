@@ -9,7 +9,7 @@ export const metadata = {
 
 export const viewport: Viewport = {
   viewportFit: "cover",
-  themeColor: "#EBEFF3",
+  themeColor: "#FFFFFF",
 };
 
 const familjen = Familjen_Grotesk({
@@ -26,9 +26,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${familjen.variable} antialiased bg-[#EBEFF3]`}
+      className={`${familjen.variable} antialiased bg-white`}
     >
-      <body className="bg-[#EBEFF3] min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col bg-white">
         {children}
       </body>
     </html>
