@@ -78,6 +78,25 @@ export default function Home() {
           md:pb-[180px]
         "
       >
+{/* Pattern */}
+  <div className="absolute inset-0 overflow-hidden">
+    <img
+      src="/pattern.svg"
+      alt=""
+      className="
+        absolute
+        right-[-10%]
+        top-0
+        h-[120%]
+        w-auto
+        opacity-[0.18]
+        pointer-events-none
+        select-none
+      "
+    />
+  </div>
+
+
         <AppHeader />
 
         {/* HERO CONTENT */}
