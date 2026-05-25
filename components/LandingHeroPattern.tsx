@@ -7,34 +7,19 @@ type PatternCell = {
 
 type Point = { x: number; y: number };
 
-/** Slightly lighter than hero — opaque so overlaps read as one solid tone. */
+/** Opaque tone — overlaps read as one solid color. */
 const PATTERN_FILL = "#1b335c";
 
-const COLS = 11;
-const ROWS = 15;
-/** Pitch so thinnest shapes (top-left) touch along the diagonal. */
-const SPACING_X = 88;
-const SPACING_Y = 50;
-
-const MIN_LENGTH = 118;
-const MAX_LENGTH = 340;
-const MIN_THICKNESS = 3;
-const MAX_THICKNESS = 118;
+const COLS = 20;
+const ROWS = 34;
+const SPACING_X = 40;
+const SPACING_Y = 36;
 
 function lerp(a: Point, b: Point, t: number): Point {
   return {
     x: a.x + (b.x - a.x) * t,
     y: a.y + (b.y - a.y) * t,
   };
-}
-
-function progress(col: number, row: number): number {
-  const colT = COLS <= 1 ? 1 : col / (COLS - 1);
-  const rowT = ROWS <= 1 ? 1 : row / (ROWS - 1);
-  const diagonal = Math.min(1, (colT * 0.52 + rowT * 0.48) * 1.08);
-  const corner = Math.min(1, Math.hypot(colT, rowT) / Math.SQRT2);
-  const blended = Math.max(diagonal, corner * 0.92);
-  return Math.pow(blended, 1.65);
 }
 
 function elongatedHexagonPoints(
@@ -48,7 +33,7 @@ function elongatedHexagonPoints(
   const px = Math.SQRT1_2;
   const py = Math.SQRT1_2;
   const hw = thickness / 2;
-  const endClip = Math.max(3, Math.min(thickness * 0.92, length * 0.12));
+  const endClip = Math.max(2.5, Math.min(thickness * 0.95, length * 0.14));
 
   const x2 = x + length * nx;
   const y2 = y + length * ny;
@@ -83,20 +68,19 @@ function buildCells(): PatternCell[] {
   const cells: PatternCell[] = [];
 
   for (let col = 0; col < COLS; col++) {
+    const t = COLS <= 1 ? 1 : col / (COLS - 1);
+    const thickness = 1.25 + Math.pow(t, 1.35) * 20;
+    const rowStride = Math.max(1, Math.ceil(5 - t * 4));
+    const colStride = col < 3 ? 2 : col < 7 ? 1 : 1;
+
     for (let row = 0; row < ROWS; row++) {
-      const t = progress(col, row);
+      if (row % rowStride !== 0) continue;
+      if (col % colStride !== 0 && t < 0.45) continue;
 
-      if (t < 0.1 && (col + row) % 4 !== 0) continue;
-      if (t < 0.22 && (col + row) % 2 !== 0) continue;
-
-      const thickness =
-        MIN_THICKNESS + (MAX_THICKNESS - MIN_THICKNESS) * Math.pow(t, 2.1);
-      const length =
-        MIN_LENGTH + (MAX_LENGTH - MIN_LENGTH) * Math.pow(t, 1.75);
-
-      const stagger = (row % 2) * (SPACING_X * 0.5);
-      const x = col * SPACING_X + stagger - 20;
-      const y = row * SPACING_Y + col * 4 + 8;
+      const stagger = (row % 2) * (SPACING_X * 0.48);
+      const x = col * SPACING_X + stagger - 24;
+      const y = row * SPACING_Y + col * 6 + 40;
+      const length = 44 + t * 36;
 
       cells.push({ x, y, length, thickness });
     }
@@ -105,25 +89,17 @@ function buildCells(): PatternCell[] {
   return cells;
 }
 
-/** Bottom-right solid mass — overlapping slabs merge visually. */
-const CORNER_MASS: PatternCell[] = [
-  { x: 520, y: 720, length: 420, thickness: 200 },
-  { x: 640, y: 640, length: 380, thickness: 220 },
-  { x: 700, y: 780, length: 360, thickness: 240 },
-  { x: 580, y: 860, length: 400, thickness: 210 },
-];
-
-const CELLS = [...buildCells(), ...CORNER_MASS];
+const CELLS = buildCells();
 
 export function LandingHeroPattern() {
   return (
     <div
-      className="pointer-events-none absolute inset-y-0 right-0 z-0 w-2/3 overflow-hidden"
+      className="pointer-events-none absolute inset-y-0 right-0 z-0 w-1/2 overflow-hidden"
       aria-hidden
     >
       <svg
         className="h-full w-full"
-        viewBox="0 0 980 1200"
+        viewBox="0 0 820 1200"
         preserveAspectRatio="xMaxYMid slice"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
