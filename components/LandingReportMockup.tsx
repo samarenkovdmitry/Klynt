@@ -14,7 +14,7 @@ import {
 } from "@/lib/report-metrics";
 
 const titleSection =
-  "text-[24px] md:text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]";
+  "text-[18px] font-semibold tracking-[-0.03em] text-[#061C2F] md:text-[26px]";
 
 const mobileClamp =
   "line-clamp-2 md:line-clamp-none";
@@ -58,12 +58,12 @@ export function LandingReportMockup() {
                 <h2
                   className="
                     shrink-0
-                    text-[26px]
+                    text-[24px]
                     font-semibold
                     leading-none
                     tracking-[-0.04em]
                     text-[var(--ink-primary)]
-                    md:text-[42px]
+                    md:text-[38px]
                   "
                 >
                   Clarity Report
@@ -106,10 +106,10 @@ export function LandingReportMockup() {
           </div>
 
           <div className="border-t border-[var(--stroke-light)]">
-            <div className="px-5 py-6 md:px-10 md:py-8">
+            <div className="px-5 pt-[18px] pb-6 md:px-10 md:pt-[26px] md:pb-8">
               <h3 className={titleSection}>Summary</h3>
 
-              <div className="mt-5 lg:grid lg:grid-cols-[1.6fr_0.7fr] lg:divide-x lg:divide-[var(--stroke-light)]">
+              <div className="mt-4 md:mt-5 lg:grid lg:grid-cols-[1.6fr_0.7fr] lg:divide-x lg:divide-[var(--stroke-light)]">
                 <div className="pb-6 lg:pr-8 lg:pb-0">
                   <div className="flex flex-row items-start gap-3 md:gap-6">
                     <div className="relative flex h-[108px] w-[108px] shrink-0 items-center justify-center md:h-[176px] md:w-[176px]">
@@ -254,11 +254,11 @@ export function LandingReportMockup() {
                     <RiLightbulbLine size={18} className="text-amber-600" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
+                    <p className="text-[12px] font-normal uppercase tracking-[0.08em] text-amber-700">
                       Key observation
                     </p>
                     <p
-                      className={`mt-1.5 text-[15px] font-medium leading-[1.55] tracking-[-0.01em] text-[var(--ink-primary)] md:text-[16px] ${mobileClamp}`}
+                      className={`mt-1.5 text-[15px] font-normal leading-[1.55] tracking-[-0.01em] text-[var(--ink-primary)] md:text-[16px] ${mobileClamp}`}
                     >
                       {data.key_observation}
                     </p>

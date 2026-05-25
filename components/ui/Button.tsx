@@ -23,7 +23,7 @@ const secondaryStyles: Record<ButtonTone, string> = {
   light:
     "border border-[rgba(6,28,47,0.08)] bg-white text-[var(--ink-primary)] hover:bg-[#F8FBFF]",
   dark:
-    "border border-white bg-transparent text-white hover:bg-white/10",
+    "border border-[rgba(255,255,255,0.12)] bg-transparent text-white hover:bg-white/10",
 };
 
 export function Button({

@@ -86,7 +86,7 @@ export default function Home() {
             className="
               max-w-[860px]
               text-[56px]
-              font-semibold
+              font-normal
               leading-[0.95]
               tracking-[-0.05em]
               text-white
@@ -115,7 +115,7 @@ export default function Home() {
               href="/analyze"
               icon={<RiArrowRightLine size={18} />}
               fullWidth={false}
-              className="h-[58px] min-h-[58px] px-8 text-[17px]"
+              className="h-[60px] min-h-[60px] rounded-full px-8 text-[18px]"
             >
               Start free audit
             </Button>
@@ -661,7 +661,7 @@ export default function Home() {
                 href="/analyze"
                 icon={<RiArrowRightLine size={18} />}
                 fullWidth={false}
-                className="h-[58px] min-h-[58px] px-8 text-[17px]"
+                className="h-[60px] min-h-[60px] rounded-full px-8 text-[18px]"
               >
                 Start free audit
               </Button>
@@ -671,7 +671,7 @@ export default function Home() {
                 variant="secondary"
                 tone="dark"
                 fullWidth={false}
-                className="h-[58px] min-h-[58px] px-8 text-[17px]"
+                className="h-[60px] min-h-[60px] rounded-full px-8 text-[18px]"
               >
                 View demo
               </Button>

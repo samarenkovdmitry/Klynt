@@ -691,7 +691,7 @@ export default function ReportPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-700">
+                      <p className="text-[12px] font-normal uppercase tracking-[0.08em] text-amber-700">
                         Key observation
                       </p>
                       <p
@@ -699,7 +699,7 @@ export default function ReportPage() {
                           mt-1.5
                           text-[15px]
                           leading-[1.55]
-                          font-medium
+                          font-normal
                           tracking-[-0.01em]
                           text-[var(--ink-primary)]
                           md:text-[16px]
