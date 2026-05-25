@@ -1,70 +1,26 @@
-type PatternCell = {
-  x: number;
-  y: number;
-  length: number;
-  thickness: number;
+type Triangle = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 };
 
-const PATTERN_FILL = "var(--pattern-hero)";
+const PATTERN_FILL = "#14254A";
 
-/** ~9×9 reference grid, scaled to cover hero. */
-const COLS = 10;
-const ROWS = 11;
-const PITCH_X = 78;
-const PITCH_Y = 68;
-const BAR_LENGTH = 64;
-
-function parallelogramPoints(
-  x: number,
-  y: number,
-  length: number,
-  thickness: number
-): string {
-  const ux = Math.SQRT1_2;
-  const uy = Math.SQRT1_2;
-  const px = -uy;
-  const py = ux;
-  const hw = thickness / 2;
-
-  const x2 = x + length * ux;
-  const y2 = y + length * uy;
-
-  const points = [
-    { x: x - px * hw, y: y - py * hw },
-    { x: x + px * hw, y: y + py * hw },
-    { x: x2 + px * hw, y: y2 + py * hw },
-    { x: x2 - px * hw, y: y2 - py * hw },
-  ];
-
-  return points.map((p) => `${p.x},${p.y}`).join(" ");
+/** Right-pointing chevron; top edge flush with `top`. */
+function trianglePoints(left: number, top: number, width: number, height: number) {
+  const tipX = left + width;
+  const tipY = top + height / 2;
+  return `${left},${top} ${left},${top + height} ${tipX},${tipY}`;
 }
 
-function buildCells(): PatternCell[] {
-  const cells: PatternCell[] = [];
-  const maxIndex = COLS - 1 + ROWS - 1;
-
-  for (let col = 0; col < COLS; col++) {
-    for (let row = 0; row < ROWS; row++) {
-      const t = maxIndex <= 0 ? 1 : (col + row) / maxIndex;
-      const thickness = 1.5 + Math.pow(t, 1.35) * 50;
-
-      const stagger = (row % 2) * (PITCH_X * 0.5);
-      const x = col * PITCH_X + stagger - 36;
-      const y = row * PITCH_Y + 16;
-
-      cells.push({
-        x,
-        y,
-        length: BAR_LENGTH,
-        thickness,
-      });
-    }
-  }
-
-  return cells;
-}
-
-const CELLS = buildCells();
+/** Columns widen left → right; tops aligned to y = 0. */
+const TRIANGLES: Triangle[] = [
+  { left: 165, top: 0, width: 58, height: 320 },
+  { left: 235, top: 0, width: 95, height: 480 },
+  { left: 330, top: 0, width: 140, height: 640 },
+  { left: 450, top: 0, width: 320, height: 800 },
+];
 
 export function LandingHeroPattern() {
   return (
@@ -73,21 +29,16 @@ export function LandingHeroPattern() {
       aria-hidden
     >
       <svg
-        className="h-full w-full"
-        viewBox="0 0 820 900"
-        preserveAspectRatio="xMidYMid slice"
+        className="absolute right-0 top-0 h-full w-[46%] min-w-[280px] max-w-[640px]"
+        viewBox="0 0 520 800"
+        preserveAspectRatio="xMaxYMin slice"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {CELLS.map((cell, index) => (
+        {TRIANGLES.map((tri, index) => (
           <polygon
             key={index}
-            points={parallelogramPoints(
-              cell.x,
-              cell.y,
-              cell.length,
-              cell.thickness
-            )}
+            points={trianglePoints(tri.left, tri.top, tri.width, tri.height)}
             fill={PATTERN_FILL}
           />
         ))}

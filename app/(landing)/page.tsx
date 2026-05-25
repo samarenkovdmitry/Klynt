@@ -87,12 +87,12 @@ export default function Home() {
           <h1
             className="
               max-w-[860px]
-              text-[56px]
+              text-[40px]
               font-normal
               leading-[0.95]
               tracking-[-0.05em]
               text-white
-              md:text-[84px]
+              md:text-[75px]
               md:tracking-[-0.04em]
             "
           >
@@ -105,7 +105,7 @@ export default function Home() {
               max-w-[640px]
               text-[17px]
               leading-8
-              text-white/75
+              text-white
               md:text-[21px]
             "
           >
