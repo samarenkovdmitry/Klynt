@@ -20,23 +20,23 @@ import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 export default function Home() {
   const pills = [
     {
-      icon: <RiSearchEyeLine size={18} className="text-[#1696C7]" />,
+      icon: <RiSearchEyeLine size={18} className="text-[#2563EB]" />,
       label: "UX issues",
     },
     {
-      icon: <RiSparkling2Line size={18} className="text-[#1696C7]" />,
+      icon: <RiSparkling2Line size={18} className="text-[#2563EB]" />,
       label: "Copy refinement",
     },
     {
-      icon: <RiBarChartBoxLine size={18} className="text-[#1696C7]" />,
+      icon: <RiBarChartBoxLine size={18} className="text-[#2563EB]" />,
       label: "Conversion insights",
     },
     {
-      icon: <RiMagicLine size={18} className="text-[#1696C7]" />,
+      icon: <RiMagicLine size={18} className="text-[#2563EB]" />,
       label: "Full-page analysis",
     },
     {
-      icon: <RiShieldCheckLine size={18} className="text-[#1696C7]" />,
+      icon: <RiShieldCheckLine size={18} className="text-[#2563EB]" />,
       label: "Product teams",
     },
   ];
@@ -214,7 +214,7 @@ export default function Home() {
                 py-2
                 text-[12px]
                 font-medium
-                text-[#6B7280]
+                text-[#061C2F]
                 md:px-4
                 md:text-[14px]
               "
@@ -231,7 +231,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1040px]">
           {/* HEADER */}
           <div className="mx-auto max-w-[760px] text-center">
-            <div className="text-[14px] font-semibold text-[#0F7FB3] md:text-[15px]">
+            <div className="text-[17px] font-semibold text-[#2563EB]">
               What Klynt analyzes
             </div>
 
@@ -241,7 +241,7 @@ export default function Home() {
                 text-[34px]
                 font-semibold
                 leading-[0.98]
-                tracking-[-0.06em]
+                tracking-[-0.04em]
                 text-[#061C2F]
                 md:text-[54px]
               "
@@ -254,8 +254,8 @@ export default function Home() {
                 mx-auto
                 mt-5
                 max-w-[620px]
-                text-[16px]
-                leading-8
+                text-[18px]
+                leading-7
                 text-[#6B7280]
               "
             >
@@ -287,7 +287,7 @@ export default function Home() {
                   See what slows users down
                 </h3>
 
-                <p className="mt-3 text-[15px] leading-7 text-[#6B7280]">
+                <p className="mt-3 text-[15px] leading-6 text-[#6B7280]">
                   Klynt flags problems in hierarchy, navigation, trust, and
                   conversion — each with a short explanation of why it matters
                   for your specific page.
@@ -351,7 +351,7 @@ export default function Home() {
                   Know what to fix first
                 </h3>
 
-                <p className="mt-3 text-[15px] leading-7 text-[#6B7280]">
+                <p className="mt-3 text-[15px] leading-6 text-[#6B7280]">
                   Get prioritized recommendations tied to real sections of
                   your UI — layout, CTA placement, trust blocks — with estimated
                   impact on clarity and conversion.
@@ -443,7 +443,7 @@ export default function Home() {
                   Rewrite vague copy
                 </h3>
 
-                <p className="mt-3 text-[15px] leading-7 text-[#6B7280]">
+                <p className="mt-3 text-[15px] leading-6 text-[#6B7280]">
                   Headlines, CTAs, and section text get before/after suggestions
                   that explain what you sell, who it&apos;s for, and what to do
                   next — without generic marketing fluff.
@@ -571,7 +571,7 @@ export default function Home() {
                   text-[34px]
                   font-semibold
                   leading-[0.98]
-                  tracking-[-0.06em]
+                  tracking-[-0.04em]
                   text-[#061C2F]
                   md:text-[48px]
                 "
@@ -584,8 +584,8 @@ export default function Home() {
                   mx-auto
                   mt-5
                   max-w-[620px]
-                  text-[16px]
-                  leading-8
+                  text-[18px]
+                  leading-7
                   text-[#6B7280]
                 "
               >
@@ -615,7 +615,7 @@ export default function Home() {
                     {step.title}
                   </h3>
 
-                  <p className="mt-3 text-[15px] leading-7 text-[#6B7280]">
+                  <p className="mt-3 text-[15px] leading-6 text-[#6B7280]">
                     {step.description}
                   </p>
                 </article>
@@ -646,11 +646,11 @@ export default function Home() {
             <h2
               className="
                 text-[42px]
-                font-semibold
+                font-normal
                 leading-[0.95]
-                tracking-[-0.06em]
+                tracking-[-0.04em]
                 text-white
-                md:text-[72px]
+                md:text-[48px]
               "
             >
               Improve clarity before shipping
