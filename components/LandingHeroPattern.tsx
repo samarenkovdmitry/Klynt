@@ -1,39 +1,32 @@
+const PATTERN_WIDTH = 512;
+const PATTERN_HEIGHT = 512;
+
 export function LandingHeroPattern() {
   return (
-    <>
-      <div className="absolute inset-0 overflow-hidden" aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/pattern.svg"
-          alt=""
-          className="
-            pointer-events-none
-            absolute
-            right-[-10%]
-            top-0
-            h-[120%]
-            w-auto
-            select-none
-            opacity-[0.18]
-          "
-        />
-      </div>
-
-      <div
+    <div className="absolute inset-0 overflow-hidden" aria-hidden>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/pattern.svg"
+        alt=""
+        width={PATTERN_WIDTH}
+        height={PATTERN_HEIGHT}
         className="
           pointer-events-none
           absolute
-          right-[-200px]
-          top-[-200px]
-          h-[700px]
-          w-[700px]
-          rounded-full
-          bg-[#2F6FED]
-          opacity-[0.08]
-          blur-3xl
+          top-0
+          left-[48%]
+          max-w-none
+          shrink-0
+          select-none
+          opacity-[0.18]
         "
-        aria-hidden
+        style={{
+          width: PATTERN_WIDTH,
+          height: PATTERN_HEIGHT,
+          minWidth: PATTERN_WIDTH,
+          minHeight: PATTERN_HEIGHT,
+        }}
       />
-    </>
+    </div>
   );
 }
