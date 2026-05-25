@@ -359,8 +359,6 @@ export default function Home() {
                       items-center
                       gap-2.5
                       rounded-xl
-                      border
-                      border-[rgba(6,28,47,0.05)]
                       bg-white
                       px-3
                       py-2.5
@@ -384,8 +382,6 @@ export default function Home() {
                       items-center
                       gap-2.5
                       rounded-xl
-                      border
-                      border-[rgba(6,28,47,0.05)]
                       bg-white
                       px-3
                       py-2.5
