@@ -74,7 +74,7 @@ export default function Home() {
         className="
           relative
           overflow-hidden
-          bg-[#081936]
+          bg-[#0E1B36]
           pb-[120px]
           md:pb-[180px]
         "
