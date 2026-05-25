@@ -87,13 +87,12 @@ export default function Home() {
           <h1
             className="
               max-w-[860px]
-              text-[40px]
+              text-[50px]
               font-normal
               leading-[0.95]
-              tracking-[-0.05em]
+              tracking-[-0.01em]
               text-white
               md:text-[75px]
-              md:tracking-[-0.04em]
             "
           >
             Clarity drives conversion
