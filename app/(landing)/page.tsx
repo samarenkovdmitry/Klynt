@@ -78,7 +78,7 @@ export default function Home() {
           md:pb-[180px]
         "
       >
-        <AppHeader variant="landing" />
+        <AppHeader />
 
         {/* HERO CONTENT */}
         <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-5 pt-10 text-center md:pt-16">

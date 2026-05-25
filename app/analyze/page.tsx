@@ -275,7 +275,7 @@ export default function Analyze() {
       <AppHeader />
 
       {/* MAIN */}
-      <main className="min-h-[calc(100dvh-64px)] bg-[#F5F7FA] px-4 py-5 md:px-6 md:py-8">
+      <main className="min-h-[calc(100dvh-68px)] bg-[#F5F7FA] px-4 py-5 md:px-6 md:py-8">
         <div className="mx-auto max-w-[920px]">
 
           {/* CARD */}
