@@ -85,11 +85,8 @@ export default function Home() {
       alt=""
       className="
         absolute
-        right-[-10%]
         top-0
-        h-[120%]
         w-auto
-        opacity-[0.18]
         pointer-events-none
         select-none
       "
