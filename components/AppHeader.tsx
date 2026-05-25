@@ -48,6 +48,7 @@ function isNavActive(item: NavItem, pathname: string) {
 
 export function AppHeader() {
   const pathname = usePathname();
+  const isLanding = pathname === "/";
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -68,16 +69,10 @@ export function AppHeader() {
   return (
     <>
       <header
-        className="
-          sticky
-          top-0
-          z-50
-          w-full
-          border-b
-          border-white/10
-          bg-[var(--surface-dark)]
-          pt-[env(safe-area-inset-top,0px)]
-        "
+        className={[
+          "sticky top-0 z-50 w-full bg-[var(--surface-dark)] pt-[env(safe-area-inset-top,0px)]",
+          isLanding ? "border-b border-transparent" : "border-b border-white/10",
+        ].join(" ")}
       >
         <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between gap-4 px-4 md:px-6">
           <Link
