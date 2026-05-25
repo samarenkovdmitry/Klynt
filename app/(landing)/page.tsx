@@ -15,7 +15,6 @@ import {
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LandingReportMockup } from "@/components/LandingReportMockup";
-import { LandingHeroPattern } from "@/components/LandingHeroPattern";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 export default function Home() {
@@ -74,12 +73,11 @@ export default function Home() {
         className="
           relative
           overflow-hidden
-          bg-[#53C2EE]
+          bg-[var(--surface-dark)]
           pb-[120px]
           md:pb-[180px]
         "
       >
-        <LandingHeroPattern />
         <AppHeader variant="landing" />
 
         {/* HERO CONTENT */}
@@ -91,7 +89,7 @@ export default function Home() {
               font-semibold
               leading-[0.95]
               tracking-[-0.05em]
-              text-[#061C2F]
+              text-white
               md:text-[84px]
               md:tracking-[-0.04em]
             "
@@ -105,7 +103,7 @@ export default function Home() {
               max-w-[640px]
               text-[17px]
               leading-8
-              text-[#061C2F]/72
+              text-white/75
               md:text-[21px]
             "
           >
@@ -132,31 +130,31 @@ export default function Home() {
                 gap-x-3
                 gap-y-2
                 text-[12px]
-                text-[#061C2F]/72
+                text-white/70
                 md:text-[13px]
               "
             >
               <div className="flex items-center gap-2">
                 <RiUserSmileLine
                   size={16}
-                  className="shrink-0 text-[#0B6FA0]"
+                  className="shrink-0 text-white/85"
                 />
                 <span>No signup required</span>
               </div>
 
-              <div className="hidden h-1 w-1 rounded-full bg-[#061C2F]/25 md:block" />
+              <div className="hidden h-1 w-1 rounded-full bg-white/30 md:block" />
 
               <div className="flex items-center gap-2">
-                <RiFilePdfLine size={16} className="shrink-0 text-[#0B6FA0]" />
+                <RiFilePdfLine size={16} className="shrink-0 text-white/85" />
                 <span>PDF export</span>
               </div>
 
-              <div className="hidden h-1 w-1 rounded-full bg-[#061C2F]/25 md:block" />
+              <div className="hidden h-1 w-1 rounded-full bg-white/30 md:block" />
 
               <div className="flex items-center gap-2">
                 <RiTimerFlashLine
                   size={16}
-                  className="shrink-0 text-[#0B6FA0]"
+                  className="shrink-0 text-white/85"
                 />
                 <span>AI-generated in ~15–25 sec</span>
               </div>
@@ -621,7 +619,7 @@ export default function Home() {
             max-w-[1040px]
             overflow-hidden
             rounded-[28px]
-            bg-[#53C2EE]
+            bg-[var(--surface-dark)]
             px-5
             py-12
             md:rounded-[36px]
@@ -629,8 +627,6 @@ export default function Home() {
             md:py-16
           "
         >
-          <LandingHeroPattern />
-
           <div className="relative z-10 mx-auto max-w-[760px] text-center">
             <h2
               className="
@@ -638,7 +634,7 @@ export default function Home() {
                 font-semibold
                 leading-[0.95]
                 tracking-[-0.06em]
-                text-[#061C2F]
+                text-white
                 md:text-[72px]
               "
             >
@@ -652,7 +648,7 @@ export default function Home() {
                 max-w-[620px]
                 text-[17px]
                 leading-8
-                text-[#061C2F]/72
+                text-white/75
                 md:text-[19px]
               "
             >
@@ -673,8 +669,9 @@ export default function Home() {
               <Button
                 href={DEMO_REPORT_PATH}
                 variant="secondary"
+                tone="dark"
                 fullWidth={false}
-                className="h-[58px] min-h-[58px] border-0 px-8 text-[17px]"
+                className="h-[58px] min-h-[58px] px-8 text-[17px]"
               >
                 View demo
               </Button>
@@ -690,31 +687,31 @@ export default function Home() {
                 gap-x-3
                 gap-y-2
                 text-[12px]
-                text-[#061C2F]/72
+                text-white/70
                 md:text-[13px]
               "
             >
               <div className="flex items-center gap-2">
                 <RiUserSmileLine
                   size={16}
-                  className="shrink-0 text-[#0B6FA0]"
+                  className="shrink-0 text-white/85"
                 />
                 <span>No signup required</span>
               </div>
 
-              <div className="hidden h-1 w-1 rounded-full bg-[#061C2F]/25 md:block" />
+              <div className="hidden h-1 w-1 rounded-full bg-white/30 md:block" />
 
               <div className="flex items-center gap-2">
-                <RiFilePdfLine size={16} className="shrink-0 text-[#0B6FA0]" />
+                <RiFilePdfLine size={16} className="shrink-0 text-white/85" />
                 <span>PDF export</span>
               </div>
 
-              <div className="hidden h-1 w-1 rounded-full bg-[#061C2F]/25 md:block" />
+              <div className="hidden h-1 w-1 rounded-full bg-white/30 md:block" />
 
               <div className="flex items-center gap-2">
                 <RiTimerFlashLine
                   size={16}
-                  className="shrink-0 text-[#0B6FA0]"
+                  className="shrink-0 text-white/85"
                 />
                 <span>AI-generated in ~15–25 sec</span>
               </div>

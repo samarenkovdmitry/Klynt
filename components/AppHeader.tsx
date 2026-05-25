@@ -33,8 +33,8 @@ function navLinkClass(isActive: boolean, variant: HeaderVariant) {
     return [
       "rounded-full px-3 py-2 text-[13px] font-medium transition-colors md:px-4 md:text-[14px]",
       isActive
-        ? "bg-[#061C2F]/10 text-[#061C2F] font-semibold"
-        : "text-[#061C2F]/70 hover:bg-[#061C2F]/5 hover:text-[#061C2F]",
+        ? "bg-white/15 font-semibold text-white"
+        : "text-white/75 hover:bg-white/10 hover:text-white",
     ].join(" ");
   }
 
@@ -102,8 +102,11 @@ export function AppHeader({ variant = "app" }: AppHeaderProps) {
 
   const subtitleClass =
     variant === "landing"
-      ? "truncate text-[12px] font-semibold tracking-[-0.02em] text-[#061C2F] sm:text-[13px] md:text-[14px]"
+      ? "truncate text-[12px] font-semibold tracking-[-0.02em] text-white/90 sm:text-[13px] md:text-[14px]"
       : "truncate text-[12px] font-semibold tracking-[-0.02em] text-[#061C2F] sm:text-[13px] md:text-[14px]";
+
+  const logoSrc =
+    variant === "landing" ? "/klynt-logo-light.svg" : "/klynt-logo-dark.svg";
 
   return (
     <>
@@ -116,7 +119,7 @@ export function AppHeader({ variant = "app" }: AppHeaderProps) {
             onClick={() => setMenuOpen(false)}
           >
             <img
-              src="/klynt-logo-dark.svg"
+              src={logoSrc}
               alt="Klynt"
               className="h-[34px] w-auto shrink-0 md:h-[40px]"
             />
@@ -140,19 +143,12 @@ export function AppHeader({ variant = "app" }: AppHeaderProps) {
 
           <button
             type="button"
-            className="
-              flex
-              h-10
-              w-10
-              shrink-0
-              items-center
-              justify-center
-              rounded-full
-              text-[#061C2F]
-              transition-colors
-              hover:bg-[#061C2F]/8
-              md:hidden
-            "
+            className={[
+              "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors md:hidden",
+              variant === "landing"
+                ? "text-white hover:bg-white/10"
+                : "text-[#061C2F] hover:bg-[#061C2F]/8",
+            ].join(" ")}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             aria-controls="mobile-nav-menu"

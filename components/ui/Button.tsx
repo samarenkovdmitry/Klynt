@@ -2,21 +2,28 @@ import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "accent";
+type ButtonTone = "light" | "dark";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
+  /** Secondary only: light surfaces (report CTA) vs dark surfaces (landing hero/CTA). */
+  tone?: ButtonTone;
   icon?: ReactNode;
   href?: string;
   fullWidth?: boolean;
 };
 
-const variantStyles: Record<ButtonVariant, string> = {
-  primary:
-    "bg-[#061C2F] text-white border border-transparent hover:opacity-90",
-  secondary:
-    "bg-white text-[var(--ink-primary)] border border-[rgba(6,28,47,0.08)] hover:bg-[#F8FBFF]",
-  accent:
-    "border border-transparent bg-[#14A8E8] text-white shadow-[0_10px_30px_rgba(0,0,0,0.10)] hover:-translate-y-px hover:bg-[#1198D2] hover:shadow-[0_14px_34px_rgba(20,168,232,0.24)]",
+const primaryStyles =
+  "border border-transparent bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-primary-hover)]";
+
+const accentStyles =
+  "border border-transparent bg-[var(--brand-primary)] text-white shadow-[0_10px_30px_rgba(37,99,235,0.22)] hover:-translate-y-px hover:bg-[var(--brand-primary-hover)] hover:shadow-[0_14px_34px_rgba(37,99,235,0.28)]";
+
+const secondaryStyles: Record<ButtonTone, string> = {
+  light:
+    "border border-[rgba(6,28,47,0.08)] bg-white text-[var(--ink-primary)] hover:bg-[#F8FBFF]",
+  dark:
+    "border border-white bg-transparent text-white hover:bg-white/10",
 };
 
 export function Button({
@@ -24,19 +31,27 @@ export function Button({
   disabled,
   className = "",
   variant = "primary",
+  tone = "light",
   icon,
   href,
   fullWidth = true,
   type = "button",
   ...props
 }: ButtonProps) {
+  const variantClass =
+    variant === "secondary"
+      ? secondaryStyles[tone]
+      : variant === "accent"
+        ? accentStyles
+        : primaryStyles;
+
   const classes = [
     "inline-flex h-[52px] min-h-[52px] items-center justify-center gap-2 rounded-2xl px-6",
     "text-[15px] font-semibold leading-none transition",
     fullWidth ? "w-full" : "w-auto",
     disabled
       ? "cursor-not-allowed border-transparent bg-[#DCE2E7] text-white opacity-60"
-      : variantStyles[variant],
+      : variantClass,
     className,
   ].join(" ");
 
