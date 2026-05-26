@@ -5,7 +5,6 @@ import {
   RiArrowRightLine,
   RiSearchEyeLine,
   RiSparkling2Line,
-  RiMagicLine,
   RiShieldCheckLine,
   RiBarChartBoxLine,
   RiUserSmileLine,
@@ -15,30 +14,30 @@ import {
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LandingReportMockup } from "@/components/LandingReportMockup";
-import { LandingHeroOpArt } from "@/components/LandingHeroOpArt";
+import { LandingCtaOpArt, LandingHeroOpArt } from "@/components/LandingHeroOpArt";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 export default function Home() {
-  const pills = [
+  const mockupHighlights = [
     {
-      icon: <RiSearchEyeLine size={18} className="text-[#2563EB]" />,
-      label: "UX issues",
+      icon: RiSearchEyeLine,
+      title: "UX issues",
+      description: "Blocks with estimated impact on clarity",
     },
     {
-      icon: <RiSparkling2Line size={18} className="text-[#2563EB]" />,
-      label: "Copy refinement",
+      icon: RiSparkling2Line,
+      title: "Copy refinements",
+      description: "Before / after text suggestions in context",
     },
     {
-      icon: <RiBarChartBoxLine size={18} className="text-[#2563EB]" />,
-      label: "Conversion insights",
+      icon: RiBarChartBoxLine,
+      title: "Conversion insights",
+      description: "Clear scores with practical next steps",
     },
     {
-      icon: <RiMagicLine size={18} className="text-[#2563EB]" />,
-      label: "Full-page analysis",
-    },
-    {
-      icon: <RiShieldCheckLine size={18} className="text-[#2563EB]" />,
-      label: "Product teams",
+      icon: RiShieldCheckLine,
+      title: "Clarity score",
+      description: "One number to track page quality",
     },
   ];
 
@@ -172,43 +171,40 @@ export default function Home() {
         <LandingReportMockup />
       </section>
 
-      {/* FEATURE PILLS */}
+      {/* MOCKUP HIGHLIGHTS */}
       <section className="px-5 pt-12 md:px-6 md:pt-20">
         <div
           className="
             mx-auto
-            flex
-            max-w-[940px]
-            flex-wrap
-            items-center
-            justify-center
-            gap-2
+            grid
+            max-w-[1040px]
+            grid-cols-2
+            gap-x-6
+            gap-y-10
+            md:grid-cols-4
+            md:gap-x-8
           "
         >
-          {pills.map((item) => (
-            <div
-              key={item.label}
-              className="
-                inline-flex
-                items-center
-                gap-2
-                rounded-full
-                border
-                border-[rgba(6,28,47,0.06)]
-                bg-white
-                px-3.5
-                py-2
-                text-[12px]
-                font-medium
-                text-[#061C2F]
-                md:px-4
-                md:text-[14px]
-              "
-            >
-              {item.icon}
-              {item.label}
-            </div>
-          ))}
+          {mockupHighlights.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <div
+                key={item.title}
+                className="flex flex-col items-center text-center"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Icon size={18} className="shrink-0 text-[#2563EB]" />
+                  <span className="text-[14px] font-semibold tracking-[-0.02em] text-[#061C2F] md:text-[15px]">
+                    {item.title}
+                  </span>
+                </div>
+                <p className="mt-2 max-w-[200px] text-[13px] leading-[1.45] text-[#6B7280] md:text-[14px]">
+                  {item.description}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -259,13 +255,11 @@ export default function Home() {
                 flex-col
                 overflow-hidden
                 rounded-[28px]
-                border
-                border-[rgba(6,28,47,0.06)]
                 bg-white
               "
             >
               <div className="flex flex-1 flex-col p-6 pb-5">
-                <div className="inline-flex w-fit rounded-full bg-[#FFF3F3] px-3 py-1 text-[12px] font-semibold text-[#D94848]">
+                <div className="inline-flex w-fit rounded-full border border-red-200 bg-[#FFF3F3] px-3 py-1 text-[12px] font-semibold text-[#D94848]">
                   UX Issues
                 </div>
 
@@ -329,7 +323,7 @@ export default function Home() {
               "
             >
               <div className="flex flex-1 flex-col p-6 pb-5">
-                <div className="inline-flex w-fit rounded-full bg-[#E8F7EE] px-3 py-1 text-[12px] font-semibold text-[#2E7D4F]">
+                <div className="inline-flex w-fit rounded-full border border-emerald-200 bg-[#E8F7EE] px-3 py-1 text-[12px] font-semibold text-[#2E7D4F]">
                   Improvements
                 </div>
 
@@ -522,23 +516,27 @@ export default function Home() {
               <p className="mt-6 text-[17px] font-medium text-[#2563EB]">
                 Used by designers, founders and product teams
               </p>
-
-              <p
-                className="
-                  mt-4
-                  max-w-[620px]
-                  text-[24px]
-                  font-semibold
-                  leading-[1.2]
-                  tracking-[-0.04em]
-                  text-[#061C2F]
-                  md:text-[32px]
-                "
-              >
-                &ldquo;The fastest way to spot UX problems before launch.&rdquo;
-              </p>
             </div>
           </div>
+
+          <p
+            className="
+              mx-auto
+              max-w-[620px]
+              px-5
+              py-[60px]
+              text-center
+              text-[24px]
+              font-semibold
+              leading-[1.2]
+              tracking-[-0.04em]
+              text-[#061C2F]
+              md:px-6
+              md:text-[32px]
+            "
+          >
+            &ldquo;The fastest way to spot UX problems before launch.&rdquo;
+          </p>
 
           {/* HOW IT WORKS */}
           <div className="mt-12 md:mt-24">
@@ -587,7 +585,7 @@ export default function Home() {
                     md:p-7
                   "
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8F6FC] text-[15px] font-semibold text-[#0F7FB3]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2563EB]/10 text-[15px] font-semibold text-[#2563EB]">
                     {index + 1}
                   </div>
 
@@ -622,6 +620,7 @@ export default function Home() {
             md:py-16
           "
         >
+          <LandingCtaOpArt />
           <div className="relative z-10 mx-auto max-w-[760px] text-center">
             <h2
               className="

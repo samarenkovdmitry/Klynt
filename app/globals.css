@@ -24,8 +24,13 @@
 }
 
 ::selection {
-  background: #10A6DA;
-  color: white; /* или любой другой цвет текста */
+  background: #C2D5FF;
+  color: inherit;
+}
+
+::-moz-selection {
+  background: #C2D5FF;
+  color: inherit;
 }
 
 /* Убираем принудительный шрифт — теперь Tailwind font-sans = Familjen Grotesk */

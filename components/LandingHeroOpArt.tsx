@@ -85,22 +85,55 @@ function buildPaths() {
   return paths;
 }
 
+function OpArtSvg({
+  className,
+  viewBox,
+  preserveAspectRatio,
+}: {
+  className: string;
+  viewBox: string;
+  preserveAspectRatio: string;
+}) {
+  return (
+    <svg
+      className={className}
+      viewBox={viewBox}
+      preserveAspectRatio={preserveAspectRatio}
+      shapeRendering="geometricPrecision"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+    >
+      {buildPaths()}
+    </svg>
+  );
+}
+
 export function LandingHeroOpArt() {
   return (
     <div
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       aria-hidden
     >
-      <svg
+      <OpArtSvg
         className="absolute left-[calc(50%+220px)] top-0 h-full w-auto max-w-none -translate-x-1/2 md:left-[calc(50%+400px)]"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
-        shapeRendering="geometricPrecision"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-      >
-        {buildPaths()}
-      </svg>
+      />
+    </div>
+  );
+}
+
+export function LandingCtaOpArt() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      aria-hidden
+    >
+      <OpArtSvg
+        className="absolute right-0 top-0 h-full w-[34%] min-w-[130px] max-w-[280px] md:w-[30%] md:max-w-[320px]"
+        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+        preserveAspectRatio="xMaxYMid meet"
+      />
     </div>
   );
 }
