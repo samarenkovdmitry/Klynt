@@ -126,30 +126,30 @@ function normalizeIssueTitle(item: { title?: unknown; why?: unknown }): string {
   return firstSentence || why;
 }
 
-export function parseAnalysisJson(raw: string) {
-  try {
-    return JSON.parse(raw);
-  } catch {
-    let start = raw.indexOf("{");
+export function extractJSON(text: string) {
+  let start = text.indexOf("{");
 
-    while (start !== -1) {
-      let end = raw.lastIndexOf("}");
+  while (start !== -1) {
+    let end = text.lastIndexOf("}");
 
-      while (end !== -1 && end > start) {
-        const candidate = raw.slice(start, end + 1);
+    while (end !== -1 && end > start) {
+      const candidate = text.slice(start, end + 1);
 
-        try {
-          return JSON.parse(candidate);
-        } catch {
-          end = raw.lastIndexOf("}", end - 1);
-        }
+      try {
+        return JSON.parse(candidate);
+      } catch {
+        end = text.lastIndexOf("}", end - 1);
       }
-
-      start = raw.indexOf("{", start + 1);
     }
 
-    throw new Error("AI analysis failed. Please try again.");
+    start = text.indexOf("{", start + 1);
   }
+
+  throw new Error("AI analysis failed. Please try again.");
+}
+
+export function parseAnalysisJson(raw: string) {
+  return extractJSON(raw);
 }
 
 export function normalizeAnalysisResponse(json: Record<string, any>) {

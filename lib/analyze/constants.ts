@@ -1,33 +1,5 @@
 export const ANALYZE_MODEL = "gpt-4.1-nano";
 
-export const VIEWPORT = {
-  width: 800,
-  height: 700,
-  deviceScaleFactor: 1,
-} as const;
-
-export const PAGE_GOTO_TIMEOUT_MS = 8_000;
-export const SCROLL_SETTLE_MS = 50;
-
-export const TRACKER_PATTERN =
-  /google-analytics|googletagmanager|googlesyndication|googleadservices|doubleclick|facebook\.net|hotjar|segment\.(com|io)|intercom|clarity\.ms|sentry\.io|mixpanel|amplitude|fullstory|optimizely|heap\.io|licdn\.com|linkedin\.com\/px|tiktok\.com\/i18n|bat\.bing\.com|adservice|cookielaw|onetrust|cookiebot|hubspot|hs-scripts|hs-analytics|newrelic|datadoghq|mouseflow|crazyegg|luckyorange|quantserve|scorecardresearch|ads\.twitter|analytics\.twitter/i;
-
-export const BLOCKED_RESOURCE_TYPES = new Set([
-  "font",
-  "media",
-  "websocket",
-  "manifest",
-  "ping",
-  "events",
-]);
-
-/** Max width sent to the vision model — keeps tokens low while preserving layout detail. */
-export const VISION_MAX_WIDTH = 768;
-export const VISION_JPEG_QUALITY = 55;
-
-export const USER_AGENT =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
-
 export const ANALYSIS_PROMPT = `You are a senior SaaS UX auditor (clarity, conversion, positioning).
 
 Analyze ONLY what is visible in the screenshot(s). Never invent UI. No generic advice — name the actual element/section.

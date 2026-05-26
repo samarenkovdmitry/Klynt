@@ -1,11 +1,8 @@
 import OpenAI from "openai";
-import {
-  ANALYSIS_PROMPT,
-  ANALYZE_MODEL,
-} from "@/lib/analyze/constants";
+import { ANALYSIS_PROMPT, ANALYZE_MODEL } from "@/lib/analyze/constants";
 import {
   normalizeAnalysisResponse,
-  parseAnalysisJson,
+  extractJSON,
 } from "@/lib/analyze/normalize-response";
 
 const client = new OpenAI({
@@ -13,7 +10,10 @@ const client = new OpenAI({
 });
 
 function buildScreenshotContent(screenshotsBase64: string[]) {
-  const content: OpenAI.Responses.ResponseInputItem.Message["content"] = [];
+  const content: Array<
+    | { type: "input_text"; text: string }
+    | { type: "input_image"; image_url: string }
+  > = [];
 
   if (screenshotsBase64[0]) {
     content.push(
@@ -24,7 +24,6 @@ function buildScreenshotContent(screenshotsBase64: string[]) {
       {
         type: "input_image",
         image_url: `data:image/jpeg;base64,${screenshotsBase64[0]}`,
-        detail: "auto",
       }
     );
   }
@@ -38,7 +37,6 @@ function buildScreenshotContent(screenshotsBase64: string[]) {
       {
         type: "input_image",
         image_url: `data:image/jpeg;base64,${screenshotsBase64[1]}`,
-        detail: "auto",
       }
     );
   }
@@ -54,9 +52,6 @@ export async function runVisionAnalysis(
     model: ANALYZE_MODEL,
     temperature: 0.2,
     max_output_tokens: 2200,
-    text: {
-      format: { type: "json_object" },
-    },
     input: [
       {
         role: "user",
@@ -67,8 +62,8 @@ export async function runVisionAnalysis(
         ],
       },
     ],
-  });
+  } as OpenAI.Responses.ResponseCreateParamsNonStreaming);
 
-  const json = parseAnalysisJson(response.output_text);
+  const json = extractJSON(response.output_text);
   return normalizeAnalysisResponse(json);
 }

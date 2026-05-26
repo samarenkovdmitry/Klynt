@@ -34,8 +34,7 @@ export async function POST(req: Request) {
     let screenshotsBase64: string[] = [];
 
     if (uploadedScreenshot) {
-      const uploadedBase64 = await blobToBase64(uploadedScreenshot);
-      screenshotsBase64 = await optimizeScreenshots([uploadedBase64]);
+      screenshotsBase64 = [await blobToBase64(uploadedScreenshot)];
     } else if (url) {
       screenshotsBase64 = await captureWebsiteScreenshots(url);
     }
@@ -46,6 +45,8 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    screenshotsBase64 = await optimizeScreenshots(screenshotsBase64);
 
     const report = await runVisionAnalysis(url, screenshotsBase64);
 
