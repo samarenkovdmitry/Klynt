@@ -6,7 +6,7 @@ export function LandingHeroOpArt() {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/hero-bg.svg"
+        src="/hero-bg@2x.png"
         alt=""
         className="h-full w-full object-fill"
         decoding="async"
