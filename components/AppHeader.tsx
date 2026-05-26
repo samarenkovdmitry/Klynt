@@ -21,12 +21,21 @@ const navItems: NavItem[] = [
   { href: "/contact", label: "Contact" },
 ];
 
-function navLinkClass(isActive: boolean) {
+function navLinkClass(isActive: boolean, isLanding: boolean) {
+  if (isLanding) {
+    return [
+      "rounded-full px-3 py-2 text-[13px] font-medium transition-colors md:px-4 md:text-[14px]",
+      isActive
+        ? "bg-white/15 font-semibold text-white"
+        : "text-white/75 hover:bg-white/10 hover:text-white",
+    ].join(" ");
+  }
+
   return [
     "rounded-full px-3 py-2 text-[13px] font-medium transition-colors md:px-4 md:text-[14px]",
     isActive
-      ? "bg-white/15 font-semibold text-white"
-      : "text-white/75 hover:bg-white/10 hover:text-white",
+      ? "bg-[#F4F8FF] font-semibold text-[#061C2F]"
+      : "text-[#061C2F]/65 hover:bg-[#F8FAFC] hover:text-[#061C2F]",
   ].join(" ");
 }
 
@@ -73,7 +82,7 @@ export function AppHeader() {
           "sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
           isLanding
             ? "border-b border-transparent bg-transparent"
-            : "border-b border-white/10 bg-[var(--surface-dark)]",
+            : "border-b border-[rgba(6,28,47,0.06)] bg-white",
         ].join(" ")}
       >
         <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between gap-4 px-4 md:px-6">
@@ -84,13 +93,15 @@ export function AppHeader() {
             onClick={() => setMenuOpen(false)}
           >
             <img
-              src="/klynt-logo-light.svg"
+              src={isLanding ? "/klynt-logo-light.svg" : "/klynt-logo-dark.svg"}
               alt="Klynt"
               className="h-auto w-[108px] shrink-0"
             />
-            <span className="truncate text-[12px] font-semibold tracking-[-0.02em] text-white/90 sm:text-[13px] md:text-[14px]">
-              UX Clarity Analyzer
-            </span>
+            {!isLanding && (
+              <span className="truncate text-[12px] font-semibold tracking-[-0.02em] text-[#061C2F] sm:text-[13px] md:text-[14px]">
+                UX Clarity Analyzer
+              </span>
+            )}
           </Link>
 
           <nav
@@ -101,7 +112,7 @@ export function AppHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={navLinkClass(isNavActive(item, pathname))}
+                className={navLinkClass(isNavActive(item, pathname), isLanding)}
               >
                 {item.label}
               </Link>
@@ -110,7 +121,12 @@ export function AppHeader() {
 
           <button
             type="button"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 md:hidden"
+            className={[
+              "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors md:hidden",
+              isLanding
+                ? "text-white hover:bg-white/10"
+                : "text-[#061C2F] hover:bg-[#061C2F]/8",
+            ].join(" ")}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             aria-controls="mobile-nav-menu"
