@@ -1,38 +1,47 @@
-const SIZE = 100;
-const COLS = 17;
-const ROWS = 13;
-const CX = 50;
-const CY = 50;
-const RX = 43;
-const RY = 43;
-const MIN_W = 0.12;
-const MAX_W = 0.98;
+const VIEW_W = 220;
+const VIEW_H = 100;
+const COLS = 31;
+const ROWS = 15;
+const CX = VIEW_W / 2;
+const CY = VIEW_H / 2;
+const RX = 36;
+const RY = 40;
+const MIN_W = 0.1;
+const MAX_W = 1;
+const EDGE_FADE = VIEW_W * 0.5;
 const FILL = "#1A3058";
 
+function columnEnvelope(xc: number): number {
+  const d = Math.abs(xc - CX) / EDGE_FADE;
+  if (d >= 1) return 0;
+  const t = 1 - d;
+  return t * t;
+}
+
+function sphereFactor(xc: number, yc: number): number {
+  const nx = (xc - CX) / RX;
+  const ny = (yc - CY) / RY;
+  const inside = 1 - nx * nx - ny * ny;
+  if (inside <= 0) return MIN_W;
+  return MIN_W + (MAX_W - MIN_W) * Math.sqrt(inside);
+}
+
 function buildRects() {
-  const colPitch = SIZE / COLS;
+  const colPitch = VIEW_W / COLS;
   const rects = [];
 
   for (let col = 0; col < COLS; col++) {
     const xc = (col + 0.5) * colPitch;
+    const envelope = columnEnvelope(xc);
+    if (envelope <= 0) continue;
 
     for (let row = 0; row < ROWS; row++) {
-      const y0 = (row * SIZE) / ROWS;
-      const y1 = ((row + 1) * SIZE) / ROWS;
+      const y0 = (row * VIEW_H) / ROWS;
+      const y1 = ((row + 1) * VIEW_H) / ROWS;
       const yc = (y0 + y1) / 2;
+      const hw = ((sphereFactor(xc, yc) * colPitch) / 2) * envelope;
 
-      const nx = (xc - CX) / RX;
-      const ny = (yc - CY) / RY;
-      const inside = 1 - nx * nx - ny * ny;
-
-      let t: number;
-      if (inside <= 0) {
-        t = 1;
-      } else {
-        t = 1 - Math.sqrt(inside);
-      }
-
-      const hw = ((MIN_W + (MAX_W - MIN_W) * t) * colPitch) / 2;
+      if (hw < 0.02) continue;
 
       rects.push(
         <rect
@@ -52,11 +61,14 @@ function buildRects() {
 
 export function LandingHeroOpArt() {
   return (
-    <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+    <div
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      aria-hidden
+    >
       <svg
-        className="h-full w-full"
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
-        preserveAspectRatio="none"
+        className="absolute left-1/2 top-0 h-full w-auto max-w-none -translate-x-1/2"
+        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+        preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
       >
