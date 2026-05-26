@@ -15,6 +15,7 @@ import {
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LandingReportMockup } from "@/components/LandingReportMockup";
+import { LandingHeroOpArt } from "@/components/LandingHeroOpArt";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 export default function Home() {
@@ -78,6 +79,7 @@ export default function Home() {
           md:pb-[180px]
         "
       >
+        <LandingHeroOpArt />
         <AppHeader />
 
         {/* HERO CONTENT */}
