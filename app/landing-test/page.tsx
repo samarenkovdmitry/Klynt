@@ -1,10 +1,12 @@
 import { LandingReportMockup } from "@/components/LandingReportMockup";
-import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
-import { TestAnalysisSection } from "@/components/landing-test/TestAnalysisSection";
 import { LandingCtaSection } from "@/components/landing/LandingCtaSection";
-import { TestFeatureStrip } from "@/components/landing-test/TestFeatureStrip";
+import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
 import { TestHowItWorksSection } from "@/components/landing-test/TestHowItWorksSection";
-import { TestSocialProofSection } from "@/components/landing-test/TestSocialProofSection";
+import { TestPlatformSection } from "@/components/landing-test/TestPlatformSection";
+import { TestQuotesSection } from "@/components/landing-test/TestQuotesSection";
+import { TestReportLensesSection } from "@/components/landing-test/TestReportLensesSection";
+import { TestStatsBand } from "@/components/landing-test/TestStatsBand";
+import { TestTrustStrip } from "@/components/landing-test/TestTrustStrip";
 
 export default function LandingTestPage() {
   return (
@@ -15,23 +17,15 @@ export default function LandingTestPage() {
         id="report"
         className="relative z-20 -mt-[70px] px-4 md:-mt-[120px] md:px-6"
       >
-        <div className="mx-auto max-w-[1040px]">
-          <div className="mb-4 flex justify-center md:mb-5">
-            <span className="rounded-full border border-[rgba(6,28,47,0.08)] bg-white/90 px-4 py-1.5 text-[12px] font-semibold tracking-[0.04em] text-[#2563EB] uppercase shadow-sm backdrop-blur-sm">
-              Sample report preview
-            </span>
-          </div>
-          <LandingReportMockup />
-        </div>
+        <LandingReportMockup />
       </section>
 
-      <div className="pt-10 md:pt-14">
-        <TestFeatureStrip />
-      </div>
-
-      <TestAnalysisSection />
-      <TestSocialProofSection />
+      <TestTrustStrip />
       <TestHowItWorksSection />
+      <TestPlatformSection />
+      <TestReportLensesSection />
+      <TestStatsBand />
+      <TestQuotesSection />
       <LandingCtaSection />
     </main>
   );
