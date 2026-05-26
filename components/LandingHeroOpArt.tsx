@@ -9,6 +9,7 @@ export function LandingHeroOpArt() {
         src="/hero-bg.svg"
         alt=""
         className="h-full w-full object-fill"
+        decoding="async"
       />
     </div>
   );
