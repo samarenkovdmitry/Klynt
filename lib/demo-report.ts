@@ -1,3 +1,5 @@
+import type { AuditReport } from "@/lib/audit-report";
+
 export const DEMO_REPORT_ID = "29e49814-abac-4211-a226-a05dae07a710";
 
 export const DEMO_REPORT_URL = "https://stripe.com";
@@ -138,7 +140,7 @@ export const DEMO_REPORT = {
       impact_value_2: 6,
     },
   ],
-} as const;
+} satisfies AuditReport;
 
 export function getDemoReportJson(): string {
   return JSON.stringify(DEMO_REPORT);

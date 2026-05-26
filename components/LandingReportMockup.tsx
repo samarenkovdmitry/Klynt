@@ -5,6 +5,7 @@ import {
   RiLightbulbLine,
   RiShareForwardLine,
 } from "@remixicon/react";
+import { ScoreRing } from "@/components/report/ScoreRing";
 import { DEMO_REPORT } from "@/lib/demo-report";
 import {
   getRiskTier,
@@ -16,20 +17,11 @@ import {
 const titleSection =
   "text-[18px] font-semibold tracking-[-0.03em] text-[#061C2F] md:text-[26px]";
 
-const mobileClamp =
-  "line-clamp-2 md:line-clamp-none";
-
-const SCORE_SIZE = 176;
-const SCORE_RADIUS = 74;
-const SCORE_STROKE = 6;
-const SCORE_CENTER = SCORE_SIZE / 2;
-const SCORE_CIRCUMFERENCE = 2 * Math.PI * SCORE_RADIUS;
+const mobileClamp = "line-clamp-2 md:line-clamp-none";
 
 export function LandingReportMockup() {
   const data = DEMO_REPORT;
   const score = Number(data.score);
-  const progress = SCORE_CIRCUMFERENCE - (score / 100) * SCORE_CIRCUMFERENCE;
-  const scoreColor = getScoreColor(score);
   const riskColor = getTierColor(getRiskTier(data.risk));
 
   return (
@@ -112,44 +104,12 @@ export function LandingReportMockup() {
               <div className="mt-4 md:mt-5 lg:grid lg:grid-cols-[1.6fr_0.7fr] lg:divide-x lg:divide-[var(--stroke-light)]">
                 <div className="pb-6 lg:pr-8 lg:pb-0">
                   <div className="flex flex-row items-start gap-3 md:gap-6">
-                    <div className="relative flex h-[108px] w-[108px] shrink-0 items-center justify-center md:h-[176px] md:w-[176px]">
-                      <svg
-                        className="absolute inset-0 h-full w-full -rotate-90"
-                        viewBox={`0 0 ${SCORE_SIZE} ${SCORE_SIZE}`}
-                        aria-hidden
-                      >
-                        <circle
-                          cx={SCORE_CENTER}
-                          cy={SCORE_CENTER}
-                          r={SCORE_RADIUS}
-                          stroke="#E5E7EB"
-                          strokeWidth={SCORE_STROKE}
-                          fill="transparent"
-                        />
-                        <circle
-                          cx={SCORE_CENTER}
-                          cy={SCORE_CENTER}
-                          r={SCORE_RADIUS}
-                          stroke={scoreColor}
-                          strokeWidth={SCORE_STROKE}
-                          fill="transparent"
-                          strokeLinecap="round"
-                          strokeDasharray={SCORE_CIRCUMFERENCE}
-                          strokeDashoffset={progress}
-                        />
-                      </svg>
-                      <div className="absolute text-center">
-                        <p className="text-[10px] font-semibold text-[var(--ink-primary)] md:text-[12px]">
-                          UX Score
-                        </p>
-                        <p
-                          className="text-[28px] leading-none font-semibold tracking-[-0.04em] md:text-[48px] md:tracking-[-0.06em]"
-                          style={{ color: scoreColor }}
-                        >
-                          {score}
-                        </p>
-                      </div>
-                    </div>
+                    <ScoreRing
+                      score={score}
+                      className="relative flex h-[108px] w-[108px] shrink-0 items-center justify-center md:h-[176px] md:w-[176px]"
+                      labelClassName="text-[10px] font-semibold text-[var(--ink-primary)] md:text-[12px]"
+                      valueClassName="text-[28px] leading-none font-semibold tracking-[-0.04em] md:text-[48px] md:tracking-[-0.06em]"
+                    />
 
                     <div className="min-w-0 flex-1">
                       <p

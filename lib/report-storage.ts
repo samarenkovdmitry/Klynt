@@ -1,6 +1,8 @@
 import { DEMO_REPORT_ID, getDemoReportJson, DEMO_REPORT_PATH } from "./demo-report";
+import { isAuditReport } from "./audit-report";
 
 export { DEMO_REPORT_ID, DEMO_REPORT_PATH } from "./demo-report";
+export { isAuditReport, type AuditReport } from "./audit-report";
 
 export function saveReport(reportId: string, data: object) {
   const payload = JSON.stringify(data);
@@ -26,15 +28,5 @@ export function loadReport(reportId: string): string | null {
 }
 
 export function isValidAuditResponse(json: unknown): boolean {
-  if (!json || typeof json !== "object") return false;
-
-  const data = json as Record<string, unknown>;
-
-  if (typeof data.error === "string" && data.error.length > 0) return false;
-
-  const hasScore = Number.isFinite(Number(data.score));
-  const hasIssues =
-    Array.isArray(data.issues) && data.issues.length > 0;
-
-  return hasScore && hasIssues;
+  return isAuditReport(json);
 }
