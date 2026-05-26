@@ -8,18 +8,19 @@ const RX = 36;
 const RY = 40;
 const MIN_W = 0.1;
 const MAX_W = 1;
-const EDGE_FADE = VIEW_W * 0.5;
 const FILL = "#1A3058";
 
+/** Dense at left/right edges, fades toward center (split halves). */
 function columnEnvelope(xc: number): number {
-  const d = Math.abs(xc - CX) / EDGE_FADE;
-  if (d >= 1) return 0;
-  const t = 1 - d;
-  return t * t;
+  const distFromCenter = Math.abs(xc - CX);
+  const d = Math.min(1, distFromCenter / (VIEW_W * 0.5));
+  return d * d;
 }
 
+/** Sphere profile anchored to nearest horizontal edge. */
 function sphereFactor(xc: number, yc: number): number {
-  const nx = (xc - CX) / RX;
+  const localX = xc <= CX ? xc : VIEW_W - xc;
+  const nx = localX / RX;
   const ny = (yc - CY) / RY;
   const inside = 1 - nx * nx - ny * ny;
   if (inside <= 0) return MIN_W;
@@ -59,16 +60,17 @@ function buildRects() {
   return rects;
 }
 
-export function LandingHeroOpArt() {
+/** Edge-dense op-art: split pattern at left/right hero edges, full bleed. */
+export function LandingHeroOpArtWide() {
   return (
     <div
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       aria-hidden
     >
       <svg
-        className="absolute left-1/2 top-0 h-full w-auto max-w-none origin-center -translate-x-1/2 scale-[1.55]"
+        className="absolute inset-0 h-full w-full"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
       >
