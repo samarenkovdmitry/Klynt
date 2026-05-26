@@ -60,7 +60,7 @@ function isNavActive(item: NavItem, pathname: string) {
 
 export function AppHeader() {
   const pathname = usePathname();
-  const isLanding = pathname === "/";
+  const isLanding = pathname === "/" || pathname === "/landing-test";
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
