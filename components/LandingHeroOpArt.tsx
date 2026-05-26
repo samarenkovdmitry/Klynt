@@ -1,62 +1,61 @@
-const VIEW_W = 220;
+const VIEW_W = 400;
 const VIEW_H = 100;
-const COLS = 31;
-const ROWS = 15;
-const CX = VIEW_W / 2;
+const COLS = 43;
 const CY = VIEW_H / 2;
-const RX = 36;
-const RY = 40;
-const MIN_W = 0.1;
-const MAX_W = 1;
-const EDGE_FADE = VIEW_W * 0.5;
+const PEAK_X = VIEW_W * 0.78;
+const BLOB_R = VIEW_W * 0.25;
 const FILL = "#1A3058";
+const GRID_FILL = "#1A3058";
 
+/** Wrapped distance → cluster peak shifted right, tail wraps to left edge. */
 function columnEnvelope(xc: number): number {
-  const d = Math.abs(xc - CX) / EDGE_FADE;
-  if (d >= 1) return 0;
-  const t = 1 - d;
+  const d = Math.abs(xc - PEAK_X);
+  const wrapped = Math.min(d, VIEW_W - d);
+  const t = 1 - wrapped / BLOB_R;
+  if (t <= 0) return 0;
   return t * t;
 }
 
-function sphereFactor(xc: number, yc: number): number {
-  const nx = (xc - CX) / RX;
-  const ny = (yc - CY) / RY;
-  const inside = 1 - nx * nx - ny * ny;
-  if (inside <= 0) return MIN_W;
-  return MIN_W + (MAX_W - MIN_W) * Math.sqrt(inside);
-}
-
-function buildRects() {
+function buildPattern() {
   const colPitch = VIEW_W / COLS;
-  const rects = [];
+  const thinHw = colPitch * 0.055;
+  const shapes = [];
 
   for (let col = 0; col < COLS; col++) {
     const xc = (col + 0.5) * colPitch;
+
+    shapes.push(
+      <rect
+        key={`grid-${col}`}
+        x={xc - thinHw}
+        y={0}
+        width={thinHw * 2}
+        height={VIEW_H}
+        fill={GRID_FILL}
+        opacity={0.35}
+      />
+    );
+
     const envelope = columnEnvelope(xc);
-    if (envelope <= 0) continue;
+    if (envelope < 0.03) continue;
 
-    for (let row = 0; row < ROWS; row++) {
-      const y0 = (row * VIEW_H) / ROWS;
-      const y1 = ((row + 1) * VIEW_H) / ROWS;
-      const yc = (y0 + y1) / 2;
-      const hw = ((sphereFactor(xc, yc) * colPitch) / 2) * envelope;
+    const thickHw = colPitch * (0.07 + 0.43 * envelope);
+    const thickH = VIEW_H * (0.1 + 0.78 * envelope);
+    const y0 = CY - thickH / 2;
 
-      if (hw < 0.02) continue;
-
-      rects.push(
-        <rect
-          key={`${col}-${row}`}
-          x={xc - hw}
-          y={y0}
-          width={hw * 2}
-          height={y1 - y0}
-          fill={FILL}
-        />
-      );
-    }
+    shapes.push(
+      <rect
+        key={`bar-${col}`}
+        x={xc - thickHw}
+        y={y0}
+        width={thickHw * 2}
+        height={thickH}
+        fill={FILL}
+      />
+    );
   }
 
-  return rects;
+  return shapes;
 }
 
 export function LandingHeroOpArt() {
@@ -66,13 +65,13 @@ export function LandingHeroOpArt() {
       aria-hidden
     >
       <svg
-        className="absolute left-1/2 top-0 h-full w-auto max-w-none -translate-x-1/2"
+        className="absolute inset-0 h-full w-full"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
       >
-        {buildRects()}
+        {buildPattern()}
       </svg>
     </div>
   );
