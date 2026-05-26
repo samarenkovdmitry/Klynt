@@ -22,9 +22,12 @@ const navItems: NavItem[] = [
 ];
 
 function navLinkClass(isActive: boolean, isLanding: boolean) {
+  const base =
+    "rounded-full px-3 py-2 text-[13px] font-medium transition-colors md:px-4 md:text-[14px]";
+
   if (isLanding) {
     return [
-      "rounded-full px-3 py-2 text-[13px] font-medium transition-colors md:px-4 md:text-[14px]",
+      base,
       isActive
         ? "bg-white/15 font-semibold text-white"
         : "text-white/75 hover:bg-white/10 hover:text-white",
@@ -32,7 +35,7 @@ function navLinkClass(isActive: boolean, isLanding: boolean) {
   }
 
   return [
-    "rounded-full px-3 py-2 text-[13px] font-medium transition-colors md:px-4 md:text-[14px]",
+    base,
     isActive
       ? "bg-[#F4F8FF] font-semibold text-[#061C2F]"
       : "text-[#061C2F]/65 hover:bg-[#F8FAFC] hover:text-[#061C2F]",

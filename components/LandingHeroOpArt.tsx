@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 const VIEW_W = 220;
 const VIEW_H = 100;
 const COLS = 31;
@@ -108,33 +110,38 @@ function OpArtSvg({
   );
 }
 
-export function LandingHeroOpArt() {
+function DecorativeBackdrop({ children }: { children: ReactNode }) {
   return (
     <div
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       aria-hidden
     >
+      {children}
+    </div>
+  );
+}
+
+export function LandingHeroOpArt() {
+  return (
+    <DecorativeBackdrop>
       <OpArtSvg
         className="absolute left-[calc(50%+220px)] top-0 h-full w-auto max-w-none -translate-x-1/2 md:left-[calc(50%+400px)]"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
       />
-    </div>
+    </DecorativeBackdrop>
   );
 }
 
 export function LandingCtaOpArt() {
   return (
-    <div
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
-      aria-hidden
-    >
+    <DecorativeBackdrop>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/bottom-cta-bg.png"
         alt=""
         className="absolute right-0 top-0 h-full w-auto max-w-[42%] min-w-[140px] object-cover object-right md:max-w-[38%]"
       />
-    </div>
+    </DecorativeBackdrop>
   );
 }

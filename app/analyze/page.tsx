@@ -5,9 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   RiUpload2Line,
   RiCheckLine,
-  RiTimerFlashLine,
-  RiFilePdfLine,
-  RiUserSmileLine,
   RiCloseLine,
 } from "@remixicon/react";
 import { FormLabel } from "@/components/ui/FormLabel";
@@ -15,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { BrandPill } from "@/components/ui/BrandPill";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { AppHeader } from "@/components/AppHeader";
+import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
 
@@ -668,44 +666,7 @@ export default function Analyze() {
               </div>
 
 
-{/* TRUST META */}
-{!loading && (
-  <div
-    className="
-      mt-5
-      flex
-      flex-wrap
-      items-center
-      justify-center
-      gap-x-3
-      gap-y-2
-      text-[12px]
-      md:text-[13px]
-      text-[#8E99A2]
-    "
-  >
-
-    <div className="flex items-center gap-2">
-      <RiUserSmileLine size={16} className="shrink-0 text-[#14A8E8]" />
-      <span>No signup required</span>
-    </div>
-
-    <div className="hidden md:block h-1 w-1 rounded-full bg-[#D5DDE5]" />
-
-    <div className="flex items-center gap-2">
-      <RiFilePdfLine size={16} className="shrink-0 text-[#14A8E8]" />
-      <span>PDF export</span>
-    </div>
-
-    <div className="hidden md:block h-1 w-1 rounded-full bg-[#D5DDE5]" />
-
-    <div className="flex items-center gap-2">
-      <RiTimerFlashLine size={16} className="shrink-0 text-[#14A8E8]" />
-      <span>AI-generated in ~15–25 sec</span>
-    </div>
-
-  </div>
-)}
+{!loading && <TrustBadgeRow variant="light" className="mt-5" />}
 
 
               {/* ERROR */}

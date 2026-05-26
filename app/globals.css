@@ -13,9 +13,6 @@
   --brand-primary: #2563eb;
   --brand-primary-hover: #1d4ed8;
   --surface-dark: #0e1b36;
-  --pattern-hero: #14254a;
-  --hero-dot: rgba(255, 255, 255, 0.07);
-  --hero-dot-size: 32px;
 
   --nordic: #10a6da;
   --nordic-text: #0f7fb3;
@@ -44,59 +41,6 @@ body {
   border: 1px solid var(--nordic-border);
   background: var(--nordic-bg);
   color: var(--nordic-text);
-}
-
-/* Loopscale-style dot grid (full hero, fades toward center) */
-.hero-dot-pattern {
-  background-color: var(--surface-dark);
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    var(--hero-dot) 1px,
-    transparent 0
-  );
-  background-size: var(--hero-dot-size) var(--hero-dot-size);
-  mask-image: radial-gradient(
-    ellipse 85% 75% at 50% 42%,
-    black 15%,
-    transparent 68%
-  );
-  -webkit-mask-image: radial-gradient(
-    ellipse 85% 75% at 50% 42%,
-    black 15%,
-    transparent 68%
-  );
-}
-
-.bg-pattern {
-  background-color: #F4F4F4;
-  background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  background-size: 64px 64px;
-}
-
-.bg-soft {
-  background-color: var(--gray-soft);
-}
-
-.hover\:bg-soft:hover {
-  background-color: var(--gray-soft);
-}
-
-/* ANIMATION */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.2s ease-out;
 }
 
 @media print {
