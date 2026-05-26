@@ -42,10 +42,12 @@ export type ReportBreakdown = {
   visuals?: number;
 };
 
+export type AuditRisk = "low" | "medium" | "high";
+
 export type AuditReport = {
   url?: string;
   score: number;
-  risk?: string;
+  risk?: AuditRisk | string;
   summary?: string;
   verdict?: string;
   key_observation?: string;

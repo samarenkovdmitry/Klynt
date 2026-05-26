@@ -72,10 +72,10 @@ type AuditResponseFlat = {
 };
 
 /** Target duration for UX copy (~15–25 sec); progress eases toward cap over this window. */
-const ESTIMATED_ANALYSIS_MS = 22_000;
+const ESTIMATED_ANALYSIS_MS = 18_000;
 const MAX_PROGRESS_WHILE_WAITING = 92;
 const PROGRESS_TICK_MS = 50;
-const FINISH_ANIMATION_MS = 450;
+const FINISH_ANIMATION_MS = 180;
 
 function getTimeBasedProgress(elapsedMs: number): number {
   const tau = ESTIMATED_ANALYSIS_MS / 2.8;
@@ -219,7 +219,8 @@ export default function Analyze() {
       const flat: AuditResponseFlat = {
         url: json.url ?? url ?? "",
         score: json.score ?? 0,
-        risk: json.risk ?? "low",
+        risk:
+          json.risk === "medium" || json.risk === "high" ? json.risk : "low",
         summary: json.summary ?? "",
         verdict: json.verdict ?? "",
         key_observation: json.key_observation ?? "",
@@ -253,7 +254,12 @@ export default function Analyze() {
 
       stopProgressTimer();
       latestProgress = getTimeBasedProgress(performance.now() - startedAt);
-      await animateProgressTo100(latestProgress, setProgress);
+
+      if (latestProgress < 90) {
+        await animateProgressTo100(latestProgress, setProgress);
+      } else {
+        setProgress(100);
+      }
 
       router.push(`/report/${reportId}`);
     } catch (error: any) {
