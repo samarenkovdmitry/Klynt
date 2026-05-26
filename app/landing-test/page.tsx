@@ -1,7 +1,7 @@
 import { LandingReportMockup } from "@/components/LandingReportMockup";
 import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
 import { TestAnalysisSection } from "@/components/landing-test/TestAnalysisSection";
-import { TestCtaSection } from "@/components/landing-test/TestCtaSection";
+import { LandingCtaSection } from "@/components/landing/LandingCtaSection";
 import { TestFeatureStrip } from "@/components/landing-test/TestFeatureStrip";
 import { TestHowItWorksSection } from "@/components/landing-test/TestHowItWorksSection";
 import { TestSocialProofSection } from "@/components/landing-test/TestSocialProofSection";
@@ -32,7 +32,7 @@ export default function LandingTestPage() {
       <TestAnalysisSection />
       <TestSocialProofSection />
       <TestHowItWorksSection />
-      <TestCtaSection />
+      <LandingCtaSection />
     </main>
   );
 }
