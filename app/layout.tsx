@@ -1,5 +1,6 @@
 import type { Viewport } from "next";
 import { Familjen_Grotesk } from "next/font/google";
+import { AppFooter } from "@/components/AppFooter";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
 
@@ -26,8 +27,9 @@ export default function RootLayout({
       lang="en"
       className={`${familjen.variable} antialiased bg-white`}
     >
-      <body className="min-h-screen flex flex-col bg-white">
-        {children}
+      <body className="flex min-h-screen flex-col bg-white">
+        <div className="flex flex-1 flex-col">{children}</div>
+        <AppFooter />
       </body>
     </html>
   );

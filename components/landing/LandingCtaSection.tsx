@@ -1,6 +1,5 @@
 import { RiArrowRightLine } from "@remixicon/react";
 import { Button } from "@/components/ui/Button";
-import { LandingCtaOpArt } from "@/components/LandingHeroOpArt";
 import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { LANDING_BUTTON_CLASS } from "@/components/landing/landingStyles";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
@@ -9,9 +8,7 @@ export function LandingCtaSection() {
   return (
     <section className="px-5 py-12 md:px-6 md:py-28">
       <div className="relative mx-auto max-w-[1040px] overflow-hidden rounded-[28px] bg-[var(--surface-dark)] px-5 py-12 md:rounded-[36px] md:px-10 md:py-16">
-        <LandingCtaOpArt />
-
-        <div className="relative z-10 mx-auto max-w-[760px] text-center">
+        <div className="mx-auto max-w-[760px] text-center">
           <h2 className="text-[42px] font-normal leading-[0.95] tracking-[-0.04em] text-white md:text-[48px]">
             Improve clarity before shipping
           </h2>

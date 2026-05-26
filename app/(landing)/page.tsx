@@ -3,7 +3,6 @@ import { AnalysisBentoGrid } from "@/components/landing/AnalysisBentoGrid";
 import { FeatureHighlightGrid } from "@/components/landing/FeatureHighlightGrid";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { LandingCtaSection } from "@/components/landing/LandingCtaSection";
-import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
 import { LandingSectionHeader } from "@/components/landing/LandingSectionHeader";
 import { LANDING_CONTAINER_CLASS } from "@/components/landing/landingStyles";
@@ -38,7 +37,6 @@ export default function Home() {
       </section>
 
       <LandingCtaSection />
-      <LandingFooter />
     </main>
   );
 }

@@ -132,16 +132,3 @@ export function LandingHeroOpArt() {
     </DecorativeBackdrop>
   );
 }
-
-export function LandingCtaOpArt() {
-  return (
-    <DecorativeBackdrop>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/bottom-cta-bg.png"
-        alt=""
-        className="absolute right-0 top-0 h-full w-auto max-w-[42%] min-w-[140px] object-cover object-right md:max-w-[38%]"
-      />
-    </DecorativeBackdrop>
-  );
-}
