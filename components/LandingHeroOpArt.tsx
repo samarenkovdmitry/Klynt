@@ -8,7 +8,7 @@ export function LandingHeroOpArt() {
       <img
         src="/hero-op-art.svg"
         alt=""
-        className="h-full w-full"
+        className="h-full w-full object-fill"
       />
     </div>
   );
