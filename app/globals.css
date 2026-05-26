@@ -23,16 +23,6 @@
   --nordic-bg: rgba(16, 166, 218, 0.08);
 }
 
-::selection {
-  background: #C2D5FF;
-  color: inherit;
-}
-
-::-moz-selection {
-  background: #C2D5FF;
-  color: inherit;
-}
-
 /* Убираем принудительный шрифт — теперь Tailwind font-sans = Familjen Grotesk */
 html {
   font-family: var(--font-familjen);

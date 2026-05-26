@@ -465,78 +465,59 @@ export default function Home() {
           </div>
 
           {/* SOCIAL PROOF */}
-          <div
-            className="
-              mt-12
-              rounded-[32px]
-              border
-              border-[rgba(6,28,47,0.06)]
-              bg-white
-              px-6
-              py-8
-              md:mt-24
-              md:px-10
-              md:py-10
-            "
-          >
-            <div className="flex flex-col items-center text-center">
-              <div className="relative z-10 flex -space-x-3">
-                {avatars.map((src, i) => (
-                  <div
-                    key={src}
-                    className="
-                      relative
-                      h-12
-                      w-12
-                      shrink-0
-                      overflow-hidden
-                      rounded-full
-                      border-2
-                      border-white
-                      bg-[#E8F0F5]
-                      ring-1
-                      ring-[rgba(6,28,47,0.06)]
-                    "
-                    style={{ zIndex: avatars.length - i }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={src}
-                      alt=""
-                      width={48}
-                      height={48}
-                      className="block h-full w-full object-cover"
-                      loading="eager"
-                      decoding="async"
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <p className="mt-6 text-[17px] font-medium text-[#2563EB]">
-                Used by designers, founders and product teams
-              </p>
+          <div className="mt-12 flex flex-col items-center px-5 py-[60px] text-center md:mt-24 md:px-6">
+            <div className="relative z-10 flex -space-x-3">
+              {avatars.map((src, i) => (
+                <div
+                  key={src}
+                  className="
+                    relative
+                    h-12
+                    w-12
+                    shrink-0
+                    overflow-hidden
+                    rounded-full
+                    border-2
+                    border-white
+                    bg-[#E8F0F5]
+                    ring-1
+                    ring-[rgba(6,28,47,0.06)]
+                  "
+                  style={{ zIndex: avatars.length - i }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt=""
+                    width={48}
+                    height={48}
+                    className="block h-full w-full object-cover"
+                    loading="eager"
+                    decoding="async"
+                  />
+                </div>
+              ))}
             </div>
-          </div>
 
-          <p
-            className="
-              mx-auto
-              max-w-[620px]
-              px-5
-              py-[60px]
-              text-center
-              text-[24px]
-              font-semibold
-              leading-[1.2]
-              tracking-[-0.04em]
-              text-[#061C2F]
-              md:px-6
-              md:text-[32px]
-            "
-          >
-            &ldquo;The fastest way to spot UX problems before launch.&rdquo;
-          </p>
+            <p className="mt-6 text-[17px] font-medium text-[#2563EB]">
+              Used by designers, founders and product teams
+            </p>
+
+            <p
+              className="
+                mt-4
+                max-w-[620px]
+                text-[24px]
+                font-semibold
+                leading-[1.2]
+                tracking-[-0.04em]
+                text-[#061C2F]
+                md:text-[32px]
+              "
+            >
+              &ldquo;The fastest way to spot UX problems before launch.&rdquo;
+            </p>
+          </div>
 
           {/* HOW IT WORKS */}
           <div className="mt-12 md:mt-24">

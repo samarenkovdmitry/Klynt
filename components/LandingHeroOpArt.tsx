@@ -129,10 +129,11 @@ export function LandingCtaOpArt() {
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       aria-hidden
     >
-      <OpArtSvg
-        className="absolute right-0 top-0 h-full w-[34%] min-w-[130px] max-w-[280px] md:w-[30%] md:max-w-[320px]"
-        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        preserveAspectRatio="xMaxYMid meet"
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/bottom-cta-bg.png"
+        alt=""
+        className="absolute right-0 top-0 h-full w-auto max-w-[42%] min-w-[140px] object-cover object-right md:max-w-[38%]"
       />
     </div>
   );
