@@ -26,37 +26,63 @@ function sphereFactor(xc: number, yc: number): number {
   return MIN_W + (MAX_W - MIN_W) * Math.sqrt(inside);
 }
 
-function buildRects() {
+function columnHalfWidths(xc: number, colPitch: number, envelope: number): number[] {
+  const hws: number[] = [];
+
+  for (let row = 0; row < ROWS; row++) {
+    const y0 = (row * VIEW_H) / ROWS;
+    const y1 = ((row + 1) * VIEW_H) / ROWS;
+    const yc = (y0 + y1) / 2;
+    hws.push(((sphereFactor(xc, yc) * colPitch) / 2) * envelope);
+  }
+
+  return hws;
+}
+
+function columnPathD(xc: number, hws: number[]): string {
+  const rowH = VIEW_H / ROWS;
+  const pts: Array<[number, number]> = [];
+
+  pts.push([xc - hws[0], 0], [xc + hws[0], 0]);
+
+  for (let i = 0; i < ROWS - 1; i++) {
+    const y = (i + 1) * rowH;
+    pts.push([xc + hws[i], y], [xc + hws[i + 1], y]);
+  }
+
+  pts.push([xc + hws[ROWS - 1], VIEW_H], [xc - hws[ROWS - 1], VIEW_H]);
+
+  for (let i = ROWS - 2; i >= 0; i--) {
+    const y = (i + 1) * rowH;
+    pts.push([xc - hws[i + 1], y], [xc - hws[i], y]);
+  }
+
+  const [first, ...rest] = pts;
+  return `M ${first[0]},${first[1]} ${rest.map(([x, y]) => `L ${x},${y}`).join(" ")} Z`;
+}
+
+function buildPaths() {
   const colPitch = VIEW_W / COLS;
-  const rects = [];
+  const paths = [];
 
   for (let col = 0; col < COLS; col++) {
     const xc = (col + 0.5) * colPitch;
     const envelope = columnEnvelope(xc);
     if (envelope <= 0) continue;
 
-    for (let row = 0; row < ROWS; row++) {
-      const y0 = (row * VIEW_H) / ROWS;
-      const y1 = ((row + 1) * VIEW_H) / ROWS;
-      const yc = (y0 + y1) / 2;
-      const hw = ((sphereFactor(xc, yc) * colPitch) / 2) * envelope;
+    const hws = columnHalfWidths(xc, colPitch, envelope);
+    if (Math.max(...hws) < 0.02) continue;
 
-      if (hw < 0.02) continue;
-
-      rects.push(
-        <rect
-          key={`${col}-${row}`}
-          x={xc - hw}
-          y={y0}
-          width={hw * 2}
-          height={y1 - y0}
-          fill={FILL}
-        />
-      );
-    }
+    paths.push(
+      <path
+        key={col}
+        d={columnPathD(xc, hws)}
+        fill={FILL}
+      />
+    );
   }
 
-  return rects;
+  return paths;
 }
 
 export function LandingHeroOpArt() {
@@ -69,10 +95,11 @@ export function LandingHeroOpArt() {
         className="absolute left-[calc(50%+200px)] top-0 h-full w-auto max-w-none -translate-x-1/2 md:left-[calc(50%+400px)]"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
+        shapeRendering="geometricPrecision"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
       >
-        {buildRects()}
+        {buildPaths()}
       </svg>
     </div>
   );
