@@ -92,7 +92,7 @@ export function LandingHeroOpArt() {
       aria-hidden
     >
       <svg
-        className="absolute left-[calc(50%+180px)] top-0 h-full w-auto max-w-none -translate-x-1/2 md:left-[calc(50%+400px)]"
+        className="absolute left-[calc(50%+220px)] top-0 h-full w-auto max-w-none -translate-x-1/2 md:left-[calc(50%+400px)]"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         shapeRendering="geometricPrecision"
