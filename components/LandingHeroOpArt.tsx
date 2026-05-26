@@ -1,29 +1,20 @@
-const VIEW_W = 220;
-const VIEW_H = 100;
-const COLS = 31;
-const ROWS = 15;
+const VIEW_W = 240;
+const VIEW_H = 140;
+const COLS = 48;
+const ROWS = 28;
 const CX = VIEW_W / 2;
 const CY = VIEW_H / 2;
-const RX = 36;
-const RY = 40;
-const MIN_W = 0.1;
+const MIN_W = 0.06;
 const MAX_W = 1;
-const EDGE_FADE = VIEW_W * 0.5;
 const FILL = "#1A3058";
 
-function columnEnvelope(xc: number): number {
-  const d = Math.abs(xc - CX) / EDGE_FADE;
-  if (d >= 1) return 0;
-  const t = 1 - d;
-  return t * t;
-}
-
-function sphereFactor(xc: number, yc: number): number {
-  const nx = (xc - CX) / RX;
-  const ny = (yc - CY) / RY;
-  const inside = 1 - nx * nx - ny * ny;
-  if (inside <= 0) return MIN_W;
-  return MIN_W + (MAX_W - MIN_W) * Math.sqrt(inside);
+/** Thin at center, dense toward edges (inverted sphere). */
+function lineWidthFactor(xc: number, yc: number): number {
+  const nx = (xc - CX) / (VIEW_W * 0.48);
+  const ny = (yc - CY) / (VIEW_H * 0.48);
+  const dist = Math.min(1, Math.sqrt(nx * nx + ny * ny));
+  const t = dist * dist;
+  return MIN_W + (MAX_W - MIN_W) * t;
 }
 
 function buildRects() {
@@ -32,16 +23,14 @@ function buildRects() {
 
   for (let col = 0; col < COLS; col++) {
     const xc = (col + 0.5) * colPitch;
-    const envelope = columnEnvelope(xc);
-    if (envelope <= 0) continue;
 
     for (let row = 0; row < ROWS; row++) {
       const y0 = (row * VIEW_H) / ROWS;
       const y1 = ((row + 1) * VIEW_H) / ROWS;
       const yc = (y0 + y1) / 2;
-      const hw = ((sphereFactor(xc, yc) * colPitch) / 2) * envelope;
+      const hw = (lineWidthFactor(xc, yc) * colPitch) / 2;
 
-      if (hw < 0.02) continue;
+      if (hw < 0.015) continue;
 
       rects.push(
         <rect
@@ -61,13 +50,11 @@ function buildRects() {
 
 export function LandingHeroOpArt() {
   return (
-    <div
-      className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
-      aria-hidden
-    >
+    <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
       <svg
-        className="h-auto w-[min(130vw,920px)] max-w-none scale-[1.35]"
+        className="h-full w-full"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+        preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
       >
