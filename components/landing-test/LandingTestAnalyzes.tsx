@@ -13,10 +13,10 @@ export function LandingTestAnalyzes() {
           <p className="text-[17px] font-semibold leading-[22px] text-[#2563EB]">
             What Klynt analyzes
           </p>
-          <h2 className="mt-4 text-[32px] font-semibold leading-[36px] text-[#061C2F] md:text-[44px] md:leading-[0.98]">
+          <h2 className="mt-4 text-[32px] font-semibold leading-[36px] tracking-[-0.04em] text-[#061C2F] md:text-[44px] md:leading-[0.98]">
             Everything that makes a page feel unclear
           </h2>
-          <p className="mx-auto mt-5 max-w-[620px] text-[16px] leading-[21px] text-[#6B7280] md:text-[17px]">
+          <p className="mx-auto mt-5 max-w-[620px] text-[16px] leading-[28px] text-[#6B7280] md:text-[17px]">
             From UX friction to weak positioning and confusing copy — Klynt
             turns landing page problems into actionable fixes.
           </p>

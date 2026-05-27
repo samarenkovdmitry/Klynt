@@ -7,7 +7,7 @@ import {
   RiFlagLine,
   RiImageAddLine,
   RiLightbulbLine,
-  RiPencilAi2Fill,
+  RiPencilAi2Line,
   RiPieChart2Line,
   RiQuillPenLine,
   RiSearchEyeLine,
@@ -52,7 +52,7 @@ export const ANALYZE_ITEMS: AnalyzeItem[] = [
     description: "Detect confusing flows and interaction friction",
   },
   {
-    icon: RiPencilAi2Fill,
+    icon: RiPencilAi2Line,
     title: "Copy clarity",
     description: "Identify vague messaging and unclear positioning",
   },
