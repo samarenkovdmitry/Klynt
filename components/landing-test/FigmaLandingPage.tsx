@@ -1,30 +1,33 @@
-import { LandingReportMockup } from "@/components/LandingReportMockup";
-import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
-import { LandingUpdateCtaSection } from "@/components/landing-test/LandingUpdateCtaSection";
-import { LandingUpdateHowItWorks } from "@/components/landing-test/LandingUpdateHowItWorks";
-import { LandingUpdatePlatform } from "@/components/landing-test/LandingUpdatePlatform";
-import { LandingUpdateReportPreview } from "@/components/landing-test/LandingUpdateReportPreview";
-import { LandingUpdateTestimonial } from "@/components/landing-test/LandingUpdateTestimonial";
-import { LandingUpdateThreeLenses } from "@/components/landing-test/LandingUpdateThreeLenses";
+import { LandingTestAnalyzes } from "@/components/landing-test/LandingTestAnalyzes";
+import { LandingTestCtaSection } from "@/components/landing-test/LandingTestCtaSection";
+import { LandingTestFooter } from "@/components/landing-test/LandingTestFooter";
+import { LandingTestHero } from "@/components/landing-test/LandingTestHero";
+import {
+  LandingTestHowItWorks,
+  LandingTestMidCta,
+} from "@/components/landing-test/LandingTestHowItWorks";
+import { LandingTestInsideReport } from "@/components/landing-test/LandingTestInsideReport";
+import { LandingTestMockup } from "@/components/landing-test/LandingTestMockup";
+import { LandingTestSocialProof } from "@/components/landing-test/LandingTestSocialProof";
+import { LandingTestWhatYouGet } from "@/components/landing-test/LandingTestWhatYouGet";
 
 export function FigmaLandingPage() {
   return (
     <main className="min-w-[1040px] overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
-      <LandingHeroSection />
+      <LandingTestHero />
 
-      <section
-        id="report"
-        className="relative z-20 -mt-[120px] px-6"
-      >
-        <LandingReportMockup />
+      <section id="report" className="relative z-20 -mt-[120px] px-6">
+        <LandingTestMockup />
       </section>
 
-      <LandingUpdateThreeLenses />
-      <LandingUpdateHowItWorks />
-      <LandingUpdatePlatform />
-      <LandingUpdateReportPreview />
-      <LandingUpdateTestimonial />
-      <LandingUpdateCtaSection />
+      <LandingTestAnalyzes />
+      <LandingTestHowItWorks />
+      <LandingTestMidCta />
+      <LandingTestWhatYouGet />
+      <LandingTestInsideReport />
+      <LandingTestSocialProof />
+      <LandingTestCtaSection />
+      <LandingTestFooter />
     </main>
   );
 }

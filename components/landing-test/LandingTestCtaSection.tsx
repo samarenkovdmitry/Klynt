@@ -9,19 +9,18 @@ import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
 
 import { UPDATE_SECTION } from "./landingUpdateStyles";
 
-export function LandingUpdateCtaSection() {
+export function LandingTestCtaSection() {
   return (
     <section className={`relative overflow-hidden bg-[#0E1B36] ${UPDATE_SECTION}`}>
       <LandingHeroOpArt />
 
       <div className={`${LANDING_UPDATE_CONTAINER} relative z-10 text-center`}>
-        <h2 className="mx-auto max-w-[760px] text-[52px] font-normal leading-[0.95] tracking-[-0.04em] text-white">
-          Improve clarity before shipping
+        <h2 className="text-[52px] font-normal leading-[0.95] tracking-[-0.04em] text-white">
+          Landing pages fail quietly.
         </h2>
 
-        <p className="mx-auto mt-6 max-w-[560px] text-[19px] leading-8 text-white/70">
-          Analyze your interface, uncover UX friction and improve conversion
-          with AI-powered insights.
+        <p className="mx-auto mt-5 max-w-[560px] text-[19px] leading-8 text-white/70">
+          Klynt shows why.
         </p>
 
         <div className="mt-10 flex items-center justify-center gap-3">

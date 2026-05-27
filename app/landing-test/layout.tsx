@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import { LandingBodyColor } from "@/app/(landing)/LandingBodyColor";
+import { LandingTestHideGlobalFooter } from "@/components/landing-test/LandingTestHideGlobalFooter";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -23,6 +24,7 @@ export default function LandingTestLayout({
   return (
     <>
       <LandingBodyColor />
+      <LandingTestHideGlobalFooter />
       {children}
     </>
   );

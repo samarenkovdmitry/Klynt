@@ -1,24 +1,32 @@
 import {
+  ANALYZE_ITEMS,
   LANDING_UPDATE_CONTAINER,
-  THREE_LENSES,
 } from "@/lib/landing-update-content";
 
-import { UPDATE_HEADLINE, UPDATE_SECTION, UPDATE_SUBCOPY } from "./landingUpdateStyles";
+import {
+  UPDATE_EYEBROW,
+  UPDATE_HEADLINE,
+  UPDATE_SECTION,
+  UPDATE_SUBCOPY,
+} from "./landingUpdateStyles";
 
-export function LandingUpdateThreeLenses() {
+export function LandingTestAnalyzes() {
   return (
-    <section className={`${UPDATE_SECTION} bg-[#F5F7FA]`}>
+    <section className={`${UPDATE_SECTION} bg-white`}>
       <div className={LANDING_UPDATE_CONTAINER}>
-        <div className="mx-auto max-w-[720px] text-center">
-          <h2 className={UPDATE_HEADLINE}>One score. Three lenses.</h2>
+        <div className="mx-auto max-w-[760px] text-center">
+          <p className={UPDATE_EYEBROW}>What Klynt analyzes</p>
+          <h2 className={`mt-4 ${UPDATE_HEADLINE}`}>
+            Everything that makes a page feel unclear
+          </h2>
           <p className={`mx-auto mt-5 max-w-[620px] ${UPDATE_SUBCOPY}`}>
-            Every audit breaks your page into what&apos;s wrong, what to fix,
-            and how to rewrite the copy.
+            From UX friction to weak positioning and confusing copy — Klynt
+            turns landing page problems into actionable fixes.
           </p>
         </div>
 
         <div className="mt-16 grid grid-cols-4 gap-8">
-          {THREE_LENSES.map((item) => {
+          {ANALYZE_ITEMS.map((item) => {
             const Icon = item.icon;
 
             return (
