@@ -3,20 +3,23 @@ import {
   LANDING_UPDATE_CONTAINER,
 } from "@/lib/landing-update-content";
 
-import { UPDATE_SECTION } from "./landingUpdateStyles";
+import {
+  UPDATE_ANALYZES_SECTION,
+  UPDATE_SECTION_DESC,
+  UPDATE_SECTION_LABEL,
+  UPDATE_SECTION_TITLE,
+} from "./landingUpdateStyles";
 
 export function LandingTestAnalyzes() {
   return (
-    <section className={`${UPDATE_SECTION} bg-white`}>
+    <section className={`${UPDATE_ANALYZES_SECTION} bg-white`}>
       <div className={LANDING_UPDATE_CONTAINER}>
         <div className="mx-auto max-w-[760px] text-center">
-          <p className="text-[17px] font-semibold leading-[22px] text-[#2563EB]">
-            What Klynt analyzes
-          </p>
-          <h2 className="mt-4 text-[32px] font-semibold leading-[36px] tracking-[-0.04em] text-[#061C2F] md:text-[44px] md:leading-[0.98]">
+          <p className={UPDATE_SECTION_LABEL}>What Klynt analyzes</p>
+          <h2 className={UPDATE_SECTION_TITLE}>
             Everything that makes a page feel unclear
           </h2>
-          <p className="mx-auto mt-5 max-w-[620px] text-[16px] leading-[28px] text-[#6B7280] md:text-[17px]">
+          <p className={UPDATE_SECTION_DESC}>
             From UX friction to weak positioning and confusing copy — Klynt
             turns landing page problems into actionable fixes.
           </p>
