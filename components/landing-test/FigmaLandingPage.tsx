@@ -1,6 +1,5 @@
 import { LandingTestAnalyzes } from "@/components/landing-test/LandingTestAnalyzes";
 import { LandingTestCtaSection } from "@/components/landing-test/LandingTestCtaSection";
-import { LandingTestFooter } from "@/components/landing-test/LandingTestFooter";
 import { LandingTestHero } from "@/components/landing-test/LandingTestHero";
 import {
   LandingTestHowItWorks,
@@ -27,7 +26,6 @@ export function FigmaLandingPage() {
       <LandingTestInsideReport />
       <LandingTestSocialProof />
       <LandingTestCtaSection />
-      <LandingTestFooter />
     </main>
   );
 }

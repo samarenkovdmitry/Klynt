@@ -9,7 +9,11 @@ import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 const HEADER_HEIGHT_PX = 68;
 
 const navItems = [
-  { href: "/landing-test", label: "Home", match: (p: string) => p === "/landing-test" },
+  {
+    href: "/",
+    label: "Home",
+    match: (p: string) => p === "/" || p === "/landing-test",
+  },
   { href: "/analyze", label: "Analyze", match: (p: string) => p.startsWith("/analyze") },
   { href: DEMO_REPORT_PATH, label: "View demo", match: (p: string) => p.startsWith("/report") },
   { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") },
@@ -47,7 +51,7 @@ export function LandingTestHeader() {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-transparent bg-transparent pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between px-4 md:px-6">
-          <Link href="/landing-test" className="shrink-0" aria-label="Klynt — home">
+          <Link href="/" className="shrink-0" aria-label="Klynt — home">
             <img src="/klynt-logo-light.svg" alt="Klynt" className="h-auto w-[108px]" />
           </Link>
 
