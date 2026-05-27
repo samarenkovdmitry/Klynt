@@ -3,6 +3,7 @@ import { TRUST_BADGES } from "@/lib/trust-badges";
 type TrustBadgeRowProps = {
   variant?: "dark" | "light";
   className?: string;
+  subtle?: boolean;
 };
 
 const variantStyles = {
@@ -10,6 +11,11 @@ const variantStyles = {
     row: "text-white/70",
     icon: "text-white/85",
     dot: "bg-white/30",
+  },
+  darkSubtle: {
+    row: "text-white/45",
+    icon: "text-white/50",
+    dot: "bg-white/25",
   },
   light: {
     row: "text-[#8E99A2]",
@@ -21,8 +27,10 @@ const variantStyles = {
 export function TrustBadgeRow({
   variant = "dark",
   className = "",
+  subtle = false,
 }: TrustBadgeRowProps) {
-  const styles = variantStyles[variant];
+  const styles =
+    variant === "dark" && subtle ? variantStyles.darkSubtle : variantStyles[variant];
 
   return (
     <div

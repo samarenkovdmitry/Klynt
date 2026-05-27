@@ -14,7 +14,7 @@ export function LandingTestHero() {
       <LandingTestHeader />
 
       <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-5 pt-10 text-center md:px-6 md:pt-16">
-        <h1 className="max-w-[860px] text-[42px] font-normal leading-[0.95] tracking-[-0.01em] text-white sm:text-[50px] md:text-[75px]">
+        <h1 className="max-w-[860px] text-[54px] font-semibold leading-[58px] tracking-[-0.01em] text-white md:text-[64px] md:leading-[80px]">
           Clarity drives conversion
         </h1>
 
@@ -22,7 +22,7 @@ export function LandingTestHero() {
           Klynt finds what makes pages feel unclear — and how to fix it.
         </p>
 
-        <div className="mt-8 flex flex-col items-center justify-center">
+        <div className="mt-6 flex flex-col items-center justify-center md:mt-8">
           <Button
             href="/analyze"
             icon={<RiArrowRightLine size={18} />}
@@ -31,9 +31,9 @@ export function LandingTestHero() {
           >
             Start free audit
           </Button>
-
-          <TrustBadgeRow variant="dark" className="mt-5" />
         </div>
+
+        <TrustBadgeRow variant="dark" subtle className="mt-6 md:mt-8" />
       </div>
     </section>
   );

@@ -1,8 +1,7 @@
 "use client";
 
-import { RiDownload2Line, RiLightbulbLine, RiShareForwardLine } from "@remixicon/react";
+import { RiLightbulbLine, RiShareBoxLine } from "@remixicon/react";
 
-import { ScoreRing } from "@/components/report/ScoreRing";
 import { DEMO_REPORT } from "@/lib/demo-report";
 import {
   getRiskTier,
@@ -11,19 +10,101 @@ import {
   normalizeRisk,
 } from "@/lib/report-metrics";
 
-const titleSection =
-  "text-[18px] font-semibold tracking-[-0.03em] text-[#061C2F] md:text-[26px]";
-
 const mobileClamp = "line-clamp-2 md:line-clamp-none";
+
+function LandingTestScoreRing({ score }: { score: number }) {
+  const scoreColor = getScoreColor(score);
+
+  return (
+    <>
+      <div className="relative mx-auto flex h-[120px] w-[120px] shrink-0 items-center justify-center md:hidden">
+        <svg
+          className="absolute inset-0 h-full w-full -rotate-90"
+          viewBox="0 0 120 120"
+          aria-hidden
+        >
+          <circle cx="60" cy="60" r="46" fill="rgba(255,255,255,0.55)" />
+          <circle
+            cx="60"
+            cy="60"
+            r="46"
+            stroke="#E5E7EB"
+            strokeWidth="5"
+            fill="transparent"
+          />
+          <circle
+            cx="60"
+            cy="60"
+            r="46"
+            stroke={scoreColor}
+            strokeWidth="5"
+            fill="transparent"
+            strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 46}
+            strokeDashoffset={2 * Math.PI * 46 * (1 - score / 100)}
+          />
+        </svg>
+        <div className="relative text-center">
+          <p className="text-[10px] font-semibold text-[#061C2F]">UX Score</p>
+          <p
+            className="text-[32px] leading-none font-semibold tracking-[-0.04em]"
+            style={{ color: scoreColor }}
+          >
+            {score}
+          </p>
+        </div>
+      </div>
+
+      <div className="relative hidden h-[152px] w-[152px] shrink-0 items-center justify-center md:flex">
+        <svg
+          className="absolute inset-0 h-full w-full -rotate-90"
+          viewBox="0 0 152 152"
+          aria-hidden
+        >
+          <circle cx="76" cy="76" r="58" fill="rgba(255,255,255,0.55)" />
+          <circle
+            cx="76"
+            cy="76"
+            r="58"
+            stroke="#E5E7EB"
+            strokeWidth="5"
+            fill="transparent"
+          />
+          <circle
+            cx="76"
+            cy="76"
+            r="58"
+            stroke={scoreColor}
+            strokeWidth="5"
+            fill="transparent"
+            strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 58}
+            strokeDashoffset={2 * Math.PI * 58 * (1 - score / 100)}
+          />
+        </svg>
+        <div className="relative text-center">
+          <p className="text-[11px] font-semibold text-[#061C2F]">UX Score</p>
+          <p
+            className="text-[40px] leading-none font-semibold tracking-[-0.05em]"
+            style={{ color: scoreColor }}
+          >
+            {score}
+          </p>
+        </div>
+      </div>
+    </>
+  );
+}
 
 export function LandingTestMockup() {
   const data = DEMO_REPORT;
   const score = 75;
   const riskColor = getTierColor(getRiskTier(data.risk));
+  const riskLabel = normalizeRisk(data.risk);
 
   return (
     <div
-      className="relative mx-auto max-w-[1040px] overflow-hidden rounded-[28px] bg-white shadow-[0_20px_60px_rgba(6,28,47,0.1)] md:rounded-[36px]"
+      className="relative mx-auto max-w-[1040px] overflow-hidden rounded-[28px] border border-[rgba(6,28,47,0.09)] bg-white shadow-[0_20px_60px_rgba(6,28,47,0.1)] md:rounded-[36px]"
       role="img"
       aria-label="Demo clarity report preview"
       onCopy={(event) => event.preventDefault()}
@@ -32,73 +113,50 @@ export function LandingTestMockup() {
         className="pointer-events-none select-none"
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
       >
-        <div className="flex flex-col gap-6 px-5 py-6 md:px-10 md:py-8 lg:flex-row lg:items-start lg:justify-between">
-          <div className="min-w-0">
-            <div className="flex flex-nowrap items-center gap-2 md:gap-3">
-              <h2 className="shrink-0 text-[24px] font-semibold leading-none tracking-[-0.04em] text-[#061C2F] md:text-[38px]">
-                Clarity Report
-              </h2>
-              <div className="shrink-0 rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[11px] font-semibold text-[#2F6FED] md:px-3 md:text-[12px]">
-                AI Generated
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1 text-[13px] text-[#8E99A2] md:gap-x-2 md:text-[14px]">
-              <div className="flex min-w-0 items-center gap-2">
-                <img
-                  src={`https://www.google.com/s2/favicons?domain_url=${data.url}&sz=32`}
-                  alt=""
-                  className="h-4 w-4 shrink-0 rounded-sm"
-                />
-                <span className="truncate">{data.url}</span>
-              </div>
-              <span className="text-neutral-300">•</span>
-              <span className="shrink-0">
-                {new Date(data.generatedAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
+        <div className="flex items-start justify-between gap-4 px-5 py-6 md:px-10 md:py-8">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 md:gap-3">
+            <h2 className="text-[20px] font-semibold leading-[26px] tracking-[-0.04em] text-[#061C2F] md:text-[24px] md:leading-[30px]">
+              Clarity Report
+            </h2>
+            <div className="rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[11px] font-semibold text-[#2F6FED] md:px-3 md:text-[12px]">
+              AI Generated
             </div>
           </div>
 
-          <div className="flex w-full gap-2 sm:w-auto">
-            <span className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[#DCE2E7] bg-white px-4 py-2.5 text-[14px] font-medium text-[#061C2F] md:flex-none md:rounded-full md:px-5 md:py-3">
-              <RiDownload2Line size={18} />
-              Export PDF
-            </span>
-            <span className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[#DCE2E7] bg-white px-4 py-2.5 text-[14px] font-medium text-[#061C2F] md:flex-none md:rounded-full md:px-5 md:py-3">
-              <RiShareForwardLine size={18} />
-              Share
-            </span>
+          <RiShareBoxLine
+            size={22}
+            className="shrink-0 text-[#8E99A2] md:hidden"
+            aria-hidden
+          />
+
+          <div className="hidden shrink-0 items-center gap-4 text-[14px] font-medium text-[#061C2F] md:flex">
+            <span>Export PDF</span>
+            <span className="h-4 w-px bg-[#DCE2E7]" aria-hidden />
+            <span>Share</span>
           </div>
         </div>
 
         <div className="border-t border-[#DCE2E7] px-5 pt-[18px] pb-6 md:px-10 md:pt-[26px] md:pb-8">
-          <h3 className={titleSection}>Summary</h3>
+          <h3 className="text-[18px] font-semibold leading-[23px] tracking-[-0.03em] text-[#061C2F] md:text-[20px] md:leading-[28px]">
+            Summary
+          </h3>
 
-          <div className="mt-4 md:mt-5 lg:grid lg:grid-cols-[1.6fr_0.7fr] lg:divide-x lg:divide-[#DCE2E7]">
-            <div className="pb-6 lg:pr-8 lg:pb-0">
-              <div className="flex flex-row items-start gap-3 md:gap-6">
-                <ScoreRing
-                  score={score}
-                  className="relative flex h-[108px] w-[108px] shrink-0 items-center justify-center md:h-[176px] md:w-[176px]"
-                  labelClassName="text-[10px] font-semibold text-[#061C2F] md:text-[12px]"
-                  valueClassName="text-[28px] leading-none font-semibold tracking-[-0.04em] md:text-[48px] md:tracking-[-0.06em]"
-                />
+          <div className="mt-4 md:mt-5 md:grid md:grid-cols-[1.6fr_0.7fr] md:divide-x md:divide-[#DCE2E7]">
+            <div className="pb-6 md:pr-8 md:pb-0">
+              <div className="flex flex-col items-center md:flex-row md:items-start md:gap-6">
+                <LandingTestScoreRing score={score} />
 
-                <div className="min-w-0 flex-1">
+                <div className="mt-4 min-w-0 w-full text-center md:mt-0 md:flex-1 md:text-left">
                   <p
-                    className={`text-left text-[16px] font-medium leading-[1.35] tracking-[-0.03em] text-[#061C2F] md:text-[24px] ${mobileClamp}`}
+                    className={`text-[20px] font-medium leading-[30px] tracking-[-0.03em] text-[#061C2F] md:text-[24px] md:leading-[1.35] ${mobileClamp}`}
                   >
                     {data.verdict}
                   </p>
-                  <p className="mt-3 text-left text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400 md:mt-4 md:text-[12px]">
+                  <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400 md:mt-4 md:text-[12px]">
                     Top insight
                   </p>
                   <p
-                    className={`mt-1 text-left text-[13px] leading-[1.55] text-[#8E99A2] md:text-[16px] md:leading-[1.65] ${mobileClamp}`}
+                    className={`mt-1 text-[13px] leading-[1.55] text-[#8E99A2] md:text-[16px] md:leading-[1.65] ${mobileClamp}`}
                   >
                     {data.summary}
                   </p>
@@ -106,23 +164,21 @@ export function LandingTestMockup() {
               </div>
             </div>
 
-            <div className="border-t border-[#DCE2E7] pt-6 lg:border-t-0 lg:pl-8 lg:pt-0">
+            <div className="border-t border-[#DCE2E7] pt-6 md:border-t-0 md:pl-8 md:pt-0">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-[14px] font-semibold text-[#061C2F]">
                   Conversion Health
                 </p>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  <div
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: riskColor }}
-                  />
-                  <p
-                    className="text-[15px] font-semibold tracking-[-0.02em]"
-                    style={{ color: riskColor }}
-                  >
-                    {normalizeRisk(data.risk)}
-                  </p>
-                </div>
+                <span
+                  className="shrink-0 rounded-full px-2.5 py-1 text-[12px] font-semibold"
+                  style={{
+                    color: riskColor,
+                    backgroundColor: `${riskColor}1A`,
+                    border: `1px solid ${riskColor}33`,
+                  }}
+                >
+                  {riskLabel}
+                </span>
               </div>
 
               <div className="mt-3 space-y-2">
@@ -181,16 +237,14 @@ export function LandingTestMockup() {
           </div>
 
           <div className="mt-6 border-t border-[#DCE2E7] pt-6 md:mt-8 md:pt-8">
-            <div className="flex items-start gap-3.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFF7ED]">
-                <RiLightbulbLine size={18} className="text-amber-600" />
-              </div>
+            <div className="flex items-start gap-3">
+              <RiLightbulbLine size={22} className="mt-0.5 shrink-0 text-amber-600" />
               <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-normal uppercase tracking-[0.08em] text-amber-700">
+                <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-amber-700">
                   Key observation
                 </p>
                 <p
-                  className={`mt-1.5 text-[15px] font-normal leading-[1.55] tracking-[-0.01em] text-[#061C2F] md:text-[16px] ${mobileClamp}`}
+                  className={`mt-1.5 text-[15px] font-medium leading-[1.55] tracking-[-0.01em] text-[#061C2F] md:text-[16px] ${mobileClamp}`}
                 >
                   {data.key_observation}
                 </p>
