@@ -8,6 +8,13 @@ import {
   getSiteUrl,
 } from "./site";
 
+const OG_IMAGE = {
+  url: "/opengraph-image.jpg",
+  width: 1024,
+  height: 537,
+  alt: `${SITE_NAME} — Clarity drives conversion`,
+};
+
 type PageSeoOptions = {
   title: string;
   description?: string;
@@ -39,11 +46,13 @@ export function buildPageMetadata({
       siteName: SITE_NAME,
       title: `${title} | ${SITE_NAME}`,
       description,
+      images: [OG_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} | ${SITE_NAME}`,
       description,
+      images: [OG_IMAGE.url],
     },
   };
 }
@@ -68,11 +77,13 @@ export function rootMetadata(): Metadata {
       siteName: SITE_NAME,
       title: `${SITE_NAME} — ${SITE_TAGLINE}`,
       description: DEFAULT_DESCRIPTION,
+      images: [OG_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       title: `${SITE_NAME} — ${SITE_TAGLINE}`,
       description: DEFAULT_DESCRIPTION,
+      images: [OG_IMAGE.url],
     },
     robots: {
       index: true,
