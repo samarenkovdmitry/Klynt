@@ -14,4 +14,4 @@ export const UPDATE_HEADLINE =
 export const UPDATE_SUBCOPY =
   "text-[16px] leading-7 text-[#6B7280] md:text-[17px]";
 export const UPDATE_CARD_STRIPE_OVERLAY =
-  "pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(6,28,47,0.035)_1px,transparent_1px)] bg-[length:40px_100%] [mask-image:linear-gradient(to_bottom,transparent_0%,black_50%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_50%)]";
+  "pointer-events-none absolute -left-[5px] top-0 right-0 bottom-0 bg-[linear-gradient(90deg,rgba(6,28,47,0.035)_1px,transparent_1px)] bg-[length:40px_100%] [mask-image:linear-gradient(to_bottom,transparent_0%,black_50%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_50%)]";

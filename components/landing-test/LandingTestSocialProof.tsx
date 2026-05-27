@@ -15,19 +15,19 @@ export function LandingTestSocialProof() {
         </p>
 
         <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:gap-3">
-          <div className="flex -space-x-3">
+          <div className="flex -space-x-2">
             {SOCIAL_PROOF_AVATARS.map((src, i) => (
               <div
                 key={src}
-                className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-white bg-[#E8F0F5] ring-1 ring-[rgba(6,28,47,0.06)]"
+                className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border-2 border-white bg-[#E8F0F5] ring-1 ring-[rgba(6,28,47,0.06)]"
                 style={{ zIndex: SOCIAL_PROOF_AVATARS.length - i }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={src}
                   alt=""
-                  width={48}
-                  height={48}
+                  width={32}
+                  height={32}
                   className="block h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"

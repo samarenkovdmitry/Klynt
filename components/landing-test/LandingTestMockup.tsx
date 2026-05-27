@@ -118,7 +118,7 @@ export function LandingTestMockup() {
             <h2 className="text-[20px] font-semibold leading-[26px] tracking-[-0.04em] text-[#061C2F] md:text-[26px] md:leading-[30px]">
               Clarity Report
             </h2>
-            <div className="ml-0.5 rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[11px] font-semibold leading-none text-[#2F6FED] md:px-3 md:text-[12px]">
+            <div className="ml-0.5 rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[12px] font-semibold leading-none text-[#2F6FED]">
               AI Generated
             </div>
           </div>

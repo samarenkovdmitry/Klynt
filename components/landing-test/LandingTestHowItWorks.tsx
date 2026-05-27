@@ -25,28 +25,28 @@ const stepCardClass =
   "w-full max-w-[380px] rounded-[20px] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]";
 
 function ReviewReportScoreRing() {
-  const radius = 26;
+  const radius = 32;
   const circumference = 2 * Math.PI * radius;
   const scoreColor = "#10B981";
 
   return (
-    <div className="relative h-16 w-16 shrink-0">
+    <div className="relative h-20 w-20 shrink-0">
       <svg
         className="absolute inset-0 h-full w-full -rotate-90"
-        viewBox="0 0 64 64"
+        viewBox="0 0 80 80"
         aria-hidden
       >
         <circle
-          cx="32"
-          cy="32"
+          cx="40"
+          cy="40"
           r={radius}
           stroke="#E5E7EB"
           strokeWidth="4"
           fill="transparent"
         />
         <circle
-          cx="32"
-          cy="32"
+          cx="40"
+          cy="40"
           r={radius}
           stroke={scoreColor}
           strokeWidth="4"
@@ -57,7 +57,7 @@ function ReviewReportScoreRing() {
         />
       </svg>
       <span
-        className="absolute inset-0 flex items-center justify-center text-[22px] font-semibold"
+        className="absolute inset-0 flex items-center justify-center text-[29px] font-semibold"
         style={{ color: scoreColor }}
       >
         75
@@ -131,23 +131,25 @@ function StepVisual({ index }: { index: number }) {
       <div className={stepCardClass}>
         <div className="flex items-center justify-between text-[14px]">
           <span className="font-semibold text-[#061C2F]">Clarity Report</span>
-          <div className="flex items-center gap-4 text-[12px] text-[#6B7280]">
+          <div className="flex items-center gap-2 text-[12px] text-[#6B7280]">
             <span>Export PDF</span>
             <span className="h-4 w-px bg-[#EBEFF3]" aria-hidden />
             <span>Share</span>
           </div>
         </div>
-        <div className="mt-5 flex items-center gap-4">
+        <div className="mt-5 flex items-start gap-4">
           <ReviewReportScoreRing />
-          <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-start gap-3">
             <div className="flex-1 space-y-2">
               <div className="h-1.5 w-full rounded-full bg-[#E5E7EB]" />
               <div className="h-1.5 w-[80%] rounded-full bg-[#E5E7EB]" />
-              <div className="h-1.5 w-[65%] rounded-full bg-[#E5E7EB]" />
             </div>
             <div className="space-y-2">
               <div className="h-1.5 w-16 rounded-full bg-[#E5E7EB]" />
+              <div className="h-1.5 w-14 rounded-full bg-[#E5E7EB]" />
               <div className="h-1.5 w-12 rounded-full bg-[#E5E7EB]" />
+              <div className="h-1.5 w-10 rounded-full bg-[#E5E7EB]" />
+              <div className="h-1.5 w-8 rounded-full bg-[#E5E7EB]" />
             </div>
           </div>
         </div>

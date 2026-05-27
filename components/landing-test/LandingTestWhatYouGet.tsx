@@ -11,7 +11,10 @@ import {
 } from "./landingUpdateStyles";
 
 const featurePreviewCard =
-  "w-full rounded-[20px] border border-[rgba(6,28,47,0.08)] bg-white p-4 shadow-[0_8px_24px_rgba(6,28,47,0.08)] lg:w-[245px]";
+  "w-full rounded-[20px] border border-[rgba(6,28,47,0.08)] bg-white p-4 lg:w-[245px]";
+
+const pdfExportCard =
+  "w-full rounded-t-[20px] rounded-b-none border border-[rgba(6,28,47,0.08)] border-b-0 bg-white p-4 lg:w-[180px]";
 
 function ScoreRing95() {
   const radius = 22;
@@ -114,9 +117,7 @@ function FeatureVisual({ id }: { id: string }) {
   }
 
   return (
-    <div
-      className={`${featurePreviewCard} rounded-t-[20px] rounded-b-none border-b-0 lg:w-[245px]`}
-    >
+    <div className={pdfExportCard}>
       <div className="flex items-center justify-between gap-3">
         <span className="text-[12px] font-semibold text-[#061C2F]">Clarity Report</span>
         <span className="rounded-md border border-[#DCE2E7] bg-[#F5F7FA] px-2 py-0.5 text-[10px] font-semibold text-[#6B7280]">
@@ -132,7 +133,7 @@ function FeatureVisual({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-x-2 gap-y-2.5">
+      <div className="mt-4 space-y-2.5">
         {[
           { label: "Hero clarity", width: "85%" },
           { label: "CTA hierarchy", width: "68%" },

@@ -35,14 +35,15 @@ export function LandingTestInsideReport() {
           </p>
         </div>
 
-        <div className="mx-auto mt-10 max-w-[700px] overflow-hidden rounded-[20px] border border-[#EBEFF3] bg-white shadow-[0_16px_48px_rgba(6,28,47,0.06)] md:mt-14 md:rounded-[28px]">
+        <div className="mx-auto mt-10 max-w-[700px] md:mt-14">
           {INSIDE_REPORT_ITEMS.map((item, index) => (
             <div
               key={item.title}
               className={[
-                "relative border-b border-[#EBEFF3] px-5 py-5 last:border-b-0 md:px-8 md:py-6",
-                index === 1 || index === 2 ? "rounded-t-[26px]" : "",
+                "relative rounded-[20px] border border-[#EBEFF3] bg-white px-5 py-5 shadow-[0_16px_48px_rgba(6,28,47,0.06)] md:rounded-[28px] md:px-8 md:py-6",
+                index > 0 ? "-mt-4" : "",
               ].join(" ")}
+              style={{ zIndex: index + 1 }}
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                 <div className="flex min-w-0 items-start gap-4 pr-24 sm:pr-0 md:gap-5">
@@ -64,15 +65,15 @@ export function LandingTestInsideReport() {
                     ) : null}
                     {item.showSkeleton ? (
                       <div className="mt-4 space-y-2">
-                        <div className="h-2.5 w-full rounded-full bg-[#E5E7EB] md:w-[380px]" />
-                        <div className="h-2.5 w-[85%] rounded-full bg-[#E5E7EB] md:w-[270px]" />
+                        <div className="h-2 w-full rounded-full bg-[#E5E7EB] md:w-[380px]" />
+                        <div className="h-2 w-[85%] rounded-full bg-[#E5E7EB] md:w-[270px]" />
                       </div>
                     ) : null}
                     {item.showComparison ? (
-                      <div className="mt-4 h-2.5 w-full rounded-full bg-[#E5E7EB] md:w-[368px]" />
+                      <div className="mt-4 h-2 w-full rounded-full bg-[#E5E7EB] md:w-[368px]" />
                     ) : null}
                     {item.footer ? (
-                      <p className="mt-1.5 hidden text-[13px] font-semibold text-[#061C2F] sm:block">
+                      <p className="mt-5 hidden text-[13px] font-semibold text-[#061C2F] sm:block">
                         {item.footer}
                       </p>
                     ) : null}
@@ -92,7 +93,7 @@ export function LandingTestInsideReport() {
                     <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#6B7280]">
                       Before
                     </p>
-                    <div className="mt-3 h-2.5 w-full rounded-full bg-[#E5E7EB]" />
+                    <div className="mt-3 h-2 w-full rounded-full bg-[#E5E7EB]" />
                   </div>
 
                   <div className="rounded-[16px] border border-sky-200 bg-sky-50/70 p-4 md:rounded-[20px]">
@@ -100,8 +101,8 @@ export function LandingTestInsideReport() {
                       Improved
                     </p>
                     <div className="mt-3 space-y-2">
-                      <div className="h-2.5 w-full rounded-full bg-[#38B3F7]" />
-                      <div className="h-2.5 w-[70%] rounded-full bg-[#38B3F7]" />
+                      <div className="h-2 w-full rounded-full bg-[#38B3F7]" />
+                      <div className="h-2 w-[70%] rounded-full bg-[#38B3F7]" />
                     </div>
                   </div>
                 </div>
