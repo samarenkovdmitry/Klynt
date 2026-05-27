@@ -16,7 +16,7 @@ export function LandingHeroSection() {
           Clarity drives conversion
         </h1>
 
-        <p className="mt-6 max-w-[640px] text-[17px] leading-8 text-white md:text-[21px]">
+        <p className="mt-5 max-w-[640px] text-[17px] leading-8 text-white md:text-[20px]">
           Klynt finds confusing UX, weak positioning and conversion friction on
           landing pages.
         </p>
