@@ -124,7 +124,7 @@ export function LandingTestMockup() {
           </div>
 
           <RiShareBoxLine
-            size={22}
+            size={18}
             className="shrink-0 text-[#8E99A2] md:hidden"
             aria-hidden
           />
@@ -244,7 +244,7 @@ export function LandingTestMockup() {
                   Key observation
                 </p>
                 <p
-                  className={`mt-1.5 text-[15px] font-normal leading-[1.55] tracking-[-0.01em] text-[#061C2F] md:text-[16px] ${mobileClamp}`}
+                  className={`mt-1.5 text-[13px] font-normal leading-[1.55] text-[#061C2F] md:mt-1.5 md:text-[16px] md:leading-[1.65] ${mobileClamp}`}
                 >
                   {data.key_observation}
                 </p>

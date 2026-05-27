@@ -3,13 +3,14 @@ import {
   RiBarChartBoxLine,
   RiDashboard3Line,
   RiFilePdfLine,
+  RiFileWarningLine,
   RiFlagLine,
   RiImageAddLine,
   RiLightbulbLine,
+  RiPencilAi2Fill,
   RiPieChart2Line,
   RiQuillPenLine,
   RiSearchEyeLine,
-  RiSparkling2Line,
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
@@ -51,7 +52,7 @@ export const ANALYZE_ITEMS: AnalyzeItem[] = [
     description: "Detect confusing flows and interaction friction",
   },
   {
-    icon: RiQuillPenLine,
+    icon: RiPencilAi2Fill,
     title: "Copy clarity",
     description: "Identify vague messaging and unclear positioning",
   },
@@ -61,7 +62,7 @@ export const ANALYZE_ITEMS: AnalyzeItem[] = [
     description: "Surface issues reducing trust and action",
   },
   {
-    icon: RiSparkling2Line,
+    icon: RiFileWarningLine,
     title: "Prioritized fixes",
     description: "Get actionable improvements ranked by impact",
   },

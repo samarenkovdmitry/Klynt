@@ -3,23 +3,20 @@ import {
   LANDING_UPDATE_CONTAINER,
 } from "@/lib/landing-update-content";
 
-import {
-  UPDATE_EYEBROW,
-  UPDATE_HEADLINE,
-  UPDATE_SECTION,
-  UPDATE_SUBCOPY,
-} from "./landingUpdateStyles";
+import { UPDATE_SECTION } from "./landingUpdateStyles";
 
 export function LandingTestAnalyzes() {
   return (
     <section className={`${UPDATE_SECTION} bg-white`}>
       <div className={LANDING_UPDATE_CONTAINER}>
         <div className="mx-auto max-w-[760px] text-center">
-          <p className={UPDATE_EYEBROW}>What Klynt analyzes</p>
-          <h2 className={`mt-4 ${UPDATE_HEADLINE}`}>
+          <p className="text-[17px] font-semibold leading-[22px] text-[#2563EB]">
+            What Klynt analyzes
+          </p>
+          <h2 className="mt-4 text-[32px] font-semibold leading-[36px] text-[#061C2F] md:text-[44px] md:leading-[0.98]">
             Everything that makes a page feel unclear
           </h2>
-          <p className={`mx-auto mt-5 max-w-[620px] ${UPDATE_SUBCOPY}`}>
+          <p className="mx-auto mt-5 max-w-[620px] text-[16px] leading-[21px] text-[#6B7280] md:text-[17px]">
             From UX friction to weak positioning and confusing copy — Klynt
             turns landing page problems into actionable fixes.
           </p>
@@ -30,14 +27,12 @@ export function LandingTestAnalyzes() {
             const Icon = item.icon;
 
             return (
-              <div key={item.title} className="text-center">
-                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#2563EB]/10 text-[#2563EB]">
-                  <Icon size={20} />
-                </div>
-                <h3 className="mt-4 text-[16px] font-semibold tracking-[-0.02em] text-[#061C2F]">
+              <div key={item.title} className="mx-auto w-full max-w-[180px] text-center">
+                <Icon size={24} className="mx-auto text-[#2563EB]" aria-hidden />
+                <h3 className="mt-4 text-[17px] font-semibold text-[#061C2F]">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-[14px] leading-6 text-[#6B7280]">
+                <p className="mx-auto mt-2 max-w-[240px] text-[14px] leading-[21px] text-[#6B7280] md:max-w-[180px]">
                   {item.description}
                 </p>
               </div>
