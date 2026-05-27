@@ -16,10 +16,10 @@ import {
 } from "./landingUpdateStyles";
 
 const stepVisualShell =
-  "flex h-[220px] items-center justify-center rounded-[24px] bg-[#E8F0FE] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-8 md:py-10";
+  "flex h-[220px] items-center justify-center rounded-[24px] bg-[#CBD9F7] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-8 md:py-10";
 
 const stepVisualShellReview =
-  "flex h-[248px] items-center justify-center rounded-[24px] bg-[#E8F0FE] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-8 md:py-10";
+  "flex h-[248px] items-center justify-center rounded-[24px] bg-[#CBD9F7] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-8 md:py-10";
 
 function ReviewReportScoreRing() {
   const radius = 26;
