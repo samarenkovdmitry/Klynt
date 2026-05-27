@@ -15,15 +15,15 @@ export function LandingTestCtaSection() {
       <LandingHeroOpArt />
 
       <div className={`${LANDING_UPDATE_CONTAINER} relative z-10 text-center`}>
-        <h2 className="text-[52px] font-normal leading-[0.95] tracking-[-0.04em] text-white">
+        <h2 className="text-[36px] font-normal leading-[0.95] tracking-[-0.04em] text-white md:text-[52px]">
           Landing pages fail quietly.
         </h2>
 
-        <p className="mx-auto mt-5 max-w-[560px] text-[19px] leading-8 text-white/70">
+        <p className="mx-auto mt-4 max-w-[560px] text-[17px] leading-8 text-white/70 md:mt-5 md:text-[19px]">
           Klynt shows why.
         </p>
 
-        <div className="mt-10 flex items-center justify-center gap-3">
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row md:mt-10">
           <Button
             href="/analyze"
             icon={<RiArrowRightLine size={18} />}

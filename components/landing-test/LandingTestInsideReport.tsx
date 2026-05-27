@@ -31,15 +31,15 @@ export function LandingTestInsideReport() {
           </p>
         </div>
 
-        <div className="mt-14 overflow-hidden rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_16px_48px_rgba(6,28,47,0.06)]">
+        <div className="mt-10 overflow-hidden rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_16px_48px_rgba(6,28,47,0.06)] md:mt-14 md:rounded-[28px]">
           {INSIDE_REPORT_ITEMS.map((item, index) => (
             <div
               key={item.title}
-              className="border-b border-[rgba(6,28,47,0.06)] px-8 py-6 last:border-b-0"
+              className="border-b border-[rgba(6,28,47,0.06)] px-5 py-5 last:border-b-0 md:px-8 md:py-6"
             >
-              <div className="flex items-start justify-between gap-6">
-                <div className="flex min-w-0 items-start gap-5">
-                  <span className="text-[48px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB]/20">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+                <div className="flex min-w-0 items-start gap-4 md:gap-5">
+                  <span className="text-[36px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB]/20 md:text-[48px]">
                     {index + 1}
                   </span>
                   <div>
@@ -60,8 +60,8 @@ export function LandingTestInsideReport() {
                     ) : null}
                     {item.showSkeleton ? (
                       <div className="mt-4 space-y-2">
-                        <div className="h-2.5 w-[320px] rounded-full bg-[#E5E7EB]" />
-                        <div className="h-2.5 w-[240px] rounded-full bg-[#E5E7EB]" />
+                        <div className="h-2.5 w-full max-w-[320px] rounded-full bg-[#E5E7EB]" />
+                        <div className="h-2.5 w-full max-w-[240px] rounded-full bg-[#E5E7EB]" />
                       </div>
                     ) : null}
                     {item.footer ? (
@@ -73,15 +73,15 @@ export function LandingTestInsideReport() {
                 </div>
 
                 <span
-                  className={`shrink-0 rounded-full border px-3 py-1 text-[12px] font-semibold ${impactStyles[item.impactTone]}`}
+                  className={`w-fit shrink-0 rounded-full border px-3 py-1 text-[12px] font-semibold ${impactStyles[item.impactTone]}`}
                 >
                   {item.impact}
                 </span>
               </div>
 
               {item.showComparison ? (
-                <div className="mt-6 grid grid-cols-2 gap-5 pl-[68px]">
-                  <div className="rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white p-5">
+                <div className="mt-6 grid grid-cols-1 gap-4 pl-0 md:grid-cols-2 md:gap-5 md:pl-[68px]">
+                  <div className="rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-white p-4 md:rounded-[20px] md:p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6B7280]">
                       Before
                     </p>
@@ -91,7 +91,7 @@ export function LandingTestInsideReport() {
                     </p>
                   </div>
 
-                  <div className="rounded-[20px] border border-sky-200 bg-sky-50/70 p-5">
+                  <div className="rounded-[16px] border border-sky-200 bg-sky-50/70 p-4 md:rounded-[20px] md:p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-sky-700">
                       Improved
                     </p>

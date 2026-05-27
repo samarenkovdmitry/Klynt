@@ -25,7 +25,7 @@ export function LandingTestAnalyzes() {
           </p>
         </div>
 
-        <div className="mt-16 grid grid-cols-4 gap-8">
+        <div className="mt-12 grid grid-cols-1 gap-10 sm:grid-cols-2 md:mt-16 lg:grid-cols-4 md:gap-8">
           {ANALYZE_ITEMS.map((item) => {
             const Icon = item.icon;
 

@@ -7,14 +7,16 @@ export function LandingTestSocialProof() {
   return (
     <section className={`${UPDATE_SECTION} bg-white`}>
       <div className={`${LANDING_UPDATE_CONTAINER} text-center`}>
-        <h2 className="mx-auto max-w-[860px] text-[52px] font-semibold leading-[1.02] tracking-[-0.04em] text-[#061C2F]">
+        <h2 className="mx-auto max-w-[860px] text-[32px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#061C2F] md:text-[52px] md:leading-[1.02]">
           Clarity problems are obvious once{" "}
           <span className="text-[#2563EB]">you see them.</span>
         </h2>
 
-        <p className="mt-5 text-[17px] text-[#6B7280]">Klynt clarity engine</p>
+        <p className="mt-4 text-[16px] text-[#6B7280] md:mt-5 md:text-[17px]">
+          Klynt clarity engine
+        </p>
 
-        <div className="mt-10 flex items-center justify-center gap-3">
+        <div className="mt-8 flex flex-col items-center justify-center gap-4 md:mt-10 md:flex-row md:gap-3">
           <div className="flex -space-x-3">
             {SOCIAL_PROOF_AVATARS.map((src, i) => (
               <div
@@ -35,7 +37,7 @@ export function LandingTestSocialProof() {
               </div>
             ))}
           </div>
-          <p className="text-[15px] font-medium text-[#2563EB]">
+          <p className="max-w-[280px] text-[14px] font-medium text-[#2563EB] md:max-w-none md:text-[15px]">
             Used by designers, founders and product teams
           </p>
         </div>

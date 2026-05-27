@@ -11,6 +11,11 @@ import {
   normalizeRisk,
 } from "@/lib/report-metrics";
 
+const titleSection =
+  "text-[18px] font-semibold tracking-[-0.03em] text-[#061C2F] md:text-[26px]";
+
+const mobileClamp = "line-clamp-2 md:line-clamp-none";
+
 export function LandingTestMockup() {
   const data = DEMO_REPORT;
   const score = 75;
@@ -18,7 +23,7 @@ export function LandingTestMockup() {
 
   return (
     <div
-      className="relative mx-auto max-w-[1040px] overflow-hidden rounded-[36px] bg-white shadow-[0_20px_60px_rgba(6,28,47,0.1)]"
+      className="relative mx-auto max-w-[1040px] overflow-hidden rounded-[28px] bg-white shadow-[0_20px_60px_rgba(6,28,47,0.1)] md:rounded-[36px]"
       role="img"
       aria-label="Demo clarity report preview"
       onCopy={(event) => event.preventDefault()}
@@ -27,26 +32,28 @@ export function LandingTestMockup() {
         className="pointer-events-none select-none"
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
       >
-        <div className="flex items-start justify-between gap-6 px-10 py-8">
+        <div className="flex flex-col gap-6 px-5 py-6 md:px-10 md:py-8 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
-            <div className="flex items-center gap-3">
-              <h2 className="text-[38px] font-semibold leading-none tracking-[-0.04em] text-[#061C2F]">
+            <div className="flex flex-nowrap items-center gap-2 md:gap-3">
+              <h2 className="shrink-0 text-[24px] font-semibold leading-none tracking-[-0.04em] text-[#061C2F] md:text-[38px]">
                 Clarity Report
               </h2>
-              <div className="rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-3 py-1 text-[12px] font-semibold text-[#2F6FED]">
+              <div className="shrink-0 rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[11px] font-semibold text-[#2F6FED] md:px-3 md:text-[12px]">
                 AI Generated
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-2 text-[14px] text-[#8E99A2]">
-              <img
-                src={`https://www.google.com/s2/favicons?domain_url=${data.url}&sz=32`}
-                alt=""
-                className="h-4 w-4 shrink-0 rounded-sm"
-              />
-              <span>{data.url}</span>
+            <div className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1 text-[13px] text-[#8E99A2] md:gap-x-2 md:text-[14px]">
+              <div className="flex min-w-0 items-center gap-2">
+                <img
+                  src={`https://www.google.com/s2/favicons?domain_url=${data.url}&sz=32`}
+                  alt=""
+                  className="h-4 w-4 shrink-0 rounded-sm"
+                />
+                <span className="truncate">{data.url}</span>
+              </div>
               <span className="text-neutral-300">•</span>
-              <span>
+              <span className="shrink-0">
                 {new Date(data.generatedAt).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
@@ -56,48 +63,55 @@ export function LandingTestMockup() {
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-5 text-[14px] font-medium text-[#061C2F]">
-            <span className="inline-flex items-center gap-2">
+          <div className="flex w-full gap-2 sm:w-auto">
+            <span className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[#DCE2E7] bg-white px-4 py-2.5 text-[14px] font-medium text-[#061C2F] md:flex-none md:rounded-full md:px-5 md:py-3">
               <RiDownload2Line size={18} />
               Export PDF
             </span>
-            <span className="inline-flex items-center gap-2">
+            <span className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[#DCE2E7] bg-white px-4 py-2.5 text-[14px] font-medium text-[#061C2F] md:flex-none md:rounded-full md:px-5 md:py-3">
               <RiShareForwardLine size={18} />
               Share
             </span>
           </div>
         </div>
 
-        <div className="border-t border-[#DCE2E7] px-10 pb-8 pt-[26px]">
-          <h3 className="text-[26px] font-semibold tracking-[-0.03em] text-[#061C2F]">
-            Summary
-          </h3>
+        <div className="border-t border-[#DCE2E7] px-5 pt-[18px] pb-6 md:px-10 md:pt-[26px] md:pb-8">
+          <h3 className={titleSection}>Summary</h3>
 
-          <div className="mt-5 grid grid-cols-[1.6fr_0.7fr] divide-x divide-[#DCE2E7]">
-            <div className="pr-8">
-              <div className="flex items-start gap-6">
-                <ScoreRing score={score} />
+          <div className="mt-4 md:mt-5 lg:grid lg:grid-cols-[1.6fr_0.7fr] lg:divide-x lg:divide-[#DCE2E7]">
+            <div className="pb-6 lg:pr-8 lg:pb-0">
+              <div className="flex flex-row items-start gap-3 md:gap-6">
+                <ScoreRing
+                  score={score}
+                  className="relative flex h-[108px] w-[108px] shrink-0 items-center justify-center md:h-[176px] md:w-[176px]"
+                  labelClassName="text-[10px] font-semibold text-[#061C2F] md:text-[12px]"
+                  valueClassName="text-[28px] leading-none font-semibold tracking-[-0.04em] md:text-[48px] md:tracking-[-0.06em]"
+                />
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-left text-[24px] font-medium leading-[1.35] tracking-[-0.03em] text-[#061C2F]">
+                  <p
+                    className={`text-left text-[16px] font-medium leading-[1.35] tracking-[-0.03em] text-[#061C2F] md:text-[24px] ${mobileClamp}`}
+                  >
                     {data.verdict}
                   </p>
-                  <p className="mt-4 text-left text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-400">
+                  <p className="mt-3 text-left text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400 md:mt-4 md:text-[12px]">
                     Top insight
                   </p>
-                  <p className="mt-1 text-left text-[16px] leading-[1.65] text-[#8E99A2]">
+                  <p
+                    className={`mt-1 text-left text-[13px] leading-[1.55] text-[#8E99A2] md:text-[16px] md:leading-[1.65] ${mobileClamp}`}
+                  >
                     {data.summary}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="pl-8">
+            <div className="border-t border-[#DCE2E7] pt-6 lg:border-t-0 lg:pl-8 lg:pt-0">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-[14px] font-semibold text-[#061C2F]">
                   Conversion Health
                 </p>
-                <div className="flex items-center gap-1.5">
+                <div className="flex shrink-0 items-center gap-1.5">
                   <div
                     className="h-2 w-2 rounded-full"
                     style={{ backgroundColor: riskColor }}
@@ -166,7 +180,7 @@ export function LandingTestMockup() {
             </div>
           </div>
 
-          <div className="mt-8 border-t border-[#DCE2E7] pt-8">
+          <div className="mt-6 border-t border-[#DCE2E7] pt-6 md:mt-8 md:pt-8">
             <div className="flex items-start gap-3.5">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFF7ED]">
                 <RiLightbulbLine size={18} className="text-amber-600" />
@@ -175,7 +189,9 @@ export function LandingTestMockup() {
                 <p className="text-[12px] font-normal uppercase tracking-[0.08em] text-amber-700">
                   Key observation
                 </p>
-                <p className="mt-1.5 text-[16px] font-normal leading-[1.55] tracking-[-0.01em] text-[#061C2F]">
+                <p
+                  className={`mt-1.5 text-[15px] font-normal leading-[1.55] tracking-[-0.01em] text-[#061C2F] md:text-[16px] ${mobileClamp}`}
+                >
                   {data.key_observation}
                 </p>
               </div>

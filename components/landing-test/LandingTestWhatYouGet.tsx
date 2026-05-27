@@ -99,20 +99,20 @@ export function LandingTestWhatYouGet() {
           </h2>
         </div>
 
-        <div className="mt-16 grid grid-cols-2 gap-5">
+        <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-2">
           {WHAT_YOU_GET_FEATURES.map((feature) => {
             const Icon = feature.icon;
 
             return (
               <article
                 key={feature.id}
-                className={`grid grid-cols-[1fr_auto] items-center gap-6 overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] p-8 ${cardPattern}`}
+                className={`grid grid-cols-1 items-center gap-6 overflow-hidden rounded-[20px] border border-[rgba(6,28,47,0.06)] p-6 sm:grid-cols-[1fr_auto] md:rounded-[24px] md:p-8 ${cardPattern}`}
               >
                 <div>
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2563EB]/10 text-[#2563EB]">
                     <Icon size={20} />
                   </div>
-                  <h3 className="mt-5 text-[22px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  <h3 className="mt-5 text-[20px] font-semibold tracking-[-0.03em] text-[#061C2F] md:text-[22px]">
                     {feature.title}
                   </h3>
                   <p className="mt-2 max-w-[280px] text-[15px] leading-6 text-[#6B7280]">
@@ -120,7 +120,9 @@ export function LandingTestWhatYouGet() {
                   </p>
                 </div>
 
-                <FeatureVisual id={feature.id} />
+                <div className="flex justify-start sm:justify-end">
+                  <FeatureVisual id={feature.id} />
+                </div>
               </article>
             );
           })}

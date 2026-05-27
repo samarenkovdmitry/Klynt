@@ -9,16 +9,16 @@ import { LandingTestHeader } from "./LandingTestHeader";
 
 export function LandingTestHero() {
   return (
-    <section className="relative overflow-hidden bg-[#0E1B36] pb-[180px]">
+    <section className="relative overflow-hidden bg-[#0E1B36] pb-[120px] md:pb-[180px]">
       <LandingHeroOpArt />
       <LandingTestHeader />
 
-      <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-6 pt-16 text-center">
-        <h1 className="max-w-[860px] text-[75px] font-normal leading-[0.95] tracking-[-0.01em] text-white">
+      <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-5 pt-10 text-center md:px-6 md:pt-16">
+        <h1 className="max-w-[860px] text-[42px] font-normal leading-[0.95] tracking-[-0.01em] text-white sm:text-[50px] md:text-[75px]">
           Clarity drives conversion
         </h1>
 
-        <p className="mt-6 max-w-[640px] text-[21px] leading-8 text-white/80">
+        <p className="mt-5 max-w-[640px] text-[17px] leading-8 text-white/80 md:mt-6 md:text-[21px]">
           Klynt finds what makes pages feel unclear — and how to fix it.
         </p>
 

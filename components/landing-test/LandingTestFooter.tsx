@@ -18,9 +18,9 @@ const socialLinks = [
 
 export function LandingTestFooter() {
   return (
-    <footer className="border-t border-[rgba(6,28,47,0.06)] bg-white px-6 py-10">
+    <footer className="border-t border-[rgba(6,28,47,0.06)] bg-white px-5 py-10 md:px-6">
       <div className={LANDING_UPDATE_CONTAINER}>
-        <div className="grid grid-cols-[1.2fr_0.8fr_1fr] items-start gap-10">
+        <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-[1.2fr_0.8fr_1fr] md:gap-10">
           <Link href="/landing-test" aria-label="Klynt — home">
             <img src="/klynt-logo-dark.svg" alt="Klynt" className="h-[30px] w-auto" />
           </Link>
@@ -54,9 +54,9 @@ export function LandingTestFooter() {
           </div>
         </div>
 
-        <div className="mt-10 flex items-center justify-between border-t border-[rgba(6,28,47,0.06)] pt-6 text-[14px] text-[#8E99A2]">
+        <div className="mt-8 flex flex-col gap-4 border-t border-[rgba(6,28,47,0.06)] pt-6 text-[14px] text-[#8E99A2] md:mt-10 md:flex-row md:items-center md:justify-between md:gap-7">
           <p>© 2026 Klynt – UX Clarity Analyzer</p>
-          <div className="flex items-center gap-7">
+          <div className="flex flex-wrap items-center gap-5 md:gap-7">
             <Link href="/privacy" className="transition hover:text-[#061C2F]">
               Privacy
             </Link>

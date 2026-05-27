@@ -13,10 +13,10 @@ import { LandingTestWhatYouGet } from "@/components/landing-test/LandingTestWhat
 
 export function FigmaLandingPage() {
   return (
-    <main className="min-w-[1040px] overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
+    <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
       <LandingTestHero />
 
-      <section id="report" className="relative z-20 -mt-[120px] px-6">
+      <section id="report" className="relative z-20 -mt-[72px] px-4 md:-mt-[120px] md:px-6">
         <LandingTestMockup />
       </section>
 

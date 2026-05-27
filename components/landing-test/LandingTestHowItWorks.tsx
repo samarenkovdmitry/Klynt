@@ -18,7 +18,7 @@ import {
 function StepVisual({ index }: { index: number }) {
   if (index === 0) {
     return (
-      <div className="flex h-[300px] items-center justify-center rounded-[28px] bg-[#E8F0FE] p-8">
+      <div className="flex h-[240px] items-center justify-center rounded-[24px] bg-[#E8F0FE] p-5 md:h-[300px] md:rounded-[28px] md:p-8">
         <div className="w-full max-w-[380px] rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]">
           <div className="flex items-center gap-2 rounded-xl border border-[rgba(6,28,47,0.08)] bg-[#F5F7FA] px-4 py-3">
             <RiLinkM size={18} className="shrink-0 text-[#2563EB]" />
@@ -42,7 +42,7 @@ function StepVisual({ index }: { index: number }) {
 
   if (index === 1) {
     return (
-      <div className="flex h-[300px] items-center justify-center rounded-[28px] bg-[#E8F0FE] p-8">
+      <div className="flex h-[240px] items-center justify-center rounded-[24px] bg-[#E8F0FE] p-5 md:h-[300px] md:rounded-[28px] md:p-8">
         <div className="w-full max-w-[380px] rounded-[20px] bg-[#0E1B36] p-5 shadow-[0_16px_48px_rgba(6,28,47,0.12)]">
           <div className="flex items-center justify-between text-[12px] text-white/60">
             <span>Scanning page</span>
@@ -76,7 +76,7 @@ function StepVisual({ index }: { index: number }) {
   }
 
   return (
-    <div className="flex h-[300px] items-center justify-center rounded-[28px] bg-[#E8F0FE] p-8">
+    <div className="flex h-[240px] items-center justify-center rounded-[24px] bg-[#E8F0FE] p-5 md:h-[300px] md:rounded-[28px] md:p-8">
       <div className="w-full max-w-[380px] rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]">
         <div className="flex items-center justify-between text-[14px]">
           <span className="font-semibold text-[#061C2F]">Clarity Report</span>
@@ -130,20 +130,20 @@ export function LandingTestHowItWorks() {
           </p>
         </div>
 
-        <div className="mt-20 space-y-24">
+        <div className="mt-12 space-y-16 md:mt-20 md:space-y-24">
           {PROCESS_STEPS.map((step, index) => {
             const reversed = index % 2 === 1;
 
             return (
               <article
                 key={step.title}
-                className={`grid grid-cols-2 items-center gap-16 ${reversed ? "[&>*:first-child]:order-2" : ""}`}
+                className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16 ${reversed ? "lg:[&>*:first-child]:order-2" : ""}`}
               >
                 <div>
-                  <div className="text-[56px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB]">
+                  <div className="text-[44px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB] md:text-[56px]">
                     {index + 1}
                   </div>
-                  <h3 className="mt-4 text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
+                  <h3 className="mt-4 text-[22px] font-semibold tracking-[-0.03em] text-[#061C2F] md:text-[28px]">
                     {step.title}
                   </h3>
                   <p className="mt-3 text-[16px] leading-7 text-[#6B7280]">
@@ -180,7 +180,7 @@ export function LandingTestHowItWorks() {
 
 export function LandingTestMidCta() {
   return (
-    <section className="bg-[#F5F7FA] px-6 pb-24 pt-4">
+    <section className="bg-[#F5F7FA] px-5 pb-16 pt-4 md:px-6 md:pb-24">
       <div className="mx-auto flex max-w-[1040px] flex-col items-center">
         <Button
           href="/analyze"
