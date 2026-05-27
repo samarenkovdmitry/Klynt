@@ -81,8 +81,10 @@ function FeatureVisual({ id }: { id: string }) {
             { label: "CTA hierarchy", width: "w-[72px]", color: "bg-[#FB923C]" },
             { label: "Trust signals", width: "w-[120px]", color: "bg-[#94A3B8]" },
           ].map((item) => (
-            <div key={item.label} className="flex items-center justify-between gap-4">
-              <div className={`h-2 rounded-full ${item.color} ${item.width}`} />
+            <div key={item.label} className="flex items-center gap-2">
+              <div className="h-2 min-w-0 flex-1 rounded-full bg-[#F5F5F5]">
+                <div className={`h-full rounded-full ${item.color} ${item.width}`} />
+              </div>
               <span className="shrink-0 text-[11px] text-[#6B7280]">{item.label}</span>
             </div>
           ))}
@@ -164,7 +166,7 @@ export function LandingTestWhatYouGet() {
             return (
               <article
                 key={feature.id}
-                className="relative grid min-h-[240px] grid-cols-1 items-stretch gap-6 overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] p-5 sm:grid-cols-[1fr_auto] md:p-8"
+                className="relative grid min-h-[240px] grid-cols-1 items-stretch gap-6 overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 sm:grid-cols-[1fr_auto] md:p-8"
               >
                 <div
                   className={UPDATE_CARD_STRIPE_OVERLAY}
