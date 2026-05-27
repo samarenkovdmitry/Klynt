@@ -7,9 +7,21 @@ import sharp from "sharp";
 export const runtime = "nodejs";
 export const maxDuration = 90;
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
+let openaiClient: OpenAI | null = null;
+
+function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured");
+  }
+
+  if (!openaiClient) {
+    openaiClient = new OpenAI({ apiKey });
+  }
+
+  return openaiClient;
+}
 
 // -----------------------------
 // HELPERS
@@ -436,7 +448,7 @@ if (screenshotsBase64[1]) {
   );
 }
 
-    const response = await client.responses.create({
+    const response = await getOpenAIClient().responses.create({
       model: "gpt-4.1-nano",
       temperature: 0.2,
       max_output_tokens: 2200,
