@@ -55,37 +55,37 @@ function LandingTestScoreRing({ score }: { score: number }) {
         </div>
       </div>
 
-      <div className="relative hidden h-[152px] w-[152px] shrink-0 items-center justify-center md:flex">
+      <div className="relative hidden h-[140px] w-[140px] shrink-0 items-center justify-center md:flex">
         <svg
           className="absolute inset-0 h-full w-full -rotate-90"
-          viewBox="0 0 152 152"
+          viewBox="0 0 140 140"
           aria-hidden
         >
-          <circle cx="76" cy="76" r="58" fill="rgba(255,255,255,0.55)" />
+          <circle cx="70" cy="70" r="54" fill="rgba(255,255,255,0.55)" />
           <circle
-            cx="76"
-            cy="76"
-            r="58"
+            cx="70"
+            cy="70"
+            r="54"
             stroke="#E5E7EB"
             strokeWidth="5"
             fill="transparent"
           />
           <circle
-            cx="76"
-            cy="76"
-            r="58"
+            cx="70"
+            cy="70"
+            r="54"
             stroke={scoreColor}
             strokeWidth="5"
             fill="transparent"
             strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * 58}
-            strokeDashoffset={2 * Math.PI * 58 * (1 - score / 100)}
+            strokeDasharray={2 * Math.PI * 54}
+            strokeDashoffset={2 * Math.PI * 54 * (1 - score / 100)}
           />
         </svg>
         <div className="relative text-center">
           <p className="text-[11px] font-semibold text-[#061C2F]">UX Score</p>
           <p
-            className="text-[40px] leading-none font-semibold tracking-[-0.05em]"
+            className="text-[36px] leading-none font-semibold tracking-[-0.05em]"
             style={{ color: scoreColor }}
           >
             {score}
@@ -113,9 +113,9 @@ export function LandingTestMockup() {
         className="pointer-events-none select-none"
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
       >
-        <div className="flex items-start justify-between gap-4 px-5 py-6 md:px-10 md:py-8">
+        <div className="flex items-start justify-between gap-4 px-5 py-6 md:px-10">
           <div className="flex min-w-0 flex-wrap items-center gap-2 md:gap-3">
-            <h2 className="text-[20px] font-semibold leading-[26px] tracking-[-0.04em] text-[#061C2F] md:text-[24px] md:leading-[30px]">
+            <h2 className="text-[20px] font-semibold leading-[26px] tracking-[-0.04em] text-[#061C2F] md:text-[26px] md:leading-[30px]">
               Clarity Report
             </h2>
             <div className="rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[11px] font-semibold text-[#2F6FED] md:px-3 md:text-[12px]">
@@ -165,7 +165,7 @@ export function LandingTestMockup() {
             </div>
 
             <div className="border-t border-[#DCE2E7] pt-6 md:border-t-0 md:pl-8 md:pt-0">
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center justify-between gap-3">
                 <p className="text-[14px] font-semibold text-[#061C2F]">
                   Conversion Health
                 </p>
@@ -244,7 +244,7 @@ export function LandingTestMockup() {
                   Key observation
                 </p>
                 <p
-                  className={`mt-1.5 text-[15px] font-medium leading-[1.55] tracking-[-0.01em] text-[#061C2F] md:text-[16px] ${mobileClamp}`}
+                  className={`mt-1.5 text-[15px] font-normal leading-[1.55] tracking-[-0.01em] text-[#061C2F] md:text-[16px] ${mobileClamp}`}
                 >
                   {data.key_observation}
                 </p>

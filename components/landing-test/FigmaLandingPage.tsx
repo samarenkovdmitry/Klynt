@@ -16,7 +16,7 @@ export function FigmaLandingPage() {
     <main className="overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
       <LandingTestHero />
 
-      <section id="report" className="relative z-20 -mt-[72px] bg-white px-4 md:-mt-[120px] md:px-6">
+      <section id="report" className="relative z-20 -mt-[107px] bg-white px-4 md:-mt-[128px] md:px-6">
         <LandingTestMockup />
       </section>
 
