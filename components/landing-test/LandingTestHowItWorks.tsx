@@ -18,6 +18,47 @@ import {
 const stepVisualShell =
   "flex h-[220px] items-center justify-center rounded-[24px] bg-[#E8F0FE] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-8 md:py-10";
 
+const stepVisualShellReview =
+  "flex h-[248px] items-center justify-center rounded-[24px] bg-[#E8F0FE] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-8 md:py-10";
+
+function ReviewReportScoreRing() {
+  const radius = 26;
+  const circumference = 2 * Math.PI * radius;
+
+  return (
+    <div className="relative h-16 w-16 shrink-0">
+      <svg
+        className="absolute inset-0 h-full w-full -rotate-90"
+        viewBox="0 0 64 64"
+        aria-hidden
+      >
+        <circle
+          cx="32"
+          cy="32"
+          r={radius}
+          stroke="#E5E7EB"
+          strokeWidth="4"
+          fill="transparent"
+        />
+        <circle
+          cx="32"
+          cy="32"
+          r={radius}
+          stroke="#F59E0B"
+          strokeWidth="4"
+          fill="transparent"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * 0.25}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-[22px] font-semibold text-[#F59E0B]">
+        75
+      </span>
+    </div>
+  );
+}
+
 function StepVisual({ index }: { index: number }) {
   if (index === 0) {
     return (
@@ -79,29 +120,24 @@ function StepVisual({ index }: { index: number }) {
   }
 
   return (
-    <div className={stepVisualShell}>
+    <div className={stepVisualShellReview}>
       <div className="w-full max-w-[380px] rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]">
         <div className="flex items-center justify-between text-[14px]">
           <span className="font-semibold text-[#061C2F]">Clarity Report</span>
-          <div className="flex gap-4 text-[#6B7280]">
+          <div className="flex gap-4 text-[12px] text-[#6B7280]">
             <span>Export PDF</span>
             <span>Share</span>
           </div>
         </div>
         <div className="mt-5 flex items-start gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-[6px] border-[#F59E0B] text-[18px] font-semibold text-[#F59E0B]">
-            75
-          </div>
+          <ReviewReportScoreRing />
           <div className="flex-1 space-y-2 pt-1">
             <div className="h-2 w-full rounded-full bg-[#E5E7EB]" />
             <div className="h-2 w-[80%] rounded-full bg-[#E5E7EB]" />
-            <div className="h-2 w-[60%] rounded-full bg-[#E5E7EB]" />
           </div>
           <div className="space-y-2">
             <div className="h-2 w-16 rounded-full bg-[#E5E7EB]" />
             <div className="h-2 w-12 rounded-full bg-[#E5E7EB]" />
-            <div className="h-2 w-14 rounded-full bg-[#E5E7EB]" />
-            <div className="h-2 w-10 rounded-full bg-[#E5E7EB]" />
           </div>
         </div>
         <div className="mt-5 flex gap-2">
@@ -150,7 +186,7 @@ export function LandingTestHowItWorks() {
                   <p className="mt-3 text-[16px] leading-7 text-[#6B7280]">
                     {step.description}
                   </p>
-                  <ul className="mt-5 space-y-3">
+                  <ul className="mt-5 space-y-2">
                     {step.bullets.map((bullet) => {
                       const Icon = bullet.icon;
 
@@ -189,7 +225,7 @@ export function LandingTestMidCta() {
         >
           Start free audit
         </Button>
-        <TrustBadgeRow variant="light" className="mt-5" />
+        <TrustBadgeRow variant="light" gray className="mt-5" />
       </div>
     </section>
   );

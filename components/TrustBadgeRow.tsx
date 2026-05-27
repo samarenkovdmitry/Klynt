@@ -4,6 +4,7 @@ type TrustBadgeRowProps = {
   variant?: "dark" | "light";
   className?: string;
   subtle?: boolean;
+  gray?: boolean;
 };
 
 const variantStyles = {
@@ -17,9 +18,19 @@ const variantStyles = {
     icon: "text-white/50",
     dot: "bg-white/25",
   },
+  darkGray: {
+    row: "text-[#8E99A2]",
+    icon: "text-[#8E99A2]",
+    dot: "bg-[#8E99A2]/40",
+  },
   light: {
     row: "text-[#8E99A2]",
     icon: "text-[#14A8E8]",
+    dot: "bg-[#D5DDE5]",
+  },
+  lightGray: {
+    row: "text-[#8E99A2]",
+    icon: "text-[#8E99A2]",
     dot: "bg-[#D5DDE5]",
   },
 } as const;
@@ -28,9 +39,16 @@ export function TrustBadgeRow({
   variant = "dark",
   className = "",
   subtle = false,
+  gray = false,
 }: TrustBadgeRowProps) {
   const styles =
-    variant === "dark" && subtle ? variantStyles.darkSubtle : variantStyles[variant];
+    variant === "dark" && gray
+      ? variantStyles.darkGray
+      : variant === "dark" && subtle
+        ? variantStyles.darkSubtle
+        : variant === "light" && gray
+          ? variantStyles.lightGray
+          : variantStyles[variant];
 
   return (
     <div

@@ -33,7 +33,7 @@ export function LandingTestHero() {
           </Button>
         </div>
 
-        <TrustBadgeRow variant="dark" subtle className="mt-6 md:mt-8" />
+        <TrustBadgeRow variant="dark" gray className="mt-6 md:mt-8" />
       </div>
     </section>
   );
