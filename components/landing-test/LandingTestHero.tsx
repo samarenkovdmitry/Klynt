@@ -9,7 +9,7 @@ import { LandingTestHeader } from "./LandingTestHeader";
 
 export function LandingTestHero() {
   return (
-    <section className="relative overflow-hidden bg-[#0E1B36] pb-[120px] md:pb-[180px]">
+    <section className="relative overflow-hidden bg-[#0E1B36] pb-[144px] md:pb-[204px]">
       <LandingHeroOpArt />
       <LandingTestHeader />
 

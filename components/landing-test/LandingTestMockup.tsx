@@ -17,45 +17,7 @@ function LandingTestScoreRing({ score }: { score: number }) {
 
   return (
     <>
-      <div className="relative mx-auto flex h-[120px] w-[120px] shrink-0 items-center justify-center md:hidden">
-        <svg
-          className="absolute inset-0 h-full w-full -rotate-90"
-          viewBox="0 0 120 120"
-          aria-hidden
-        >
-          <circle cx="60" cy="60" r="46" fill="rgba(255,255,255,0.55)" />
-          <circle
-            cx="60"
-            cy="60"
-            r="46"
-            stroke="#E5E7EB"
-            strokeWidth="5"
-            fill="transparent"
-          />
-          <circle
-            cx="60"
-            cy="60"
-            r="46"
-            stroke={scoreColor}
-            strokeWidth="5"
-            fill="transparent"
-            strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * 46}
-            strokeDashoffset={2 * Math.PI * 46 * (1 - score / 100)}
-          />
-        </svg>
-        <div className="relative text-center">
-          <p className="text-[10px] font-semibold text-[#061C2F]">UX Score</p>
-          <p
-            className="text-[32px] leading-none font-semibold tracking-[-0.04em]"
-            style={{ color: scoreColor }}
-          >
-            {score}
-          </p>
-        </div>
-      </div>
-
-      <div className="relative hidden h-[140px] w-[140px] shrink-0 items-center justify-center md:flex">
+      <div className="relative mx-auto flex h-[140px] w-[140px] shrink-0 items-center justify-center md:hidden">
         <svg
           className="absolute inset-0 h-full w-full -rotate-90"
           viewBox="0 0 140 140"
@@ -85,7 +47,45 @@ function LandingTestScoreRing({ score }: { score: number }) {
         <div className="relative text-center">
           <p className="text-[11px] font-semibold text-[#061C2F]">UX Score</p>
           <p
-            className="text-[36px] leading-none font-semibold tracking-[-0.05em]"
+            className="text-[36px] leading-none font-semibold tracking-[-0.04em]"
+            style={{ color: scoreColor }}
+          >
+            {score}
+          </p>
+        </div>
+      </div>
+
+      <div className="relative hidden h-[160px] w-[160px] shrink-0 items-center justify-center md:flex">
+        <svg
+          className="absolute inset-0 h-full w-full -rotate-90"
+          viewBox="0 0 160 160"
+          aria-hidden
+        >
+          <circle cx="80" cy="80" r="61" fill="rgba(255,255,255,0.55)" />
+          <circle
+            cx="80"
+            cy="80"
+            r="61"
+            stroke="#E5E7EB"
+            strokeWidth="5"
+            fill="transparent"
+          />
+          <circle
+            cx="80"
+            cy="80"
+            r="61"
+            stroke={scoreColor}
+            strokeWidth="5"
+            fill="transparent"
+            strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 61}
+            strokeDashoffset={2 * Math.PI * 61 * (1 - score / 100)}
+          />
+        </svg>
+        <div className="relative text-center">
+          <p className="text-[12px] font-semibold text-[#061C2F]">UX Score</p>
+          <p
+            className="text-[40px] leading-none font-semibold tracking-[-0.05em]"
             style={{ color: scoreColor }}
           >
             {score}
@@ -113,7 +113,7 @@ export function LandingTestMockup() {
         className="pointer-events-none select-none"
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
       >
-        <div className="flex items-start justify-between gap-4 px-5 py-6 md:px-10">
+        <div className="flex items-center justify-between gap-4 px-5 py-6 md:px-8">
           <div className="flex min-w-0 flex-wrap items-center gap-2 md:gap-3">
             <h2 className="text-[20px] font-semibold leading-[26px] tracking-[-0.04em] text-[#061C2F] md:text-[26px] md:leading-[30px]">
               Clarity Report
@@ -136,7 +136,7 @@ export function LandingTestMockup() {
           </div>
         </div>
 
-        <div className="border-t border-[#DCE2E7] px-5 pt-[18px] pb-6 md:px-10 md:pt-[26px] md:pb-8">
+        <div className="border-t border-[#DCE2E7] px-5 pt-[18px] pb-6 md:px-8 md:pt-[26px] md:pb-8">
           <h3 className="text-[18px] font-semibold leading-[23px] tracking-[-0.03em] text-[#061C2F] md:text-[20px] md:leading-[28px]">
             Summary
           </h3>
