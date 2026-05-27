@@ -1,6 +1,6 @@
 "use client";
 
-import { RiLightbulbLine, RiShareBoxLine } from "@remixicon/react";
+import { RiFilePdf2Line, RiLightbulbLine, RiShare2Line, RiShareBoxLine } from "@remixicon/react";
 
 import { DEMO_REPORT } from "@/lib/demo-report";
 import {
@@ -130,9 +130,15 @@ export function LandingTestMockup() {
           />
 
           <div className="hidden shrink-0 items-center gap-4 text-[14px] font-medium text-[#061C2F] md:flex">
-            <span>Export PDF</span>
+            <span className="inline-flex items-center gap-2">
+              <RiFilePdf2Line size={18} className="text-[#6B7280]" aria-hidden />
+              Export PDF
+            </span>
             <span className="h-4 w-px bg-[#DCE2E7]" aria-hidden />
-            <span>Share</span>
+            <span className="inline-flex items-center gap-2">
+              <RiShare2Line size={18} className="text-[#6B7280]" aria-hidden />
+              Share
+            </span>
           </div>
         </div>
 

@@ -178,7 +178,7 @@ export function LandingTestHowItWorks() {
           </p>
         </div>
 
-        <div className="mt-12 space-y-16 md:mt-20 md:space-y-24">
+        <div className="mt-12 space-y-8 md:mt-20 md:space-y-24">
           {PROCESS_STEPS.map((step, index) => {
             const reversed = index % 2 === 1;
 

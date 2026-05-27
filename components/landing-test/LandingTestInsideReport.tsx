@@ -35,12 +35,12 @@ export function LandingTestInsideReport() {
           </p>
         </div>
 
-        <div className="mx-auto mt-10 max-w-[700px] overflow-hidden rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_16px_48px_rgba(6,28,47,0.06)] md:mt-14 md:rounded-[28px]">
+        <div className="mx-auto mt-10 max-w-[700px] overflow-hidden rounded-[20px] border border-[#EBEFF3] bg-white shadow-[0_16px_48px_rgba(6,28,47,0.06)] md:mt-14 md:rounded-[28px]">
           {INSIDE_REPORT_ITEMS.map((item, index) => (
             <div
               key={item.title}
               className={[
-                "relative border-b border-[rgba(6,28,47,0.06)] px-5 py-5 last:border-b-0 md:px-8 md:py-6",
+                "relative border-b border-[#EBEFF3] px-5 py-5 last:border-b-0 md:px-8 md:py-6",
                 index === 1 || index === 2 ? "rounded-t-[26px]" : "",
               ].join(" ")}
             >
@@ -64,12 +64,12 @@ export function LandingTestInsideReport() {
                     ) : null}
                     {item.showSkeleton ? (
                       <div className="mt-4 space-y-2">
-                        <div className="h-2.5 w-[380px] max-w-full rounded-full bg-[#E5E7EB]" />
-                        <div className="h-2.5 w-[270px] max-w-full rounded-full bg-[#E5E7EB]" />
+                        <div className="h-2.5 w-full rounded-full bg-[#E5E7EB] md:w-[380px]" />
+                        <div className="h-2.5 w-[85%] rounded-full bg-[#E5E7EB] md:w-[270px]" />
                       </div>
                     ) : null}
                     {item.showComparison ? (
-                      <div className="mt-4 h-2.5 w-[368px] max-w-full rounded-full bg-[#E5E7EB]" />
+                      <div className="mt-4 h-2.5 w-full rounded-full bg-[#E5E7EB] md:w-[368px]" />
                     ) : null}
                     {item.footer ? (
                       <p className="mt-1.5 hidden text-[13px] font-semibold text-[#061C2F] sm:block">
@@ -100,8 +100,8 @@ export function LandingTestInsideReport() {
                       Improved
                     </p>
                     <div className="mt-3 space-y-2">
-                      <div className="h-2.5 w-full rounded-full bg-[#006BA6]" />
-                      <div className="h-2.5 w-[70%] rounded-full bg-[#006BA6]" />
+                      <div className="h-2.5 w-full rounded-full bg-[#38B3F7]" />
+                      <div className="h-2.5 w-[70%] rounded-full bg-[#38B3F7]" />
                     </div>
                   </div>
                 </div>
