@@ -1,22 +1,20 @@
 import { SOCIAL_PROOF_AVATARS } from "@/lib/landing-content";
 import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
 
-import { UPDATE_SECTION } from "./landingUpdateStyles";
-
 export function LandingTestSocialProof() {
   return (
-    <section className={`${UPDATE_SECTION} bg-white`}>
+    <section className="bg-white px-5 py-[108px] md:px-6 md:py-[200px]">
       <div className={`${LANDING_UPDATE_CONTAINER} text-center`}>
-        <h2 className="mx-auto max-w-[860px] text-[32px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#061C2F] md:text-[52px] md:leading-[1.02]">
+        <h2 className="mx-auto max-w-[860px] text-[40px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#061C2F] md:text-[44px] md:leading-[1.02]">
           Clarity problems are obvious once{" "}
           <span className="text-[#2563EB]">you see them.</span>
         </h2>
 
-        <p className="mt-4 text-[16px] text-[#6B7280] md:mt-5 md:text-[17px]">
+        <p className="mb-20 mt-4 text-[16px] font-semibold text-[#6B7280] md:mt-5 md:text-[17px]">
           Klynt clarity engine
         </p>
 
-        <div className="mt-8 flex flex-col items-center justify-center gap-4 md:mt-10 md:flex-row md:gap-3">
+        <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:gap-3">
           <div className="flex -space-x-3">
             {SOCIAL_PROOF_AVATARS.map((src, i) => (
               <div
@@ -37,7 +35,7 @@ export function LandingTestSocialProof() {
               </div>
             ))}
           </div>
-          <p className="max-w-[280px] text-[14px] font-medium text-[#2563EB] md:max-w-none md:text-[15px]">
+          <p className="max-w-[280px] text-[15px] font-normal text-[#8E99A2] md:max-w-none">
             Used by designers, founders and product teams
           </p>
         </div>

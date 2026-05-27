@@ -7,15 +7,13 @@ import { LANDING_BUTTON_CLASS } from "@/components/landing/landingStyles";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
 
-import { UPDATE_SECTION } from "./landingUpdateStyles";
-
 export function LandingTestCtaSection() {
   return (
-    <section className={`relative overflow-hidden bg-[#0E1B36] ${UPDATE_SECTION}`}>
+    <section className="relative overflow-hidden bg-[#0E1B36] px-5 py-32 md:px-6">
       <LandingHeroOpArt />
 
       <div className={`${LANDING_UPDATE_CONTAINER} relative z-10 text-center`}>
-        <h2 className="text-[36px] font-normal leading-[0.95] tracking-[-0.04em] text-white md:text-[52px]">
+        <h2 className="text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-white">
           Landing pages fail quietly.
         </h2>
 
@@ -44,7 +42,7 @@ export function LandingTestCtaSection() {
           </Button>
         </div>
 
-        <TrustBadgeRow variant="dark" className="mt-5" />
+        <TrustBadgeRow variant="dark" subtle className="mt-5" />
       </div>
     </section>
   );
