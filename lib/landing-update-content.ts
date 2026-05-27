@@ -13,7 +13,8 @@ import {
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
-export const LANDING_UPDATE_CONTAINER = "mx-auto w-full max-w-[1040px]";
+export const TEST_CONTAINER = "mx-auto w-full max-w-[1040px]";
+export const LANDING_UPDATE_CONTAINER = TEST_CONTAINER;
 
 export type AnalyzeItem = {
   icon: RemixiconComponentType;

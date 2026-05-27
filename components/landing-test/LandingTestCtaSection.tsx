@@ -5,16 +5,16 @@ import { Button } from "@/components/ui/Button";
 import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { LANDING_BUTTON_CLASS } from "@/components/landing/landingStyles";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
-import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
+import { TEST_CONTAINER } from "@/lib/landing-update-content";
 
-import { UPDATE_SECTION } from "./landingUpdateStyles";
+import { TEST_SECTION } from "./landingUpdateStyles";
 
 export function LandingTestCtaSection() {
   return (
-    <section className={`relative overflow-hidden bg-[#0E1B36] ${UPDATE_SECTION}`}>
+    <section className={`relative overflow-hidden bg-[#0E1B36] ${TEST_SECTION}`}>
       <LandingHeroOpArt />
 
-      <div className={`${LANDING_UPDATE_CONTAINER} relative z-10 text-center`}>
+      <div className={`${TEST_CONTAINER} relative z-10 text-center`}>
         <h2 className="text-[52px] font-normal leading-[0.95] tracking-[-0.04em] text-white">
           Landing pages fail quietly.
         </h2>

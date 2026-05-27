@@ -2,15 +2,11 @@ import {
   INSIDE_REPORT_AFTER,
   INSIDE_REPORT_BEFORE,
   INSIDE_REPORT_ITEMS,
-  LANDING_UPDATE_CONTAINER,
+  TEST_CONTAINER,
 } from "@/lib/landing-update-content";
 
-import {
-  UPDATE_EYEBROW,
-  UPDATE_HEADLINE,
-  UPDATE_SECTION,
-  UPDATE_SUBCOPY,
-} from "./landingUpdateStyles";
+import { TestSectionHeader } from "./TestSectionHeader";
+import { TEST_CARD, TEST_SECTION } from "./landingUpdateStyles";
 
 const impactStyles = {
   red: "border-red-200 bg-[#FFF3F3] text-[#D94848]",
@@ -20,26 +16,23 @@ const impactStyles = {
 
 export function LandingTestInsideReport() {
   return (
-    <section className={`${UPDATE_SECTION} bg-[#F5F7FA]`}>
-      <div className={LANDING_UPDATE_CONTAINER}>
-        <div className="mx-auto max-w-[760px] text-center">
-          <p className={UPDATE_EYEBROW}>Inside the report</p>
-          <h2 className={`mt-4 ${UPDATE_HEADLINE}`}>One score. Three lenses.</h2>
-          <p className={`mx-auto mt-5 max-w-[620px] ${UPDATE_SUBCOPY}`}>
-            Every audit breaks your page into what&apos;s wrong, what to fix,
-            and how to rewrite the copy.
-          </p>
-        </div>
+    <section className={`${TEST_SECTION} bg-[#F5F7FA]`}>
+      <div className={TEST_CONTAINER}>
+        <TestSectionHeader
+          eyebrow="Inside the report"
+          title="One score. Three lenses."
+          description="Every audit breaks your page into what's wrong, what to fix, and how to rewrite the copy."
+        />
 
-        <div className="mt-14 overflow-hidden rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_16px_48px_rgba(6,28,47,0.06)]">
+        <div className={`mt-16 ${TEST_CARD}`}>
           {INSIDE_REPORT_ITEMS.map((item, index) => (
             <div
               key={item.title}
-              className="border-b border-[rgba(6,28,47,0.06)] px-8 py-6 last:border-b-0"
+              className="border-b border-[rgba(6,28,47,0.06)] px-8 py-7 last:border-b-0"
             >
               <div className="flex items-start justify-between gap-6">
                 <div className="flex min-w-0 items-start gap-5">
-                  <span className="text-[48px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB]/20">
+                  <span className="w-10 shrink-0 text-[48px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB]/20">
                     {index + 1}
                   </span>
                   <div>
@@ -59,9 +52,9 @@ export function LandingTestInsideReport() {
                       </div>
                     ) : null}
                     {item.showSkeleton ? (
-                      <div className="mt-4 space-y-2">
-                        <div className="h-2.5 w-[320px] rounded-full bg-[#E5E7EB]" />
-                        <div className="h-2.5 w-[240px] rounded-full bg-[#E5E7EB]" />
+                      <div className="mt-4 space-y-2.5">
+                        <div className="h-2.5 w-[320px] max-w-full rounded-full bg-[#E5E7EB]" />
+                        <div className="h-2.5 w-[240px] max-w-full rounded-full bg-[#E5E7EB]" />
                       </div>
                     ) : null}
                     {item.footer ? (

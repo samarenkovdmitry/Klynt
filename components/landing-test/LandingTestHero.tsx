@@ -18,7 +18,7 @@ export function LandingTestHero() {
           Clarity drives conversion
         </h1>
 
-        <p className="mt-6 max-w-[640px] text-[21px] leading-8 text-white/80">
+        <p className="mt-6 max-w-[640px] text-[21px] leading-8 text-white/75">
           Klynt finds what makes pages feel unclear — and how to fix it.
         </p>
 

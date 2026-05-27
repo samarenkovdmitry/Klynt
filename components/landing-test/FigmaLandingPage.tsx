@@ -11,9 +11,11 @@ import { LandingTestMockup } from "@/components/landing-test/LandingTestMockup";
 import { LandingTestSocialProof } from "@/components/landing-test/LandingTestSocialProof";
 import { LandingTestWhatYouGet } from "@/components/landing-test/LandingTestWhatYouGet";
 
+import { TEST_PAGE } from "./landingUpdateStyles";
+
 export function FigmaLandingPage() {
   return (
-    <main className="min-w-[1040px] overflow-hidden bg-[#F5F7FA] text-[#061C2F]">
+    <main className={TEST_PAGE}>
       <LandingTestHero />
 
       <section id="report" className="relative z-20 -mt-[120px] px-6">

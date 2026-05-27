@@ -1,13 +1,13 @@
 import { SOCIAL_PROOF_AVATARS } from "@/lib/landing-content";
-import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
+import { TEST_CONTAINER } from "@/lib/landing-update-content";
 
-import { UPDATE_SECTION } from "./landingUpdateStyles";
+import { TEST_HEADLINE, TEST_SECTION } from "./landingUpdateStyles";
 
 export function LandingTestSocialProof() {
   return (
-    <section className={`${UPDATE_SECTION} bg-white`}>
-      <div className={`${LANDING_UPDATE_CONTAINER} text-center`}>
-        <h2 className="mx-auto max-w-[860px] text-[52px] font-semibold leading-[1.02] tracking-[-0.04em] text-[#061C2F]">
+    <section className={`${TEST_SECTION} bg-white`}>
+      <div className={`${TEST_CONTAINER} text-center`}>
+        <h2 className={`mx-auto max-w-[860px] ${TEST_HEADLINE}`}>
           Clarity problems are obvious once{" "}
           <span className="text-[#2563EB]">you see them.</span>
         </h2>
