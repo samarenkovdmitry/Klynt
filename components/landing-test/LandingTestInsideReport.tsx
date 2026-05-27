@@ -12,7 +12,7 @@ import {
 
 const impactStyles = {
   red: "border-red-200 bg-[#FFF3F3] text-[#D94848]",
-  green: "border-emerald-200 bg-[#A7F3D0] text-[#2E7D4F]",
+  green: "border-emerald-200 bg-[#ECFDF5] text-[#2E7D4F]",
   sky: "border-sky-200 bg-sky-50 text-sky-700",
 } as const;
 
@@ -41,7 +41,7 @@ export function LandingTestInsideReport() {
               key={item.title}
               className={[
                 "relative border-b border-[rgba(6,28,47,0.06)] px-5 py-5 last:border-b-0 md:px-8 md:py-6",
-                index === 1 || index === 2 ? "rounded-t-[20px] md:rounded-t-[28px]" : "",
+                index === 1 || index === 2 ? "rounded-t-[26px]" : "",
               ].join(" ")}
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
@@ -64,15 +64,15 @@ export function LandingTestInsideReport() {
                     ) : null}
                     {item.showSkeleton ? (
                       <div className="mt-4 space-y-2">
-                        <div className="h-2.5 w-full max-w-[380px] rounded-full bg-[#E5E7EB]" />
-                        <div className="h-2.5 w-full max-w-[270px] rounded-full bg-[#E5E7EB]" />
+                        <div className="h-2.5 w-[380px] max-w-full rounded-full bg-[#E5E7EB]" />
+                        <div className="h-2.5 w-[270px] max-w-full rounded-full bg-[#E5E7EB]" />
                       </div>
                     ) : null}
                     {item.showComparison ? (
-                      <div className="mt-4 h-2.5 w-full max-w-[380px] rounded-full bg-[#E5E7EB]" />
+                      <div className="mt-4 h-2.5 w-[368px] max-w-full rounded-full bg-[#E5E7EB]" />
                     ) : null}
                     {item.footer ? (
-                      <p className="mt-1.5 text-[13px] font-semibold text-[#061C2F]">
+                      <p className="mt-1.5 hidden text-[13px] font-semibold text-[#061C2F] sm:block">
                         {item.footer}
                       </p>
                     ) : null}
@@ -87,15 +87,15 @@ export function LandingTestInsideReport() {
               </div>
 
               {item.showComparison ? (
-                <div className="mt-6 grid grid-cols-2 gap-4 pl-0 md:gap-5 md:pl-[68px]">
-                  <div className="rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-white p-4 md:rounded-[20px] md:p-5">
+                <div className="mt-6 grid grid-cols-2 gap-2 pl-0 md:gap-5 md:pl-[68px]">
+                  <div className="rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-white p-4 md:rounded-[20px]">
                     <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#6B7280]">
                       Before
                     </p>
                     <div className="mt-3 h-2.5 w-full rounded-full bg-[#E5E7EB]" />
                   </div>
 
-                  <div className="rounded-[16px] border border-sky-200 bg-sky-50/70 p-4 md:rounded-[20px] md:p-5">
+                  <div className="rounded-[16px] border border-sky-200 bg-sky-50/70 p-4 md:rounded-[20px]">
                     <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-sky-700">
                       Improved
                     </p>

@@ -16,14 +16,18 @@ import {
 } from "./landingUpdateStyles";
 
 const stepVisualShell =
-  "flex h-[220px] items-center justify-center rounded-[24px] bg-[#CBD9F7] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-8 md:py-10";
+  "flex h-[220px] items-center justify-center rounded-[24px] bg-[#CBD9F7] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-10 md:py-10";
 
 const stepVisualShellReview =
-  "flex h-[248px] items-center justify-center rounded-[24px] bg-[#CBD9F7] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-8 md:py-10";
+  "flex h-[248px] items-center justify-center rounded-[24px] bg-[#CBD9F7] px-5 py-5 md:h-[400px] md:rounded-[28px] md:px-10 md:py-10";
+
+const stepCardClass =
+  "w-full max-w-[380px] rounded-[20px] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]";
 
 function ReviewReportScoreRing() {
   const radius = 26;
   const circumference = 2 * Math.PI * radius;
+  const scoreColor = "#10B981";
 
   return (
     <div className="relative h-16 w-16 shrink-0">
@@ -44,7 +48,7 @@ function ReviewReportScoreRing() {
           cx="32"
           cy="32"
           r={radius}
-          stroke="#F59E0B"
+          stroke={scoreColor}
           strokeWidth="4"
           fill="transparent"
           strokeLinecap="round"
@@ -52,7 +56,10 @@ function ReviewReportScoreRing() {
           strokeDashoffset={circumference * 0.25}
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-[22px] font-semibold text-[#F59E0B]">
+      <span
+        className="absolute inset-0 flex items-center justify-center text-[22px] font-semibold"
+        style={{ color: scoreColor }}
+      >
         75
       </span>
     </div>
@@ -63,7 +70,7 @@ function StepVisual({ index }: { index: number }) {
   if (index === 0) {
     return (
       <div className={stepVisualShell}>
-        <div className="w-full max-w-[380px] rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]">
+        <div className={stepCardClass}>
           <div className="flex items-center gap-2 rounded-xl border border-[rgba(6,28,47,0.08)] bg-[#F5F7FA] px-4 py-3">
             <RiLinkM size={18} className="shrink-0 text-[#2563EB]" />
             <span className="truncate text-[14px] text-[#6B7280]">
@@ -121,30 +128,34 @@ function StepVisual({ index }: { index: number }) {
 
   return (
     <div className={stepVisualShellReview}>
-      <div className="w-full max-w-[380px] rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]">
+      <div className={stepCardClass}>
         <div className="flex items-center justify-between text-[14px]">
           <span className="font-semibold text-[#061C2F]">Clarity Report</span>
-          <div className="flex gap-4 text-[12px] text-[#6B7280]">
+          <div className="flex items-center gap-4 text-[12px] text-[#6B7280]">
             <span>Export PDF</span>
+            <span className="h-4 w-px bg-[#EBEFF3]" aria-hidden />
             <span>Share</span>
           </div>
         </div>
-        <div className="mt-5 flex items-start gap-4">
+        <div className="mt-5 flex items-center gap-4">
           <ReviewReportScoreRing />
-          <div className="flex-1 space-y-2 pt-1">
-            <div className="h-2 w-full rounded-full bg-[#E5E7EB]" />
-            <div className="h-2 w-[80%] rounded-full bg-[#E5E7EB]" />
-          </div>
-          <div className="space-y-2">
-            <div className="h-2 w-16 rounded-full bg-[#E5E7EB]" />
-            <div className="h-2 w-12 rounded-full bg-[#E5E7EB]" />
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <div className="flex-1 space-y-2">
+              <div className="h-1.5 w-full rounded-full bg-[#E5E7EB]" />
+              <div className="h-1.5 w-[80%] rounded-full bg-[#E5E7EB]" />
+              <div className="h-1.5 w-[65%] rounded-full bg-[#E5E7EB]" />
+            </div>
+            <div className="space-y-2">
+              <div className="h-1.5 w-16 rounded-full bg-[#E5E7EB]" />
+              <div className="h-1.5 w-12 rounded-full bg-[#E5E7EB]" />
+            </div>
           </div>
         </div>
-        <div className="mt-5 flex gap-2">
+        <div className="mt-5 grid grid-cols-3 gap-2">
           {["UX Issues", "Improvements", "Copy Refinement"].map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-[#F5F7FA] px-3 py-1.5 text-[11px] font-medium text-[#6B7280]"
+              className="flex items-center justify-center rounded-lg bg-[#F5F7FA] px-2 py-1.5 text-center text-[11px] font-medium text-[#6B7280]"
             >
               {tag}
             </span>
@@ -221,7 +232,7 @@ export function LandingTestMidCta() {
           href="/analyze"
           icon={<RiArrowRightLine size={18} />}
           fullWidth={false}
-          className={LANDING_BUTTON_CLASS}
+          className={`${LANDING_BUTTON_CLASS} w-[302px]`}
         >
           Start free audit
         </Button>

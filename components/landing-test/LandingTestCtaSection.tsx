@@ -21,12 +21,12 @@ export function LandingTestCtaSection() {
           Klynt shows why.
         </p>
 
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row md:mt-10">
+        <div className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center md:mt-10">
           <Button
             href="/analyze"
             icon={<RiArrowRightLine size={18} />}
-            fullWidth={false}
-            className={LANDING_BUTTON_CLASS}
+            fullWidth
+            className={`${LANDING_BUTTON_CLASS} sm:w-auto`}
           >
             Start free audit
           </Button>
@@ -35,8 +35,8 @@ export function LandingTestCtaSection() {
             href={DEMO_REPORT_PATH}
             variant="secondary"
             tone="dark"
-            fullWidth={false}
-            className={LANDING_BUTTON_CLASS}
+            fullWidth
+            className={`${LANDING_BUTTON_CLASS} sm:w-auto`}
           >
             View demo
           </Button>

@@ -52,9 +52,9 @@ export const MOCKUP_HIGHLIGHTS: MockupHighlight[] = [
 ];
 
 export const SOCIAL_PROOF_AVATARS = [
-  "/avatars/user1.png",
-  "/avatars/user2.png",
-  "/avatars/user3.png",
+  "/avatars/user1.jpg",
+  "/avatars/user2.jpg",
+  "/avatars/user3.jpg",
 ];
 
 export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [

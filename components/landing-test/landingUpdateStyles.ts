@@ -6,7 +6,7 @@ export const UPDATE_SECTION_TITLE =
 export const UPDATE_SECTION_DESC =
   "mx-auto mt-5 max-w-[620px] text-[16px] leading-[28px] text-[#6B7280] md:text-[17px]";
 export const UPDATE_ANALYZES_SECTION =
-  "px-5 pt-24 pb-16 md:px-6 md:pt-32 md:pb-24";
+  "px-5 pt-[116px] pb-16 md:px-6 md:pt-[148px] md:pb-24";
 export const UPDATE_EYEBROW =
   "text-[12px] font-semibold uppercase tracking-[0.12em] text-[#2563EB] md:text-[13px]";
 export const UPDATE_HEADLINE =

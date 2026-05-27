@@ -11,7 +11,7 @@ import {
 } from "./landingUpdateStyles";
 
 const featurePreviewCard =
-  "w-full rounded-[20px] border border-[rgba(6,28,47,0.08)] bg-white p-4 shadow-[0_8px_24px_rgba(6,28,47,0.08)] sm:w-[240px]";
+  "w-full rounded-[20px] border border-[rgba(6,28,47,0.08)] bg-white p-4 shadow-[0_8px_24px_rgba(6,28,47,0.08)] sm:w-[245px]";
 
 function ScoreRing95() {
   const radius = 22;
@@ -82,10 +82,12 @@ function FeatureVisual({ id }: { id: string }) {
             { label: "Trust signals", width: "w-[120px]", color: "bg-[#94A3B8]" },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-2">
-              <div className="h-2 min-w-0 flex-1 rounded-full bg-[#F5F5F5]">
+              <div className="h-1 min-w-0 flex-1 rounded-full bg-[#F5F5F5]">
                 <div className={`h-full rounded-full ${item.color} ${item.width}`} />
               </div>
-              <span className="shrink-0 text-[11px] text-[#6B7280]">{item.label}</span>
+              <span className="w-[80px] shrink-0 text-[11px] text-[#6B7280]">
+                {item.label}
+              </span>
             </div>
           ))}
         </div>
@@ -95,14 +97,12 @@ function FeatureVisual({ id }: { id: string }) {
 
   if (id === "copy-rewrites") {
     return (
-      <div
-        className={`w-full rounded-[20px] border border-[#BFDBFE] bg-[#F0F7FF] p-4 sm:w-[240px] h-[110px]`}
-      >
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-[#2563EB] px-2.5 py-1 text-[11px] font-semibold text-white">
+      <div className="h-[110px] w-full rounded-[20px] border border-[#BFDBFE] bg-[#F0F7FF] p-4 sm:w-[245px]">
+        <div className="flex items-center justify-between gap-2">
+          <span className="rounded-full border border-[#BAE7FD] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#006BA6]">
             AI Suggestion
           </span>
-          <span className="rounded-full border border-[#BFDBFE] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#2563EB]">
+          <span className="rounded-full border border-[#BFDBFE] bg-[#F0F9FF] px-2.5 py-1 text-[11px] font-semibold text-[#2563EB]">
             +15%
           </span>
         </div>
@@ -114,7 +114,9 @@ function FeatureVisual({ id }: { id: string }) {
   }
 
   return (
-    <div className={`${featurePreviewCard} sm:w-[240px]`}>
+    <div
+      className={`${featurePreviewCard} rounded-t-[20px] rounded-b-none border-b-0 sm:w-[245px]`}
+    >
       <div className="flex items-center justify-between gap-3">
         <span className="text-[12px] font-semibold text-[#061C2F]">Clarity Report</span>
         <span className="rounded-md border border-[#DCE2E7] bg-[#F5F7FA] px-2 py-0.5 text-[10px] font-semibold text-[#6B7280]">
@@ -122,15 +124,15 @@ function FeatureVisual({ id }: { id: string }) {
         </span>
       </div>
 
-      <div className="mt-4 flex items-start gap-3">
+      <div className="mt-4 flex items-center gap-3">
         <ScoreRing95 />
-        <div className="flex-1 space-y-2 pt-1">
-          <div className="h-2 w-full rounded-full bg-[#E5E7EB]" />
-          <div className="h-2 w-[75%] rounded-full bg-[#E5E7EB]" />
+        <div className="flex-1 space-y-2">
+          <div className="h-[5px] w-full rounded-full bg-[#E5E7EB]" />
+          <div className="h-[5px] w-[75%] rounded-full bg-[#E5E7EB]" />
         </div>
       </div>
 
-      <div className="mt-4 space-y-2.5">
+      <div className="mt-4 grid grid-cols-2 gap-x-2 gap-y-2.5">
         {[
           { label: "Hero clarity", width: "85%" },
           { label: "CTA hierarchy", width: "68%" },
@@ -162,16 +164,14 @@ export function LandingTestWhatYouGet() {
         <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-2">
           {WHAT_YOU_GET_FEATURES.map((feature) => {
             const Icon = feature.icon;
+            const isPdfExport = feature.id === "pdf-export";
 
             return (
               <article
                 key={feature.id}
                 className="relative grid min-h-[240px] grid-cols-1 items-stretch gap-6 overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 sm:grid-cols-[1fr_auto] md:p-8"
               >
-                <div
-                  className={UPDATE_CARD_STRIPE_OVERLAY}
-                  aria-hidden
-                />
+                <div className={UPDATE_CARD_STRIPE_OVERLAY} aria-hidden />
 
                 <div className="relative z-10 flex min-w-0 flex-col">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2563EB]/10 text-[#2563EB]">
@@ -188,7 +188,7 @@ export function LandingTestWhatYouGet() {
                 <div
                   className={[
                     "relative z-10 flex items-end justify-start sm:justify-end",
-                    feature.id === "pdf-export" ? "sm:-mb-2 sm:-mr-2" : "",
+                    isPdfExport ? "-mb-5 self-end sm:-mr-0 md:-mb-8 md:-mr-8" : "",
                   ].join(" ")}
                 >
                   <FeatureVisual id={feature.id} />

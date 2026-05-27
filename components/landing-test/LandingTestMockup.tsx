@@ -114,11 +114,11 @@ export function LandingTestMockup() {
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
       >
         <div className="flex items-center justify-between gap-4 px-5 py-6 md:px-8">
-          <div className="flex min-w-0 flex-wrap items-center gap-2 md:gap-3">
+          <div className="flex min-w-0 items-center gap-2 md:gap-[10px]">
             <h2 className="text-[20px] font-semibold leading-[26px] tracking-[-0.04em] text-[#061C2F] md:text-[26px] md:leading-[30px]">
               Clarity Report
             </h2>
-            <div className="rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[11px] font-semibold text-[#2F6FED] md:px-3 md:text-[12px]">
+            <div className="ml-0.5 rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[11px] font-semibold leading-none text-[#2F6FED] md:px-3 md:text-[12px]">
               AI Generated
             </div>
           </div>
