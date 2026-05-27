@@ -12,7 +12,7 @@ import { UPDATE_SECTION } from "./landingUpdateStyles";
 export function LandingTestCtaSection() {
   return (
     <section className={`relative overflow-hidden bg-[#0E1B36] ${UPDATE_SECTION}`}>
-      <LandingHeroOpArt />
+      <LandingHeroOpArt muted />
 
       <div className={`${LANDING_UPDATE_CONTAINER} relative z-10 text-center`}>
         <h2 className="text-[36px] font-normal leading-[0.95] tracking-[-0.04em] text-white md:text-[52px]">

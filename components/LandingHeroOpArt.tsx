@@ -121,11 +121,14 @@ function DecorativeBackdrop({ children }: { children: ReactNode }) {
   );
 }
 
-export function LandingHeroOpArt() {
+export function LandingHeroOpArt({ muted = false }: { muted?: boolean }) {
   return (
     <DecorativeBackdrop>
       <OpArtSvg
-        className="absolute left-[calc(50%+220px)] top-0 h-full w-auto max-w-none -translate-x-1/2 md:left-[calc(50%+400px)]"
+        className={[
+          "absolute left-[calc(50%+220px)] top-0 h-full w-auto max-w-none -translate-x-1/2 md:left-[calc(50%+400px)]",
+          muted ? "opacity-35" : "",
+        ].join(" ")}
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
       />

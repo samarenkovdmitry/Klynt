@@ -12,6 +12,7 @@ import {
   UPDATE_EYEBROW,
   UPDATE_HEADLINE,
   UPDATE_SECTION,
+  UPDATE_SECTION_GRID,
   UPDATE_SUBCOPY,
 } from "./landingUpdateStyles";
 
@@ -130,14 +131,14 @@ export function LandingTestHowItWorks() {
           </p>
         </div>
 
-        <div className="mt-12 space-y-16 md:mt-20 md:space-y-24">
+        <div className={`${UPDATE_SECTION_GRID} space-y-16 md:space-y-24`}>
           {PROCESS_STEPS.map((step, index) => {
             const reversed = index % 2 === 1;
 
             return (
               <article
                 key={step.title}
-                className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16 ${reversed ? "lg:[&>*:first-child]:order-2" : ""}`}
+                className={`grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-16 ${reversed ? "md:[&>*:first-child]:order-2" : ""}`}
               >
                 <div>
                   <div className="text-[44px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB] md:text-[56px]">
@@ -180,7 +181,7 @@ export function LandingTestHowItWorks() {
 
 export function LandingTestMidCta() {
   return (
-    <section className="bg-[#F5F7FA] px-5 pb-16 pt-4 md:px-6 md:pb-24">
+    <section className="bg-[#F5F7FA] px-5 pb-14 pt-2 md:px-6 md:pb-20">
       <div className="mx-auto flex max-w-[1040px] flex-col items-center">
         <Button
           href="/analyze"
