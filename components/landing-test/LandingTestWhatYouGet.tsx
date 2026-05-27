@@ -1,12 +1,21 @@
-import { TEST_CONTAINER, WHAT_YOU_GET_FEATURES } from "@/lib/landing-update-content";
+import {
+  LANDING_UPDATE_CONTAINER,
+  WHAT_YOU_GET_FEATURES,
+} from "@/lib/landing-update-content";
 
-import { TestSectionHeader } from "./TestSectionHeader";
-import { TEST_FEATURE_CARD_PATTERN, TEST_SECTION } from "./landingUpdateStyles";
+import {
+  UPDATE_EYEBROW,
+  UPDATE_HEADLINE,
+  UPDATE_SECTION,
+} from "./landingUpdateStyles";
+
+const cardPattern =
+  "bg-[linear-gradient(90deg,rgba(6,28,47,0.04)_1px,transparent_1px)] bg-[length:24px_100%]";
 
 function FeatureVisual({ id }: { id: string }) {
   if (id === "ux-diagnostics") {
     return (
-      <div className="w-[180px] rounded-2xl border border-[rgba(6,28,47,0.06)] bg-white p-3.5 shadow-sm">
+      <div className="w-[180px] rounded-2xl border border-[rgba(6,28,47,0.06)] bg-white p-3 shadow-sm">
         <div className="h-2 w-16 rounded-full bg-[#E5E7EB]" />
         <div className="mt-2 h-2.5 w-[85%] rounded-full bg-[#E5E7EB]" />
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -23,15 +32,15 @@ function FeatureVisual({ id }: { id: string }) {
 
   if (id === "prioritized-fixes") {
     return (
-      <div className="w-[180px] space-y-2.5">
+      <div className="w-[180px] space-y-2">
         {[
-          ["Hero clarity", "bg-red-400", "w-[120px]"],
-          ["CTA hierarchy", "bg-orange-400", "w-[100px]"],
-          ["Trust signals", "bg-sky-300", "w-[140px]"],
+          ["Hero clarity", "bg-red-400", "max-w-[120px]"],
+          ["CTA hierarchy", "bg-orange-400", "max-w-[100px]"],
+          ["Trust signals", "bg-sky-300", "max-w-[140px]"],
         ].map(([label, color, width]) => (
           <div key={label} className="flex items-center gap-2">
-            <div className={`h-1.5 rounded-full bg-[#E5E7EB] ${width}`}>
-              <div className={`h-full rounded-full ${color}`} />
+            <div className={`h-1.5 flex-1 rounded-full bg-[#E5E7EB] ${width}`}>
+              <div className={`h-full rounded-full ${color}`} style={{ width: "100%" }} />
             </div>
             <span className="w-20 text-right text-[10px] text-[#6B7280]">{label}</span>
           </div>
@@ -42,7 +51,7 @@ function FeatureVisual({ id }: { id: string }) {
 
   if (id === "copy-rewrites") {
     return (
-      <div className="w-[180px] rounded-2xl border border-sky-200 bg-sky-50/70 p-3.5">
+      <div className="w-[180px] rounded-2xl border border-sky-200 bg-sky-50/70 p-3">
         <div className="flex items-center gap-2">
           <span className="rounded-full bg-[#2563EB] px-2 py-0.5 text-[10px] font-semibold text-white">
             AI Suggestion
@@ -59,7 +68,7 @@ function FeatureVisual({ id }: { id: string }) {
   }
 
   return (
-    <div className="w-[180px] rounded-2xl border border-[rgba(6,28,47,0.06)] bg-white p-3.5 shadow-sm">
+    <div className="w-[180px] rounded-2xl border border-[rgba(6,28,47,0.06)] bg-white p-3 shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold text-[#061C2F]">Clarity Report</span>
         <span className="rounded bg-[#F5F7FA] px-1.5 py-0.5 text-[9px] font-semibold text-[#6B7280]">
@@ -81,12 +90,14 @@ function FeatureVisual({ id }: { id: string }) {
 
 export function LandingTestWhatYouGet() {
   return (
-    <section className={`${TEST_SECTION} bg-white`}>
-      <div className={TEST_CONTAINER}>
-        <TestSectionHeader
-          eyebrow="What you get"
-          title="Built to make landing clarity obvious"
-        />
+    <section className={`${UPDATE_SECTION} bg-white`}>
+      <div className={LANDING_UPDATE_CONTAINER}>
+        <div className="mx-auto max-w-[760px] text-center">
+          <p className={UPDATE_EYEBROW}>What you get</p>
+          <h2 className={`mt-4 ${UPDATE_HEADLINE}`}>
+            Built to make landing clarity obvious
+          </h2>
+        </div>
 
         <div className="mt-16 grid grid-cols-2 gap-5">
           {WHAT_YOU_GET_FEATURES.map((feature) => {
@@ -95,16 +106,16 @@ export function LandingTestWhatYouGet() {
             return (
               <article
                 key={feature.id}
-                className={`grid grid-cols-[1fr_auto] items-center gap-6 overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] p-8 ${TEST_FEATURE_CARD_PATTERN}`}
+                className={`grid grid-cols-[1fr_auto] items-center gap-6 overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] p-8 ${cardPattern}`}
               >
                 <div>
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2563EB]/10 text-[#2563EB]">
                     <Icon size={20} />
                   </div>
-                  <h3 className="mt-5 text-[22px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#061C2F]">
+                  <h3 className="mt-5 text-[22px] font-semibold tracking-[-0.03em] text-[#061C2F]">
                     {feature.title}
                   </h3>
-                  <p className="mt-3 max-w-[280px] text-[15px] leading-6 text-[#6B7280]">
+                  <p className="mt-2 max-w-[280px] text-[15px] leading-6 text-[#6B7280]">
                     {feature.description}
                   </p>
                 </div>

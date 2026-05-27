@@ -1,22 +1,24 @@
-import {
-  RiAdvertisementLine,
-  RiArrowRightLine,
-  RiImageAddLine,
-  RiLinkM,
-} from "@remixicon/react";
+import { RiAdvertisementLine, RiArrowRightLine, RiImageAddLine, RiLinkM } from "@remixicon/react";
 
 import { Button } from "@/components/ui/Button";
 import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { LANDING_BUTTON_CLASS } from "@/components/landing/landingStyles";
-import { PROCESS_STEPS, TEST_CONTAINER } from "@/lib/landing-update-content";
+import {
+  LANDING_UPDATE_CONTAINER,
+  PROCESS_STEPS,
+} from "@/lib/landing-update-content";
 
-import { TestSectionHeader } from "./TestSectionHeader";
-import { TEST_SECTION, TEST_STEP_PANEL } from "./landingUpdateStyles";
+import {
+  UPDATE_EYEBROW,
+  UPDATE_HEADLINE,
+  UPDATE_SECTION,
+  UPDATE_SUBCOPY,
+} from "./landingUpdateStyles";
 
 function StepVisual({ index }: { index: number }) {
   if (index === 0) {
     return (
-      <div className={`flex h-[320px] items-center justify-center p-8 ${TEST_STEP_PANEL}`}>
+      <div className="flex h-[300px] items-center justify-center rounded-[28px] bg-[#E8F0FE] p-8">
         <div className="w-full max-w-[380px] rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]">
           <div className="flex items-center gap-2 rounded-xl border border-[rgba(6,28,47,0.08)] bg-[#F5F7FA] px-4 py-3">
             <RiLinkM size={18} className="shrink-0 text-[#2563EB]" />
@@ -40,7 +42,7 @@ function StepVisual({ index }: { index: number }) {
 
   if (index === 1) {
     return (
-      <div className={`flex h-[320px] items-center justify-center p-8 ${TEST_STEP_PANEL}`}>
+      <div className="flex h-[300px] items-center justify-center rounded-[28px] bg-[#E8F0FE] p-8">
         <div className="w-full max-w-[380px] rounded-[20px] bg-[#0E1B36] p-5 shadow-[0_16px_48px_rgba(6,28,47,0.12)]">
           <div className="flex items-center justify-between text-[12px] text-white/60">
             <span>Scanning page</span>
@@ -74,25 +76,25 @@ function StepVisual({ index }: { index: number }) {
   }
 
   return (
-    <div className={`flex h-[320px] items-center justify-center p-8 ${TEST_STEP_PANEL}`}>
+    <div className="flex h-[300px] items-center justify-center rounded-[28px] bg-[#E8F0FE] p-8">
       <div className="w-full max-w-[380px] rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_16px_48px_rgba(6,28,47,0.08)]">
         <div className="flex items-center justify-between text-[14px]">
           <span className="font-semibold text-[#061C2F]">Clarity Report</span>
-          <div className="flex gap-4 text-[13px] text-[#6B7280]">
+          <div className="flex gap-4 text-[#6B7280]">
             <span>Export PDF</span>
             <span>Share</span>
           </div>
         </div>
         <div className="mt-5 flex items-start gap-4">
-          <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full border-[6px] border-[#F59E0B] text-[22px] font-semibold text-[#F59E0B]">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-[6px] border-[#F59E0B] text-[18px] font-semibold text-[#F59E0B]">
             75
           </div>
-          <div className="flex-1 space-y-2 pt-2">
+          <div className="flex-1 space-y-2 pt-1">
             <div className="h-2 w-full rounded-full bg-[#E5E7EB]" />
             <div className="h-2 w-[80%] rounded-full bg-[#E5E7EB]" />
             <div className="h-2 w-[60%] rounded-full bg-[#E5E7EB]" />
           </div>
-          <div className="space-y-2 pt-2">
+          <div className="space-y-2">
             <div className="h-2 w-16 rounded-full bg-[#E5E7EB]" />
             <div className="h-2 w-12 rounded-full bg-[#E5E7EB]" />
             <div className="h-2 w-14 rounded-full bg-[#E5E7EB]" />
@@ -116,13 +118,17 @@ function StepVisual({ index }: { index: number }) {
 
 export function LandingTestHowItWorks() {
   return (
-    <section className={`${TEST_SECTION} bg-[#F5F7FA]`}>
-      <div className={TEST_CONTAINER}>
-        <TestSectionHeader
-          eyebrow="How it works"
-          title="Paste a URL. Get a clarity report."
-          description="No setup. No signup. Results in under a minute."
-        />
+    <section className={`${UPDATE_SECTION} bg-[#F5F7FA]`}>
+      <div className={LANDING_UPDATE_CONTAINER}>
+        <div className="mx-auto max-w-[760px] text-center">
+          <p className={UPDATE_EYEBROW}>How it works</p>
+          <h2 className={`mt-4 ${UPDATE_HEADLINE}`}>
+            Paste a URL. Get a clarity report.
+          </h2>
+          <p className={`mx-auto mt-5 max-w-[620px] ${UPDATE_SUBCOPY}`}>
+            No setup. No signup. Results in under a minute.
+          </p>
+        </div>
 
         <div className="mt-20 space-y-24">
           {PROCESS_STEPS.map((step, index) => {
@@ -134,10 +140,10 @@ export function LandingTestHowItWorks() {
                 className={`grid grid-cols-2 items-center gap-16 ${reversed ? "[&>*:first-child]:order-2" : ""}`}
               >
                 <div>
-                  <div className="text-[64px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB]">
+                  <div className="text-[56px] font-semibold leading-none tracking-[-0.04em] text-[#2563EB]">
                     {index + 1}
                   </div>
-                  <h3 className="mt-4 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#061C2F]">
+                  <h3 className="mt-4 text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]">
                     {step.title}
                   </h3>
                   <p className="mt-3 text-[16px] leading-7 text-[#6B7280]">
@@ -174,7 +180,7 @@ export function LandingTestHowItWorks() {
 
 export function LandingTestMidCta() {
   return (
-    <section className="bg-[#F5F7FA] px-6 pb-[100px] pt-2">
+    <section className="bg-[#F5F7FA] px-6 pb-24 pt-4">
       <div className="mx-auto flex max-w-[1040px] flex-col items-center">
         <Button
           href="/analyze"

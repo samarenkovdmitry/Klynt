@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
-import { TEST_CONTAINER } from "@/lib/landing-update-content";
+import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
 
 const navLinks = [
   { href: "/landing-test", label: "Home" },
@@ -18,8 +18,8 @@ const socialLinks = [
 
 export function LandingTestFooter() {
   return (
-    <footer className="border-t border-[rgba(6,28,47,0.06)] bg-white px-6 py-12">
-      <div className={TEST_CONTAINER}>
+    <footer className="border-t border-[rgba(6,28,47,0.06)] bg-white px-6 py-10">
+      <div className={LANDING_UPDATE_CONTAINER}>
         <div className="grid grid-cols-[1.2fr_0.8fr_1fr] items-start gap-10">
           <Link href="/landing-test" aria-label="Klynt — home">
             <img src="/klynt-logo-dark.svg" alt="Klynt" className="h-[30px] w-auto" />
@@ -39,12 +39,12 @@ export function LandingTestFooter() {
 
           <div>
             <p className="text-[14px] font-medium text-[#8E99A2]">Connect</p>
-            <div className="mt-4 flex items-center gap-3">
+            <div className="mt-4 flex items-center gap-4">
               {socialLinks.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(6,28,47,0.08)] text-[11px] font-semibold text-[#8E99A2] transition hover:text-[#061C2F]"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(6,28,47,0.08)] text-[12px] font-semibold text-[#6B7280] transition hover:text-[#061C2F]"
                   aria-label={link.label}
                 >
                   {link.label[0]}

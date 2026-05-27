@@ -2,30 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 const navItems = [
-  {
-    href: "/landing-test",
-    label: "Home",
-    match: (p: string) => p === "/landing-test",
-  },
-  {
-    href: "/analyze",
-    label: "Analyze",
-    match: (p: string) => p.startsWith("/analyze"),
-  },
-  {
-    href: DEMO_REPORT_PATH,
-    label: "View demo",
-    match: (p: string) => p.startsWith("/report"),
-  },
-  {
-    href: "/contact",
-    label: "Contact",
-    match: (p: string) => p.startsWith("/contact"),
-  },
+  { href: "/landing-test", label: "Home", match: (p: string) => p === "/landing-test" },
+  { href: "/analyze", label: "Analyze", match: (p: string) => p.startsWith("/analyze") },
+  { href: DEMO_REPORT_PATH, label: "View demo", match: (p: string) => p.startsWith("/report") },
+  { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") },
 ];
 
 export function LandingTestHeader() {
@@ -38,7 +21,7 @@ export function LandingTestHeader() {
           <img src="/klynt-logo-light.svg" alt="Klynt" className="h-auto w-[108px]" />
         </Link>
 
-        <nav className="flex items-center gap-0.5" aria-label="Main">
+        <nav className="flex items-center gap-1" aria-label="Main">
           {navItems.map((item) => {
             const isActive = item.match(pathname);
 

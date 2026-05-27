@@ -11,8 +11,6 @@ import {
   normalizeRisk,
 } from "@/lib/report-metrics";
 
-import { TEST_CARD } from "./landingUpdateStyles";
-
 export function LandingTestMockup() {
   const data = DEMO_REPORT;
   const score = 75;
@@ -20,22 +18,41 @@ export function LandingTestMockup() {
 
   return (
     <div
-      className={`relative ${TEST_CARD}`}
+      className="relative mx-auto max-w-[1040px] overflow-hidden rounded-[36px] bg-white shadow-[0_20px_60px_rgba(6,28,47,0.1)]"
       role="img"
       aria-label="Demo clarity report preview"
       onCopy={(event) => event.preventDefault()}
     >
       <div
-        className="pointer-events-none relative select-none"
+        className="pointer-events-none select-none"
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
       >
-        <div className="flex items-center justify-between gap-6 px-10 py-8">
-          <div className="flex min-w-0 items-center gap-3">
-            <h2 className="text-[38px] font-semibold leading-none tracking-[-0.04em] text-[#061C2F]">
-              Clarity Report
-            </h2>
-            <div className="rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-3 py-1 text-[12px] font-semibold text-[#2F6FED]">
-              AI Generated
+        <div className="flex items-start justify-between gap-6 px-10 py-8">
+          <div className="min-w-0">
+            <div className="flex items-center gap-3">
+              <h2 className="text-[38px] font-semibold leading-none tracking-[-0.04em] text-[#061C2F]">
+                Clarity Report
+              </h2>
+              <div className="rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-3 py-1 text-[12px] font-semibold text-[#2F6FED]">
+                AI Generated
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-center gap-2 text-[14px] text-[#8E99A2]">
+              <img
+                src={`https://www.google.com/s2/favicons?domain_url=${data.url}&sz=32`}
+                alt=""
+                className="h-4 w-4 shrink-0 rounded-sm"
+              />
+              <span>{data.url}</span>
+              <span className="text-neutral-300">•</span>
+              <span>
+                {new Date(data.generatedAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
             </div>
           </div>
 
@@ -56,7 +73,7 @@ export function LandingTestMockup() {
             Summary
           </h3>
 
-          <div className="mt-5 grid grid-cols-[1.55fr_0.75fr] divide-x divide-[#DCE2E7]">
+          <div className="mt-5 grid grid-cols-[1.6fr_0.7fr] divide-x divide-[#DCE2E7]">
             <div className="pr-8">
               <div className="flex items-start gap-6">
                 <ScoreRing score={score} />
