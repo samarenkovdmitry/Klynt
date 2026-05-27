@@ -1,7 +1,7 @@
 import { SOCIAL_PROOF_AVATARS } from "@/lib/landing-content";
 import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
 
-import { UPDATE_SECTION, UPDATE_SECTION_GRID } from "./landingUpdateStyles";
+import { UPDATE_SECTION } from "./landingUpdateStyles";
 
 export function LandingTestSocialProof() {
   return (
@@ -16,7 +16,7 @@ export function LandingTestSocialProof() {
           Klynt clarity engine
         </p>
 
-        <div className={`${UPDATE_SECTION_GRID} flex flex-col items-center justify-center gap-4 md:flex-row md:gap-3`}>
+        <div className="mt-8 flex flex-col items-center justify-center gap-4 md:mt-10 md:flex-row md:gap-3">
           <div className="flex -space-x-3">
             {SOCIAL_PROOF_AVATARS.map((src, i) => (
               <div
