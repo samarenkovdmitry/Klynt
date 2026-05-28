@@ -21,14 +21,22 @@ const socialLinks: {
   label: string;
   icon: RemixiconComponentType;
 }[] = [
-  { href: "https://linkedin.com", label: "LinkedIn", icon: RiLinkedinBoxFill },
-  { href: "https://reddit.com", label: "Reddit", icon: RiReddit2Line },
+  { href: "https://x.com/klynt_ai", label: "X", icon: RiTwitterXLine },
   {
-    href: "https://producthunt.com",
+    href: "https://www.linkedin.com/in/smrnkov/",
+    label: "LinkedIn",
+    icon: RiLinkedinBoxFill,
+  },
+  {
+    href: "https://www.reddit.com/user/DmitryKlynt/",
+    label: "Reddit",
+    icon: RiReddit2Line,
+  },
+  {
+    href: "https://www.producthunt.com/@dima_samarenkov",
     label: "Product Hunt",
     icon: RiProductHuntFill,
   },
-  { href: "https://x.com", label: "X", icon: RiTwitterXLine },
 ];
 
 export function AppFooter() {
