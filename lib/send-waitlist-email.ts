@@ -63,7 +63,7 @@ function buildWaitlistEmailContent(reportUrl: string) {
     "→ explains behavioral impact",
     "→ prioritizes issues by importance",
     "",
-    "We're also launching on Product Hunt this Tuesday 🚀",
+    "We're also launching on Product Hunt on June 2 🚀",
     "",
     "Would love your feedback.",
     "",
@@ -94,7 +94,7 @@ function buildWaitlistEmailContent(reportUrl: string) {
                 <p style="margin:0 0 4px;">→ detects UX friction points</p>
                 <p style="margin:0 0 4px;">→ explains behavioral impact</p>
                 <p style="margin:0 0 24px;">→ prioritizes issues by importance</p>
-                <p style="margin:0 0 16px;">We're also launching on Product Hunt this Tuesday 🚀</p>
+                <p style="margin:0 0 16px;">We're also launching on Product Hunt on June 2 🚀</p>
                 <p style="margin:0 0 16px;">Would love your feedback.</p>
                 <p style="margin:0;">— Dmitry</p>
               </td>

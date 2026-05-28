@@ -6,7 +6,7 @@
 export const preLaunch = {
   enabled: true,
   /** ISO date (YYYY-MM-DD) of the Product Hunt launch day. */
-  productHuntLaunchDate: "2026-06-03",
+  productHuntLaunchDate: "2026-06-02",
   waitlist: {
     enabled: true,
     storageKey: "klynt-waitlist-unlocked",
