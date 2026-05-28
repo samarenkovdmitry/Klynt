@@ -472,7 +472,7 @@ export default function Analyze() {
                           items-center
                           justify-center
                           rounded-full
-                          bg-[#F3F9FC]
+                          bg-[#2563EB]/10
                         "
                       >
                         <RiUpload2Line

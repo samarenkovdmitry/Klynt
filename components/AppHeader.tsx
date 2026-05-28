@@ -85,7 +85,7 @@ export function AppHeader() {
           "sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
           isLanding
             ? "border-b border-transparent bg-transparent"
-            : "border-b border-[rgba(6,28,47,0.06)] bg-white shadow-[0_4px_16px_rgba(6,28,47,0.08)]",
+            : "bg-white shadow-[0_4px_16px_rgba(6,28,47,0.08)]",
         ].join(" ")}
       >
         <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between gap-4 px-4 md:px-6">

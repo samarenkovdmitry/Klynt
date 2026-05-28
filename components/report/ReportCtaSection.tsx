@@ -27,7 +27,7 @@ export function ReportCtaSection({ onRerun, onExport }: ReportCtaSectionProps) {
             onClick={onRerun}
             icon={<RiArrowRightUpLine size={18} />}
             fullWidth={false}
-            className="w-full sm:w-auto"
+            className="w-full !rounded-full sm:w-auto"
           >
             Re-run analysis
           </Button>
@@ -37,7 +37,7 @@ export function ReportCtaSection({ onRerun, onExport }: ReportCtaSectionProps) {
             variant="secondary"
             icon={<RiDownload2Line size={18} />}
             fullWidth={false}
-            className="w-full sm:w-auto"
+            className="w-full !rounded-full sm:w-auto"
           >
             Export PDF
           </Button>

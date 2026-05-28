@@ -1,16 +1,16 @@
 import {
   RiAdvertisementLine,
   RiBarChartBoxLine,
-  RiDashboard3Line,
   RiFilePdfLine,
   RiFileWarningLine,
   RiFlagLine,
-  RiImageAddLine,
   RiLightbulbLine,
   RiPencilAi2Line,
-  RiPieChart2Line,
+  RiPieChartLine,
   RiQuillPenLine,
+  RiScreenshot2Line,
   RiSearchEyeLine,
+  RiSpeedUpLine,
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
@@ -78,7 +78,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
         text: "Works on marketing sites and product pages",
       },
       {
-        icon: RiImageAddLine,
+        icon: RiScreenshot2Line,
         text: "Captures UI and copy as users see it",
       },
     ],
@@ -90,7 +90,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     bullets: [
       { icon: RiFlagLine, text: "Flags friction across the full page" },
       {
-        icon: RiDashboard3Line,
+        icon: RiSpeedUpLine,
         text: "Scores clarity, trust, and conversion",
       },
     ],
@@ -99,7 +99,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     title: "Review your report",
     description: "Issues, priorities, and copy rewrites — ready to share.",
     bullets: [
-      { icon: RiPieChart2Line, text: "Prioritized recommendations" },
+      { icon: RiPieChartLine, text: "Prioritized recommendations" },
       { icon: RiFilePdfLine, text: "Export as PDF" },
     ],
   },
