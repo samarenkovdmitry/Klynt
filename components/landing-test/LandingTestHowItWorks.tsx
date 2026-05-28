@@ -137,12 +137,12 @@ function StepVisual({ index }: { index: number }) {
             <span>Share</span>
           </div>
         </div>
-        <div className="mt-5 flex items-start gap-4">
+        <div className="mt-5 flex items-stretch gap-4">
           <ReviewReportScoreRing />
-          <div className="flex min-w-0 flex-1 items-start gap-3">
-            <div className="flex-1 space-y-2">
-              <div className="h-1.5 w-full rounded-full bg-[#E5E7EB]" />
-              <div className="h-1.5 w-[80%] rounded-full bg-[#E5E7EB]" />
+          <div className="flex min-w-0 flex-1 items-stretch gap-3">
+            <div className="flex flex-1 flex-col justify-center gap-2">
+              <div className="h-2 w-full rounded-full bg-[#E5E7EB]" />
+              <div className="h-2 w-[80%] rounded-full bg-[#E5E7EB]" />
             </div>
             <div className="space-y-2">
               <div className="h-1.5 w-16 rounded-full bg-[#E5E7EB]" />
@@ -153,7 +153,7 @@ function StepVisual({ index }: { index: number }) {
             </div>
           </div>
         </div>
-        <div className="mt-5 grid grid-cols-3 gap-2">
+        <div className="mt-5 grid grid-cols-3 gap-1 md:gap-2">
           {["UX Issues", "Improvements", "Copy Refinement"].map((tag) => (
             <span
               key={tag}

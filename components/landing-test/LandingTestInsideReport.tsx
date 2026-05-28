@@ -41,7 +41,7 @@ export function LandingTestInsideReport() {
               key={item.title}
               className={[
                 "relative rounded-[20px] border border-[#EBEFF3] bg-white px-5 py-5 shadow-[0_16px_48px_rgba(6,28,47,0.06)] md:rounded-[28px] md:px-8 md:py-6",
-                index > 0 ? "-mt-12" : "",
+                index > 0 ? "-mt-8 md:-mt-12" : "",
               ].join(" ")}
               style={{ zIndex: index + 1 }}
             >
@@ -51,7 +51,12 @@ export function LandingTestInsideReport() {
                     {index + 1}
                   </span>
                   <div>
-                    <h3 className="text-[18px] font-semibold tracking-[-0.02em] text-[#061C2F]">
+                    <h3
+                      className={[
+                        "text-[18px] font-semibold tracking-[-0.02em] text-[#061C2F]",
+                        index === 0 ? "line-clamp-1 md:line-clamp-none" : "",
+                      ].join(" ")}
+                    >
                       {item.title}
                     </h3>
                     {item.tags ? (
