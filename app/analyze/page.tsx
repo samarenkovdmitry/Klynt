@@ -150,6 +150,13 @@ export default function Analyze() {
     return step ? step.label : "Analyzing…";
   }
 
+  function handleUrlKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== "Enter" || loading) return;
+
+    e.preventDefault();
+    void handleAnalyze();
+  }
+
   async function handleAnalyze() {
     let progressTimer: ReturnType<typeof setInterval> | null = null;
     let latestProgress = 0;
@@ -348,6 +355,7 @@ export default function Analyze() {
                     type="text"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
+                    onKeyDown={handleUrlKeyDown}
                     placeholder="https://stripe.com"
                     disabled={loading}
                     aria-invalid={showUrlError ? true : undefined}
