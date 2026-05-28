@@ -4,8 +4,16 @@ import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 import sharp from "sharp";
 
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { validateAuditUrl } from "@/lib/validate-audit-url";
+
 export const runtime = "nodejs";
 export const maxDuration = 90;
+
+const ANALYZE_RATE_LIMIT = Number(process.env.ANALYZE_RATE_LIMIT) || 8;
+const ANALYZE_RATE_WINDOW_MS =
+  Number(process.env.ANALYZE_RATE_WINDOW_MS) || 60 * 60 * 1000;
+const MAX_SCREENSHOT_BYTES = 20 * 1024 * 1024;
 
 let openaiClient: OpenAI | null = null;
 
@@ -337,12 +345,54 @@ page.on("request", (req) => {
 // -----------------------------
 export async function POST(req: Request) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(
+      `analyze:${clientIp}`,
+      ANALYZE_RATE_LIMIT,
+      ANALYZE_RATE_WINDOW_MS
+    );
+
+    if (!rateLimit.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSec),
+          },
+        }
+      );
+    }
+
     const formData = await req.formData();
 
     const rawUrl = (formData.get("url") as string) ?? "";
-    const url = normalizeUrl(rawUrl);
-
     const uploadedScreenshot = formData.get("screenshot") as Blob | null;
+
+    if (rawUrl.trim()) {
+      const urlError = validateAuditUrl(rawUrl);
+      if (urlError) {
+        return NextResponse.json({ error: urlError }, { status: 400 });
+      }
+    }
+
+    if (uploadedScreenshot && uploadedScreenshot.size > 0) {
+      if (uploadedScreenshot.size > MAX_SCREENSHOT_BYTES) {
+        return NextResponse.json(
+          { error: "Screenshot must be 20 MB or smaller." },
+          { status: 400 }
+        );
+      }
+
+      if (!uploadedScreenshot.type.startsWith("image/")) {
+        return NextResponse.json(
+          { error: "Upload a PNG or JPG screenshot." },
+          { status: 400 }
+        );
+      }
+    }
+
+    const url = normalizeUrl(rawUrl);
 
     let screenshotsBase64: string[] = [];
 

@@ -107,10 +107,29 @@ function animateProgressTo100(
   });
 }
 
+const ANALYZE_HOURLY_LIMIT = 8;
+
+function getRateLimitMessage(retryAfterSec: number | null): string {
+  const base = `You've reached the limit of ${ANALYZE_HOURLY_LIMIT} free analyses per hour.`;
+
+  if (!retryAfterSec || retryAfterSec <= 0) {
+    return `${base} Please try again later.`;
+  }
+
+  if (retryAfterSec >= 3600) {
+    const hours = Math.ceil(retryAfterSec / 3600);
+    return `${base} Try again in about ${hours} hour${hours === 1 ? "" : "s"}.`;
+  }
+
+  const minutes = Math.max(1, Math.ceil(retryAfterSec / 60));
+  return `${base} Try again in about ${minutes} minute${minutes === 1 ? "" : "s"}.`;
+}
+
 export default function Analyze() {
   const [data, setData] = useState<AuditResponseFlat | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState(false);
 
   const router = useRouter();
 
@@ -178,6 +197,7 @@ export default function Analyze() {
       setData(null);
       setProgress(0);
       setError(null);
+      setIsRateLimited(false);
 
       const startedAt = performance.now();
       progressTimer = setInterval(() => {
@@ -201,10 +221,23 @@ export default function Analyze() {
 
       const json = await res.json().catch(() => null);
 
+      if (res.status === 429) {
+        stopProgressTimer();
+        setProgress(0);
+        setLoading(false);
+        const retryAfter = Number(res.headers.get("Retry-After"));
+        setIsRateLimited(true);
+        setError(
+          getRateLimitMessage(Number.isFinite(retryAfter) ? retryAfter : null)
+        );
+        return;
+      }
+
       if (!res.ok || !json) {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
+        setIsRateLimited(false);
         setError(
           json?.error ||
             "Something went wrong during analysis. Please try again."
@@ -216,6 +249,7 @@ export default function Analyze() {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
+        setIsRateLimited(false);
         setError(
           json?.error ||
             "Analysis returned an incomplete report. Please try again."
@@ -272,6 +306,7 @@ export default function Analyze() {
     } catch (error: any) {
       stopProgressTimer();
       setProgress(0);
+      setIsRateLimited(false);
       setError(
         error?.message ||
           "Something went wrong while analyzing the website."
@@ -686,47 +721,56 @@ export default function Analyze() {
               {/* ERROR */}
               {error && (
                 <div
-                  className="
-                    mt-5
-                    rounded-2xl
-                    border
-                    border-[#FFD9D6]
-                    bg-[#FFF4F3]
-                    px-4
-                    py-4
-                  "
+                  className={[
+                    "mt-5 rounded-2xl px-4 py-4",
+                    isRateLimited
+                      ? "border border-amber-200 bg-amber-50"
+                      : "border border-[#FFD9D6] bg-[#FFF4F3]",
+                  ].join(" ")}
                 >
 
                   <div className="flex items-start justify-between gap-4">
 
                     <div>
 
-                      <p className="text-[15px] font-medium text-[#D14343]">
-                        Analysis failed
+                      <p
+                        className={[
+                          "text-[15px] font-medium",
+                          isRateLimited ? "text-amber-800" : "text-[#D14343]",
+                        ].join(" ")}
+                      >
+                        {isRateLimited ? "Rate limit reached" : "Analysis failed"}
                       </p>
 
-                      <p className="mt-1 text-[14px] text-[#9F5C5C]">
+                      <p
+                        className={[
+                          "mt-1 text-[14px]",
+                          isRateLimited ? "text-amber-700" : "text-[#9F5C5C]",
+                        ].join(" ")}
+                      >
                         {error}
                       </p>
                     </div>
 
-                    <button
-                      onClick={handleAnalyze}
-                      className="
-                        shrink-0
-                        rounded-full
-                        bg-red-100
-                        px-3
-                        py-1.5
-                        text-[12px]
-                        font-medium
-                        text-red-700
-                        transition
-                        hover:bg-red-200
-                      "
-                    >
-                      Retry
-                    </button>
+                    {!isRateLimited && (
+                      <button
+                        onClick={handleAnalyze}
+                        className="
+                          shrink-0
+                          rounded-full
+                          bg-red-100
+                          px-3
+                          py-1.5
+                          text-[12px]
+                          font-medium
+                          text-red-700
+                          transition
+                          hover:bg-red-200
+                        "
+                      >
+                        Retry
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
