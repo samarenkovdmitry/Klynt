@@ -68,7 +68,7 @@ export function ReportSuggestionsSection({
         <SuggestionCard item={firstSuggestion} index={0} />
 
         {showWaitlistGate ? (
-          <div className="relative h-[300px] overflow-hidden">
+          <div className="relative h-[500px] overflow-hidden">
             {blurredSuggestions.length > 0 && (
               <>
                 <div
