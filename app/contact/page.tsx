@@ -110,7 +110,7 @@ export default function ContactPage() {
                 message and reply to{" "}
                 <a
                   href="mailto:hello@klynt.one"
-                  className="font-medium text-[#0F7FB3] hover:underline"
+                  className="font-medium text-[#2563EB] hover:underline"
                 >
                   hello@klynt.one
                 </a>
@@ -141,7 +141,7 @@ export default function ContactPage() {
                 <button
                   type="button"
                   onClick={() => setSent(false)}
-                  className="mt-4 text-[14px] font-medium text-[#0F7FB3] hover:underline"
+                  className="mt-4 text-[14px] font-medium text-[#2563EB] hover:underline"
                 >
                   Send another message
                 </button>

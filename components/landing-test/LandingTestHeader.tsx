@@ -67,7 +67,7 @@ export function LandingTestHeader() {
                     "rounded-full px-4 py-2 text-[14px] font-medium transition-colors",
                     isActive
                       ? "bg-white/5 font-semibold text-white"
-                      : "text-white/75 hover:bg-white/10 hover:text-white",
+                      : "text-white/75 hover:bg-white/5 hover:text-white",
                   ].join(" ")}
                 >
                   {item.label}

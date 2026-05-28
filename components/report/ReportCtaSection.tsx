@@ -42,16 +42,6 @@ export function ReportCtaSection({ onRerun, onExport }: ReportCtaSectionProps) {
             Export PDF
           </Button>
         </div>
-
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-[13px] text-neutral-500">
-          <div className="rounded-full bg-[#F5F7FA] px-3 py-1">
-            AI-generated insights
-          </div>
-          <div className="rounded-full bg-[#F5F7FA] px-3 py-1">
-            Shareable report
-          </div>
-          <div className="rounded-full bg-[#F5F7FA] px-3 py-1">PDF export</div>
-        </div>
       </div>
     </section>
   );

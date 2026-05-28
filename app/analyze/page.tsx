@@ -477,7 +477,7 @@ export default function Analyze() {
                       >
                         <RiUpload2Line
                           size={24}
-                          className="text-[#14A8E8]"
+                          className="text-[#2563EB]"
                         />
                       </div>
 

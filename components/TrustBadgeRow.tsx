@@ -25,7 +25,7 @@ const variantStyles = {
   },
   light: {
     row: "text-[#8E99A2]",
-    icon: "text-[#14A8E8]",
+    icon: "text-[#8E99A2]",
     dot: "bg-[#D5DDE5]",
   },
   lightGray: {

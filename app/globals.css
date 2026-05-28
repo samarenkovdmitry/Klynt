@@ -15,9 +15,9 @@
   --surface-dark: #0e1b36;
 
   --nordic: #10a6da;
-  --nordic-text: #0f7fb3;
-  --nordic-border: rgba(16, 166, 218, 0.28);
-  --nordic-bg: rgba(16, 166, 218, 0.08);
+  --nordic-text: #2563eb;
+  --nordic-border: rgba(37, 99, 235, 0.28);
+  --nordic-bg: rgba(37, 99, 235, 0.08);
 }
 
 /* Убираем принудительный шрифт — теперь Tailwind font-sans = Familjen Grotesk */

@@ -18,7 +18,7 @@ export function inputFieldClass({
     error ? "border-[#F0A8A5]" : "border-[#D8E0E7]",
     disabled
       ? "cursor-not-allowed opacity-60"
-      : !error && "focus:border-[#14A8E8]",
+      : !error && "focus:border-[#2563EB]",
   ]
     .filter(Boolean)
     .join(" ");

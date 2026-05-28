@@ -189,7 +189,9 @@ export function LandingTestWhatYouGet() {
                 <div
                   className={[
                     "relative z-10 flex items-end justify-start lg:justify-end",
-                    isPdfExport ? "-mb-5 self-end md:-mb-8 md:-mr-8 md:ml-8" : "",
+                    isPdfExport
+                      ? "-mb-5 self-end md:-mb-8 md:-mr-8 md:ml-8 md:-translate-x-[30px]"
+                      : "",
                   ].join(" ")}
                 >
                   <FeatureVisual id={feature.id} />
