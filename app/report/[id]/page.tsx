@@ -10,6 +10,8 @@ import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
 import { ReportSummary } from "@/components/report/ReportSummary";
 import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
+import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
+import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { useReportData } from "@/hooks/useReportData";
 
 export default function ReportPage() {
@@ -18,6 +20,9 @@ export default function ReportPage() {
   const reportId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const { data, loadState } = useReportData(reportId);
+  const { hydrated, unlocked, waitlistActive, unlock } = usePreLaunchWaitlist(
+    reportId === DEMO_REPORT_ID
+  );
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -51,8 +56,8 @@ export default function ReportPage() {
     router.push("/analyze");
   }
 
-  if (loadState !== "ready" || !data) {
-    return <ReportPageStates loadState={loadState} />;
+  if (loadState !== "ready" || !data || !hydrated) {
+    return <ReportPageStates loadState={loadState === "ready" && !hydrated ? "loading" : loadState} />;
   }
 
   return (
@@ -83,12 +88,18 @@ export default function ReportPage() {
 
           <div className="mt-8 space-y-8">
             <ReportUxIssuesSection issues={data.issues} />
-            <ReportSuggestionsSection suggestions={data.suggestions} />
-            <ReportCopySection
-              copy={data.copy}
-              copiedIndex={copiedIndex}
-              onCopy={handleCopy}
+            <ReportSuggestionsSection
+              suggestions={data.suggestions}
+              waitlistActive={waitlistActive}
+              onWaitlistUnlock={unlock}
             />
+            {unlocked && (
+              <ReportCopySection
+                copy={data.copy}
+                copiedIndex={copiedIndex}
+                onCopy={handleCopy}
+              />
+            )}
             <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
           </div>
         </div>

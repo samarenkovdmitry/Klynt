@@ -1,7 +1,7 @@
 import { RiArrowRightLine } from "@remixicon/react";
 
 import { LandingHeroOpArt } from "@/components/LandingHeroOpArt";
-import { PreLaunchProductHuntBanner } from "@/components/pre-launch/PreLaunchProductHuntBanner";
+import { PreLaunchProductHuntBanner } from "@/components/pre-launch/PreLaunchWaitlist";
 import { Button } from "@/components/ui/Button";
 import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { LANDING_BUTTON_CLASS } from "@/components/landing/landingStyles";
