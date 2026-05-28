@@ -80,13 +80,16 @@ function FeatureVisual({ id }: { id: string }) {
       <div className={`${featurePreviewCard} h-[113px]`}>
         <div className="space-y-3">
           {[
-            { label: "Hero clarity", width: "w-[44px]", color: "bg-[#F87171]" },
-            { label: "CTA hierarchy", width: "w-[36px]", color: "bg-[#FB923C]" },
-            { label: "Trust signals", width: "w-[60px]", color: "bg-[#94A3B8]" },
+            { label: "Hero clarity", width: "20%", color: "bg-[#F87171]" },
+            { label: "CTA hierarchy", width: "45%", color: "bg-[#FB923C]" },
+            { label: "Trust signals", width: "90%", color: "bg-[#94A3B8]" },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-2">
-              <div className="h-1 min-w-0 flex-1 rounded-full bg-[#F5F5F5]">
-                <div className={`h-full rounded-full ${item.color} ${item.width}`} />
+              <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-[#F5F5F5]">
+                <div
+                  className={`h-full rounded-full ${item.color}`}
+                  style={{ width: item.width }}
+                />
               </div>
               <span className="w-[80px] shrink-0 text-right text-[11px] text-[#6B7280]">
                 {item.label}
