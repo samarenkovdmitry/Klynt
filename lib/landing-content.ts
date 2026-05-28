@@ -71,7 +71,7 @@ export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
   {
     title: "Review your report",
     description:
-      "Get UX issues, prioritized improvements, and copy rewrites in one shareable clarity report — ready to export as PDF.",
+      "Get UX issues, prioritized improvements, and copy rewrites in one clarity report — ready to export as PDF.",
   },
 ];
 

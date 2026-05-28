@@ -12,7 +12,7 @@ const navItems = [
   {
     href: "/",
     label: "Home",
-    match: (p: string) => p === "/" || p === "/landing-test",
+    match: (p: string) => p === "/",
   },
   { href: "/analyze", label: "Analyze", match: (p: string) => p.startsWith("/analyze") },
   { href: DEMO_REPORT_PATH, label: "View demo", match: (p: string) => p.startsWith("/report") },

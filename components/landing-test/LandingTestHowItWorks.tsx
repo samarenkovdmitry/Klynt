@@ -134,7 +134,7 @@ function StepVisual({ index }: { index: number }) {
           <div className="flex items-center gap-2 text-[12px] text-[#6B7280]">
             <span>Export PDF</span>
             <span className="h-4 w-px bg-[#EBEFF3]" aria-hidden />
-            <span>Share</span>
+            <span>Copy link</span>
           </div>
         </div>
         <div className="mt-5 flex items-stretch gap-4">

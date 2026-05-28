@@ -1,6 +1,7 @@
 import { RiArrowRightLine } from "@remixicon/react";
 
 import { LandingHeroOpArt } from "@/components/LandingHeroOpArt";
+import { PreLaunchProductHuntBanner } from "@/components/pre-launch/PreLaunchProductHuntBanner";
 import { Button } from "@/components/ui/Button";
 import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { LANDING_BUTTON_CLASS } from "@/components/landing/landingStyles";
@@ -14,6 +15,8 @@ export function LandingTestHero() {
       <LandingTestHeader />
 
       <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-5 pt-10 text-center md:px-6 md:pt-16">
+        <PreLaunchProductHuntBanner />
+
         <h1 className="max-w-[860px] text-[54px] font-semibold leading-[58px] tracking-[-0.01em] text-white md:text-[64px] md:leading-[80px]">
           Clarity drives conversion
         </h1>

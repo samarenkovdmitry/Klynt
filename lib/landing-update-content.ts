@@ -97,7 +97,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   },
   {
     title: "Review your report",
-    description: "Issues, priorities, and copy rewrites — ready to share.",
+    description: "Issues, priorities, and copy rewrites — export as PDF when you are ready.",
     bullets: [
       { icon: RiPieChartLine, text: "Prioritized recommendations" },
       { icon: RiFilePdfLine, text: "Export as PDF" },
@@ -128,7 +128,7 @@ export const WHAT_YOU_GET_FEATURES: WhatYouGetFeature[] = [
     id: "pdf-export",
     icon: RiFilePdfLine,
     title: "PDF export",
-    description: "Share findings with design, product, or clients.",
+    description: "Export a PDF to share with design, product, or clients.",
   },
 ];
 
