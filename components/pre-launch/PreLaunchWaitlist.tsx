@@ -32,13 +32,17 @@ export function PreLaunchProductHuntBanner() {
 
 type PreLaunchWaitlistCardProps = {
   onUnlock: () => void;
+  overlay?: boolean;
 };
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-export function PreLaunchWaitlistCard({ onUnlock }: PreLaunchWaitlistCardProps) {
+export function PreLaunchWaitlistCard({
+  onUnlock,
+  overlay = false,
+}: PreLaunchWaitlistCardProps) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +76,10 @@ export function PreLaunchWaitlistCard({ onUnlock }: PreLaunchWaitlistCardProps) 
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({
+          email: email.trim(),
+          reportUrl: window.location.href,
+        }),
       });
 
       const json = await res.json().catch(() => null);
@@ -93,19 +100,32 @@ export function PreLaunchWaitlistCard({ onUnlock }: PreLaunchWaitlistCardProps) 
 
   if (submitted) {
     return (
-      <div className="rounded-[28px] border border-emerald-200 bg-emerald-50 px-5 py-6 text-center md:px-8 md:py-8">
+      <div
+        className={[
+          "rounded-[28px] border border-emerald-200 bg-emerald-50 px-5 py-6 text-center md:px-8 md:py-8",
+          overlay ? "shadow-[0_16px_48px_rgba(6,28,47,0.12)]" : "",
+        ].join(" ")}
+      >
         <p className="text-[18px] font-semibold tracking-[-0.02em] text-emerald-900 md:text-[20px]">
           Full report unlocked
         </p>
         <p className="mt-2 text-[14px] leading-6 text-emerald-800 md:text-[15px]">
-          Scroll down to read the remaining improvements and copy refinements.
+          Check your inbox for the report link, then scroll down for the rest
+          of the analysis.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-[28px] border border-[var(--stroke-light)] bg-white px-5 py-6 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:px-8 md:py-8">
+    <div
+      className={[
+        "rounded-[28px] border border-[var(--stroke-light)] bg-white px-5 py-6 md:px-8 md:py-8",
+        overlay
+          ? "shadow-[0_16px_48px_rgba(6,28,47,0.12)]"
+          : "shadow-[0_10px_40px_rgba(0,0,0,0.03)]",
+      ].join(" ")}
+    >
       <h4 className="text-center text-[24px] font-semibold tracking-[-0.03em] text-[var(--ink-primary)] md:text-[28px]">
         Get the full UX analysis
       </h4>

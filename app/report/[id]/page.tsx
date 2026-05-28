@@ -12,6 +12,7 @@ import { ReportSummary } from "@/components/report/ReportSummary";
 import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
+import { isPreLaunchEnabled } from "@/lib/pre-launch";
 import { useReportData } from "@/hooks/useReportData";
 
 export default function ReportPage() {
@@ -100,7 +101,9 @@ export default function ReportPage() {
                 onCopy={handleCopy}
               />
             )}
-            <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
+            {!isPreLaunchEnabled() && (
+              <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
+            )}
           </div>
         </div>
       </main>

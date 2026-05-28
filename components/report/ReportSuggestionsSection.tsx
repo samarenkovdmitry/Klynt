@@ -56,6 +56,7 @@ export function ReportSuggestionsSection({
 
   const [firstSuggestion, ...restSuggestions] = suggestions;
   const showWaitlistGate = waitlistActive && Boolean(onWaitlistUnlock);
+  const blurredSuggestions = restSuggestions.slice(0, 2);
 
   return (
     <section>
@@ -67,14 +68,14 @@ export function ReportSuggestionsSection({
         <SuggestionCard item={firstSuggestion} index={0} />
 
         {showWaitlistGate ? (
-          <>
-            {restSuggestions.length > 0 && (
-              <div className="relative overflow-hidden">
+          <div className="relative h-[300px] overflow-hidden">
+            {blurredSuggestions.length > 0 && (
+              <>
                 <div
-                  className="space-y-4 blur-[5px] opacity-55 pointer-events-none select-none"
+                  className="absolute inset-x-0 top-0 space-y-4 blur-[5px] opacity-55 pointer-events-none select-none"
                   aria-hidden
                 >
-                  {restSuggestions.map((item, index) => (
+                  {blurredSuggestions.map((item, index) => (
                     <SuggestionCard
                       key={index + 1}
                       item={item}
@@ -84,17 +85,24 @@ export function ReportSuggestionsSection({
                 </div>
 
                 <div
-                  className="pointer-events-none absolute inset-x-0 top-0 h-[300px]"
+                  className="pointer-events-none absolute inset-0"
                   style={{
                     background:
-                      "linear-gradient(to bottom, rgba(245,247,250,0) 0%, rgba(245,247,250,0.72) 55%, #F5F7FA 100%)",
+                      "linear-gradient(to bottom, rgba(245,247,250,0) 0%, rgba(245,247,250,0.55) 45%, #F5F7FA 100%)",
                   }}
                 />
-              </div>
+              </>
             )}
 
-            <PreLaunchWaitlistCard onUnlock={onWaitlistUnlock!} />
-          </>
+            <div className="absolute inset-0 z-10 flex items-center justify-center px-4 py-6">
+              <div className="w-full max-w-[560px]">
+                <PreLaunchWaitlistCard
+                  overlay
+                  onUnlock={onWaitlistUnlock!}
+                />
+              </div>
+            </div>
+          </div>
         ) : (
           restSuggestions.map((item, index) => (
             <SuggestionCard key={index + 1} item={item} index={index + 1} />

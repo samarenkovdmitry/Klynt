@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { isPreLaunchWaitlistActive } from "@/lib/pre-launch";
+import {
+  isValidReportUrl,
+  sendWaitlistEmail,
+} from "@/lib/send-waitlist-email";
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -12,8 +16,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    const body = (await req.json()) as { email?: string };
+    const body = (await req.json()) as { email?: string; reportUrl?: string };
     const email = String(body.email ?? "").trim();
+    const reportUrl = String(body.reportUrl ?? "").trim();
 
     if (!isValidEmail(email)) {
       return NextResponse.json(
@@ -22,13 +27,24 @@ export async function POST(req: Request) {
       );
     }
 
-    console.info("[waitlist]", email);
+    if (!reportUrl || !isValidReportUrl(reportUrl)) {
+      return NextResponse.json(
+        { error: "Invalid report link." },
+        { status: 400 }
+      );
+    }
+
+    await sendWaitlistEmail({ email, reportUrl });
 
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
-      { status: 500 }
-    );
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Something went wrong. Please try again.";
+
+    console.error("[waitlist]", error);
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
