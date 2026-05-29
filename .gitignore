@@ -50,6 +50,7 @@ debug_*
 *.png
 !public/favicon-16x16.png
 !public/favicon-32x32.png
+!public/klynt-logo-email.png
 !app/icon.png
 !app/apple-icon.png
 *.bin

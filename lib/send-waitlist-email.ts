@@ -1,3 +1,4 @@
+import { buildEmailLogoHtml } from "@/lib/email-brand";
 import { getSiteUrl } from "@/lib/site";
 
 type WaitlistEmailPayload = {
@@ -47,7 +48,7 @@ export function isValidReportUrl(url: string): boolean {
 
 function buildWaitlistEmailContent(reportUrl: string) {
   const siteUrl = getSiteUrl();
-  const logoUrl = `${siteUrl}/klynt-logo-dark.svg`;
+  const logoHtml = buildEmailLogoHtml(siteUrl);
   const safeReportUrl = escapeHtml(reportUrl);
 
   const text = [
@@ -79,7 +80,7 @@ function buildWaitlistEmailContent(reportUrl: string) {
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#FFFFFF;border:1px solid rgba(6,28,47,0.08);border-radius:20px;padding:32px 28px;">
             <tr>
               <td style="padding-bottom:24px;">
-                <img src="${logoUrl}" alt="Klynt" width="108" height="30" style="display:block;height:30px;width:auto;" />
+                ${logoHtml}
               </td>
             </tr>
             <tr>
