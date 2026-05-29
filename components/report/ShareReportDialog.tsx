@@ -146,7 +146,7 @@ export function ShareReportDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="share-report-title"
-        className="relative z-10 mx-auto w-[min(100%,500px)] rounded-[28px] border border-[var(--stroke-light)] bg-white px-5 py-6 shadow-[0_24px_64px_rgba(6,28,47,0.18)] md:px-7 md:py-7"
+        className="relative z-10 mx-auto min-w-0 w-[min(100%,500px)] max-w-full rounded-[28px] border border-[var(--stroke-light)] bg-white px-5 py-6 shadow-[0_24px_64px_rgba(6,28,47,0.18)] md:px-7 md:py-7"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -204,7 +204,7 @@ export function ShareReportDialog({
           Share to
         </p>
 
-        <div className="mt-3 flex flex-nowrap items-center gap-1.5">
+        <div className="mt-3 flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
           {targets.map((target) => (
             <a
               key={target.id}
