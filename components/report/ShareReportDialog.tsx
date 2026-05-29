@@ -146,7 +146,7 @@ export function ShareReportDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="share-report-title"
-        className="relative z-10 w-full max-w-[520px] rounded-[28px] border border-[var(--stroke-light)] bg-white px-5 py-6 shadow-[0_24px_64px_rgba(6,28,47,0.18)] md:px-7 md:py-7"
+        className="relative z-10 mx-auto w-[min(100%,500px)] rounded-[28px] border border-[var(--stroke-light)] bg-white px-5 py-6 shadow-[0_24px_64px_rgba(6,28,47,0.18)] md:px-7 md:py-7"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -204,14 +204,14 @@ export function ShareReportDialog({
           Share to
         </p>
 
-        <div className="mt-3 flex flex-nowrap gap-2 overflow-x-auto pb-0.5 sm:overflow-visible">
+        <div className="mt-3 flex flex-nowrap items-center gap-1.5">
           {targets.map((target) => (
             <a
               key={target.id}
               href={target.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--stroke-light)] bg-white text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[var(--stroke-light)] bg-white text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
               aria-label={`Share on ${target.label}`}
             >
               <ShareNetworkIcon id={target.id} />
@@ -222,7 +222,7 @@ export function ShareReportDialog({
             <button
               type="button"
               onClick={() => void handleNativeShare()}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--stroke-light)] bg-white text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[var(--stroke-light)] bg-white text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
               aria-label="More share options"
             >
               <RiMoreFill size={20} aria-hidden />
