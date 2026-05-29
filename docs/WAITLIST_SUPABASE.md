@@ -6,7 +6,7 @@ Run in the Supabase SQL editor.
 
 ```sql
 create table if not exists public.reports (
-  id uuid primary key,
+  id text primary key,
   audited_url text not null,
   payload jsonb not null,
   created_at timestamptz not null default now()
@@ -18,6 +18,13 @@ create index if not exists reports_created_at_idx
 
 - Saved on every successful `POST /api/analyze`
 - Loaded via `GET /api/reports/[id]` when opening a shared link
+- New links use a **10-character** id, e.g. `https://klynt.one/report/k7m2x9p4q1` (older UUID links still load if already in the table)
+
+If you already created `reports` with `id uuid`, either drop the table (empty) or migrate:
+
+```sql
+alter table public.reports alter column id type text using id::text;
+```
 
 ## Waitlist emails
 

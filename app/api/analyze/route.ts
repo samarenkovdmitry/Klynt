@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto";
-
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import puppeteer from "puppeteer-core";
@@ -8,6 +6,7 @@ import sharp from "sharp";
 
 import { isAuditReport, type AuditReport } from "@/lib/audit-report";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { generateReportId } from "@/lib/report-id";
 import { saveReportToDb } from "@/lib/reports-db";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
@@ -619,7 +618,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
       ...mapImpact(item.impact || {}),
     }));
 
-    const reportId = randomUUID();
+    const reportId = generateReportId();
     const auditedUrl =
       typeof json.url === "string" && json.url.trim()
         ? json.url.trim()

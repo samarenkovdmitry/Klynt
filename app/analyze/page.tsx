@@ -13,6 +13,7 @@ import { BrandPill } from "@/components/ui/BrandPill";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { AppHeader } from "@/components/AppHeader";
 import { TrustBadgeRow } from "@/components/TrustBadgeRow";
+import { generateReportId } from "@/lib/report-id";
 import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
 
@@ -260,7 +261,7 @@ export default function Analyze() {
       const reportId =
         typeof json.reportId === "string" && json.reportId.trim()
           ? json.reportId.trim()
-          : crypto.randomUUID();
+          : generateReportId();
 
       const flat: AuditResponseFlat = {
         url: json.url ?? url ?? "",
