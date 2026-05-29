@@ -7,13 +7,13 @@ import {
   RiFileCopyLine,
   RiLinkedinBoxFill,
   RiMailLine,
+  RiMoreFill,
   RiReddit2Line,
   RiShareForwardLine,
   RiTwitterXLine,
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
-import { Button } from "@/components/ui/Button";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { getShareTargets } from "@/lib/share-report";
 
@@ -204,39 +204,31 @@ export function ShareReportDialog({
           Share to
         </p>
 
-        <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-7">
+        <div className="mt-3 flex flex-wrap gap-2">
           {targets.map((target) => (
             <a
               key={target.id}
               href={target.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--stroke-light)] bg-white px-2 py-3 text-center text-[11px] font-medium text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF] sm:text-[12px]"
+              className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--stroke-light)] bg-white text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
               aria-label={`Share on ${target.label}`}
             >
-              <span className="text-[var(--ink-primary)]">
-                <ShareNetworkIcon id={target.id} />
-              </span>
-              <span>{target.label}</span>
+              <ShareNetworkIcon id={target.id} />
             </a>
           ))}
-        </div>
 
-        {canNativeShare && (
-          <div className="mt-5">
-            <Button
+          {canNativeShare && (
+            <button
               type="button"
-              variant="secondary"
-              tone="light"
-              fullWidth
-              icon={<RiShareForwardLine size={18} />}
               onClick={() => void handleNativeShare()}
-              className="!rounded-2xl"
+              className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--stroke-light)] bg-white text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
+              aria-label="More share options"
             >
-              More options…
-            </Button>
-          </div>
-        )}
+              <RiMoreFill size={20} aria-hidden />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
