@@ -6,6 +6,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { ReportCopySection } from "@/components/report/ReportCopySection";
 import { ReportCtaSection } from "@/components/report/ReportCtaSection";
 import { ReportHeader } from "@/components/report/ReportHeader";
+import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
 import { ReportSummary } from "@/components/report/ReportSummary";
@@ -24,7 +25,8 @@ export default function ReportPage() {
     reportId === DEMO_REPORT_ID
   );
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState("");
 
   async function handleCopy(text: string, index: number) {
     await navigator.clipboard.writeText(text);
@@ -32,20 +34,9 @@ export default function ReportPage() {
     setTimeout(() => setCopiedIndex(null), 1500);
   }
 
-  async function handleShare() {
-    const url = window.location.href;
-
-    if (navigator.share) {
-      await navigator.share({
-        title: "Klynt UX Report",
-        url,
-      });
-      return;
-    }
-
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  function handleShare() {
+    setShareUrl(window.location.href);
+    setShareOpen(true);
   }
 
   function handleExport() {
@@ -70,7 +61,6 @@ export default function ReportPage() {
             <ReportHeader
               url={data.url}
               generatedAt={data.generatedAt}
-              copied={copied}
               onExport={handleExport}
               onShare={handleShare}
             />
@@ -107,6 +97,13 @@ export default function ReportPage() {
           </div>
         </div>
       </main>
+
+      <ShareReportDialog
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        shareUrl={shareUrl}
+        auditedUrl={data.url}
+      />
     </>
   );
 }

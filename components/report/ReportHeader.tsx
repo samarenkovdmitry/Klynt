@@ -1,13 +1,9 @@
-import {
-  RiDownload2Line,
-  RiLinkM,
-} from "@remixicon/react";
+import { RiDownload2Line, RiShareForwardLine } from "@remixicon/react";
 import { REPORT_ACTION_BUTTON_CLASS } from "@/components/report/reportStyles";
 
 type ReportHeaderProps = {
   url?: string;
   generatedAt?: string;
-  copied: boolean;
   onExport: () => void;
   onShare: () => void;
 };
@@ -25,7 +21,6 @@ function formatReportDate(value?: string) {
 export function ReportHeader({
   url,
   generatedAt,
-  copied,
   onExport,
   onShare,
 }: ReportHeaderProps) {
@@ -66,8 +61,8 @@ export function ReportHeader({
         </button>
 
         <button type="button" onClick={onShare} className={REPORT_ACTION_BUTTON_CLASS}>
-          <RiLinkM size={18} />
-          <span>{copied ? "Copied" : "Copy link"}</span>
+          <RiShareForwardLine size={18} />
+          <span>Share</span>
         </button>
       </div>
     </div>
