@@ -37,6 +37,43 @@ body {
   color: var(--foreground);
 }
 
+@keyframes share-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes share-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.share-backdrop-enter {
+  animation: share-backdrop-in 0.2s ease-out both;
+}
+
+.share-dialog-enter {
+  animation: share-dialog-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .share-backdrop-enter,
+  .share-dialog-enter {
+    animation: none;
+  }
+}
+
 .brand-pill {
   border: 1px solid var(--nordic-border);
   background: var(--nordic-bg);
