@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
+  RiCheckLine,
   RiCloseLine,
   RiFacebookFill,
   RiFileCopyLine,
@@ -190,9 +191,14 @@ export function ShareReportDialog({
             <button
               type="button"
               onClick={() => void handleCopy()}
-              className="flex h-[48px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
+              aria-label={copied ? "Link copied" : "Copy report link"}
+              className="flex h-[48px] w-[48px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF] sm:w-auto"
             >
-              <RiFileCopyLine size={18} />
+              {copied ? (
+                <RiCheckLine size={18} className="text-emerald-600" aria-hidden />
+              ) : (
+                <RiFileCopyLine size={18} aria-hidden />
+              )}
               <span className="hidden sm:inline">
                 {copied ? "Copied" : "Copy"}
               </span>
