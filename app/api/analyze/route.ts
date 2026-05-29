@@ -1,10 +1,14 @@
+import { randomUUID } from "crypto";
+
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 import sharp from "sharp";
 
+import { isAuditReport, type AuditReport } from "@/lib/audit-report";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { saveReportToDb } from "@/lib/reports-db";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
 export const runtime = "nodejs";
@@ -615,7 +619,46 @@ json.confidence = Number.isFinite(Number(json.confidence))
       ...mapImpact(item.impact || {}),
     }));
 
-    return NextResponse.json(json);
+    const reportId = randomUUID();
+    const auditedUrl =
+      typeof json.url === "string" && json.url.trim()
+        ? json.url.trim()
+        : url;
+
+    const reportPayload: AuditReport = {
+      url: auditedUrl,
+      score: Number(json.score) || 0,
+      risk:
+        json.risk === "medium" || json.risk === "high" ? json.risk : "low",
+      summary: json.summary,
+      verdict: json.verdict,
+      key_observation: json.key_observation,
+      confidence: json.confidence,
+      issues: json.issues,
+      suggestions: json.suggestions,
+      copy: json.copy,
+      breakdown: json.breakdown,
+      generatedAt: new Date().toISOString(),
+    };
+
+    if (isAuditReport(reportPayload)) {
+      try {
+        await saveReportToDb({
+          id: reportId,
+          auditedUrl,
+          report: reportPayload,
+        });
+      } catch (persistError) {
+        console.error("[analyze] Failed to persist report:", persistError);
+      }
+    }
+
+    return NextResponse.json({
+      ...json,
+      reportId,
+      url: auditedUrl,
+      generatedAt: reportPayload.generatedAt,
+    });
   } catch (error: any) {
     
     console.error("ANALYZE ERROR:");

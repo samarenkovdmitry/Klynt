@@ -8,21 +8,39 @@ function getSupabaseUrl() {
   );
 }
 
-export function createServerSupabase(): SupabaseClient {
-  const url = getSupabaseUrl();
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+function getSupabaseKey() {
+  return (
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ||
+    process.env.SUPABASE_ANON_KEY?.trim() ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
+    ""
+  );
+}
 
-  if (!url || !serviceRoleKey) {
-    throw new Error(
-      "Supabase is not configured. Set SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) and SUPABASE_SERVICE_ROLE_KEY."
-    );
+export function getSupabaseConfigError(): string | null {
+  if (!getSupabaseUrl()) {
+    return "Set NEXT_PUBLIC_SUPABASE_URL in .env.local";
   }
 
-  return createClient(url, serviceRoleKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  if (!getSupabaseKey()) {
+    return "Set SUPABASE_SERVICE_ROLE_KEY (recommended) or NEXT_PUBLIC_SUPABASE_ANON_KEY";
+  }
+
+  return null;
 }
 
 export function isSupabaseConfigured() {
-  return Boolean(getSupabaseUrl() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim());
+  return getSupabaseConfigError() === null;
+}
+
+export function createServerSupabase(): SupabaseClient {
+  const configError = getSupabaseConfigError();
+
+  if (configError) {
+    throw new Error(configError);
+  }
+
+  return createClient(getSupabaseUrl(), getSupabaseKey(), {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }

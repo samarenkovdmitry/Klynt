@@ -257,6 +257,11 @@ export default function Analyze() {
         return;
       }
 
+      const reportId =
+        typeof json.reportId === "string" && json.reportId.trim()
+          ? json.reportId.trim()
+          : crypto.randomUUID();
+
       const flat: AuditResponseFlat = {
         url: json.url ?? url ?? "",
         score: json.score ?? 0,
@@ -276,10 +281,11 @@ export default function Analyze() {
           trust: json.breakdown?.trust ?? 0,
           conversion: json.breakdown?.conversion ?? 0,
         },
-        generatedAt: new Date().toISOString(),
+        generatedAt:
+          typeof json.generatedAt === "string"
+            ? json.generatedAt
+            : new Date().toISOString(),
       };
-
-      const reportId = crypto.randomUUID();
 
       try {
         saveReport(reportId, flat);

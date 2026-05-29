@@ -5,7 +5,10 @@ import {
   isValidReportUrl,
   sendWaitlistEmail,
 } from "@/lib/send-waitlist-email";
-import { isSupabaseConfigured } from "@/lib/supabase-server";
+import {
+  getSupabaseConfigError,
+  isSupabaseConfigured,
+} from "@/lib/supabase-server";
 import {
   getReportIdFromReportUrl,
   isValidReportId,
@@ -22,9 +25,16 @@ export async function POST(req: Request) {
   }
 
   if (!isSupabaseConfigured()) {
-    console.error("[waitlist] Supabase env vars are missing");
+    const configError = getSupabaseConfigError();
+    console.error("[waitlist]", configError);
+
     return NextResponse.json(
-      { error: "Waitlist is temporarily unavailable. Please try again later." },
+      {
+        error:
+          process.env.NODE_ENV === "development" && configError
+            ? configError
+            : "Waitlist is temporarily unavailable. Please try again later.",
+      },
       { status: 503 }
     );
   }

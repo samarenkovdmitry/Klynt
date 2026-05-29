@@ -32,8 +32,8 @@ export function ReportPageStates({ loadState }: ReportPageStatesProps) {
               Report not available
             </p>
             <p className="mt-3 text-[15px] leading-7 text-[var(--ink-secondary)]">
-              This report is stored only in the browser where the analysis was
-              run. Open the link from the same device or run a new analysis.
+              This link may be invalid, or the report was created before sharing
+              was enabled. Run a new analysis to generate a shareable report.
             </p>
             <div className="mt-6">
               <Button href="/analyze" fullWidth={false} className="px-8">
