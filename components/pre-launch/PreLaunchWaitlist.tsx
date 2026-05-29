@@ -31,6 +31,7 @@ export function PreLaunchProductHuntBanner() {
 }
 
 type PreLaunchWaitlistCardProps = {
+  reportId: string;
   onUnlock: () => void;
   overlay?: boolean;
 };
@@ -40,6 +41,7 @@ function isValidEmail(value: string) {
 }
 
 export function PreLaunchWaitlistCard({
+  reportId,
   onUnlock,
   overlay = false,
 }: PreLaunchWaitlistCardProps) {
@@ -78,6 +80,7 @@ export function PreLaunchWaitlistCard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email.trim(),
+          reportId,
           reportUrl: window.location.href,
         }),
       });

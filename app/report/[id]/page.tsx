@@ -90,6 +90,7 @@ export default function ReportPage() {
             <ReportUxIssuesSection issues={data.issues} />
             <ReportSuggestionsSection
               suggestions={data.suggestions}
+              reportId={reportId}
               waitlistActive={waitlistActive}
               onWaitlistUnlock={unlock}
             />

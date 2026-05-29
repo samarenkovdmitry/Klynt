@@ -8,6 +8,7 @@ import { getImpactEntries } from "@/lib/report-impact";
 
 type ReportSuggestionsSectionProps = {
   suggestions?: ReportSuggestion[];
+  reportId?: string;
   waitlistActive?: boolean;
   onWaitlistUnlock?: () => void;
 };
@@ -49,13 +50,15 @@ function SuggestionCard({
 
 export function ReportSuggestionsSection({
   suggestions = [],
+  reportId,
   waitlistActive = false,
   onWaitlistUnlock,
 }: ReportSuggestionsSectionProps) {
   if (suggestions.length === 0) return null;
 
   const [firstSuggestion, ...restSuggestions] = suggestions;
-  const showWaitlistGate = waitlistActive && Boolean(onWaitlistUnlock);
+  const showWaitlistGate =
+    waitlistActive && Boolean(onWaitlistUnlock) && Boolean(reportId);
   const blurredSuggestions = restSuggestions.slice(0, 2);
 
   return (
@@ -97,6 +100,7 @@ export function ReportSuggestionsSection({
             <div className="absolute inset-0 z-10 flex items-center justify-center px-4 py-6">
               <div className="w-full max-w-[560px]">
                 <PreLaunchWaitlistCard
+                  reportId={reportId!}
                   overlay
                   onUnlock={onWaitlistUnlock!}
                 />

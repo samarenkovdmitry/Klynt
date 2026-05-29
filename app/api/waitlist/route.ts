@@ -5,6 +5,12 @@ import {
   isValidReportUrl,
   sendWaitlistEmail,
 } from "@/lib/send-waitlist-email";
+import { isSupabaseConfigured } from "@/lib/supabase-server";
+import {
+  getReportIdFromReportUrl,
+  isValidReportId,
+  saveWaitlistEmail,
+} from "@/lib/waitlist-emails";
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -15,10 +21,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  if (!isSupabaseConfigured()) {
+    console.error("[waitlist] Supabase env vars are missing");
+    return NextResponse.json(
+      { error: "Waitlist is temporarily unavailable. Please try again later." },
+      { status: 503 }
+    );
+  }
+
   try {
-    const body = (await req.json()) as { email?: string; reportUrl?: string };
+    const body = (await req.json()) as {
+      email?: string;
+      reportUrl?: string;
+      reportId?: string;
+    };
     const email = String(body.email ?? "").trim();
     const reportUrl = String(body.reportUrl ?? "").trim();
+    const reportIdFromBody = String(body.reportId ?? "").trim();
 
     if (!isValidEmail(email)) {
       return NextResponse.json(
@@ -34,6 +53,24 @@ export async function POST(req: Request) {
       );
     }
 
+    const reportIdFromUrl = getReportIdFromReportUrl(reportUrl);
+    const reportId = reportIdFromBody || reportIdFromUrl || "";
+
+    if (!isValidReportId(reportId)) {
+      return NextResponse.json(
+        { error: "Invalid report." },
+        { status: 400 }
+      );
+    }
+
+    if (reportIdFromUrl && reportIdFromUrl !== reportId) {
+      return NextResponse.json(
+        { error: "Report does not match the link." },
+        { status: 400 }
+      );
+    }
+
+    await saveWaitlistEmail({ email, reportId });
     await sendWaitlistEmail({ email, reportUrl });
 
     return NextResponse.json({ ok: true });
