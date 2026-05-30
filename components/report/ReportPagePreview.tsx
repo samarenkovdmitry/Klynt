@@ -1,11 +1,17 @@
+import { REPORT_PREVIEW_HEIGHT, REPORT_PREVIEW_WIDTH } from "@/lib/report-preview-size";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 
 type ReportPagePreviewProps = {
   url?: string;
+  previewImage?: string;
   topIssueTitle?: string;
 };
 
-export function ReportPagePreview({ url, topIssueTitle }: ReportPagePreviewProps) {
+export function ReportPagePreview({
+  url,
+  previewImage,
+  topIssueTitle,
+}: ReportPagePreviewProps) {
   const domain = formatReportDomain(url);
 
   return (
@@ -31,13 +37,23 @@ export function ReportPagePreview({ url, topIssueTitle }: ReportPagePreviewProps
           )}
         </div>
 
-        <div className="relative h-[132px] bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7]">
-          <div className="absolute inset-x-4 top-4 space-y-2">
-            <div className="h-2.5 w-2/3 rounded bg-[rgba(6,28,47,0.08)]" />
-            <div className="h-2.5 w-1/2 rounded bg-[rgba(6,28,47,0.06)]" />
-            <div className="mt-4 h-16 rounded-md bg-[rgba(6,28,47,0.04)]" />
+        {previewImage ? (
+          <img
+            src={previewImage}
+            alt={`Preview of ${domain || "analyzed page"}`}
+            width={REPORT_PREVIEW_WIDTH}
+            height={REPORT_PREVIEW_HEIGHT}
+            className="block h-[190px] w-full object-cover object-top"
+          />
+        ) : (
+          <div className="relative h-[190px] bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7]">
+            <div className="absolute inset-x-4 top-4 space-y-2">
+              <div className="h-2.5 w-2/3 rounded bg-[rgba(6,28,47,0.08)]" />
+              <div className="h-2.5 w-1/2 rounded bg-[rgba(6,28,47,0.06)]" />
+              <div className="mt-4 h-16 rounded-md bg-[rgba(6,28,47,0.04)]" />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {topIssueTitle && (

@@ -8,7 +8,12 @@ import type { RemixiconComponentType } from "@remixicon/react";
 import { ReportHeroGrid } from "@/components/report/ReportHeroGrid";
 import { ReportPagePreview } from "@/components/report/ReportPagePreview";
 import { ReportShareStrip } from "@/components/report/ReportShareStrip";
-import type { ReportBreakdown, ReportIssue } from "@/lib/audit-report";
+import type {
+  ReportBreakdown,
+  ReportIssue,
+  ReportMetricObservations,
+} from "@/lib/audit-report";
+import { getMetricObservationFallbacks } from "@/lib/metric-observations";
 import {
   formatAnalyzedDate,
   formatOverallScore,
@@ -28,6 +33,8 @@ type ReportHeroSummaryProps = {
   breakdown?: ReportBreakdown;
   confidence?: number;
   keyObservation?: string;
+  previewImage?: string;
+  metricObservations?: ReportMetricObservations;
   issues?: ReportIssue[];
   onShare: () => void;
   onExport: () => void;
@@ -69,23 +76,15 @@ function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) 
 }
 
 function getTrustDescription(value: number) {
-  if (value >= 70) return "Feels polished and credible from the first screen.";
-  if (value >= 40) return "Some trust signals are present, but not immediately convincing.";
-  return "Trust cues are weak or missing at the first impression.";
+  return getMetricObservationFallbacks({ trust: value }).trust ?? "";
 }
 
 function getClarityDescription(value: number) {
-  if (value >= 70) return "The primary action and value are easy to grasp quickly.";
-  if (value >= 40) {
-    return "Users may need extra scanning before understanding the primary action.";
-  }
-  return "The page makes users work too hard to understand what to do next.";
+  return getMetricObservationFallbacks({ clarity: value }).clarity ?? "";
 }
 
-function getFrictionDescription(value: number) {
-  if (value >= 70) return "Multiple competing elements reduce focus on the core value proposition.";
-  if (value >= 40) return "Noticeable friction slows comprehension in key sections.";
-  return "Heavy cognitive load makes the experience feel harder than it should.";
+function getFrictionDescription(value: number, breakdown?: ReportBreakdown) {
+  return getMetricObservationFallbacks(breakdown).friction ?? "";
 }
 
 export function ReportHeroSummary({
@@ -97,6 +96,8 @@ export function ReportHeroSummary({
   breakdown,
   confidence = 0,
   keyObservation,
+  previewImage,
+  metricObservations,
   issues = [],
   onShare,
   onExport,
@@ -109,6 +110,16 @@ export function ReportHeroSummary({
   const topIssueTitle = issues[0]?.title;
   const overallScore = formatOverallScore(score);
   const confidenceValue = Math.max(0, Math.min(100, Number(confidence)));
+  const fallbacks = getMetricObservationFallbacks(breakdown, verdict);
+  const trustDescription =
+    metricObservations?.trust?.trim() || getTrustDescription(trust);
+  const clarityDescription =
+    metricObservations?.clarity?.trim() || getClarityDescription(clarity);
+  const frictionDescription =
+    metricObservations?.friction?.trim() ||
+    getFrictionDescription(friction, breakdown);
+  const overallDescription =
+    metricObservations?.overall?.trim() || fallbacks.overall || summary || "";
 
   return (
     <div className="space-y-3">
@@ -158,7 +169,11 @@ export function ReportHeroSummary({
               </div>
 
               <div className="flex shrink-0 justify-center lg:justify-end lg:pt-2">
-                <ReportPagePreview url={url} topIssueTitle={topIssueTitle} />
+                <ReportPagePreview
+                  url={url}
+                  previewImage={previewImage}
+                  topIssueTitle={topIssueTitle}
+                />
               </div>
             </div>
           </section>
@@ -169,19 +184,19 @@ export function ReportHeroSummary({
                 icon={RiShieldCheckLine}
                 label="Trust Signals"
                 value={trust}
-                description={getTrustDescription(trust)}
+                description={trustDescription}
               />
               <MetricCard
                 icon={RiFocus3Line}
                 label="Decision Clarity"
                 value={clarity}
-                description={getClarityDescription(clarity)}
+                description={clarityDescription}
               />
               <MetricCard
                 icon={RiBrainLine}
                 label="Cognitive Friction"
                 value={friction}
-                description={getFrictionDescription(friction)}
+                description={frictionDescription}
               />
 
               <div className="min-w-0">
@@ -197,34 +212,42 @@ export function ReportHeroSummary({
                   </p>
                 </div>
                 <p className="mt-3 text-[14px] leading-5 text-[rgba(6,28,47,0.5)]">
-                  {verdict || "UX assessment complete"}
+                  {overallDescription}
                 </p>
               </div>
             </div>
 
             <div className="mt-6 border-t border-[var(--stroke-light)] pt-5 md:mt-6">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-[14px] text-[rgba(6,28,47,0.5)]">
+              <div className="flex flex-col gap-3 text-[12px] leading-[18px] text-[rgba(6,28,47,0.45)] sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2">
+                <p className="shrink-0 text-[14px] text-[rgba(6,28,47,0.5)]">
                   AI confidence:
                   <span className="ml-1 font-semibold text-[var(--ink-primary)]">
                     {confidenceValue}%
                   </span>
                 </p>
-                <p className="hidden text-[12px] text-[rgba(6,28,47,0.45)] sm:block">
-                  Generated with Klynt
+
+                <span className="hidden h-4 w-px shrink-0 bg-[rgba(6,28,47,0.1)] sm:inline-block" />
+
+                <p className="min-w-0 flex-1">
+                  Based on visible UI structure, messaging clarity and conversion signals.
                 </p>
-              </div>
 
-              <div className="mt-3 h-[5px] overflow-hidden rounded-full bg-[rgba(6,28,47,0.06)]">
-                <div
-                  className="h-full rounded-full bg-[#061C2F] transition-all duration-700"
-                  style={{ width: `${confidenceValue}%` }}
-                />
-              </div>
+                <span className="hidden h-4 w-px shrink-0 bg-[rgba(6,28,47,0.1)] sm:inline-block" />
 
-              <p className="mt-2 text-[12px] leading-[18px] text-[rgba(6,28,47,0.45)]">
-                Based on visible UI structure, messaging clarity and conversion signals.
-              </p>
+                <a
+                  href="https://klynt.one"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex shrink-0 items-center gap-1.5 text-[rgba(6,28,47,0.45)] transition-opacity hover:opacity-80"
+                >
+                  Generated with
+                  <img
+                    src="/klynt-logo-dark.svg"
+                    alt="Klynt"
+                    className="h-3.5 w-auto"
+                  />
+                </a>
+              </div>
             </div>
           </section>
         </div>

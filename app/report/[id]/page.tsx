@@ -66,6 +66,8 @@ export default function ReportPage() {
             breakdown={data.breakdown}
             confidence={data.confidence}
             keyObservation={data.key_observation}
+            previewImage={data.previewImage}
+            metricObservations={data.metric_observations}
             issues={data.issues}
             onShare={handleShare}
             onExport={handleExport}

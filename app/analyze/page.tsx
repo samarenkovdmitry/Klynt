@@ -59,6 +59,13 @@ type AuditResponseFlat = {
   verdict: string;
   key_observation: string;
   confidence: number;
+  previewImage?: string;
+  metric_observations?: {
+    trust?: string;
+    clarity?: string;
+    friction?: string;
+    overall?: string;
+  };
   issues: FlatIssue[];
   suggestions: FlatSuggestion[];
   copy: FlatCopy[];
@@ -272,6 +279,9 @@ export default function Analyze() {
         verdict: json.verdict ?? "",
         key_observation: json.key_observation ?? "",
         confidence: json.confidence ?? 0,
+        previewImage:
+          typeof json.previewImage === "string" ? json.previewImage : undefined,
+        metric_observations: json.metric_observations,
         issues: json.issues ?? [],
         suggestions: json.suggestions ?? [],
         copy: json.copy ?? [],

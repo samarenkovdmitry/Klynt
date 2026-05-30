@@ -1,0 +1,2 @@
+export const REPORT_PREVIEW_WIDTH = 310;
+export const REPORT_PREVIEW_HEIGHT = 190;

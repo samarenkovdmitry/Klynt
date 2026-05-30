@@ -42,6 +42,14 @@ export type ReportBreakdown = {
   visuals?: number;
 };
 
+/** Consultant-style observations for summary metric cards (12–16 words each). */
+export type ReportMetricObservations = {
+  trust?: string;
+  clarity?: string;
+  friction?: string;
+  overall?: string;
+};
+
 export type AuditRisk = "low" | "medium" | "high";
 
 export type AuditReport = {
@@ -53,6 +61,9 @@ export type AuditReport = {
   key_observation?: string;
   confidence?: number;
   generatedAt?: string;
+  /** Hero screenshot preview for report card (data URL or HTTPS URL). */
+  previewImage?: string;
+  metric_observations?: ReportMetricObservations;
   breakdown?: ReportBreakdown;
   issues: ReportIssue[];
   suggestions?: ReportSuggestion[];

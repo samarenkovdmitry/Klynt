@@ -5,8 +5,12 @@ import chromium from "@sparticuz/chromium";
 import sharp from "sharp";
 
 import { isAuditReport, type AuditReport } from "@/lib/audit-report";
+import {
+  normalizeMetricObservations,
+} from "@/lib/metric-observations";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
+import { buildReportPreviewImage } from "@/lib/report-preview";
 import { saveReportToDb } from "@/lib/reports-db";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
@@ -424,6 +428,16 @@ export async function POST(req: Request) {
 
     screenshotsBase64 = await optimizeScreenshots(screenshotsBase64);
 
+    let previewImage: string | undefined;
+
+    if (screenshotsBase64[0]) {
+      try {
+        previewImage = await buildReportPreviewImage(screenshotsBase64[0]);
+      } catch (previewError) {
+        console.error("[analyze] Failed to build preview image:", previewError);
+      }
+    }
+
     const basePrompt = `You are a senior SaaS UX auditor (clarity, conversion, positioning).
 
 Analyze ONLY what is visible in the screenshot(s). Never invent UI. No generic advice — name the actual element/section.
@@ -438,6 +452,12 @@ Return ONLY valid JSON (no markdown):
   "verdict": "string",
   "key_observation": "string",
   "confidence": number,
+  "metric_observations": {
+    "trust": "string",
+    "clarity": "string",
+    "friction": "string",
+    "overall": "string"
+  },
   "issues": [{
     "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
     "title": "one concrete sentence",
@@ -469,6 +489,13 @@ Good title: "The hero headline never states who the product is for, so visitors 
 Bad title: "Weak visual hierarchy"
 Impact: issues use negative ints (-5 to -25); suggestions/copy use positive (5-20). Pick top 1-2 impact keys per item.
 confidence: integer 70-98. breakdown: integers 0-100. score: integer 0-100 aligned with breakdown.
+metric_observations: expert UX consultant observations (NOT metric labels). Each field 12-16 words.
+- Do NOT repeat category names (Trust, Clarity, Friction, Overall) or the word "metric".
+- Describe likely user perception and behavioral impact, like a consultant briefing a team.
+- trust: what users likely feel about credibility and professionalism.
+- clarity: what users likely understand about value and the next step.
+- friction: how much competing UI or copy may slow first-pass understanding.
+- overall: holistic read of the page experience; do not repeat verdict verbatim.
 Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
 
 const screenshotContent: any[] = [];
@@ -624,6 +651,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
         ? json.url.trim()
         : url;
 
+    const metricObservations = normalizeMetricObservations(json.metric_observations);
+
     const reportPayload: AuditReport = {
       url: auditedUrl,
       score: Number(json.score) || 0,
@@ -633,6 +662,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
       verdict: json.verdict,
       key_observation: json.key_observation,
       confidence: json.confidence,
+      previewImage,
+      metric_observations: metricObservations,
       issues: json.issues,
       suggestions: json.suggestions,
       copy: json.copy,
@@ -657,6 +688,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
       reportId,
       url: auditedUrl,
       generatedAt: reportPayload.generatedAt,
+      previewImage,
+      metric_observations: metricObservations,
     });
   } catch (error: any) {
     
