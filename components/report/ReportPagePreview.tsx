@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { RiQuestionLine } from "@remixicon/react";
+import { RiInformationLine } from "@remixicon/react";
 
 import { REPORT_PREVIEW_HEIGHT, REPORT_PREVIEW_WIDTH } from "@/lib/report-preview-size";
 
@@ -39,13 +39,13 @@ export function ReportPagePreview({
 
       {topIssueTitle && (
         <>
-          <p className="mt-3 text-[15px] leading-[19px] text-[var(--ink-primary)] md:hidden">
+          <p className="mt-3 text-center text-[15px] leading-[19px] text-[var(--ink-primary)] md:hidden">
             {topIssueTitle}
           </p>
 
           <div className="mt-2 hidden justify-center md:flex">
-            <div className="inline-flex max-w-full items-center gap-2 rounded-[13px] bg-white px-2.5 py-1 shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
-              <p className="max-w-[240px] truncate text-[15px] leading-[19px] text-[var(--ink-primary)]">
+            <div className="inline-flex h-[21px] max-w-[278px] items-center gap-1 rounded-[13px] bg-white px-[9px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+              <p className="min-w-0 truncate text-[15px] leading-[19px] text-[var(--ink-primary)]">
                 {topIssueTitle}
               </p>
 
@@ -57,12 +57,16 @@ export function ReportPagePreview({
                 onBlur={() => setShowTooltip(false)}
               >
                 <span
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white ring-1 ring-black/[0.06]"
+                  className="inline-flex items-center"
                   aria-describedby={tooltipId}
                   role="button"
                   tabIndex={0}
                 >
-                  <RiQuestionLine size={16} className="text-[rgba(6,28,47,0.55)]" aria-hidden />
+                  <RiInformationLine
+                    size={14}
+                    className="text-[rgba(6,28,47,0.45)]"
+                    aria-hidden
+                  />
                 </span>
 
                 <span

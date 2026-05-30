@@ -1,4 +1,7 @@
-import { getReportHeroPatternMaskStyle } from "@/lib/report-hero-pattern";
+import {
+  getReportHeroPatternMaskStyle,
+  type ReportHeroPatternMaskStyle,
+} from "@/lib/report-hero-pattern";
 
 type ReportHeroPatternProps = {
   gridColor: string;
@@ -7,9 +10,11 @@ type ReportHeroPatternProps = {
 
 function TintedPattern({
   gridColor,
+  maskStyle,
   className = "",
 }: {
   gridColor: string;
+  maskStyle: ReportHeroPatternMaskStyle;
   className?: string;
 }) {
   return (
@@ -17,7 +22,7 @@ function TintedPattern({
       className={`h-full w-full ${className}`}
       style={{
         backgroundColor: gridColor,
-        ...getReportHeroPatternMaskStyle(),
+        ...maskStyle,
       }}
       aria-hidden
     />
@@ -31,10 +36,13 @@ export function ReportHeroPattern({
   return (
     <>
       <div
-        className={`pointer-events-none absolute inset-y-0 left-0 hidden w-[min(620px,58%)] overflow-hidden md:block ${className}`}
+        className={`pointer-events-none absolute inset-y-0 right-0 hidden w-[min(620px,58%)] overflow-hidden md:block ${className}`}
         aria-hidden
       >
-        <TintedPattern gridColor={gridColor} />
+        <TintedPattern
+          gridColor={gridColor}
+          maskStyle={getReportHeroPatternMaskStyle("right")}
+        />
       </div>
 
       <div
@@ -47,7 +55,10 @@ export function ReportHeroPattern({
         }}
         aria-hidden
       >
-        <TintedPattern gridColor={gridColor} />
+        <TintedPattern
+          gridColor={gridColor}
+          maskStyle={getReportHeroPatternMaskStyle("left")}
+        />
       </div>
     </>
   );

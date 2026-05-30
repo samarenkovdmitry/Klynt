@@ -11,14 +11,18 @@ export type ReportHeroPatternMaskStyle = {
   maskSize: string;
 };
 
-export function getReportHeroPatternMaskStyle(): ReportHeroPatternMaskStyle {
+export function getReportHeroPatternMaskStyle(
+  align: "left" | "right" = "left"
+): ReportHeroPatternMaskStyle {
+  const position = align === "right" ? "right top" : "left top";
+
   return {
     WebkitMaskImage: `url(${REPORT_HERO_PATTERN_URL})`,
     maskImage: `url(${REPORT_HERO_PATTERN_URL})`,
     WebkitMaskRepeat: "no-repeat",
     maskRepeat: "no-repeat",
-    WebkitMaskPosition: "left top",
-    maskPosition: "left top",
+    WebkitMaskPosition: position,
+    maskPosition: position,
     WebkitMaskSize: "100% 100%",
     maskSize: "100% 100%",
   };
