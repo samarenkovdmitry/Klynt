@@ -1,3 +1,5 @@
+"use client";
+
 import {
   RiBrainLine,
   RiFocus3Line,
@@ -5,7 +7,8 @@ import {
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
-import { ReportHeroGrid } from "@/components/report/ReportHeroGrid";
+import { KlyntFooterLogo } from "@/components/report/KlyntFooterLogo";
+import { ReportHeroPattern } from "@/components/report/ReportHeroPattern";
 import { ReportPagePreview } from "@/components/report/ReportPagePreview";
 import { ReportShareStrip } from "@/components/report/ReportShareStrip";
 import type {
@@ -51,25 +54,27 @@ function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) 
   const barColor = getMetricBarColor(value);
 
   return (
-    <div className="min-w-0">
+    <div className="flex min-w-0 flex-col md:h-full">
       <div className="flex items-center gap-2">
         <Icon size={18} className="shrink-0 text-[#8E99A2]" aria-hidden />
         <p className="text-[16px] font-semibold text-[var(--ink-primary)]">{label}</p>
+      </div>
+
+      <p className="mt-3 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">{description}</p>
+
+      <div className="mt-auto pt-3">
         <p
-          className="ml-auto text-[12px] font-semibold tabular-nums"
+          className="text-right text-[12px] font-semibold tabular-nums leading-[18px]"
           style={{ color: barColor }}
         >
           {value}%
         </p>
-      </div>
-
-      <p className="mt-3 text-[14px] leading-5 text-[rgba(6,28,47,0.5)]">{description}</p>
-
-      <div className="mt-3 h-[5px] overflow-hidden rounded-full bg-[rgba(6,28,47,0.06)]">
-        <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${value}%`, backgroundColor: barColor }}
-        />
+        <div className="mt-1 h-[5px] overflow-hidden rounded-full bg-[#F5F5F5]">
+          <div
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${value}%`, backgroundColor: barColor }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -131,7 +136,7 @@ export function ReportHeroSummary({
             className="relative px-5 pb-8 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]"
             style={{ backgroundColor: theme.heroBg }}
           >
-            <ReportHeroGrid gridColor={theme.gridColor} />
+            <ReportHeroPattern gridColor={theme.gridColor} />
 
             <div className="relative z-[1] flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
               <div className="min-w-0 flex-1 lg:max-w-[647px]">
@@ -170,7 +175,6 @@ export function ReportHeroSummary({
 
               <div className="flex shrink-0 justify-center lg:justify-end lg:pt-2">
                 <ReportPagePreview
-                  url={url}
                   previewImage={previewImage}
                   topIssueTitle={topIssueTitle}
                 />
@@ -179,7 +183,7 @@ export function ReportHeroSummary({
           </section>
 
           <section className="border-t border-[var(--stroke-light)] bg-white px-5 py-6 md:px-[30px] md:py-6">
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4 xl:gap-6">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-stretch xl:grid-cols-4 xl:gap-6">
               <MetricCard
                 icon={RiShieldCheckLine}
                 label="Trust Signals"
@@ -199,7 +203,7 @@ export function ReportHeroSummary({
                 description={frictionDescription}
               />
 
-              <div className="min-w-0">
+              <div className="flex min-w-0 flex-col md:h-full">
                 <div className="flex items-start gap-2">
                   <span
                     className="mt-0.5 inline-flex h-[21px] min-w-[30px] items-center justify-center rounded-full px-2 text-[12px] font-bold tracking-[-0.05em] text-white"
@@ -211,15 +215,15 @@ export function ReportHeroSummary({
                     Overall Assessment
                   </p>
                 </div>
-                <p className="mt-3 text-[14px] leading-5 text-[rgba(6,28,47,0.5)]">
+                <p className="mt-3 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">
                   {overallDescription}
                 </p>
               </div>
             </div>
 
             <div className="mt-6 border-t border-[var(--stroke-light)] pt-5 md:mt-6">
-              <div className="flex flex-col gap-3 text-[12px] leading-[18px] text-[rgba(6,28,47,0.45)] sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2">
-                <p className="shrink-0 text-[14px] text-[rgba(6,28,47,0.5)]">
+              <div className="flex flex-col gap-3 text-[13px] leading-[18px] text-[rgba(6,28,47,0.5)] sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2">
+                <p className="shrink-0 font-medium">
                   AI confidence:
                   <span className="ml-1 font-semibold text-[var(--ink-primary)]">
                     {confidenceValue}%
@@ -228,7 +232,7 @@ export function ReportHeroSummary({
 
                 <span className="hidden h-4 w-px shrink-0 bg-[rgba(6,28,47,0.1)] sm:inline-block" />
 
-                <p className="min-w-0 flex-1">
+                <p className="min-w-0 flex-1 font-normal">
                   Based on visible UI structure, messaging clarity and conversion signals.
                 </p>
 
@@ -238,14 +242,10 @@ export function ReportHeroSummary({
                   href="https://klynt.one"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1.5 text-[rgba(6,28,47,0.45)] transition-opacity hover:opacity-80"
+                  className="inline-flex shrink-0 items-center gap-1.5 font-medium transition-opacity hover:opacity-80"
                 >
                   Generated with
-                  <img
-                    src="/klynt-logo-dark.svg"
-                    alt="Klynt"
-                    className="h-3.5 w-auto"
-                  />
+                  <KlyntFooterLogo />
                 </a>
               </div>
             </div>

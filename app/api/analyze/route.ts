@@ -8,6 +8,7 @@ import { isAuditReport, type AuditReport } from "@/lib/audit-report";
 import {
   normalizeMetricObservations,
 } from "@/lib/metric-observations";
+import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/lib/page-screenshot";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
 import { buildReportPreviewImage } from "@/lib/report-preview";
@@ -281,9 +282,9 @@ async function captureWebsiteScreenshots(url: string) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
-      width: 800,
-      height: 700,
-      deviceScaleFactor: 1,
+      width: 1280,
+      height: 900,
+      deviceScaleFactor: 2,
     },
     executablePath: await chromium.executablePath(),
     headless: true,
@@ -299,7 +300,6 @@ page.on("request", (req) => {
   const requestUrl = req.url();
 
   if (
-    type === "font" ||
     type === "media" ||
     type === "websocket" ||
     TRACKER_PATTERN.test(requestUrl)
@@ -315,10 +315,19 @@ page.on("request", (req) => {
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     );
 
-    await page.goto(url, {
-      waitUntil: "domcontentloaded",
-      timeout: 8000,
-    });
+    try {
+      await page.goto(url, {
+        waitUntil: "load",
+        timeout: 12000,
+      });
+    } catch {
+      await page.goto(url, {
+        waitUntil: "domcontentloaded",
+        timeout: 10000,
+      });
+    }
+
+    await preparePageForHeroScreenshot(page);
 
     const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
 
@@ -328,13 +337,23 @@ page.on("request", (req) => {
         ? Math.max(0, bodyHeight - 650)
         : Math.max(Math.floor(bodyHeight * 0.52), bodyHeight - 1300);
 
-    const shotOptions = { type: "jpeg" as const, quality: 48 };
+    const viewport = page.viewport();
+    const clipWidth = viewport?.width ?? 1280;
+    const clipHeight = viewport?.height ?? 900;
+
+    const heroShotOptions = {
+      type: "jpeg" as const,
+      quality: 94,
+      clip: { x: 0, y: 0, width: clipWidth, height: clipHeight },
+    };
+    const lowerShotOptions = { type: "jpeg" as const, quality: 80 };
 
     await jumpTo(page, heroY);
-    const hero = await page.screenshot(shotOptions);
+    const hero = await page.screenshot(heroShotOptions);
 
     await jumpTo(page, lowerY);
-    const lower = await page.screenshot(shotOptions);
+    await preparePageForLowerScreenshot(page);
+    const lower = await page.screenshot(lowerShotOptions);
 
     return [
       Buffer.from(hero as Buffer).toString("base64"),
@@ -426,17 +445,16 @@ export async function POST(req: Request) {
       );
     }
 
+    const rawScreenshotsBase64 = [...screenshotsBase64];
     screenshotsBase64 = await optimizeScreenshots(screenshotsBase64);
 
-    let previewImage: string | undefined;
-
-    if (screenshotsBase64[0]) {
-      try {
-        previewImage = await buildReportPreviewImage(screenshotsBase64[0]);
-      } catch (previewError) {
-        console.error("[analyze] Failed to build preview image:", previewError);
-      }
-    }
+    const rawHeroBase64 = rawScreenshotsBase64[0];
+    const previewImagePromise = rawHeroBase64
+      ? buildReportPreviewImage(rawHeroBase64).catch((previewError) => {
+          console.error("[analyze] Failed to build preview image:", previewError);
+          return undefined;
+        })
+      : Promise.resolve(undefined);
 
     const basePrompt = `You are a senior SaaS UX auditor (clarity, conversion, positioning).
 
@@ -652,6 +670,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
         : url;
 
     const metricObservations = normalizeMetricObservations(json.metric_observations);
+    const previewImage = await previewImagePromise;
 
     const reportPayload: AuditReport = {
       url: auditedUrl,
