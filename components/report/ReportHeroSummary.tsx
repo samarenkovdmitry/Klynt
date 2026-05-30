@@ -2,7 +2,7 @@
 
 import {
   RiBrainLine,
-  RiFocusLine,
+  RiFocus3Line,
   RiShieldCheckLine,
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
@@ -132,16 +132,16 @@ export function ReportHeroSummary({
     <div className="space-y-3">
       <ReportShareStrip onShare={onShare} onExport={onExport} />
 
-      <div className="overflow-hidden rounded-[24px] border border-black/[0.07] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] ring-1 ring-inset ring-black/[0.08] md:rounded-[32px]">
+      <div className="overflow-hidden rounded-[24px] border border-black/[0.10] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] ring-1 ring-inset ring-black/[0.08] md:rounded-[32px]">
         <div className="relative overflow-hidden">
           <section
             className="relative overflow-hidden px-5 pb-8 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]"
             style={{ backgroundColor: theme.heroBg }}
           >
-            <ReportHeroPattern gridColor={theme.gridColor} />
+            <ReportHeroPattern gridColor={theme.gridColor} heroBg={theme.heroBg} />
 
-            <div className="relative z-[1] flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
-              <div className="min-w-0 flex-1 lg:max-w-[647px]">
+            <div className="relative z-[1] flex flex-col gap-8 md:flex-row md:items-center md:justify-between md:gap-10">
+              <div className="min-w-0 flex-1 md:max-w-[647px] md:pr-5">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
                   <div className="flex min-w-0 items-center gap-2">
                     {url && (
@@ -174,19 +174,19 @@ export function ReportHeroSummary({
                   {verdict || "UX assessment complete"}
                 </h1>
 
-                <p className="mb-10 mt-2 text-[15px] leading-[25px] text-[rgba(6,28,47,0.5)] md:text-[16px]">
+                <p className="mb-10 mt-2 text-[15px] leading-[19px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
                   {summary || "No summary generated."}
                 </p>
 
                 <div className="mt-6 md:mt-8">
                   <p className="text-[14px] text-[rgba(6,28,47,0.5)]">Key Insight</p>
-                  <p className="mt-1 text-[16px] leading-[26px] text-[var(--ink-primary)]">
+                  <p className="mt-1 text-[16px] leading-[19px] text-[var(--ink-primary)] md:leading-[26px]">
                     {keyObservation || "No key observation available."}
                   </p>
                 </div>
               </div>
 
-              <div className="flex shrink-0 justify-center lg:justify-end lg:pt-2">
+              <div className="flex shrink-0 justify-center md:justify-end">
                 <ReportPagePreview
                   previewImage={previewImage}
                   topIssueTitle={topIssueTitle}
@@ -204,7 +204,7 @@ export function ReportHeroSummary({
                 description={trustDescription}
               />
               <MetricCard
-                icon={RiFocusLine}
+                icon={RiFocus3Line}
                 label="Decision Clarity"
                 value={clarity}
                 description={clarityDescription}
@@ -217,9 +217,9 @@ export function ReportHeroSummary({
               />
 
               <div className="flex min-w-0 flex-col md:h-full">
-                <div className="flex items-start gap-2">
+                <div className="flex items-center gap-2">
                   <span
-                    className="mt-0.5 inline-flex h-[21px] min-w-[30px] items-center justify-center rounded-full px-2 text-[12px] font-bold tracking-[-0.05em] text-white"
+                    className="inline-flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-[12px] font-bold leading-none tracking-[-0.05em] text-white"
                     style={{ backgroundColor: theme.badgeBg }}
                   >
                     {overallScore}

@@ -8,6 +8,7 @@ import {
 
 type ReportHeroPatternProps = {
   gridColor: string;
+  heroBg: string;
   className?: string;
 };
 
@@ -34,6 +35,7 @@ function TintedPattern({
 
 export function ReportHeroPattern({
   gridColor,
+  heroBg,
   className = "",
 }: ReportHeroPatternProps) {
   return (
@@ -54,6 +56,10 @@ export function ReportHeroPattern({
         style={{
           width: REPORT_HERO_PATTERN_WIDTH,
           height: REPORT_HERO_PATTERN_HEIGHT,
+          WebkitMaskImage:
+            "linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%)",
         }}
         aria-hidden
       >
@@ -63,6 +69,14 @@ export function ReportHeroPattern({
           className="h-full w-full"
         />
       </div>
+
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-20 md:hidden"
+        style={{
+          background: `linear-gradient(to bottom, transparent, ${heroBg})`,
+        }}
+        aria-hidden
+      />
     </>
   );
 }
