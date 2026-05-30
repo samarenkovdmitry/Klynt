@@ -147,8 +147,7 @@ function metricColumnMarkup(params: {
 
   return `
     <g transform="translate(${x}, ${y})">
-      <g transform="translate(0, 1)">${icon}</g>
-      <text x="24" y="14" font-family=${REPORT_OG_FONT_FAMILY} font-size="14" font-weight="700" fill="#061C2F">${escapeXml(label)}</text>
+      <g transform="translate(0, 1)">${icon}</g> font-family=${REPORT_OG_FONT_FAMILY} font-size="14" font-weight="700" fill="#061C2F">${escapeXml(label)}</text>
       ${svgTextBlock({
         lines: descriptionLines,
         x: 0,
@@ -164,9 +163,9 @@ function metricColumnMarkup(params: {
 }
 
 const ICONS = {
-  trust: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6V11C4 16.55 7.84 21.74 12 23C16.16 21.74 20 16.55 20 11V6L12 2ZM10.5 15.5L7.5 12.5L8.91 11.09L10.5 12.67L15.09 8.09L16.5 9.5L10.5 15.5Z" fill="#8E99A2"/></svg>`,
-  clarity: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM12 6C9.79 6 8 7.79 8 10C8 12.21 9.79 14 12 14C14.21 14 16 12.21 16 10C16 7.79 14.21 6 12 6ZM6 18.05C7.03 16.09 9.28 14.75 12 14.75C14.72 14.75 16.97 16.09 18 18.05C16.71 19.23 14.87 20 12 20C9.13 20 7.29 19.23 6 18.05Z" fill="#8E99A2"/></svg>`,
-  friction: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9C5 11.38 6.19 13.47 8 14.74V17C8 17.55 8.45 18 9 18H15C15.55 18 16 17.55 16 17V14.74C17.81 13.47 19 11.38 19 9C19 5.13 15.87 2 12 2ZM14 13.7V16H10V13.7C8.84 13.07 8 11.64 8 10C8 7.79 9.79 6 12 6C14.21 6 16 7.79 16 10C16 11.64 15.16 13.07 14 13.7Z" fill="#8E99A2"/></svg>`,
+  trust: `<g transform="translate(0,1) scale(0.75)"><path d="M12 2L4 6V11C4 16.55 7.84 21.74 12 23C16.16 21.74 20 16.55 20 11V6L12 2ZM10.5 15.5L7.5 12.5L8.91 11.09L10.5 12.67L15.09 8.09L16.5 9.5L10.5 15.5Z" fill="#8E99A2"/></g>`,
+  clarity: `<g transform="translate(0,1) scale(0.75)"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM12 6C9.79 6 8 7.79 8 10C8 12.21 9.79 14 12 14C14.21 14 16 12.21 16 10C16 7.79 14.21 6 12 6ZM6 18.05C7.03 16.09 9.28 14.75 12 14.75C14.72 14.75 16.97 16.09 18 18.05C16.71 19.23 14.87 20 12 20C9.13 20 7.29 19.23 6 18.05Z" fill="#8E99A2"/></g>`,
+  friction: `<g transform="translate(0,1) scale(0.75)"><path d="M12 2C8.13 2 5 5.13 5 9C5 11.38 6.19 13.47 8 14.74V17C8 17.55 8.45 18 9 18H15C15.55 18 16 17.55 16 17V14.74C17.81 13.47 19 11.38 19 9C19 5.13 15.87 2 12 2ZM14 13.7V16H10V13.7C8.84 13.07 8 11.64 8 10C8 7.79 9.79 6 12 6C14.21 6 16 7.79 16 10C16 11.64 15.16 13.07 14 13.7Z" fill="#8E99A2"/></g>`,
 };
 
 async function loadHeroPatternPng(gridColor: string) {

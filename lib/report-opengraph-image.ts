@@ -15,9 +15,22 @@ export const REPORT_OG_IMAGE_HEADERS = {
   "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
 } as const;
 
+const FALLBACK_IMAGE_PATHS = [
+  path.join(process.cwd(), "public", "og-fallback.jpg"),
+  path.join(process.cwd(), "app", "opengraph-image.jpg"),
+  path.join(process.cwd(), ".next", "server", "app", "opengraph-image.jpg"),
+];
+
 async function loadDefaultOpenGraphImage() {
-  const filePath = path.join(process.cwd(), "app", "opengraph-image.jpg");
-  return readFile(filePath);
+  for (const filePath of FALLBACK_IMAGE_PATHS) {
+    try {
+      return await readFile(filePath);
+    } catch {
+      continue;
+    }
+  }
+
+  throw new Error("Default Open Graph image not found");
 }
 
 export async function buildReportOpenGraphJpeg(reportId: string) {
@@ -39,9 +52,15 @@ export async function buildReportOpenGraphJpeg(reportId: string) {
       return loadDefaultOpenGraphImage();
     }
 
-    return composeReportOpenGraphImage(report, previewBuffer);
+    return await composeReportOpenGraphImage(report, previewBuffer);
   } catch (error) {
     console.error("[report opengraph-image]", error);
-    return loadDefaultOpenGraphImage();
+
+    try {
+      return await loadDefaultOpenGraphImage();
+    } catch (fallbackError) {
+      console.error("[report opengraph-image] fallback failed", fallbackError);
+      throw fallbackError;
+    }
   }
 }
