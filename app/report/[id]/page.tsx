@@ -99,7 +99,11 @@ export default function ReportPage() {
         open={shareOpen}
         onClose={() => setShareOpen(false)}
         shareUrl={shareUrl}
-        auditedUrl={data.url}
+        shareContext={{
+          url: data.url,
+          score: data.score,
+          verdict: data.verdict,
+        }}
       />
     </>
   );

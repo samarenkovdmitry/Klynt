@@ -1,12 +1,8 @@
-export function buildShareText(auditedUrl?: string) {
-  const target = auditedUrl?.trim();
-
-  if (target) {
-    return `UX clarity report for ${target} — generated with Klynt`;
-  }
-
-  return "UX clarity report — generated with Klynt";
-}
+import {
+  buildShareEmailSubject,
+  buildShareText,
+  type ReportShareContext,
+} from "@/lib/report-seo";
 
 export type ShareTarget = {
   id: string;
@@ -14,10 +10,14 @@ export type ShareTarget = {
   href: string;
 };
 
-export function getShareTargets(shareUrl: string, auditedUrl?: string): ShareTarget[] {
+export function getShareTargets(
+  shareUrl: string,
+  context?: ReportShareContext
+) {
   const url = encodeURIComponent(shareUrl);
-  const text = encodeURIComponent(buildShareText(auditedUrl));
+  const text = encodeURIComponent(buildShareText(context));
   const title = text;
+  const shareLine = buildShareText(context);
 
   return [
     {
@@ -43,7 +43,7 @@ export function getShareTargets(shareUrl: string, auditedUrl?: string): ShareTar
     {
       id: "whatsapp",
       label: "WhatsApp",
-      href: `https://wa.me/?text=${encodeURIComponent(`${buildShareText(auditedUrl)} ${shareUrl}`)}`,
+      href: `https://wa.me/?text=${encodeURIComponent(`${shareLine}\n${shareUrl}`)}`,
     },
     {
       id: "telegram",
@@ -53,7 +53,9 @@ export function getShareTargets(shareUrl: string, auditedUrl?: string): ShareTar
     {
       id: "email",
       label: "Email",
-      href: `mailto:?subject=${encodeURIComponent("Klynt UX Report")}&body=${encodeURIComponent(`${buildShareText(auditedUrl)}\n\n${shareUrl}`)}`,
+      href: `mailto:?subject=${encodeURIComponent(buildShareEmailSubject(context))}&body=${encodeURIComponent(`${shareLine}\n\n${shareUrl}`)}`,
     },
   ];
 }
+
+export { buildShareText, type ReportShareContext } from "@/lib/report-seo";
