@@ -18,6 +18,10 @@ import {
   REPORT_HERO_PATTERN_WIDTH,
 } from "@/lib/report-hero-pattern";
 import {
+  getReportOgFontFaces,
+  REPORT_OG_FONT_FAMILY,
+} from "@/lib/report-og-fonts";
+import {
   REPORT_OG_HEIGHT,
   REPORT_OG_WIDTH,
   REPORT_PREVIEW_HEIGHT,
@@ -95,14 +99,19 @@ function svgTextBlock(params: {
   fontSize: number;
   fontWeight?: number;
   fill: string;
+  fillOpacity?: number;
   lineHeight?: number;
 }) {
   const lineHeight = params.lineHeight ?? Math.round(params.fontSize * 1.28);
+  const opacityAttr =
+    params.fillOpacity !== undefined
+      ? ` fill-opacity="${params.fillOpacity}"`
+      : "";
 
   return params.lines
     .map(
       (line, index) =>
-        `<text x="${params.x}" y="${params.y + index * lineHeight}" font-family="Arial, Helvetica, sans-serif" font-size="${params.fontSize}" font-weight="${params.fontWeight ?? 400}" fill="${params.fill}">${escapeXml(line)}</text>`
+        `<text x="${params.x}" y="${params.y + index * lineHeight}" font-family=${REPORT_OG_FONT_FAMILY} font-size="${params.fontSize}" font-weight="${params.fontWeight ?? 400}" fill="${params.fill}"${opacityAttr}>${escapeXml(line)}</text>`
     )
     .join("");
 }
@@ -117,7 +126,7 @@ function metricBarMarkup(
   const fillWidth = Math.max(0, Math.min(width, Math.round((width * value) / 100)));
 
   return `
-    <text x="${x + width}" y="${y - 2}" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="${color}">${value}%</text>
+    <text x="${x + width}" y="${y - 2}" text-anchor="end" font-family=${REPORT_OG_FONT_FAMILY} font-size="11" font-weight="700" fill="${color}">${value}%</text>
     <rect x="${x}" y="${y + 4}" width="${width}" height="5" rx="2.5" fill="#F5F5F5"/>
     <rect x="${x}" y="${y + 4}" width="${fillWidth}" height="5" rx="2.5" fill="${color}"/>
   `;
@@ -139,13 +148,14 @@ function metricColumnMarkup(params: {
   return `
     <g transform="translate(${x}, ${y})">
       <g transform="translate(0, 1)">${icon}</g>
-      <text x="24" y="14" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#061C2F">${escapeXml(label)}</text>
+      <text x="24" y="14" font-family=${REPORT_OG_FONT_FAMILY} font-size="14" font-weight="700" fill="#061C2F">${escapeXml(label)}</text>
       ${svgTextBlock({
         lines: descriptionLines,
         x: 0,
         y: 38,
         fontSize: 12,
-        fill: "rgba(6,28,47,0.5)",
+        fill: "#061C2F",
+        fillOpacity: 0.5,
         lineHeight: 16,
       })}
       ${metricBarMarkup(0, 88, width, value, color)}
@@ -236,6 +246,7 @@ async function roundedImage(
 }
 
 function buildCardSvg(params: {
+  fontFaces: string;
   report: ReportOgInput;
   theme: ReturnType<typeof getReportHeroTheme>;
   domain: string;
@@ -251,6 +262,7 @@ function buildCardSvg(params: {
   confidenceValue: number;
   topIssueTitle?: string;
 }) {
+  const { fontFaces } = params;
   const {
     report,
     theme,
@@ -302,13 +314,14 @@ function buildCardSvg(params: {
   const pillMarkup = pillText
     ? `
       <rect x="${PREVIEW_X + 8}" y="${PREVIEW_Y + REPORT_PREVIEW_HEIGHT + 10}" width="${REPORT_PREVIEW_WIDTH - 16}" height="24" rx="12" fill="#ffffff" stroke="rgba(6,28,47,0.08)"/>
-      <text x="${PREVIEW_X + 18}" y="${PREVIEW_Y + REPORT_PREVIEW_HEIGHT + 26}" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#061C2F">${escapeXml(pillText)}</text>
+      <text x="${PREVIEW_X + 18}" y="${PREVIEW_Y + REPORT_PREVIEW_HEIGHT + 26}" font-family=${REPORT_OG_FONT_FAMILY} font-size="12" fill="#061C2F">${escapeXml(pillText)}</text>
     `
     : "";
 
   return Buffer.from(`
     <svg width="${REPORT_OG_WIDTH}" height="${REPORT_OG_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
       <defs>
+        <style><![CDATA[${fontFaces}]]></style>
         <clipPath id="cardClip">
           <rect width="${REPORT_OG_WIDTH}" height="${REPORT_OG_HEIGHT}" rx="${CARD_RADIUS}" ry="${CARD_RADIUS}"/>
         </clipPath>
@@ -317,10 +330,10 @@ function buildCardSvg(params: {
         <rect width="${REPORT_OG_WIDTH}" height="${REPORT_OG_HEIGHT}" fill="#ffffff"/>
         <rect width="${REPORT_OG_WIDTH}" height="${HERO_HEIGHT}" fill="${theme.heroBg}"/>
 
-        <text x="${PADDING_X + 22}" y="40" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#061C2F">
+        <text x="${PADDING_X + 22}" y="40" font-family=${REPORT_OG_FONT_FAMILY} font-size="13" fill="#061C2F">
           <tspan font-weight="600">${escapeXml(domain)}</tspan>
-          <tspan dx="12" fill="rgba(6,28,47,0.25)">|</tspan>
-          <tspan dx="12" fill="rgba(6,28,47,0.5)">${escapeXml(analyzedDate)}</tspan>
+          <tspan dx="12" fill="#061C2F" fill-opacity="0.25">|</tspan>
+          <tspan dx="12" fill="#061C2F" fill-opacity="0.5">${escapeXml(analyzedDate)}</tspan>
         </text>
 
         ${svgTextBlock({
@@ -337,11 +350,12 @@ function buildCardSvg(params: {
           x: PADDING_X,
           y: summaryY,
           fontSize: 14,
-          fill: "rgba(6,28,47,0.5)",
+          fill: "#061C2F",
+          fillOpacity: 0.5,
           lineHeight: 19,
         })}
 
-        <text x="${PADDING_X}" y="${keyInsightLabelY}" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="rgba(6,28,47,0.5)">Key Insight</text>
+        <text x="${PADDING_X}" y="${keyInsightLabelY}" font-family=${REPORT_OG_FONT_FAMILY} font-size="12" fill="#061C2F" fill-opacity="0.5">Key Insight</text>
         ${svgTextBlock({
           lines: insightLines,
           x: PADDING_X,
@@ -386,14 +400,15 @@ function buildCardSvg(params: {
 
         <g transform="translate(${columnXs[3]}, ${metricsTop + 22})">
           <rect x="0" y="0" width="34" height="24" rx="12" fill="${theme.badgeBg}"/>
-          <text x="17" y="16" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#ffffff">${escapeXml(overallScore)}</text>
-          <text x="42" y="16" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#061C2F">Overall Assessment</text>
+          <text x="17" y="16" text-anchor="middle" font-family=${REPORT_OG_FONT_FAMILY} font-size="12" font-weight="700" fill="#ffffff">${escapeXml(overallScore)}</text>
+          <text x="42" y="16" font-family=${REPORT_OG_FONT_FAMILY} font-size="14" font-weight="700" fill="#061C2F">Overall Assessment</text>
           ${svgTextBlock({
             lines: wrapText(overallDescription, 34, 3),
             x: 0,
             y: 38,
             fontSize: 12,
-            fill: "rgba(6,28,47,0.5)",
+            fill: "#061C2F",
+            fillOpacity: 0.5,
             lineHeight: 16,
           })}
         </g>
@@ -401,13 +416,13 @@ function buildCardSvg(params: {
         <rect y="${footerTop}" width="${REPORT_OG_WIDTH}" height="${FOOTER_HEIGHT}" fill="#ffffff"/>
         <line x1="${PADDING_X}" y1="${footerTop + 1}" x2="${REPORT_OG_WIDTH - PADDING_X}" y2="${footerTop + 1}" stroke="rgba(32,52,94,0.09)"/>
 
-        <text x="${PADDING_X}" y="${footerTop + 28}" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="600" fill="rgba(6,28,47,0.5)">
+        <text x="${PADDING_X}" y="${footerTop + 28}" font-family=${REPORT_OG_FONT_FAMILY} font-size="12" font-weight="600" fill="#061C2F" fill-opacity="0.5">
           AI confidence:
-          <tspan fill="#061C2F">${confidenceValue}%</tspan>
+          <tspan fill="#061C2F" fill-opacity="1">${confidenceValue}%</tspan>
         </text>
         <rect x="${PADDING_X + 132}" y="${footerTop + 16}" width="1" height="14" fill="rgba(6,28,47,0.1)"/>
-        <text x="${PADDING_X + 148}" y="${footerTop + 28}" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="rgba(6,28,47,0.5)">Based on visible UI structure, messaging clarity and conversion signals.</text>
-        <text x="${REPORT_OG_WIDTH - PADDING_X}" y="${footerTop + 28}" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="600" fill="rgba(6,28,47,0.5)">Generated with Klynt</text>
+        <text x="${PADDING_X + 148}" y="${footerTop + 28}" font-family=${REPORT_OG_FONT_FAMILY} font-size="12" fill="#061C2F" fill-opacity="0.5">Based on visible UI structure, messaging clarity and conversion signals.</text>
+        <text x="${REPORT_OG_WIDTH - PADDING_X}" y="${footerTop + 28}" text-anchor="end" font-family=${REPORT_OG_FONT_FAMILY} font-size="12" font-weight="600" fill="#061C2F" fill-opacity="0.5">Generated with Klynt</text>
       </g>
       <rect width="${REPORT_OG_WIDTH}" height="${REPORT_OG_HEIGHT}" rx="${CARD_RADIUS}" ry="${CARD_RADIUS}" fill="none" stroke="rgba(6,28,47,0.10)" stroke-width="2"/>
     </svg>
@@ -446,6 +461,8 @@ export async function composeReportOpenGraphImage(
     "Overall assessment unavailable.";
   const topIssueTitle = report.issues?.[0]?.title;
 
+  const fontFaces = await getReportOgFontFaces();
+
   const [pattern, previewCard, favicon, cardSvg] = await Promise.all([
     loadHeroPatternPng(theme.gridColor),
     roundedImage(
@@ -457,6 +474,7 @@ export async function composeReportOpenGraphImage(
     loadFaviconBuffer(report.url),
     Promise.resolve(
       buildCardSvg({
+        fontFaces,
         report,
         theme,
         domain,
