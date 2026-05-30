@@ -17,7 +17,6 @@ import type { RemixiconComponentType } from "@remixicon/react";
 
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import {
-  buildShareText,
   getShareTargets,
   type ReportShareContext,
 } from "@/lib/share-report";
@@ -81,7 +80,6 @@ export function ShareReportDialog({
   const [canNativeShare, setCanNativeShare] = useState(false);
 
   const targets = getShareTargets(shareUrl, shareContext);
-  const shareText = buildShareText(shareContext);
 
   useEffect(() => {
     setCanNativeShare(typeof navigator !== "undefined" && "share" in navigator);
@@ -123,7 +121,6 @@ export function ShareReportDialog({
     try {
       await navigator.share({
         title: "Klynt UX Report",
-        text: shareText,
         url: shareUrl,
       });
       onClose();

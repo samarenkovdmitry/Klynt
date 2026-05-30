@@ -63,6 +63,8 @@ export type AuditReport = {
   generatedAt?: string;
   /** Hero screenshot preview for report card (data URL or HTTPS URL). */
   previewImage?: string;
+  /** Pre-rendered 1200×630 JPEG for social link previews (data URL). */
+  ogPreviewImage?: string;
   metric_observations?: ReportMetricObservations;
   breakdown?: ReportBreakdown;
   issues: ReportIssue[];

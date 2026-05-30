@@ -39,15 +39,9 @@ export function buildShareEmailSubject(context?: ReportShareContext) {
   return "Klynt UX Report";
 }
 
-export function buildReportOgTitle(report: Pick<AuditReport, "url" | "score">) {
-  const domain = formatReportDomain(report.url);
+export function buildReportOgTitle(report: Pick<AuditReport, "score">) {
   const score = formatOverallScore(report.score);
-
-  if (domain) {
-    return `${domain} — UX score ${score}/10`;
-  }
-
-  return `UX score ${score}/10`;
+  return `UX clarity score ${score}/10`;
 }
 
 export function buildReportOgDescription(
@@ -69,7 +63,7 @@ export function buildReportOgDescription(
 }
 
 export function getReportOpenGraphImagePath(reportId: string) {
-  return `/report/${reportId}/opengraph-image`;
+  return `/report/${reportId}/preview.jpg`;
 }
 
 export function getReportOpenGraphImageUrl(
@@ -128,19 +122,31 @@ export function buildReportMetadata(
 }
 
 export function previewImageToBuffer(previewImage?: string): Buffer | null {
-  if (!previewImage?.startsWith("data:image")) {
+  if (!previewImage) {
     return null;
   }
 
-  const match = previewImage.match(/^data:image\/[\w+.-]+;base64,(.+)$/);
+  if (previewImage.startsWith("data:image")) {
+    const match = previewImage.match(/^data:image\/[\w+.-]+;base64,(.+)$/);
+    if (!match?.[1]) {
+      return null;
+    }
 
-  if (!match?.[1]) {
-    return null;
+    try {
+      return Buffer.from(match[1], "base64");
+    } catch {
+      return null;
+    }
   }
 
-  try {
-    return Buffer.from(match[1], "base64");
-  } catch {
-    return null;
-  }
+  return null;
+}
+
+export function getReportOgImageBuffer(
+  report?: Pick<AuditReport, "ogPreviewImage" | "previewImage">
+): Buffer | null {
+  return (
+    previewImageToBuffer(report?.ogPreviewImage) ??
+    previewImageToBuffer(report?.previewImage)
+  );
 }

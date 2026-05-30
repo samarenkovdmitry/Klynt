@@ -60,6 +60,7 @@ type AuditResponseFlat = {
   key_observation: string;
   confidence: number;
   previewImage?: string;
+  ogPreviewImage?: string;
   metric_observations?: {
     trust?: string;
     clarity?: string;
@@ -281,6 +282,10 @@ export default function Analyze() {
         confidence: json.confidence ?? 0,
         previewImage:
           typeof json.previewImage === "string" ? json.previewImage : undefined,
+        ogPreviewImage:
+          typeof json.ogPreviewImage === "string"
+            ? json.ogPreviewImage
+            : undefined,
         metric_observations: json.metric_observations,
         issues: json.issues ?? [],
         suggestions: json.suggestions ?? [],

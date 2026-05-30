@@ -9,6 +9,7 @@ import {
   isDemoReportId,
   loadReportForPublicMetadata,
 } from "@/lib/report-seo-loader";
+import { REPORT_OG_HEIGHT, REPORT_OG_WIDTH } from "@/lib/report-preview-size";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
 
 export const REPORT_OG_IMAGE_HEADERS = {
@@ -32,6 +33,12 @@ export async function buildReportOpenGraphJpeg(reportId: string) {
 
   try {
     const report = await loadReportForPublicMetadata(reportId);
+    const ogBuffer = previewImageToBuffer(report?.ogPreviewImage);
+
+    if (ogBuffer) {
+      return ogBuffer;
+    }
+
     const previewBuffer = previewImageToBuffer(report?.previewImage);
 
     if (!previewBuffer) {
@@ -39,7 +46,7 @@ export async function buildReportOpenGraphJpeg(reportId: string) {
     }
 
     return sharp(previewBuffer)
-      .resize(1200, 630, {
+      .resize(REPORT_OG_WIDTH, REPORT_OG_HEIGHT, {
         fit: "cover",
         position: "top",
       })
