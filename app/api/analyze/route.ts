@@ -11,7 +11,7 @@ import {
 import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/lib/page-screenshot";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
-import { buildReportOgImage, buildReportPreviewImage } from "@/lib/report-preview";
+import { buildReportPreviewImage } from "@/lib/report-preview";
 import { saveReportToDb } from "@/lib/reports-db";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
@@ -455,13 +455,6 @@ export async function POST(req: Request) {
           return undefined;
         })
       : Promise.resolve(undefined);
-    const ogPreviewImagePromise = rawHeroBase64
-      ? buildReportOgImage(rawHeroBase64).catch((ogError) => {
-          console.error("[analyze] Failed to build OG preview image:", ogError);
-          return undefined;
-        })
-      : Promise.resolve(undefined);
-
     const basePrompt = `You are a senior SaaS UX auditor (clarity, conversion, positioning).
 
 Analyze ONLY what is visible in the screenshot(s). Never invent UI. No generic advice — name the actual element/section.
@@ -676,10 +669,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
         : url;
 
     const metricObservations = normalizeMetricObservations(json.metric_observations);
-    const [previewImage, ogPreviewImage] = await Promise.all([
-      previewImagePromise,
-      ogPreviewImagePromise,
-    ]);
+    const previewImage = await previewImagePromise;
 
     const reportPayload: AuditReport = {
       url: auditedUrl,
@@ -691,7 +681,6 @@ json.confidence = Number.isFinite(Number(json.confidence))
       key_observation: json.key_observation,
       confidence: json.confidence,
       previewImage,
-      ogPreviewImage,
       metric_observations: metricObservations,
       issues: json.issues,
       suggestions: json.suggestions,
@@ -718,7 +707,6 @@ json.confidence = Number.isFinite(Number(json.confidence))
       url: auditedUrl,
       generatedAt: reportPayload.generatedAt,
       previewImage,
-      ogPreviewImage,
       metric_observations: metricObservations,
     });
   } catch (error: any) {

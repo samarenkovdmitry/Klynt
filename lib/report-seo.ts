@@ -63,7 +63,7 @@ export function buildReportOgDescription(
 }
 
 export function getReportOpenGraphImagePath(reportId: string) {
-  return `/report/${reportId}/preview.jpg`;
+  return `/report/${reportId}/opengraph-image`;
 }
 
 export function getReportOpenGraphImageUrl(
@@ -142,11 +142,3 @@ export function previewImageToBuffer(previewImage?: string): Buffer | null {
   return null;
 }
 
-export function getReportOgImageBuffer(
-  report?: Pick<AuditReport, "ogPreviewImage" | "previewImage">
-): Buffer | null {
-  return (
-    previewImageToBuffer(report?.ogPreviewImage) ??
-    previewImageToBuffer(report?.previewImage)
-  );
-}

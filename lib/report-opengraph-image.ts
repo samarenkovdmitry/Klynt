@@ -1,15 +1,13 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import sharp from "sharp";
-
 import { previewImageToBuffer } from "@/lib/report-seo";
+import { composeReportOpenGraphImage } from "@/lib/report-og-composer";
 import {
   canGenerateReportMetadata,
   isDemoReportId,
   loadReportForPublicMetadata,
 } from "@/lib/report-seo-loader";
-import { REPORT_OG_HEIGHT, REPORT_OG_WIDTH } from "@/lib/report-preview-size";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
 
 export const REPORT_OG_IMAGE_HEADERS = {
@@ -33,25 +31,15 @@ export async function buildReportOpenGraphJpeg(reportId: string) {
 
   try {
     const report = await loadReportForPublicMetadata(reportId);
-    const ogBuffer = previewImageToBuffer(report?.ogPreviewImage);
+    const previewBuffer =
+      previewImageToBuffer(report?.previewImage) ??
+      previewImageToBuffer(report?.ogPreviewImage);
 
-    if (ogBuffer) {
-      return ogBuffer;
-    }
-
-    const previewBuffer = previewImageToBuffer(report?.previewImage);
-
-    if (!previewBuffer) {
+    if (!report || !previewBuffer) {
       return loadDefaultOpenGraphImage();
     }
 
-    return sharp(previewBuffer)
-      .resize(REPORT_OG_WIDTH, REPORT_OG_HEIGHT, {
-        fit: "cover",
-        position: "top",
-      })
-      .jpeg({ quality: 86, mozjpeg: true })
-      .toBuffer();
+    return composeReportOpenGraphImage(report, previewBuffer);
   } catch (error) {
     console.error("[report opengraph-image]", error);
     return loadDefaultOpenGraphImage();
