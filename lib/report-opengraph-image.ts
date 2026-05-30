@@ -3,9 +3,12 @@ import path from "node:path";
 
 import sharp from "sharp";
 
-import { isValidReportId } from "@/lib/report-id";
 import { previewImageToBuffer } from "@/lib/report-seo";
-import { loadReportFromDb } from "@/lib/reports-db";
+import {
+  canGenerateReportMetadata,
+  isDemoReportId,
+  loadReportForPublicMetadata,
+} from "@/lib/report-seo-loader";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
 
 export const REPORT_OG_IMAGE_HEADERS = {
@@ -19,12 +22,16 @@ async function loadDefaultOpenGraphImage() {
 }
 
 export async function buildReportOpenGraphJpeg(reportId: string) {
-  if (!isValidReportId(reportId) || !isSupabaseConfigured()) {
+  if (!canGenerateReportMetadata(reportId)) {
+    return loadDefaultOpenGraphImage();
+  }
+
+  if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
     return loadDefaultOpenGraphImage();
   }
 
   try {
-    const report = await loadReportFromDb(reportId);
+    const report = await loadReportForPublicMetadata(reportId);
     const previewBuffer = previewImageToBuffer(report?.previewImage);
 
     if (!previewBuffer) {

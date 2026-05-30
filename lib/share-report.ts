@@ -43,7 +43,8 @@ export function getShareTargets(
     {
       id: "whatsapp",
       label: "WhatsApp",
-      href: `https://wa.me/?text=${encodeURIComponent(`${shareLine}\n${shareUrl}`)}`,
+      // Share only the report URL so WhatsApp does not unfurl a domain from text.
+      href: `https://wa.me/?text=${url}`,
     },
     {
       id: "telegram",

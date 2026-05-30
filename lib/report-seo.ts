@@ -11,18 +11,15 @@ export type ReportShareContext = {
 };
 
 export function buildShareText(context?: ReportShareContext) {
-  const domain = formatReportDomain(context?.url);
   const score =
     context?.score != null && Number.isFinite(Number(context.score))
       ? formatOverallScore(context.score)
       : null;
 
-  if (domain && score) {
-    return `${domain} scored ${score}/10 on UX clarity — full report on Klynt`;
-  }
-
-  if (domain) {
-    return `UX clarity report for ${domain} — Klynt`;
+  // Avoid bare domains in share text — messengers linkify them and show the
+  // audited site's OG preview instead of the Klynt report link.
+  if (score) {
+    return `UX clarity score ${score}/10 — full report on Klynt`;
   }
 
   return "UX clarity report — Klynt";
