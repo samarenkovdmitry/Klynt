@@ -33,6 +33,9 @@ function TintedPattern({
   );
 }
 
+const PATTERN_FADE_MASK =
+  "linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%)";
+
 export function ReportHeroPattern({
   gridColor,
   heroBg,
@@ -41,7 +44,12 @@ export function ReportHeroPattern({
   return (
     <>
       <div
-        className={`pointer-events-none absolute inset-y-0 right-0 hidden w-[620px] max-w-[60%] md:block ${className}`}
+        className={`pointer-events-none absolute right-0 top-0 hidden w-[620px] max-w-[60%] md:block ${className}`}
+        style={{
+          height: REPORT_HERO_PATTERN_HEIGHT,
+          WebkitMaskImage: PATTERN_FADE_MASK,
+          maskImage: PATTERN_FADE_MASK,
+        }}
         aria-hidden
       >
         <TintedPattern
@@ -56,10 +64,8 @@ export function ReportHeroPattern({
         style={{
           width: REPORT_HERO_PATTERN_WIDTH,
           height: REPORT_HERO_PATTERN_HEIGHT,
-          WebkitMaskImage:
-            "linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%)",
-          maskImage:
-            "linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%)",
+          WebkitMaskImage: PATTERN_FADE_MASK,
+          maskImage: PATTERN_FADE_MASK,
         }}
         aria-hidden
       >

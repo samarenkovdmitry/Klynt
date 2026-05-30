@@ -21,8 +21,8 @@ export function getReportHeroPatternDesktopMaskStyle(): ReportHeroPatternMaskSty
     maskRepeat: "no-repeat",
     WebkitMaskPosition: "right top",
     maskPosition: "right top",
-    WebkitMaskSize: "100% 100%",
-    maskSize: "100% 100%",
+    WebkitMaskSize: `${REPORT_HERO_PATTERN_WIDTH}px ${REPORT_HERO_PATTERN_HEIGHT}px`,
+    maskSize: `${REPORT_HERO_PATTERN_WIDTH}px ${REPORT_HERO_PATTERN_HEIGHT}px`,
   };
 }
 

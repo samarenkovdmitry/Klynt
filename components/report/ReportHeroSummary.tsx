@@ -57,7 +57,7 @@ function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) 
   return (
     <div className="flex min-w-0 flex-col md:h-full">
       <div className="flex items-center gap-2">
-        <Icon size={18} className="relative top-[2px] shrink-0 text-[#8E99A2]" aria-hidden />
+        <Icon size={18} className="relative top-[1px] shrink-0 text-[#8E99A2]" aria-hidden />
         <p className="text-[16px] font-semibold text-[var(--ink-primary)]">{label}</p>
       </div>
 

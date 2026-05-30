@@ -61,7 +61,6 @@ function isNavActive(item: NavItem, pathname: string) {
 export function AppHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
-  const isReportPage = pathname.startsWith("/report");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -86,9 +85,7 @@ export function AppHeader() {
           "sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
           isLanding
             ? "border-b border-transparent bg-transparent"
-            : isReportPage
-              ? "border-b border-[rgba(6,28,47,0.08)] bg-white"
-              : "bg-white shadow-[0_4px_16px_rgba(6,28,47,0.08)]",
+            : "border-b border-[rgba(6,28,47,0.10)] bg-white",
         ].join(" ")}
       >
         <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between gap-4 px-4 md:px-6">
@@ -103,10 +100,16 @@ export function AppHeader() {
               alt="Klynt"
               className="h-auto w-[108px] shrink-0"
             />
-            {!isLanding && !isReportPage && (
-              <span className="truncate text-[12px] font-semibold tracking-[-0.02em] text-[#061C2F] sm:text-[13px] md:text-[14px]">
-                UX Clarity Analyzer
-              </span>
+            {!isLanding && (
+              <>
+                <span
+                  className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
+                  aria-hidden
+                />
+                <span className="truncate text-[12px] font-semibold tracking-[-0.02em] text-[#061C2F] sm:text-[13px] md:text-[14px]">
+                  UX Clarity Analyzer
+                </span>
+              </>
             )}
           </Link>
 
