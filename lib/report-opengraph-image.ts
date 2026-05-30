@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { composeReportOpenGraphImage } from "@/lib/report-og-image";
 import { previewImageToBuffer } from "@/lib/report-seo";
-import { composeReportOpenGraphImage } from "@/lib/report-og-composer";
 import {
   canGenerateReportMetadata,
   isDemoReportId,
@@ -11,7 +11,6 @@ import {
 import { isSupabaseConfigured } from "@/lib/supabase-server";
 
 export const REPORT_OG_IMAGE_HEADERS = {
-  "Content-Type": "image/jpeg",
   "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
 } as const;
 
@@ -33,34 +32,69 @@ async function loadDefaultOpenGraphImage() {
   throw new Error("Default Open Graph image not found");
 }
 
-export async function buildReportOpenGraphJpeg(reportId: string) {
+function withOgHeaders(response: Response) {
+  response.headers.set(
+    "Cache-Control",
+    "public, max-age=86400, stale-while-revalidate=604800"
+  );
+
+  return response;
+}
+
+export async function buildReportOpenGraphResponse(reportId: string) {
   if (!canGenerateReportMetadata(reportId)) {
-    return loadDefaultOpenGraphImage();
+    const fallback = await loadDefaultOpenGraphImage();
+    return new Response(fallback, {
+      headers: {
+        ...REPORT_OG_IMAGE_HEADERS,
+        "Content-Type": "image/jpeg",
+      },
+    });
   }
 
   if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
-    return loadDefaultOpenGraphImage();
+    const fallback = await loadDefaultOpenGraphImage();
+    return new Response(fallback, {
+      headers: {
+        ...REPORT_OG_IMAGE_HEADERS,
+        "Content-Type": "image/jpeg",
+      },
+    });
   }
 
   try {
     const report = await loadReportForPublicMetadata(reportId);
-    const previewBuffer =
-      previewImageToBuffer(report?.previewImage) ??
-      previewImageToBuffer(report?.ogPreviewImage);
 
-    if (!report || !previewBuffer) {
-      return loadDefaultOpenGraphImage();
+    if (!report) {
+      const fallback = await loadDefaultOpenGraphImage();
+      return new Response(fallback, {
+        headers: {
+          ...REPORT_OG_IMAGE_HEADERS,
+          "Content-Type": "image/jpeg",
+        },
+      });
     }
 
-    return await composeReportOpenGraphImage(report, previewBuffer);
+    const previewBuffer =
+      (await previewImageToBuffer(report.previewImage)) ??
+      (await previewImageToBuffer(report.ogPreviewImage));
+
+    return withOgHeaders(await composeReportOpenGraphImage(report, previewBuffer));
   } catch (error) {
     console.error("[report opengraph-image]", error);
 
-    try {
-      return await loadDefaultOpenGraphImage();
-    } catch (fallbackError) {
-      console.error("[report opengraph-image] fallback failed", fallbackError);
-      throw fallbackError;
-    }
+    const fallback = await loadDefaultOpenGraphImage();
+    return new Response(fallback, {
+      headers: {
+        ...REPORT_OG_IMAGE_HEADERS,
+        "Content-Type": "image/jpeg",
+      },
+    });
   }
+}
+
+/** @deprecated Use buildReportOpenGraphResponse instead. */
+export async function buildReportOpenGraphJpeg(reportId: string) {
+  const response = await buildReportOpenGraphResponse(reportId);
+  return Buffer.from(await response.arrayBuffer());
 }

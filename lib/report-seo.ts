@@ -121,7 +121,7 @@ export function buildReportMetadata(
   };
 }
 
-export function previewImageToBuffer(previewImage?: string): Buffer | null {
+export async function previewImageToBuffer(previewImage?: string): Promise<Buffer | null> {
   if (!previewImage) {
     return null;
   }
@@ -134,6 +134,22 @@ export function previewImageToBuffer(previewImage?: string): Buffer | null {
 
     try {
       return Buffer.from(match[1], "base64");
+    } catch {
+      return null;
+    }
+  }
+
+  if (previewImage.startsWith("http://") || previewImage.startsWith("https://")) {
+    try {
+      const response = await fetch(previewImage, {
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      return Buffer.from(await response.arrayBuffer());
     } catch {
       return null;
     }
