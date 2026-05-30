@@ -170,11 +170,11 @@ export function ReportHeroSummary({
                   </span>
                 </div>
 
-                <h1 className="mt-10 text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
+                <h1 className="mt-7 text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:mt-10 md:text-[26px] md:leading-[1.2]">
                   {verdict || "UX assessment complete"}
                 </h1>
 
-                <p className="mb-10 mt-2 text-[15px] leading-[19px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
+                <p className="mb-7 mt-2 text-[15px] leading-[19px] text-[rgba(6,28,47,0.5)] md:mb-10 md:text-[16px] md:leading-[25px]">
                   {summary || "No summary generated."}
                 </p>
 
