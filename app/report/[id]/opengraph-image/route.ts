@@ -5,6 +5,8 @@ import {
   REPORT_OG_IMAGE_HEADERS,
 } from "@/lib/report-opengraph-image";
 
+export const dynamic = "force-dynamic";
+
 type RouteContext = {
   params: Promise<{ id: string }> | { id: string };
 };

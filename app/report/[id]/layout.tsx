@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 
 import { isValidReportId } from "@/lib/report-id";
 import { buildReportMetadata } from "@/lib/report-seo";
+import { getRequestSiteUrl } from "@/lib/request-site-url";
 import { loadReportFromDb } from "@/lib/reports-db";
 import { buildPageMetadata } from "@/lib/seo";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
+
+export const dynamic = "force-dynamic";
 
 type ReportLayoutProps = {
   children: React.ReactNode;
@@ -48,7 +51,7 @@ export async function generateMetadata({
       });
     }
 
-    return buildReportMetadata(id, report);
+    return buildReportMetadata(id, report, getRequestSiteUrl());
   } catch {
     return buildPageMetadata({
       title: "UX Report",

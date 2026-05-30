@@ -7,7 +7,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/report/"],
+      // Keep /report/ crawlable so social bots can read og:* tags and fetch
+      // /report/*/opengraph-image. Report pages stay noindex via page metadata.
+      disallow: ["/api/"],
     },
     sitemap: absoluteUrl("/sitemap.xml"),
     host: absoluteUrl("/"),

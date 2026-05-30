@@ -20,8 +20,8 @@ export function getSiteUrl(): string {
   return "https://klynt.one";
 }
 
-export function absoluteUrl(path: string): string {
-  const base = getSiteUrl();
+export function absoluteUrl(path: string, baseUrl = getSiteUrl()): string {
+  const base = baseUrl.replace(/\/$/, "");
   if (!path || path === "/") return base;
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }

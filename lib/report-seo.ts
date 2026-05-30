@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import type { AuditReport } from "@/lib/audit-report";
 import { formatOverallScore, formatReportDomain } from "@/lib/report-hero-theme";
-import { SITE_NAME, absoluteUrl } from "@/lib/site";
+import { SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/site";
 
 export type ReportShareContext = {
   url?: string;
@@ -72,23 +72,28 @@ export function buildReportOgDescription(
 }
 
 export function getReportOpenGraphImagePath(reportId: string) {
-  return `/api/reports/${reportId}/opengraph-image`;
+  return `/report/${reportId}/opengraph-image`;
 }
 
-export function getReportOpenGraphImageUrl(reportId: string) {
-  return absoluteUrl(getReportOpenGraphImagePath(reportId));
+export function getReportOpenGraphImageUrl(
+  reportId: string,
+  baseUrl = getSiteUrl()
+) {
+  return absoluteUrl(getReportOpenGraphImagePath(reportId), baseUrl);
 }
 
 export function buildReportMetadata(
   reportId: string,
-  report: AuditReport
+  report: AuditReport,
+  siteUrl = getSiteUrl()
 ): Metadata {
   const title = buildReportOgTitle(report);
   const description = buildReportOgDescription(report);
-  const pageUrl = absoluteUrl(`/report/${reportId}`);
-  const imageUrl = getReportOpenGraphImageUrl(reportId);
+  const pageUrl = absoluteUrl(`/report/${reportId}`, siteUrl);
+  const imageUrl = getReportOpenGraphImageUrl(reportId, siteUrl);
 
   return {
+    metadataBase: new URL(siteUrl),
     title,
     description,
     alternates: {
@@ -108,6 +113,8 @@ export function buildReportMetadata(
       images: [
         {
           url: imageUrl,
+          secureUrl: imageUrl,
+          type: "image/jpeg",
           width: 1200,
           height: 630,
           alt: title,
