@@ -20,7 +20,7 @@ export default function ReportPage() {
   const reportId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const { data, loadState } = useReportData(reportId);
-  const { hydrated, unlocked, waitlistActive, unlock } = usePreLaunchWaitlist(
+  const { unlocked, waitlistActive, unlock } = usePreLaunchWaitlist(
     reportId === DEMO_REPORT_ID
   );
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -46,8 +46,8 @@ export default function ReportPage() {
     router.push("/analyze");
   }
 
-  if (loadState !== "ready" || !data || !hydrated) {
-    return <ReportPageStates loadState={loadState === "ready" && !hydrated ? "loading" : loadState} />;
+  if (loadState !== "ready" || !data) {
+    return <ReportPageStates loadState={loadState} />;
   }
 
   return (

@@ -4,6 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 
 import { isPreLaunchWaitlistActive, preLaunch } from "@/lib/pre-launch";
 
+function readWaitlistUnlocked(): boolean {
+  try {
+    return localStorage.getItem(preLaunch.waitlist.storageKey) === "true";
+  } catch {
+    return false;
+  }
+}
+
 export function usePreLaunchWaitlist(isDemoReport: boolean) {
   const [unlocked, setUnlocked] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -15,14 +23,17 @@ export function usePreLaunchWaitlist(isDemoReport: boolean) {
       return;
     }
 
-    setUnlocked(
-      localStorage.getItem(preLaunch.waitlist.storageKey) === "true"
-    );
+    setUnlocked(readWaitlistUnlocked());
     setHydrated(true);
   }, [isDemoReport]);
 
   const unlock = useCallback(() => {
-    localStorage.setItem(preLaunch.waitlist.storageKey, "true");
+    try {
+      localStorage.setItem(preLaunch.waitlist.storageKey, "true");
+    } catch {
+      // Ignore storage failures — unlock for this session anyway
+    }
+
     setUnlocked(true);
   }, []);
 

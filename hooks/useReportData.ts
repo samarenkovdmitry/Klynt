@@ -7,6 +7,8 @@ import { loadReport, saveReport } from "@/lib/report-storage";
 
 export type ReportLoadState = "loading" | "ready" | "missing";
 
+const REPORT_FETCH_TIMEOUT_MS = 15000;
+
 function parseStoredReport(stored: string): AuditReport | null {
   try {
     const parsed: unknown = JSON.parse(stored);
@@ -18,6 +20,36 @@ function parseStoredReport(stored: string): AuditReport | null {
     return parsed;
   } catch {
     return null;
+  }
+}
+
+async function fetchReportFromApi(reportId: string): Promise<AuditReport | null> {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => controller.abort(),
+    REPORT_FETCH_TIMEOUT_MS
+  );
+
+  try {
+    const res = await fetch(`/api/reports/${reportId}`, {
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    const parsed: unknown = await res.json();
+
+    if (!isAuditReport(parsed)) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 }
 
@@ -38,35 +70,25 @@ export function useReportData(reportId: string | undefined) {
       setLoadState("loading");
       setData(null);
 
-      const stored = loadReport(id);
-
-      if (stored) {
-        const parsed = parseStoredReport(stored);
-
-        if (parsed) {
-          if (!cancelled) {
-            setData(parsed);
-            setLoadState("ready");
-          }
-
-          return;
-        }
-      }
-
       try {
-        const res = await fetch(`/api/reports/${id}`);
+        const stored = loadReport(id);
 
-        if (!res.ok) {
-          if (!cancelled) {
-            setLoadState("missing");
+        if (stored) {
+          const parsed = parseStoredReport(stored);
+
+          if (parsed) {
+            if (!cancelled) {
+              setData(parsed);
+              setLoadState("ready");
+            }
+
+            return;
           }
-
-          return;
         }
 
-        const parsed: unknown = await res.json();
+        const parsed = await fetchReportFromApi(id);
 
-        if (!isAuditReport(parsed)) {
+        if (!parsed) {
           if (!cancelled) {
             setLoadState("missing");
           }

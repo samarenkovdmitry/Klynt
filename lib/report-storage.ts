@@ -8,7 +8,11 @@ export function saveReport(reportId: string, data: object) {
   const payload = JSON.stringify(data);
   const key = `report-${reportId}`;
 
-  sessionStorage.setItem(key, payload);
+  try {
+    sessionStorage.setItem(key, payload);
+  } catch {
+    // sessionStorage unavailable or full — API fallback still works
+  }
 
   try {
     localStorage.setItem(key, payload);
@@ -24,7 +28,11 @@ export function loadReport(reportId: string): string | null {
 
   const key = `report-${reportId}`;
 
-  return sessionStorage.getItem(key) ?? localStorage.getItem(key);
+  try {
+    return sessionStorage.getItem(key) ?? localStorage.getItem(key);
+  } catch {
+    return null;
+  }
 }
 
 export function isValidAuditResponse(json: unknown): boolean {
