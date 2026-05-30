@@ -1,4 +1,6 @@
 export const REPORT_HERO_PATTERN_URL = "/report/klynt-analyze-bg.svg";
+export const REPORT_HERO_PATTERN_WIDTH = 620;
+export const REPORT_HERO_PATTERN_HEIGHT = 320;
 
 export type ReportHeroPatternMaskStyle = {
   WebkitMaskImage: string;
@@ -11,19 +13,28 @@ export type ReportHeroPatternMaskStyle = {
   maskSize: string;
 };
 
-export function getReportHeroPatternMaskStyle(
-  align: "left" | "right" = "left"
-): ReportHeroPatternMaskStyle {
-  const position = align === "right" ? "right top" : "left top";
-
+export function getReportHeroPatternDesktopMaskStyle(): ReportHeroPatternMaskStyle {
   return {
     WebkitMaskImage: `url(${REPORT_HERO_PATTERN_URL})`,
     maskImage: `url(${REPORT_HERO_PATTERN_URL})`,
     WebkitMaskRepeat: "no-repeat",
     maskRepeat: "no-repeat",
-    WebkitMaskPosition: position,
-    maskPosition: position,
+    WebkitMaskPosition: "right top",
+    maskPosition: "right top",
     WebkitMaskSize: "100% 100%",
     maskSize: "100% 100%",
+  };
+}
+
+export function getReportHeroPatternMobileMaskStyle(): ReportHeroPatternMaskStyle {
+  return {
+    WebkitMaskImage: `url(${REPORT_HERO_PATTERN_URL})`,
+    maskImage: `url(${REPORT_HERO_PATTERN_URL})`,
+    WebkitMaskRepeat: "no-repeat",
+    maskRepeat: "no-repeat",
+    WebkitMaskPosition: "left top",
+    maskPosition: "left top",
+    WebkitMaskSize: `${REPORT_HERO_PATTERN_WIDTH}px ${REPORT_HERO_PATTERN_HEIGHT}px`,
+    maskSize: `${REPORT_HERO_PATTERN_WIDTH}px ${REPORT_HERO_PATTERN_HEIGHT}px`,
   };
 }

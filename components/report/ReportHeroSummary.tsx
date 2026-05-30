@@ -2,7 +2,7 @@
 
 import {
   RiBrainLine,
-  RiFocus3Line,
+  RiFocusLine,
   RiShieldCheckLine,
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
@@ -21,6 +21,7 @@ import {
   formatAnalyzedDate,
   formatOverallScore,
   formatReportDomain,
+  formatReportHref,
   getFrictionScore,
   getMetricBarColor,
   getReportHeroTheme,
@@ -109,6 +110,7 @@ export function ReportHeroSummary({
 }: ReportHeroSummaryProps) {
   const theme = getReportHeroTheme(score);
   const domain = formatReportDomain(url);
+  const reportHref = formatReportHref(url);
   const trust = Math.max(0, Math.min(100, Number(breakdown?.trust ?? 0)));
   const clarity = Math.max(0, Math.min(100, Number(breakdown?.clarity ?? 0)));
   const friction = Math.max(0, Math.min(100, getFrictionScore(breakdown)));
@@ -130,10 +132,10 @@ export function ReportHeroSummary({
     <div className="space-y-3">
       <ReportShareStrip onShare={onShare} onExport={onExport} />
 
-      <div className="overflow-hidden rounded-[24px] border border-black/[0.07] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:rounded-[32px]">
+      <div className="overflow-hidden rounded-[24px] border border-black/[0.07] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] ring-1 ring-inset ring-black/[0.08] md:rounded-[32px]">
         <div className="relative overflow-hidden">
           <section
-            className="relative px-5 pb-8 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]"
+            className="relative overflow-hidden px-5 pb-8 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]"
             style={{ backgroundColor: theme.heroBg }}
           >
             <ReportHeroPattern gridColor={theme.gridColor} />
@@ -149,7 +151,18 @@ export function ReportHeroSummary({
                         className="h-4 w-4 shrink-0 rounded-sm"
                       />
                     )}
-                    <span className="font-medium text-[var(--ink-primary)]">{domain}</span>
+                    {reportHref ? (
+                      <a
+                        href={reportHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-[var(--ink-primary)] transition-opacity hover:opacity-70"
+                      >
+                        {domain}
+                      </a>
+                    ) : (
+                      <span className="font-medium text-[var(--ink-primary)]">{domain}</span>
+                    )}
                   </div>
                   <span className="hidden h-4 w-px bg-[rgba(6,28,47,0.1)] sm:inline-block" />
                   <span className="text-[rgba(6,28,47,0.5)]">
@@ -157,11 +170,11 @@ export function ReportHeroSummary({
                   </span>
                 </div>
 
-                <h1 className="mt-5 text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
+                <h1 className="mt-10 text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
                   {verdict || "UX assessment complete"}
                 </h1>
 
-                <p className="mt-4 text-[15px] leading-[25px] text-[rgba(6,28,47,0.5)] md:text-[16px]">
+                <p className="mb-10 mt-2 text-[15px] leading-[25px] text-[rgba(6,28,47,0.5)] md:text-[16px]">
                   {summary || "No summary generated."}
                 </p>
 
@@ -182,7 +195,7 @@ export function ReportHeroSummary({
             </div>
           </section>
 
-          <section className="border-t border-[var(--stroke-light)] bg-white px-5 py-6 md:px-[30px] md:py-6">
+          <section className="bg-white px-5 py-6 md:px-[30px] md:py-6">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-stretch xl:grid-cols-4 xl:gap-6">
               <MetricCard
                 icon={RiShieldCheckLine}
@@ -191,7 +204,7 @@ export function ReportHeroSummary({
                 description={trustDescription}
               />
               <MetricCard
-                icon={RiFocus3Line}
+                icon={RiFocusLine}
                 label="Decision Clarity"
                 value={clarity}
                 description={clarityDescription}
@@ -221,7 +234,7 @@ export function ReportHeroSummary({
               </div>
             </div>
 
-            <div className="mt-6 border-t border-[var(--stroke-light)] pt-5 md:mt-6">
+            <div className="mt-6 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
               <div className="flex flex-col gap-3 text-[13px] leading-[18px] text-[rgba(6,28,47,0.5)] sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2">
                 <p className="shrink-0 font-medium">
                   AI confidence:
@@ -235,8 +248,6 @@ export function ReportHeroSummary({
                 <p className="min-w-0 flex-1 font-normal">
                   Based on visible UI structure, messaging clarity and conversion signals.
                 </p>
-
-                <span className="hidden h-4 w-px shrink-0 bg-[rgba(6,28,47,0.1)] sm:inline-block" />
 
                 <a
                   href="https://klynt.one"

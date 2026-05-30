@@ -44,26 +44,26 @@ export function ReportPagePreview({
           </p>
 
           <div className="mt-2 hidden justify-center md:flex">
-            <div className="inline-flex h-[21px] max-w-[278px] items-center gap-1 rounded-[13px] bg-white px-[9px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+            <div className="inline-flex h-[21px] max-w-[278px] items-center gap-1.5 rounded-[13px] bg-white px-[9px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
               <p className="min-w-0 truncate text-[15px] leading-[19px] text-[var(--ink-primary)]">
                 {topIssueTitle}
               </p>
 
               <span
-                className="group relative shrink-0"
+                className="group relative flex shrink-0 items-center self-center"
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
                 onFocus={() => setShowTooltip(true)}
                 onBlur={() => setShowTooltip(false)}
               >
                 <span
-                  className="inline-flex items-center"
+                  className="inline-flex items-center justify-center"
                   aria-describedby={tooltipId}
                   role="button"
                   tabIndex={0}
                 >
                   <RiInformationLine
-                    size={14}
+                    size={16}
                     className="text-[rgba(6,28,47,0.45)]"
                     aria-hidden
                   />

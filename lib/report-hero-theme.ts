@@ -62,6 +62,16 @@ export function formatReportDomain(url?: string) {
   }
 }
 
+export function formatReportHref(url?: string) {
+  if (!url) return undefined;
+
+  try {
+    return new URL(url.startsWith("http") ? url : `https://${url}`).href;
+  } catch {
+    return undefined;
+  }
+}
+
 export function getMetricBarColor(value: number) {
   if (value >= 70) return "#10B981";
   if (value >= 40) return "#FF7A00";

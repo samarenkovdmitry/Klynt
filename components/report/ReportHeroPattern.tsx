@@ -1,5 +1,8 @@
 import {
-  getReportHeroPatternMaskStyle,
+  getReportHeroPatternDesktopMaskStyle,
+  getReportHeroPatternMobileMaskStyle,
+  REPORT_HERO_PATTERN_HEIGHT,
+  REPORT_HERO_PATTERN_WIDTH,
   type ReportHeroPatternMaskStyle,
 } from "@/lib/report-hero-pattern";
 
@@ -19,7 +22,7 @@ function TintedPattern({
 }) {
   return (
     <div
-      className={`h-full w-full ${className}`}
+      className={className}
       style={{
         backgroundColor: gridColor,
         ...maskStyle,
@@ -36,28 +39,28 @@ export function ReportHeroPattern({
   return (
     <>
       <div
-        className={`pointer-events-none absolute inset-y-0 right-0 hidden w-[min(620px,58%)] overflow-hidden md:block ${className}`}
+        className={`pointer-events-none absolute inset-y-0 right-0 hidden w-[620px] max-w-[60%] md:block ${className}`}
         aria-hidden
       >
         <TintedPattern
           gridColor={gridColor}
-          maskStyle={getReportHeroPatternMaskStyle("right")}
+          maskStyle={getReportHeroPatternDesktopMaskStyle()}
+          className="h-full w-full"
         />
       </div>
 
       <div
-        className={`pointer-events-none absolute inset-y-0 left-0 w-full overflow-hidden md:hidden ${className}`}
+        className={`pointer-events-none absolute left-0 top-0 md:hidden ${className}`}
         style={{
-          WebkitMaskImage:
-            "linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%)",
-          maskImage:
-            "linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%)",
+          width: REPORT_HERO_PATTERN_WIDTH,
+          height: REPORT_HERO_PATTERN_HEIGHT,
         }}
         aria-hidden
       >
         <TintedPattern
           gridColor={gridColor}
-          maskStyle={getReportHeroPatternMaskStyle("left")}
+          maskStyle={getReportHeroPatternMobileMaskStyle()}
+          className="h-full w-full"
         />
       </div>
     </>
