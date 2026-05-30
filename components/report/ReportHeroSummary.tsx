@@ -57,7 +57,7 @@ function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) 
   return (
     <div className="flex min-w-0 flex-col md:h-full">
       <div className="flex items-center gap-2">
-        <Icon size={18} className="shrink-0 text-[#8E99A2]" aria-hidden />
+        <Icon size={18} className="relative top-[2px] shrink-0 text-[#8E99A2]" aria-hidden />
         <p className="text-[16px] font-semibold text-[var(--ink-primary)]">{label}</p>
       </div>
 
@@ -180,7 +180,7 @@ export function ReportHeroSummary({
 
                 <div className="mt-6 md:mt-8">
                   <p className="text-[14px] text-[rgba(6,28,47,0.5)]">Key Insight</p>
-                  <p className="mt-1 text-[16px] leading-[19px] text-[var(--ink-primary)] md:leading-[26px]">
+                  <p className="mt-0 text-[16px] leading-[19px] text-[var(--ink-primary)] md:leading-[26px]">
                     {keyObservation || "No key observation available."}
                   </p>
                 </div>
@@ -235,7 +235,7 @@ export function ReportHeroSummary({
             </div>
 
             <div className="mt-6 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
-              <div className="flex flex-col gap-3 text-[13px] leading-[18px] text-[rgba(6,28,47,0.5)] sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2">
+              <div className="flex flex-col gap-3 text-[13px] leading-[18px] text-[rgba(6,28,47,0.5)] sm:flex-row sm:flex-wrap sm:items-center sm:gap-y-2">
                 <p className="shrink-0 font-medium">
                   AI confidence:
                   <span className="ml-1 font-semibold text-[var(--ink-primary)]">
@@ -243,7 +243,7 @@ export function ReportHeroSummary({
                   </span>
                 </p>
 
-                <span className="hidden h-4 w-px shrink-0 bg-[rgba(6,28,47,0.1)] sm:inline-block" />
+                <span className="mx-3 hidden h-4 w-px shrink-0 bg-[rgba(6,28,47,0.1)] sm:inline-block" />
 
                 <p className="min-w-0 flex-1 font-normal">
                   Based on visible UI structure, messaging clarity and conversion signals.

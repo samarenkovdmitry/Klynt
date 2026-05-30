@@ -11,7 +11,7 @@ export function ReportPageStates({ loadState }: ReportPageStatesProps) {
     return (
       <>
         <AppHeader />
-        <main className="flex min-h-[calc(100dvh-68px)] items-center justify-center bg-[#F5F7FA] px-6">
+        <main className="flex min-h-[calc(100dvh-68px)] items-center justify-center bg-white px-6">
           <div className="rounded-3xl border border-neutral-200 bg-white px-8 py-6 shadow-sm">
             <p className="text-[15px] text-[var(--ink-secondary)]">
               Loading report...
@@ -26,7 +26,7 @@ export function ReportPageStates({ loadState }: ReportPageStatesProps) {
     return (
       <>
         <AppHeader />
-        <main className="flex min-h-[calc(100dvh-68px)] items-center justify-center bg-[#F5F7FA] px-6">
+        <main className="flex min-h-[calc(100dvh-68px)] items-center justify-center bg-white px-6">
           <div className="max-w-[440px] rounded-3xl border border-neutral-200 bg-white px-8 py-8 text-center shadow-sm">
             <p className="text-[20px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)]">
               Report not available

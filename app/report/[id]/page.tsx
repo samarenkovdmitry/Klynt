@@ -54,7 +54,7 @@ export default function ReportPage() {
     <>
       <AppHeader />
 
-      <main className="min-h-[calc(100dvh-68px)] bg-[#F5F7FA] px-4 pb-12 pt-4 text-[var(--ink-primary)] md:px-6 md:pt-6">
+      <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-4 text-[var(--ink-primary)] md:px-6 md:pt-6">
         <div className="mx-auto max-w-[1040px]">
           <ReportHeroSummary
             url={data.url}

@@ -1,7 +1,7 @@
-import { RiDownload2Line, RiShareForwardLine } from "@remixicon/react";
+import { RiFilePdf2Line, RiShare2Line } from "@remixicon/react";
 
-const STRIP_BUTTON_CLASS =
-  "inline-flex h-[37px] items-center justify-center gap-2 rounded-full border border-[rgba(32,52,94,0.10)] bg-white/75 px-4 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_2px_rgba(6,28,47,0.04)] backdrop-blur-xl transition hover:bg-white";
+const STRIP_ACTION_CLASS =
+  "inline-flex h-[37px] items-center justify-center gap-2 rounded-full border border-[rgba(32,52,94,0.10)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:bg-[#F8FAFC]";
 
 type ReportShareStripProps = {
   onShare: () => void;
@@ -10,7 +10,7 @@ type ReportShareStripProps = {
 
 export function ReportShareStrip({ onShare, onExport }: ReportShareStripProps) {
   return (
-    <div className="rounded-2xl bg-[#ECF0F6] px-4 py-3 md:rounded-2xl md:px-4 md:py-[11px]">
+    <div className="rounded-2xl border border-[rgba(32,52,94,0.10)] bg-[#ECF0F6] px-4 py-3 md:px-4 md:py-[11px]">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
         <div className="text-center md:text-left">
           <p className="text-[16px] font-normal leading-[21px] text-[var(--ink-primary)]">
@@ -19,12 +19,12 @@ export function ReportShareStrip({ onShare, onExport }: ReportShareStripProps) {
         </div>
 
         <div className="flex shrink-0 items-center justify-center gap-2 md:justify-end">
-          <button type="button" onClick={onShare} className={STRIP_BUTTON_CLASS}>
-            <RiShareForwardLine size={15} className="text-[#8E99A2]" />
+          <button type="button" onClick={onShare} className={STRIP_ACTION_CLASS}>
+            <RiShare2Line size={16} className="text-[#8E99A2]" aria-hidden />
             <span>Share</span>
           </button>
-          <button type="button" onClick={onExport} className={STRIP_BUTTON_CLASS}>
-            <RiDownload2Line size={16} className="text-[#8E99A2]" />
+          <button type="button" onClick={onExport} className={STRIP_ACTION_CLASS}>
+            <RiFilePdf2Line size={16} className="text-[#8E99A2]" aria-hidden />
             <span>Export PDF</span>
           </button>
         </div>
