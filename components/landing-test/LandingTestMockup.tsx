@@ -1,266 +1,216 @@
 "use client";
 
-import { RiFilePdf2Line, RiLightbulbLine, RiLinkM } from "@remixicon/react";
-
-import { DEMO_REPORT } from "@/lib/demo-report";
+import Link from "next/link";
 import {
-  getRiskTier,
-  getScoreColor,
-  getTierColor,
-  normalizeRisk,
-} from "@/lib/report-metrics";
+  RiBrainLine,
+  RiFilePdf2Line,
+  RiFocus3Line,
+  RiShare2Line,
+  RiShieldCheckLine,
+} from "@remixicon/react";
+
+import { ReportHeroPattern } from "@/components/report/ReportHeroPattern";
+import { DEMO_REPORT, DEMO_REPORT_PATH } from "@/lib/demo-report";
+import {
+  formatAnalyzedDate,
+  formatOverallScore,
+  formatReportDomain,
+  getFrictionScore,
+  getMetricBarColor,
+  getReportHeroTheme,
+} from "@/lib/report-hero-theme";
 
 const mobileClamp = "line-clamp-2 md:line-clamp-none";
 
-function LandingTestScoreRing({ score }: { score: number }) {
-  const scoreColor = getScoreColor(score);
+function MockMetric({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof RiShieldCheckLine;
+  label: string;
+  value: number;
+}) {
+  const barColor = getMetricBarColor(value);
 
   return (
-    <>
-      <div className="relative mx-auto flex h-[140px] w-[140px] shrink-0 items-center justify-center md:hidden">
-        <svg
-          className="absolute inset-0 h-full w-full -rotate-90"
-          viewBox="0 0 140 140"
-          aria-hidden
-        >
-          <circle cx="70" cy="70" r="54" fill="rgba(255,255,255,0.55)" />
-          <circle
-            cx="70"
-            cy="70"
-            r="54"
-            stroke="#E5E7EB"
-            strokeWidth="5"
-            fill="transparent"
-          />
-          <circle
-            cx="70"
-            cy="70"
-            r="54"
-            stroke={scoreColor}
-            strokeWidth="5"
-            fill="transparent"
-            strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * 54}
-            strokeDashoffset={2 * Math.PI * 54 * (1 - score / 100)}
-          />
-        </svg>
-        <div className="relative text-center">
-          <p className="text-[11px] font-semibold text-[#061C2F]">UX Score</p>
-          <p
-            className="text-[36px] leading-none font-semibold tracking-[-0.04em]"
-            style={{ color: scoreColor }}
-          >
-            {score}
-          </p>
-        </div>
+    <div className="min-w-0">
+      <div className="flex items-center gap-1.5">
+        <Icon size={14} className="shrink-0 text-[#8E99A2]" aria-hidden />
+        <p className="truncate text-[12px] font-semibold text-[var(--ink-primary)]">{label}</p>
       </div>
-
-      <div className="relative hidden h-[160px] w-[160px] shrink-0 items-center justify-center md:flex">
-        <svg
-          className="absolute inset-0 h-full w-full -rotate-90"
-          viewBox="0 0 160 160"
-          aria-hidden
-        >
-          <circle cx="80" cy="80" r="61" fill="rgba(255,255,255,0.55)" />
-          <circle
-            cx="80"
-            cy="80"
-            r="61"
-            stroke="#E5E7EB"
-            strokeWidth="5"
-            fill="transparent"
+      <div className="mt-2 flex items-center gap-2">
+        <div className="h-[4px] min-w-0 flex-1 overflow-hidden rounded-full bg-[#F5F5F5]">
+          <div
+            className="h-full rounded-full"
+            style={{ width: `${value}%`, backgroundColor: barColor }}
           />
-          <circle
-            cx="80"
-            cy="80"
-            r="61"
-            stroke={scoreColor}
-            strokeWidth="5"
-            fill="transparent"
-            strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * 61}
-            strokeDashoffset={2 * Math.PI * 61 * (1 - score / 100)}
-          />
-        </svg>
-        <div className="relative text-center">
-          <p className="text-[12px] font-semibold text-[#061C2F]">UX Score</p>
-          <p
-            className="text-[40px] leading-none font-semibold tracking-[-0.05em]"
-            style={{ color: scoreColor }}
-          >
-            {score}
-          </p>
         </div>
+        <span
+          className="shrink-0 text-[11px] font-semibold tabular-nums"
+          style={{ color: barColor }}
+        >
+          {value}%
+        </span>
       </div>
-    </>
+    </div>
   );
 }
 
 export function LandingTestMockup() {
   const data = DEMO_REPORT;
-  const score = 75;
-  const riskColor = getTierColor(getRiskTier(data.risk));
-  const riskLabel = normalizeRisk(data.risk);
+  const score = Number(data.score);
+  const theme = getReportHeroTheme(score);
+  const domain = formatReportDomain(data.url);
+  const trust = Math.max(0, Math.min(100, Number(data.breakdown.trust)));
+  const clarity = Math.max(0, Math.min(100, Number(data.breakdown.clarity)));
+  const friction = Math.max(0, Math.min(100, getFrictionScore(data.breakdown)));
+  const topIssue = data.issues[0]?.title;
+  const overallScore = formatOverallScore(score);
+  const confidence = Math.max(0, Math.min(100, Number(data.confidence)));
 
   return (
-    <div
-      className="relative mx-auto max-w-[1040px] overflow-hidden rounded-[28px] border border-[rgba(6,28,47,0.09)] bg-white shadow-[0_20px_60px_rgba(6,28,47,0.1)] md:rounded-[36px]"
-      role="img"
-      aria-label="Demo clarity report preview"
-      onCopy={(event) => event.preventDefault()}
+    <Link
+      href={DEMO_REPORT_PATH}
+      id="report"
+      className="group relative mx-auto block max-w-[560px] lg:max-w-none"
+      aria-label="View sample UX report for stripe.com"
     >
       <div
-        className="pointer-events-none select-none"
-        style={{ WebkitUserSelect: "none", userSelect: "none" }}
+        className="overflow-hidden rounded-[24px] border border-white/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)] ring-1 ring-black/[0.06] transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_32px_96px_rgba(0,0,0,0.32)] md:rounded-[28px]"
+        onCopy={(event) => event.preventDefault()}
       >
-        <div className="flex items-center justify-between gap-4 px-5 py-6 md:px-8">
-          <div className="flex min-w-0 items-center gap-2 md:gap-[10px]">
-            <h2 className="text-[20px] font-semibold leading-[26px] tracking-[-0.04em] text-[#061C2F] md:text-[26px] md:leading-[30px]">
-              Clarity Report
-            </h2>
-            <div className="ml-0.5 rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[12px] font-semibold leading-none text-[#2F6FED]">
-              AI Generated
-            </div>
-          </div>
-
-          <RiLinkM
-            size={18}
-            className="shrink-0 text-[#8E99A2] md:hidden"
-            aria-hidden
-          />
-
-          <div className="hidden shrink-0 items-center gap-4 text-[14px] font-medium text-[#061C2F] md:flex">
-            <span className="inline-flex items-center gap-2">
-              <RiFilePdf2Line size={18} className="text-[#6B7280]" aria-hidden />
-              Export PDF
-            </span>
-            <span className="h-4 w-px bg-[#DCE2E7]" aria-hidden />
-            <span className="inline-flex items-center gap-2">
-              <RiLinkM size={18} className="text-[#6B7280]" aria-hidden />
-              Copy link
-            </span>
-          </div>
-        </div>
-
-        <div className="border-t border-[#DCE2E7] px-5 pt-[18px] pb-6 md:px-8 md:pt-[26px] md:pb-8">
-          <h3 className="text-[18px] font-semibold leading-[23px] tracking-[-0.03em] text-[#061C2F] md:text-[20px] md:leading-[28px]">
-            Summary
-          </h3>
-
-          <div className="mt-4 md:mt-5 md:grid md:grid-cols-[1.6fr_0.7fr] md:divide-x md:divide-[#DCE2E7]">
-            <div className="pb-6 md:pr-8 md:pb-0">
-              <div className="flex flex-col items-center md:flex-row md:items-start md:gap-6">
-                <LandingTestScoreRing score={score} />
-
-                <div className="mt-4 min-w-0 w-full text-center md:mt-0 md:flex-1 md:text-left">
-                  <p
-                    className={`text-[20px] font-medium leading-[30px] tracking-[-0.03em] text-[#061C2F] md:text-[24px] md:leading-[1.35] ${mobileClamp}`}
-                  >
-                    {data.verdict}
-                  </p>
-                  <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400 md:mt-4 md:text-[12px]">
-                    Top insight
-                  </p>
-                  <p
-                    className={`mt-1 text-[13px] leading-[1.55] text-[#8E99A2] md:text-[16px] md:leading-[1.65] ${mobileClamp}`}
-                  >
-                    {data.summary}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-[#DCE2E7] pt-6 md:border-t-0 md:pl-8 md:pt-0">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-[14px] font-semibold text-[#061C2F]">
-                  Conversion Health
-                </p>
-                <span
-                  className="shrink-0 rounded-full px-2.5 py-1 text-[12px] font-semibold"
-                  style={{
-                    color: riskColor,
-                    backgroundColor: `${riskColor}1A`,
-                    border: `1px solid ${riskColor}33`,
-                  }}
-                >
-                  {riskLabel}
+        <div
+          className="pointer-events-none select-none"
+          style={{ WebkitUserSelect: "none", userSelect: "none" }}
+        >
+          <div className="rounded-t-[24px] bg-[#ECF0F6] px-4 py-3 md:rounded-t-[28px] md:px-5 md:py-[11px]">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+              <p className="text-center text-[13px] font-normal leading-[18px] text-[var(--ink-primary)] sm:text-left md:text-[14px] md:leading-[21px]">
+                Share-ready UX report
+              </p>
+              <div className="flex gap-2">
+                <span className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 text-[12px] font-medium text-[var(--ink-primary)] sm:flex-none md:h-[37px] md:px-4 md:text-[14px]">
+                  <RiShare2Line size={16} aria-hidden />
+                  Share
+                </span>
+                <span className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 text-[12px] font-medium text-[var(--ink-primary)] sm:flex-none md:h-[37px] md:px-4 md:text-[14px]">
+                  <RiFilePdf2Line size={16} aria-hidden />
+                  Export
                 </span>
               </div>
+            </div>
+          </div>
 
-              <div className="mt-3 space-y-2">
-                {(
-                  [
-                    ["Clarity", data.breakdown.clarity],
-                    ["Trust", data.breakdown.trust],
-                    ["Conversion", data.breakdown.conversion],
-                  ] as const
-                ).map(([label, value]) => {
-                  const barScore = Math.max(0, Math.min(100, Number(value)));
-                  const barColor = getScoreColor(barScore);
+          <div
+            className="relative overflow-hidden px-4 pb-5 pt-5 md:px-5 md:pb-6 md:pt-6"
+            style={{ backgroundColor: theme.heroBg }}
+          >
+            <ReportHeroPattern gridColor={theme.gridColor} heroBg={theme.heroBg} />
 
-                  return (
-                    <div key={label}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[12px] text-neutral-500">{label}</span>
-                        <span
-                          className="text-[12px] font-semibold tabular-nums"
-                          style={{ color: barColor }}
-                        >
-                          {barScore}
-                        </span>
-                      </div>
-                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-neutral-100">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${barScore}%`,
-                            backgroundColor: barColor,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="relative z-[1] flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] md:text-[13px]">
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <img
+                      src={`https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(data.url)}&sz=32`}
+                      alt=""
+                      className="h-3.5 w-3.5 shrink-0 rounded-sm md:h-4 md:w-4"
+                    />
+                    <span className="truncate font-medium text-[var(--ink-primary)]">{domain}</span>
+                  </div>
+                  <span className="hidden h-3 w-px bg-[rgba(6,28,47,0.1)] sm:inline-block" />
+                  <span className="text-[rgba(6,28,47,0.5)]">
+                    {formatAnalyzedDate(data.generatedAt)}
+                  </span>
+                </div>
 
-              <div className="mt-4 border-t border-[#DCE2E7] pt-4">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-[12px] font-medium text-neutral-500">
-                    AI confidence
-                  </p>
-                  <p className="text-[14px] font-semibold tabular-nums text-[#061C2F]">
-                    {data.confidence}%
+                <p
+                  className={`mt-4 text-[17px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:mt-5 md:text-[20px] ${mobileClamp}`}
+                >
+                  {data.verdict}
+                </p>
+
+                <p
+                  className={`mt-2 text-[13px] leading-[1.5] text-[rgba(6,28,47,0.5)] md:text-[14px] md:leading-[20px] ${mobileClamp}`}
+                >
+                  {data.summary}
+                </p>
+
+                <div className="mt-4 md:mt-5">
+                  <p className="text-[12px] text-[rgba(6,28,47,0.5)] md:text-[13px]">Key Insight</p>
+                  <p
+                    className={`mt-0.5 text-[13px] leading-[1.45] text-[var(--ink-primary)] md:text-[14px] md:leading-[20px] ${mobileClamp}`}
+                  >
+                    {data.key_observation}
                   </p>
                 </div>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-neutral-100">
-                  <div
-                    className="h-full rounded-full bg-[#061C2F]"
-                    style={{ width: `${data.confidence}%` }}
-                  />
+              </div>
+
+              <div className="mx-auto shrink-0 sm:mx-0">
+                <div className="relative w-[220px] md:w-[240px]">
+                  <div className="overflow-hidden rounded-lg border border-black/[0.09] bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7] shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
+                    <div className="flex items-center gap-1.5 border-b border-black/[0.06] px-2.5 py-2">
+                      <span className="h-2 w-2 rounded-full bg-[#FF5F57]" />
+                      <span className="h-2 w-2 rounded-full bg-[#FFBD2E]" />
+                      <span className="h-2 w-2 rounded-full bg-[#28CA41]" />
+                      <span className="ml-1 truncate text-[10px] text-[rgba(6,28,47,0.45)]">
+                        {domain}
+                      </span>
+                    </div>
+                    <div className="space-y-2 px-3 py-3">
+                      <div className="h-2 w-3/4 rounded bg-[rgba(6,28,47,0.10)]" />
+                      <div className="h-2 w-1/2 rounded bg-[rgba(6,28,47,0.07)]" />
+                      <div className="mt-3 h-14 rounded-md bg-[rgba(6,28,47,0.05)]" />
+                      <div className="flex gap-2">
+                        <div className="h-6 flex-1 rounded bg-[#635BFF]/20" />
+                        <div className="h-6 flex-1 rounded border border-[rgba(6,28,47,0.08)] bg-white" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {topIssue && (
+                    <div className="absolute -bottom-3 left-1/2 w-[calc(100%-16px)] max-w-[260px] -translate-x-1/2 rounded-[13px] bg-white px-2.5 py-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.06]">
+                      <p className="truncate text-[11px] leading-[15px] text-[var(--ink-primary)] md:text-[12px]">
+                        {topIssue}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 border-t border-[#DCE2E7] pt-6 md:mt-8 md:pt-8">
-            <div className="flex items-start gap-3">
-              <RiLightbulbLine size={22} className="mt-0.5 shrink-0 text-amber-600" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-amber-700">
-                  Key observation
-                </p>
-                <p
-                  className={`mt-1.5 text-[13px] font-normal leading-[1.55] text-[#061C2F] md:mt-1.5 md:text-[16px] md:leading-[1.65] ${mobileClamp}`}
-                >
-                  {data.key_observation}
-                </p>
-              </div>
+          <div className="grid grid-cols-3 gap-3 border-t border-[rgba(32,52,94,0.09)] bg-white px-4 py-4 md:gap-4 md:px-5 md:py-5">
+            <MockMetric icon={RiShieldCheckLine} label="Trust" value={trust} />
+            <MockMetric icon={RiFocus3Line} label="Clarity" value={clarity} />
+            <MockMetric icon={RiBrainLine} label="Friction" value={friction} />
+          </div>
+
+          <div className="flex flex-col gap-2 border-t border-[rgba(32,52,94,0.09)] bg-white px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between md:px-5 md:py-4">
+            <div className="flex items-center gap-2">
+              <span
+                className="inline-flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-[11px] font-bold leading-none tracking-[-0.05em] text-white md:text-[12px]"
+                style={{ backgroundColor: theme.badgeBg }}
+              >
+                {overallScore}
+              </span>
+              <p className="text-[13px] font-semibold text-[var(--ink-primary)] md:text-[14px]">
+                Overall Assessment
+              </p>
             </div>
+            <p className="text-[12px] text-[rgba(6,28,47,0.5)] md:text-[13px]">
+              <span className="font-medium text-[var(--ink-primary)]">
+                AI confidence: {confidence}%
+              </span>
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="absolute inset-0 z-10 cursor-default" aria-hidden />
-    </div>
+      <p className="mt-4 text-center text-[13px] font-medium text-white/50 transition group-hover:text-white/70">
+        View full sample report →
+      </p>
+    </Link>
   );
 }
