@@ -7,14 +7,7 @@ import {
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/analyze", label: "Analyze" },
-  { href: DEMO_REPORT_PATH, label: "View demo" },
-];
 
 const legalLinks = [
   { href: "/privacy", label: "Privacy" },
@@ -48,93 +41,38 @@ const socialLinks: {
 export function AppFooter() {
   return (
     <footer className="mt-auto w-full shrink-0 border-t border-[rgba(6,28,47,0.06)] bg-white px-6 py-[33px] md:px-6 md:py-10">
-      <div className={LANDING_UPDATE_CONTAINER}>
-        <div className="flex flex-col items-center text-center md:hidden">
-          <p className="text-[14px] font-normal text-[#8E99A2]">
-            © 2026 Klynt – UX Clarity Analyzer
-          </p>
+      <div className={`${LANDING_UPDATE_CONTAINER} flex flex-col items-center text-center`}>
+        <p className="text-[14px] font-normal text-[#8E99A2]">
+          © 2026 Klynt – UX Clarity Analyzer
+        </p>
 
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px] font-medium text-[#8E99A2]">
-            {legalLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="transition hover:text-[#061C2F]"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-10 flex items-center justify-center gap-11">
-            {socialLinks.map((link) => {
-              const Icon = link.icon;
-
-              return (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="text-[#8E99A2] transition hover:text-[#061C2F]"
-                  aria-label={link.label}
-                >
-                  <Icon size={24} />
-                </a>
-              );
-            })}
-          </div>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px] font-medium text-[#8E99A2] md:mt-4">
+          {legalLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="transition hover:text-[#061C2F]"
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
-        <div className="hidden md:grid md:grid-cols-[1.2fr_0.8fr_1fr] md:items-start md:gap-10 md:text-left">
-          <Link href="/" aria-label="Klynt — home" className="inline-flex justify-start">
-            <img src="/klynt-logo-dark.svg" alt="Klynt" className="h-[30px] w-auto" />
-          </Link>
+        <div className="mt-10 flex items-center justify-center gap-11 md:mt-10">
+          {socialLinks.map((link) => {
+            const Icon = link.icon;
 
-          <div className="space-y-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
+            return (
+              <a
+                key={link.label}
                 href={link.href}
-                className="block text-[15px] font-medium text-[#8E99A2] transition hover:text-[#061C2F]"
+                className="text-[#8E99A2] transition hover:text-[#061C2F]"
+                aria-label={link.label}
               >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          <div>
-            <p className="text-[14px] font-medium text-[#8E99A2]">Connect</p>
-            <div className="mt-4 flex items-center gap-4">
-              {socialLinks.map((link) => {
-                const Icon = link.icon;
-
-                return (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="text-[#8E99A2] transition hover:text-[#061C2F]"
-                    aria-label={link.label}
-                  >
-                    <Icon size={24} />
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8 hidden border-t border-[rgba(6,28,47,0.06)] pt-6 text-[14px] text-[#8E99A2] md:mt-10 md:flex md:items-center md:justify-between">
-          <p className="font-normal">© 2026 Klynt – UX Clarity Analyzer</p>
-          <div className="flex flex-wrap items-center gap-7 font-medium">
-            {legalLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="transition hover:text-[#061C2F]"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+                <Icon size={24} />
+              </a>
+            );
+          })}
         </div>
       </div>
     </footer>

@@ -1,7 +1,7 @@
 import { RiFilePdf2Line, RiShare2Line } from "@remixicon/react";
 
 const STRIP_ACTION_CLASS =
-  "inline-flex h-[37px] flex-1 items-center justify-center gap-2 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-4 text-[14px] font-medium leading-[21px] text-[var(--ink-primary)] md:w-[165px] md:flex-none";
+  "inline-flex h-[37px] flex-1 items-center justify-center gap-2 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-4 text-[14px] font-medium leading-[21px] text-[var(--ink-primary)] transition hover:bg-[#F8FAFC] md:w-auto md:flex-none md:px-4";
 
 const STRIP_ACTION_ICON_CLASS = "text-[var(--ink-primary)]";
 

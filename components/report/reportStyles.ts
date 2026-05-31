@@ -28,5 +28,8 @@ export const REPORT_WHY_BODY_CLASS =
 
 export const REPORT_WHY_DIVIDER_CLASS = "border-t border-[#F5F5F5] pt-4";
 
+export const REPORT_METRIC_DESCRIPTION_CLASS =
+  "mt-2 mb-2 text-[15px] leading-5 text-[rgba(6,28,47,0.5)] md:mt-3 md:mb-3";
+
 export const REPORT_ACTION_BUTTON_CLASS =
   "flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 py-3 text-[14px] font-medium text-[var(--ink-primary)] transition-colors duration-200 hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF] md:flex-none md:rounded-full md:px-5";

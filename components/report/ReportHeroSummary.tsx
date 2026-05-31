@@ -26,6 +26,7 @@ import {
   getMetricBarColor,
   getReportHeroTheme,
 } from "@/lib/report-hero-theme";
+import { REPORT_METRIC_DESCRIPTION_CLASS } from "@/components/report/reportStyles";
 
 type ReportHeroSummaryProps = {
   url?: string;
@@ -61,9 +62,9 @@ function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) 
         <p className="text-[16px] font-semibold text-[var(--ink-primary)]">{label}</p>
       </div>
 
-      <p className="mt-2 mb-4 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">{description}</p>
+      <p className={REPORT_METRIC_DESCRIPTION_CLASS}>{description}</p>
 
-      <div className="mt-auto flex items-center gap-3 pt-3">
+      <div className="mt-auto flex items-center gap-3">
         <div className="h-[5px] min-w-0 flex-1 overflow-hidden rounded-full bg-[#F5F5F5]">
           <div
             className="h-full rounded-full transition-all duration-700"
@@ -196,7 +197,7 @@ export function ReportHeroSummary({
           </section>
 
           <section className="bg-white px-5 py-6 md:px-[30px] md:py-6">
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-stretch xl:grid-cols-4 xl:gap-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-8 xl:grid-cols-4 xl:gap-6">
               <MetricCard
                 icon={RiShieldCheckLine}
                 label="Trust Signals"
@@ -216,7 +217,7 @@ export function ReportHeroSummary({
                 description={frictionDescription}
               />
 
-              <div className="flex min-w-0 flex-col md:h-full">
+              <div className="flex min-w-0 flex-col border-t border-[rgba(32,52,94,0.09)] pt-4 md:h-full md:pt-5">
                 <div className="flex items-center gap-2">
                   <span
                     className="inline-flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-[12px] font-bold leading-none tracking-[-0.05em] text-white"
@@ -228,9 +229,7 @@ export function ReportHeroSummary({
                     Overall Assessment
                   </p>
                 </div>
-                <p className="mt-2 mb-4 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">
-                  {overallDescription}
-                </p>
+                <p className={REPORT_METRIC_DESCRIPTION_CLASS}>{overallDescription}</p>
               </div>
             </div>
 

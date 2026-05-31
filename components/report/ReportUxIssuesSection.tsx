@@ -4,7 +4,6 @@ import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_TAG_CLASS,
   REPORT_CARD_CONTENT_GAP_CLASS,
-  REPORT_CARD_HEADLINE_BOTTOM_CLASS,
   REPORT_WHY_BODY_CLASS,
   REPORT_WHY_DIVIDER_CLASS,
   REPORT_WHY_LABEL_CLASS,
@@ -44,9 +43,7 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
               )}
 
               {issue.why && (
-                <div
-                  className={`${issue.bullets && issue.bullets.length > 0 ? "mt-4" : REPORT_CARD_CONTENT_GAP_CLASS} ${REPORT_WHY_DIVIDER_CLASS}`}
-                >
+                <div className={`mt-4 ${REPORT_WHY_DIVIDER_CLASS}`}>
                   <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
                   <p className={REPORT_WHY_BODY_CLASS}>{issue.why}</p>
                 </div>

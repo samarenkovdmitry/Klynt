@@ -30,7 +30,7 @@ function PriorityBadgeIcon({ label }: { label: PriorityLabel }) {
   if (label === "High Impact") {
     return (
       <span
-        className="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-[#009966]"
+        className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#009966]"
         aria-hidden
       />
     );

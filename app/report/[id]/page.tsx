@@ -88,10 +88,13 @@ export default function ReportPage() {
                 onCopy={handleCopy}
               />
             )}
-            {!waitlistActive && (
-              <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
-            )}
           </div>
+
+          {!waitlistActive && (
+            <div className="mt-12">
+              <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
+            </div>
+          )}
         </div>
       </main>
 

@@ -64,7 +64,7 @@ export function ReportCopySection({
                   </div>
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
                   <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
                     <div className="mb-3 flex items-center justify-between">
                       <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-400">

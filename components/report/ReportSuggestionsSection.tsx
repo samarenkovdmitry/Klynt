@@ -64,7 +64,7 @@ function SuggestionCard({
           </div>
 
           {item.why && (
-            <div className={`mt-4 ${REPORT_WHY_DIVIDER_CLASS}`}>
+            <div className={REPORT_WHY_DIVIDER_CLASS}>
               <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
               <p className={REPORT_WHY_BODY_CLASS}>{item.why}</p>
             </div>
