@@ -1,6 +1,4 @@
 import { RiArrowRightUpLine, RiDownload2Line } from "@remixicon/react";
-import { Button } from "@/components/ui/Button";
-import { BrandPill } from "@/components/ui/BrandPill";
 
 type ReportCtaSectionProps = {
   onRerun: () => void;
@@ -9,38 +7,37 @@ type ReportCtaSectionProps = {
 
 export function ReportCtaSection({ onRerun, onExport }: ReportCtaSectionProps) {
   return (
-    <section className="overflow-hidden rounded-[32px] border border-[rgba(6,28,47,0.05)] bg-white px-6 py-8 text-center shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:px-10">
+    <section className="overflow-hidden rounded-[32px] border border-[rgba(6,28,47,0.05)] bg-white px-[25px] py-[33px] text-center shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:px-10 md:py-8">
       <div className="mx-auto max-w-[760px]">
-        <BrandPill className="text-[12px]">Next Step</BrandPill>
+        <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">Next Step</p>
 
-        <h3 className="mt-4 text-[30px] font-semibold leading-[1.05] tracking-[-0.04em] text-[var(--ink-primary)] md:text-[42px]">
+        <h3 className="mt-4 text-[30px] font-bold leading-[30px] tracking-[-0.01em] text-[var(--ink-primary)] md:text-[36px] md:leading-9">
           Improve your UX and run another analysis
         </h3>
 
-        <p className="mt-4 text-[16px] leading-7 text-[var(--ink-secondary)]">
+        <p className="mt-4 text-[16px] leading-5 text-[rgba(6,28,47,0.5)] md:leading-[25px]">
           Iterate on messaging, trust, hierarchy and conversion flow — then
           compare updated UX scores.
         </p>
 
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button
+        <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center">
+          <button
+            type="button"
             onClick={onRerun}
-            icon={<RiArrowRightUpLine size={18} />}
-            fullWidth={false}
-            className="w-full !rounded-full sm:w-auto"
+            className="inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-full border border-transparent bg-[#2563EB] px-6 text-[15px] font-semibold text-white transition hover:bg-[#1D4ED8] sm:w-auto"
           >
+            <RiArrowRightUpLine size={18} aria-hidden />
             Re-run analysis
-          </Button>
+          </button>
 
-          <Button
+          <button
+            type="button"
             onClick={onExport}
-            variant="secondary"
-            icon={<RiDownload2Line size={18} />}
-            fullWidth={false}
-            className="w-full !rounded-full sm:w-auto"
+            className="inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-full border border-[rgba(6,28,47,0.14)] bg-white px-6 text-[15px] font-semibold text-[var(--ink-primary)] transition hover:bg-[#F8FAFC] sm:w-auto"
           >
+            <RiDownload2Line size={18} aria-hidden />
             Export PDF
-          </Button>
+          </button>
         </div>
       </div>
     </section>

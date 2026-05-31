@@ -9,6 +9,7 @@ import {
   REPORT_CARD_HEADLINE_CLASS,
   REPORT_SECTION_LABEL_CLASS,
   REPORT_WHY_BODY_CLASS,
+  REPORT_WHY_DIVIDER_CLASS,
   REPORT_WHY_LABEL_CLASS,
 } from "@/components/report/reportStyles";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
@@ -45,7 +46,9 @@ function SuggestionCard({
               {item.section ? (
                 <p className={REPORT_SECTION_LABEL_CLASS}>{item.section}</p>
               ) : null}
-              <p className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""}`}>
+              <p
+                className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""} mb-4 md:mb-0`}
+              >
                 {item.recommendation}
               </p>
 
@@ -60,7 +63,7 @@ function SuggestionCard({
           </div>
 
           {item.why && (
-            <div className="mt-5 border-t border-[#F5F5F5] pt-5">
+            <div className={REPORT_WHY_DIVIDER_CLASS}>
               <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
               <p className={REPORT_WHY_BODY_CLASS}>{item.why}</p>
             </div>

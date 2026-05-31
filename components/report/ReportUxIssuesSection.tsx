@@ -4,6 +4,7 @@ import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_TAG_CLASS,
   REPORT_WHY_BODY_CLASS,
+  REPORT_WHY_DIVIDER_CLASS,
   REPORT_WHY_LABEL_CLASS,
 } from "@/components/report/reportStyles";
 import { getImpactEntries } from "@/lib/report-impact";
@@ -41,7 +42,7 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
               )}
 
               {issue.why && (
-                <div className="mt-5 border-t border-[#F5F5F5] pt-5">
+                <div className={REPORT_WHY_DIVIDER_CLASS}>
                   <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
                   <p className={REPORT_WHY_BODY_CLASS}>{issue.why}</p>
                 </div>

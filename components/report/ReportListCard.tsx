@@ -41,7 +41,7 @@ export function ReportListCard({
                 />
               </div>
 
-              <p className={REPORT_CARD_HEADLINE_CLASS}>{title}</p>
+              <p className={`${REPORT_CARD_HEADLINE_CLASS} mb-3`}>{title}</p>
 
               <div className="hidden md:block lg:hidden">
                 <ImpactPercentageBadges entries={impactEntries} className="mt-4" />

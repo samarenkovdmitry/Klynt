@@ -22,5 +22,8 @@ export const REPORT_WHY_LABEL_CLASS =
 export const REPORT_WHY_BODY_CLASS =
   "mt-1 text-[15px] font-normal leading-[20px] text-[rgba(6,28,47,0.5)]";
 
+export const REPORT_WHY_DIVIDER_CLASS =
+  "mt-3 border-t border-[#F5F5F5] pt-3 md:mt-5 md:pt-5";
+
 export const REPORT_ACTION_BUTTON_CLASS =
   "flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 py-3 text-[14px] font-medium text-[var(--ink-primary)] transition-colors duration-200 hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF] md:flex-none md:rounded-full md:px-5";

@@ -81,7 +81,3 @@ export const PRIORITY_BADGE_CLASS: Record<PriorityLabel, string> = {
   "High Impact": "border-[#A4F4CF] bg-[#ECFDF5] text-[#009966]",
   "Medium Impact": "border-[#E5E5E5] bg-[#FAFAFA] text-[#616C77]",
 };
-
-export const PRIORITY_BADGE_ICON: Partial<Record<PriorityLabel, string>> = {
-  "Medium Impact": "◐",
-};

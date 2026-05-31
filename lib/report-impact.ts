@@ -16,5 +16,6 @@ export function getImpactEntries(item: ImpactFields): ImpactEntry[] {
       (entry) =>
         entry.key && Number.isFinite(entry.value) && entry.value !== 0
     )
-    .slice(0, 2);
+    .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+    .slice(0, 1);
 }

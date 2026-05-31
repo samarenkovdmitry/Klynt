@@ -33,8 +33,8 @@ export const DEMO_REPORT = {
       why: "When the category is abstract, evaluators bounce to compare simpler alternatives before exploring product tiles.",
       impact_metric_1: "clarity",
       impact_value_1: -16,
-      impact_metric_2: "conversion",
-      impact_value_2: -11,
+      impact_metric_2: "",
+      impact_value_2: 0,
     },
     {
       category: "Conversion",
@@ -44,8 +44,8 @@ export const DEMO_REPORT = {
       why: "Parallel primary actions increase hesitation for teams that are still qualifying fit.",
       impact_metric_1: "conversion",
       impact_value_1: -18,
-      impact_metric_2: "trust",
-      impact_value_2: -8,
+      impact_metric_2: "",
+      impact_value_2: 0,
     },
     {
       category: "Trust",
@@ -66,8 +66,8 @@ export const DEMO_REPORT = {
       why: "Equal visual priority makes scanning slower and pushes users to hunt for relevance.",
       impact_metric_1: "visuals",
       impact_value_1: -10,
-      impact_metric_2: "clarity",
-      impact_value_2: -9,
+      impact_metric_2: "",
+      impact_value_2: 0,
     },
   ],
   suggestions: [

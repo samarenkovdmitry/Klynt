@@ -61,7 +61,7 @@ function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) 
         <p className="text-[16px] font-semibold text-[var(--ink-primary)]">{label}</p>
       </div>
 
-      <p className="my-3 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">{description}</p>
+      <p className="mt-2 mb-4 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">{description}</p>
 
       <div className="mt-auto flex items-center gap-3 pt-3">
         <div className="h-[5px] min-w-0 flex-1 overflow-hidden rounded-full bg-[#F5F5F5]">
@@ -228,7 +228,7 @@ export function ReportHeroSummary({
                     Overall Assessment
                   </p>
                 </div>
-                <p className="my-3 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">
+                <p className="mt-2 mb-4 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">
                   {overallDescription}
                 </p>
               </div>
@@ -237,11 +237,8 @@ export function ReportHeroSummary({
             <div className="mt-6 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
                 <p className="min-w-0 text-[13px] leading-[18px]">
-                  <span className="font-normal text-[rgba(6,28,47,0.5)]">
-                    AI confidence:{" "}
-                  </span>
-                  <span className="font-medium text-[var(--ink-primary)]">
-                    {confidenceValue}%
+                  <span className="font-normal text-[var(--ink-primary)]">
+                    AI confidence: {confidenceValue}%
                   </span>
                   <span className="font-normal text-[rgba(6,28,47,0.5)]">
                     {" "}
@@ -252,7 +249,7 @@ export function ReportHeroSummary({
                   href="https://klynt.one"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1.5 self-end font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80"
+                  className="inline-flex shrink-0 items-center gap-1.5 self-start text-[13px] leading-[18px] font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80 md:self-auto"
                 >
                   Generated with
                   <KlyntFooterLogo />

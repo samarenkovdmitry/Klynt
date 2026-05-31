@@ -46,7 +46,9 @@ export function ReportCopySection({
                       <p className={REPORT_SECTION_LABEL_CLASS}>{item.section}</p>
                     ) : null}
                     {item.why ? (
-                      <p className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""}`}>
+                      <p
+                        className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""} mb-4 md:mb-0`}
+                      >
                         {item.why}
                       </p>
                     ) : null}
@@ -76,14 +78,9 @@ export function ReportCopySection({
 
                   <div className="relative rounded-2xl border border-sky-200 bg-sky-50/70 p-5">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-sky-700">
-                          Improved
-                        </p>
-                        <div className="rounded-full border border-sky-200 bg-white px-2.5 py-1 text-[11px] font-medium text-sky-700">
-                          AI Suggestion
-                        </div>
-                      </div>
+                      <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-sky-700">
+                        Improved
+                      </p>
 
                       <div className="relative">
                         <button

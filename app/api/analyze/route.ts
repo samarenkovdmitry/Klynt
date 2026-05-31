@@ -129,23 +129,11 @@ function mapImpact(impactObj: Record<string, number>) {
 
   const [m1, v1] = entries[0];
 
-  let m2 = "";
-  let v2 = 0;
-
-  if (entries.length > 1) {
-    const [candM2, candV2] = entries[1];
-
-    if (Math.abs(candV2) >= Math.abs(v1) * 0.15) {
-      m2 = candM2;
-      v2 = candV2;
-    }
-  }
-
   return {
     impact_metric_1: m1,
     impact_value_1: v1,
-    impact_metric_2: m2,
-    impact_value_2: v2,
+    impact_metric_2: "",
+    impact_value_2: 0,
   };
 }
 
@@ -535,7 +523,7 @@ Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; 
 issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
 Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
 Bad title: "Weak visual hierarchy"
-Impact: issues ONLY — use negative ints (-5 to -25) in issues[].impact; pick top 1-2 keys per issue.
+Impact: issues ONLY — use negative ints (-5 to -25) in issues[].impact; pick exactly 1 top key per issue.
 priority: suggestions[] and copy[] ONLY — required enum, no impact field:
 - quick_win: low effort, visible UX payoff (copy tweak, one CTA, small layout fix)
 - high_impact: materially improves understanding or conversion; may need more design/dev work

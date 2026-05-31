@@ -1,9 +1,12 @@
+import type { ReactNode } from "react";
+import { RiFlashlightFill } from "@remixicon/react";
+
 import type { ImpactEntry } from "@/lib/report-impact";
 import {
   getPriorityLabel,
   PRIORITY_BADGE_CLASS,
-  PRIORITY_BADGE_ICON,
   type PriorityItem,
+  type PriorityLabel,
 } from "@/lib/report-priority";
 
 type ImpactBadgesProps = {
@@ -19,19 +22,43 @@ type PriorityBadgeProps = {
 const IMPACT_PILL_CLASS =
   "inline-flex h-[37px] shrink-0 items-center rounded-full border px-[15px] text-[13px] font-semibold leading-[19.5px]";
 
+function PriorityBadgeIcon({ label }: { label: PriorityLabel }) {
+  if (label === "Quick Win") {
+    return <RiFlashlightFill size={12} className="text-[#D08700]" aria-hidden />;
+  }
+
+  if (label === "High Impact") {
+    return (
+      <span
+        className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#009966]"
+        aria-hidden
+      />
+    );
+  }
+
+  return (
+    <span className="text-[12px] leading-none text-[#616C77]" aria-hidden>
+      ◐
+    </span>
+  );
+}
+
+function renderPriorityIcon(label: PriorityLabel): ReactNode {
+  return <PriorityBadgeIcon label={label} />;
+}
+
 export function ImpactPercentageBadges({ entries, className = "" }: ImpactBadgesProps) {
   if (entries.length === 0) return null;
 
+  const entry = entries[0];
+
   return (
     <div className={`flex max-w-full flex-wrap gap-2 lg:justify-end ${className}`}>
-      {entries.map((entry, i) => (
-        <div
-          key={i}
-          className={`${IMPACT_PILL_CLASS} border-[#FFC9C9] bg-[#FEF2F2] text-[#FB2C36]`}
-        >
-          -{Math.abs(entry.value)}% {entry.key}
-        </div>
-      ))}
+      <div
+        className={`${IMPACT_PILL_CLASS} border-[#FFC9C9] bg-[#FEF2F2] text-[#FB2C36]`}
+      >
+        -{Math.abs(entry.value)}% {entry.key}
+      </div>
     </div>
   );
 }
@@ -39,13 +66,11 @@ export function ImpactPercentageBadges({ entries, className = "" }: ImpactBadges
 export function PriorityBadge({ label, className = "" }: PriorityBadgeProps) {
   if (!label) return null;
 
-  const icon = PRIORITY_BADGE_ICON[label];
-
   return (
     <div
-      className={`${IMPACT_PILL_CLASS} ${PRIORITY_BADGE_CLASS[label]} ${className}`}
+      className={`${IMPACT_PILL_CLASS} gap-2 ${PRIORITY_BADGE_CLASS[label]} ${className}`}
     >
-      {icon ? <span className="mr-1.5">{icon}</span> : null}
+      {renderPriorityIcon(label)}
       {label}
     </div>
   );
