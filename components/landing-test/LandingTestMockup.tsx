@@ -11,19 +11,14 @@ import {
   RiShieldCheckLine,
 } from "@remixicon/react";
 
-import { ReportHeroPattern } from "@/components/report/ReportHeroPattern";
 import { DEMO_REPORT, DEMO_REPORT_PATH, DEMO_REPORT_PREVIEW_IMAGE } from "@/lib/demo-report";
 import {
   getFrictionScore,
   getMetricBarColor,
-  getReportHeroTheme,
 } from "@/lib/report-hero-theme";
 import { REPORT_PREVIEW_HEIGHT, REPORT_PREVIEW_WIDTH } from "@/lib/report-preview-size";
 
 const textClamp = "line-clamp-2";
-
-const summaryTextClass =
-  "text-[15px] leading-[19px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]";
 
 const STRIP_ACTION_CLASS =
   "inline-flex h-[37px] items-center justify-center gap-2 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-4 text-[14px] font-medium leading-[21px] text-[var(--ink-primary)]";
@@ -66,7 +61,6 @@ function MockMetric({
 export function LandingTestMockup() {
   const data = DEMO_REPORT;
   const score = Number(data.score);
-  const theme = getReportHeroTheme(score);
   const previewImage = data.previewImage ?? DEMO_REPORT_PREVIEW_IMAGE;
   const trust = Math.max(0, Math.min(100, Number(data.breakdown?.trust)));
   const clarity = Math.max(0, Math.min(100, Number(data.breakdown?.clarity)));
@@ -107,23 +101,24 @@ export function LandingTestMockup() {
             </div>
           </div>
 
-          <div
-            className="relative overflow-hidden px-5 pb-6 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]"
-            style={{ backgroundColor: theme.heroBg }}
-          >
-            <ReportHeroPattern gridColor={theme.gridColor} heroBg={theme.heroBg} />
-
+          <div className="relative overflow-hidden bg-[#12161F] px-5 pb-6 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]">
             <div className="relative z-[1] flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
               <div className="min-w-0 flex-1">
-                <p className="text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
+                <p className="text-[20px] font-bold leading-[1.25] tracking-[-0.01em] text-white md:text-[22px] md:leading-[1.2]">
                   {data.verdict}
                 </p>
 
-                <p className={`mt-2 ${summaryTextClass} ${textClamp}`}>{data.summary}</p>
+                <p
+                  className={`mt-2 text-[14px] leading-[20px] text-white/50 md:text-[15px] md:leading-[19px] ${textClamp}`}
+                >
+                  {data.summary}
+                </p>
 
-                <div className="mt-6 md:mt-8">
-                  <p className="text-[14px] text-[rgba(6,28,47,0.5)]">Key Insight</p>
-                  <p className={`mt-0 ${summaryTextClass} ${textClamp}`}>
+                <div className="mt-5 md:mt-6">
+                  <p className="text-[14px] text-white/50">Key Insight</p>
+                  <p
+                    className={`mt-0 text-[15px] leading-[19px] text-white md:text-[16px] md:leading-[26px] ${textClamp}`}
+                  >
                     {data.key_observation}
                   </p>
                 </div>
@@ -139,11 +134,15 @@ export function LandingTestMockup() {
                 />
 
                 {topIssue && (
-                  <p
-                    className={`mt-3 text-[13px] leading-[17px] text-[var(--ink-primary)] md:text-[14px] md:leading-[19px] ${textClamp}`}
-                  >
-                    {topIssue}
-                  </p>
+                  <div className="mt-2 flex justify-center">
+                    <div className="inline-flex w-full items-center rounded-[13px] bg-white px-[9px] py-1 shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+                      <p
+                        className={`min-w-0 flex-1 text-[13px] leading-[17px] text-[var(--ink-primary)] md:text-[15px] md:leading-[19px] ${textClamp}`}
+                      >
+                        {topIssue}
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
