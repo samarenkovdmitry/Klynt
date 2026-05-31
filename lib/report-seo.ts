@@ -39,9 +39,15 @@ export function buildShareEmailSubject(context?: ReportShareContext) {
   return "Klynt UX Report";
 }
 
-export function buildReportOgTitle(report: Pick<AuditReport, "score">) {
+export function buildReportOgTitle(report: Pick<AuditReport, "score" | "url">) {
   const score = formatOverallScore(report.score);
-  return `UX clarity score ${score}/10`;
+  const domain = formatReportDomain(report.url);
+
+  if (domain) {
+    return `UX clarity score ${score}/10 for ${domain} — full report on ${SITE_NAME}`;
+  }
+
+  return `UX clarity score ${score}/10 — full report on ${SITE_NAME}`;
 }
 
 export function buildReportOgDescription(
@@ -99,13 +105,13 @@ export function buildReportMetadata(
       locale: "en_US",
       url: pageUrl,
       siteName: SITE_NAME,
-      title: `${title} | ${SITE_NAME}`,
+      title,
       description,
       images: [
         {
           url: imageUrl,
           secureUrl: imageUrl,
-          type: "image/jpeg",
+          type: "image/png",
           width: 1200,
           height: 630,
           alt: title,
@@ -114,7 +120,7 @@ export function buildReportMetadata(
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | ${SITE_NAME}`,
+      title,
       description,
       images: [imageUrl],
     },

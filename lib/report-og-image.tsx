@@ -8,7 +8,6 @@ import {
   formatReportDomain,
   getReportHeroTheme,
 } from "@/lib/report-hero-theme";
-import { SITE_NAME } from "@/lib/site";
 import {
   REPORT_OG_HEIGHT,
   REPORT_OG_WIDTH,
@@ -125,12 +124,14 @@ export async function composeReportOpenGraphImage(
               style={{
                 display: "flex",
                 alignItems: "center",
+                flexShrink: 0,
               }}
             >
               <div
                 style={{
                   fontSize: 32,
                   color: "rgba(6, 28, 47, 0.45)",
+                  flexShrink: 0,
                 }}
               >
                 UX clarity score
@@ -148,40 +149,10 @@ export async function composeReportOpenGraphImage(
                   alignItems: "center",
                   justifyContent: "center",
                   marginLeft: 18,
-                  marginRight: 10,
+                  flexShrink: 0,
                 }}
               >
                 {scoreLabel}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  fontSize: 30,
-                  color: "rgba(6, 28, 47, 0.45)",
-                }}
-              >
-                <span>/10 for</span>
-                <span
-                  style={{
-                    marginLeft: 8,
-                    marginRight: 8,
-                    color: "#061C2F",
-                    fontWeight: 700,
-                  }}
-                >
-                  {domain}
-                </span>
-                <span>— full report on</span>
-                <span
-                  style={{
-                    marginLeft: 8,
-                    color: "#061C2F",
-                    fontWeight: 700,
-                  }}
-                >
-                  {SITE_NAME}
-                </span>
               </div>
             </div>
           </div>
@@ -197,6 +168,7 @@ export async function composeReportOpenGraphImage(
                 borderRadius: 16,
                 objectFit: "cover",
                 objectPosition: "top",
+                flexShrink: 0,
               }}
             />
           ) : (
@@ -206,6 +178,7 @@ export async function composeReportOpenGraphImage(
                 height: PREVIEW_HEIGHT,
                 borderRadius: 16,
                 backgroundColor: "rgba(6, 28, 47, 0.08)",
+                flexShrink: 0,
               }}
             />
           )}

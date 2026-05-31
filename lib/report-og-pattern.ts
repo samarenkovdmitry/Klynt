@@ -13,33 +13,16 @@ export async function buildReportOgPatternDataUrl(gridColor: string) {
   const svgPath = path.join(process.cwd(), "public", "report", "klynt-analyze-bg.svg");
   const svg = (await readFile(svgPath, "utf8")).replace(/fill="black"/g, `fill="${gridColor}"`);
 
+  const patternWidth = Math.round(
+    REPORT_HERO_PATTERN_WIDTH * (REPORT_OG_HEIGHT / REPORT_HERO_PATTERN_HEIGHT)
+  );
+
   const pattern = await sharp(Buffer.from(svg))
-    .resize(REPORT_HERO_PATTERN_WIDTH, REPORT_HERO_PATTERN_HEIGHT)
+    .resize(patternWidth, REPORT_OG_HEIGHT, { fit: "fill" })
     .png()
     .toBuffer();
 
-  const fadeMask = Buffer.from(`
-    <svg width="${REPORT_HERO_PATTERN_WIDTH}" height="${REPORT_HERO_PATTERN_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="white"/>
-          <stop offset="58%" stop-color="white"/>
-          <stop offset="100%" stop-color="black" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <rect width="${REPORT_HERO_PATTERN_WIDTH}" height="${REPORT_HERO_PATTERN_HEIGHT}" fill="url(#fade)"/>
-    </svg>
-  `);
-
-  const faded = await sharp(pattern)
-    .composite([
-      {
-        input: await sharp(fadeMask).png().toBuffer(),
-        blend: "dest-in",
-      },
-    ])
-    .png()
-    .toBuffer();
+  const left = Math.round((REPORT_OG_WIDTH - patternWidth) / 2);
 
   const canvas = await sharp({
     create: {
@@ -51,9 +34,9 @@ export async function buildReportOgPatternDataUrl(gridColor: string) {
   })
     .composite([
       {
-        input: faded,
+        input: pattern,
         top: 0,
-        left: REPORT_OG_WIDTH - REPORT_HERO_PATTERN_WIDTH,
+        left,
       },
     ])
     .png()
