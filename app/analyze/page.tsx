@@ -33,10 +33,7 @@ type FlatSuggestion = {
   category: "Clarity" | "Navigation" | "Visuals" | "Trust" | "Conversion";
   section: string;
   recommendation: string;
-  impact_metric_1: string;
-  impact_value_1: number;
-  impact_metric_2: string;
-  impact_value_2: number;
+  priority: "quick_win" | "high_impact" | "medium_impact";
   why: string;
 };
 
@@ -44,10 +41,7 @@ type FlatCopy = {
   section: string;
   before: string;
   after: string;
-  impact_metric_1: string;
-  impact_value_1: number;
-  impact_metric_2: string;
-  impact_value_2: number;
+  priority: "quick_win" | "high_impact" | "medium_impact";
   why: string;
 };
 

@@ -3,7 +3,7 @@ import {
   getPriorityLabel,
   PRIORITY_BADGE_CLASS,
   PRIORITY_BADGE_ICON,
-  type PriorityLabel,
+  type PriorityItem,
 } from "@/lib/report-priority";
 
 type ImpactBadgesProps = {
@@ -12,7 +12,7 @@ type ImpactBadgesProps = {
 };
 
 type PriorityBadgeProps = {
-  label?: PriorityLabel;
+  label?: ReturnType<typeof getPriorityLabel>;
   className?: string;
 };
 
@@ -55,7 +55,7 @@ export function PriorityBadgeFromImpact({
   item,
   className = "",
 }: {
-  item: Parameters<typeof getPriorityLabel>[0];
+  item: PriorityItem;
   className?: string;
 }) {
   return <PriorityBadge label={getPriorityLabel(item)} className={className} />;

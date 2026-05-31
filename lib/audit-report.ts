@@ -12,6 +12,9 @@ export type ImpactFields = {
   impact_value_2?: number | string;
 };
 
+/** Effort/impact label for suggestions and copy cards (not percentage-based). */
+export type ReportPriority = "quick_win" | "high_impact" | "medium_impact";
+
 export type ReportIssue = ImpactFields & {
   category?: ReportCategory | string;
   title?: string;
@@ -20,18 +23,20 @@ export type ReportIssue = ImpactFields & {
   severity?: "low" | "medium" | "high";
 };
 
-export type ReportSuggestion = ImpactFields & {
+export type ReportSuggestion = {
   category?: ReportCategory | string;
   section?: string;
   recommendation?: string;
   why?: string;
+  priority?: ReportPriority;
 };
 
-export type ReportCopyItem = ImpactFields & {
+export type ReportCopyItem = {
   section?: string;
   before?: string;
   after?: string;
   why?: string;
+  priority?: ReportPriority;
 };
 
 export type ReportBreakdown = {

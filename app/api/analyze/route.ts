@@ -12,6 +12,7 @@ import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/l
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
 import { buildReportPreviewImage } from "@/lib/report-preview";
+import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
@@ -145,6 +146,36 @@ function mapImpact(impactObj: Record<string, number>) {
     impact_value_1: v1,
     impact_metric_2: m2,
     impact_value_2: v2,
+  };
+}
+
+function normalizePriorityItem(item: Record<string, unknown>) {
+  const {
+    impact,
+    impact_metric_1,
+    impact_value_1,
+    impact_metric_2,
+    impact_value_2,
+    priority,
+    ...rest
+  } = item;
+
+  const legacyImpact =
+    impact && typeof impact === "object"
+      ? (impact as Record<string, number>)
+      : ({
+          impact_metric_1,
+          impact_value_1,
+          impact_metric_2,
+          impact_value_2,
+        } as Record<string, unknown>);
+
+  return {
+    ...rest,
+    priority: normalizeReportPriority(
+      priority,
+      legacyImpact as Record<string, number>
+    ),
   };
 }
 
@@ -487,14 +518,14 @@ Return ONLY valid JSON (no markdown):
     "section": "string",
     "recommendation": "string",
     "why": "string",
-    "impact": { ...same keys, positive ints only }
+    "priority": "quick_win"|"high_impact"|"medium_impact"
   }],
   "copy": [{
     "section": "string",
     "before": "exact visible copy",
     "after": "clearer rewrite",
     "why": "string",
-    "impact": { ...same keys, positive ints only }
+    "priority": "quick_win"|"high_impact"|"medium_impact"
   }],
   "breakdown": { "clarity": int, "navigation": int, "visuals": int, "trust": int, "conversion": int }
 }
@@ -504,7 +535,11 @@ Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; 
 issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
 Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
 Bad title: "Weak visual hierarchy"
-Impact: issues use negative ints (-5 to -25); suggestions/copy use positive (5-20). Pick top 1-2 impact keys per item.
+Impact: issues ONLY — use negative ints (-5 to -25) in issues[].impact; pick top 1-2 keys per issue.
+priority: suggestions[] and copy[] ONLY — required enum, no impact field:
+- quick_win: low effort, visible UX payoff (copy tweak, one CTA, small layout fix)
+- high_impact: materially improves understanding or conversion; may need more design/dev work
+- medium_impact: helpful but secondary, partial gain, or needs validation
 confidence: integer 70-98. breakdown: integers 0-100. score: integer 0-100 aligned with breakdown.
 metric_observations: expert UX consultant observations (NOT metric labels). Each field 12-16 words.
 - Do NOT repeat category names (Trust, Clarity, Friction, Overall) or the word "metric".
@@ -652,15 +687,11 @@ json.confidence = Number.isFinite(Number(json.confidence))
      ...mapImpact(item.impact || {}),
      }));
 
-    json.suggestions = json.suggestions.map((item: any) => ({
-      ...item,
-      ...mapImpact(item.impact || {}),
-    }));
+    json.suggestions = json.suggestions.map((item: any) =>
+      normalizePriorityItem(item)
+    );
 
-    json.copy = json.copy.map((item: any) => ({
-      ...item,
-      ...mapImpact(item.impact || {}),
-    }));
+    json.copy = json.copy.map((item: any) => normalizePriorityItem(item));
 
     const reportId = generateReportId();
     const auditedUrl =

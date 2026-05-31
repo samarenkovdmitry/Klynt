@@ -77,10 +77,7 @@ export const DEMO_REPORT = {
       recommendation:
         "Add a one-line qualifier under the headline: 'Payments, billing, and financial tools for internet businesses.'",
       why: "Concrete scope helps visitors self-qualify in the first screen.",
-      impact_metric_1: "clarity",
-      impact_value_1: 13,
-      impact_metric_2: "conversion",
-      impact_value_2: 9,
+      priority: "quick_win",
     },
     {
       category: "Conversion",
@@ -88,10 +85,7 @@ export const DEMO_REPORT = {
       recommendation:
         "Make Get started the single primary action and move Contact sales to a secondary text link.",
       why: "One obvious path reduces decision friction for first-time evaluators.",
-      impact_metric_1: "conversion",
-      impact_value_1: 14,
-      impact_metric_2: "",
-      impact_value_2: 0,
+      priority: "high_impact",
     },
     {
       category: "Trust",
@@ -99,10 +93,7 @@ export const DEMO_REPORT = {
       recommendation:
         "Add a compact proof strip with $1.9T volume or Fortune 100 usage directly under the hero subhead.",
       why: "Early credibility increases willingness to explore deeper product sections.",
-      impact_metric_1: "trust",
-      impact_value_1: 11,
-      impact_metric_2: "conversion",
-      impact_value_2: 8,
+      priority: "medium_impact",
     },
   ],
   copy: [
@@ -112,20 +103,14 @@ export const DEMO_REPORT = {
       after:
         "Payments and financial tools to grow revenue — from first transaction to global scale.",
       why: "Names the core jobs so visitors understand fit immediately.",
-      impact_metric_1: "clarity",
-      impact_value_1: 12,
-      impact_metric_2: "conversion",
-      impact_value_2: 7,
+      priority: "quick_win",
     },
     {
       section: "Primary CTA",
       before: "Get started",
       after: "Start accepting payments",
       why: "Signals a concrete first outcome instead of a generic signup.",
-      impact_metric_1: "conversion",
-      impact_value_1: 11,
-      impact_metric_2: "",
-      impact_value_2: 0,
+      priority: "quick_win",
     },
     {
       section: "Hero subhead",
@@ -134,10 +119,7 @@ export const DEMO_REPORT = {
       after:
         "Run payments, billing, and payouts in one platform — built for startups, platforms, and enterprises.",
       why: "Balances breadth with audience clarity in one scan.",
-      impact_metric_1: "clarity",
-      impact_value_1: 10,
-      impact_metric_2: "trust",
-      impact_value_2: 6,
+      priority: "medium_impact",
     },
   ],
 } satisfies AuditReport;
