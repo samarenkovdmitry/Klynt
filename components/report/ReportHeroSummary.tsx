@@ -217,7 +217,7 @@ export function ReportHeroSummary({
                 description={frictionDescription}
               />
 
-              <div className="flex min-w-0 flex-col border-t border-[rgba(32,52,94,0.09)] md:border-t-0 md:h-full">
+              <div className="flex min-w-0 flex-col border-t border-[rgba(32,52,94,0.09)] py-4 md:border-t-0 md:py-0 md:h-full">
                 <div className="flex items-center gap-2">
                   <span
                     className="inline-flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-[12px] font-bold leading-none tracking-[-0.05em] text-white"
@@ -233,7 +233,7 @@ export function ReportHeroSummary({
               </div>
             </div>
 
-            <div className="mt-6 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
+            <div className="mt-0 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
                 <p className="min-w-0 text-[13px] leading-[18px]">
                   <span className="font-medium text-[var(--ink-primary)]">
