@@ -98,7 +98,7 @@ export function AppHeader() {
             <img
               src={isLanding ? "/klynt-logo-light.svg" : "/klynt-logo-dark.svg"}
               alt="Klynt"
-              className="h-auto w-[108px] shrink-0"
+              className="h-[30px] w-[100px] shrink-0"
             />
             {!isLanding && (
               <>
@@ -106,7 +106,7 @@ export function AppHeader() {
                   className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
                   aria-hidden
                 />
-                <span className="truncate text-[12px] font-semibold tracking-[-0.02em] text-[#061C2F] sm:text-[13px] md:text-[14px]">
+                <span className="truncate text-[12px] font-semibold tracking-[-0.02em] text-[#8E99A2] sm:text-[13px] md:text-[14px]">
                   UX Clarity Analyzer
                 </span>
               </>

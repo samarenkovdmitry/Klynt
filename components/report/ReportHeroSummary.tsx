@@ -61,21 +61,21 @@ function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) 
         <p className="text-[16px] font-semibold text-[var(--ink-primary)]">{label}</p>
       </div>
 
-      <p className="mt-3 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">{description}</p>
+      <p className="my-3 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">{description}</p>
 
-      <div className="mt-auto pt-3">
-        <p
-          className="text-right text-[12px] font-semibold tabular-nums leading-[18px]"
-          style={{ color: barColor }}
-        >
-          {value}%
-        </p>
-        <div className="mt-1 h-[5px] overflow-hidden rounded-full bg-[#F5F5F5]">
+      <div className="mt-auto flex items-center gap-3 pt-3">
+        <div className="h-[5px] min-w-0 flex-1 overflow-hidden rounded-full bg-[#F5F5F5]">
           <div
             className="h-full rounded-full transition-all duration-700"
             style={{ width: `${value}%`, backgroundColor: barColor }}
           />
         </div>
+        <p
+          className="shrink-0 text-[12px] font-semibold tabular-nums leading-[18px]"
+          style={{ color: barColor }}
+        >
+          {value}%
+        </p>
       </div>
     </div>
   );
@@ -228,37 +228,34 @@ export function ReportHeroSummary({
                     Overall Assessment
                   </p>
                 </div>
-                <p className="mt-3 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">
+                <p className="my-3 text-[15px] leading-5 text-[rgba(6,28,47,0.5)]">
                   {overallDescription}
                 </p>
               </div>
             </div>
 
             <div className="mt-6 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
-              <div className="flex flex-col gap-3 text-[13px] leading-[18px] text-[rgba(6,28,47,0.5)] sm:flex-row sm:flex-wrap sm:items-center sm:gap-y-2">
-                <p className="shrink-0 font-medium">
-                  AI confidence:
-                  <span className="ml-1 font-semibold text-[var(--ink-primary)]">
-                    {confidenceValue}%
-                  </span>
-                </p>
-
-                <span className="mx-3 hidden h-4 w-px shrink-0 bg-[rgba(6,28,47,0.1)] sm:inline-block" />
-
-                <p className="min-w-0 flex-1 font-normal">
-                  Based on visible UI structure, messaging clarity and conversion signals.
-                </p>
-
+              <p className="text-[13px] leading-[18px]">
+                <span className="font-normal text-[rgba(6,28,47,0.5)]">
+                  AI confidence:{" "}
+                </span>
+                <span className="font-medium text-[var(--ink-primary)]">
+                  {confidenceValue}%
+                </span>
+                <span className="font-normal text-[rgba(6,28,47,0.5)]">
+                  {" "}
+                  – Based on visible UI structure, messaging clarity and conversion signals.{" "}
+                </span>
                 <a
                   href="https://klynt.one"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1.5 font-medium transition-opacity hover:opacity-80"
+                  className="inline-flex items-center gap-1.5 font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80"
                 >
                   Generated with
                   <KlyntFooterLogo />
                 </a>
-              </div>
+              </p>
             </div>
           </section>
         </div>

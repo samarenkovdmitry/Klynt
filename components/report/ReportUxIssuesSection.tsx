@@ -1,6 +1,11 @@
 import type { ReportIssue } from "@/lib/audit-report";
 import { ReportListCard } from "@/components/report/ReportListCard";
-import { REPORT_SECTION_TITLE_CLASS } from "@/components/report/reportStyles";
+import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
+import {
+  REPORT_TAG_CLASS,
+  REPORT_WHY_BODY_CLASS,
+  REPORT_WHY_LABEL_CLASS,
+} from "@/components/report/reportStyles";
 import { getImpactEntries } from "@/lib/report-impact";
 
 type ReportUxIssuesSectionProps = {
@@ -12,9 +17,9 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
 
   return (
     <section>
-      <h3 className={`${REPORT_SECTION_TITLE_CLASS} mb-5`}>UX Issues</h3>
+      <ReportSectionHeader title="UX Issues" count={issues.length} />
 
-      <div className="space-y-4">
+      <div className="mt-5 space-y-4">
         {issues.map((issue, index) => {
           const impactEntries = getImpactEntries(issue);
 
@@ -24,15 +29,11 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
               index={index}
               title={issue.title ?? ""}
               impactEntries={impactEntries}
-              impactVariant="negative"
             >
               {issue.bullets && issue.bullets.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {issue.bullets.slice(0, 3).map((bullet, i) => (
-                    <span
-                      key={i}
-                      className="rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-[12px] font-medium text-neutral-600 md:text-[13px]"
-                    >
+                    <span key={i} className={REPORT_TAG_CLASS}>
                       {bullet}
                     </span>
                   ))}
@@ -40,13 +41,9 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
               )}
 
               {issue.why && (
-                <div className="mt-6 border-t border-neutral-100 pt-5">
-                  <p className="text-[14px] font-semibold text-[var(--ink-primary)]">
-                    Why it matters
-                  </p>
-                  <p className="mt-1 text-[15px] leading-6 text-[var(--ink-secondary)]">
-                    {issue.why}
-                  </p>
+                <div className="mt-5 border-t border-[#F5F5F5] pt-5">
+                  <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
+                  <p className={REPORT_WHY_BODY_CLASS}>{issue.why}</p>
                 </div>
               )}
             </ReportListCard>

@@ -1,10 +1,17 @@
 "use client";
 
 import type { ReportSuggestion } from "@/lib/audit-report";
-import { ReportListCard } from "@/components/report/ReportListCard";
+import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
+import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import { PreLaunchWaitlistCard } from "@/components/pre-launch/PreLaunchWaitlist";
-import { REPORT_SECTION_TITLE_CLASS } from "@/components/report/reportStyles";
-import { getImpactEntries } from "@/lib/report-impact";
+import {
+  REPORT_CARD_CLASS_ANIMATED,
+  REPORT_CARD_HEADLINE_CLASS,
+  REPORT_SECTION_LABEL_CLASS,
+  REPORT_WHY_BODY_CLASS,
+  REPORT_WHY_LABEL_CLASS,
+} from "@/components/report/reportStyles";
+import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
 
 type ReportSuggestionsSectionProps = {
   suggestions?: ReportSuggestion[];
@@ -20,31 +27,47 @@ function SuggestionCard({
   item: ReportSuggestion;
   index: number;
 }) {
-  const impactEntries = getImpactEntries(item);
-
   return (
-    <ReportListCard
-      index={index}
-      title={item.section ?? ""}
-      impactEntries={impactEntries}
-      impactVariant="positive"
-      animated
-    >
-      <p className="mt-3 text-[16px] leading-7 text-[var(--ink-primary)] md:text-[18px]">
-        {item.recommendation}
-      </p>
-
-      {item.why && (
-        <div className="mt-6 border-t border-neutral-100 pt-5">
-          <p className="text-[14px] font-semibold text-[var(--ink-primary)]">
-            Why it works
-          </p>
-          <p className="mt-1 text-[15px] leading-6 text-[var(--ink-secondary)]">
-            {item.why}
-          </p>
+    <div className={REPORT_CARD_CLASS_ANIMATED}>
+      <div className="flex flex-col gap-5 md:flex-row md:gap-6">
+        <div className="hidden items-start justify-center pt-0.5 md:flex">
+          <ReportIndexBadge index={index} />
         </div>
-      )}
-    </ReportListCard>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0 flex-1">
+              <div className="mb-4 flex items-start justify-between gap-3 md:hidden">
+                <ReportIndexBadge index={index} />
+                <PriorityBadgeFromImpact item={item} className="justify-end" />
+              </div>
+
+              {item.section ? (
+                <p className={REPORT_SECTION_LABEL_CLASS}>{item.section}</p>
+              ) : null}
+              <p className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""}`}>
+                {item.recommendation}
+              </p>
+
+              <div className="hidden md:block lg:hidden">
+                <PriorityBadgeFromImpact item={item} className="mt-4" />
+              </div>
+            </div>
+
+            <div className="hidden shrink-0 lg:block">
+              <PriorityBadgeFromImpact item={item} />
+            </div>
+          </div>
+
+          {item.why && (
+            <div className="mt-5 border-t border-[#F5F5F5] pt-5">
+              <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
+              <p className={REPORT_WHY_BODY_CLASS}>{item.why}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -63,11 +86,9 @@ export function ReportSuggestionsSection({
 
   return (
     <section>
-      <h3 className={`${REPORT_SECTION_TITLE_CLASS} mb-5 min-w-0 shrink`}>
-        Suggested Improvements
-      </h3>
+      <ReportSectionHeader title="Suggested Improvements" count={suggestions.length} />
 
-      <div className="space-y-4">
+      <div className="mt-5 space-y-4">
         <SuggestionCard item={firstSuggestion} index={0} />
 
         {showWaitlistGate ? (

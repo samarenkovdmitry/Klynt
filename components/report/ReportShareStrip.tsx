@@ -1,7 +1,7 @@
 import { RiFilePdf2Line, RiShare2Line } from "@remixicon/react";
 
 const STRIP_ACTION_CLASS =
-  "inline-flex h-[37px] w-full items-center justify-center gap-2 rounded-full border border-[rgba(32,52,94,0.12)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:bg-[#F8FAFC] md:w-auto";
+  "inline-flex h-[37px] flex-1 items-center justify-center gap-2 rounded-full border border-[rgba(32,52,94,0.12)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:bg-[#F8FAFC] md:flex-none md:w-auto";
 
 type ReportShareStripProps = {
   onShare: () => void;
@@ -18,7 +18,7 @@ export function ReportShareStrip({ onShare, onExport }: ReportShareStripProps) {
           </p>
         </div>
 
-        <div className="flex w-full shrink-0 flex-col gap-2 md:w-auto md:flex-row md:justify-end">
+        <div className="flex w-full shrink-0 flex-row gap-2 md:w-auto md:justify-end">
           <button type="button" onClick={onShare} className={STRIP_ACTION_CLASS}>
             <RiShare2Line size={16} className="text-[#8E99A2]" aria-hidden />
             <span>Share</span>
