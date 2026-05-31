@@ -5,7 +5,6 @@ import {
   RiPieChartLine,
 } from "@remixicon/react";
 
-import { LandingHeroOpArt } from "@/components/LandingHeroOpArt";
 import { Button } from "@/components/ui/Button";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
@@ -24,7 +23,6 @@ const HERO_BUTTON_CLASS =
 export function LandingTestHero() {
   return (
     <section className="relative overflow-hidden bg-[#12161F]">
-      <LandingHeroOpArt />
       <LandingTestHeader />
 
       <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-14 pt-8 md:px-6 md:pb-20 md:pt-12">
@@ -34,13 +32,12 @@ export function LandingTestHero() {
               AI UX Review
             </p>
 
-            <h1 className="mt-3 max-w-[560px] text-[36px] font-semibold leading-[1.1] tracking-[-0.02em] text-white md:text-[48px] md:leading-[1.06] lg:max-w-none xl:text-[52px]">
+            <h1 className="mt-3 max-w-[580px] text-[40px] font-semibold leading-[1.08] tracking-[-0.02em] text-white md:text-[54px] md:leading-[1.05] lg:max-w-none xl:text-[58px]">
               Clarity drives conversion
             </h1>
 
-            <p className="mt-4 max-w-[520px] text-[16px] font-normal leading-[26px] text-white/70 md:mt-5 md:text-[17px] md:leading-[28px] lg:max-w-[480px]">
-              Paste a URL or upload a screenshot. Klynt flags friction, weak copy, and trust
-              gaps — with fixes you can ship.
+            <p className="mt-4 max-w-[520px] text-[16px] font-normal leading-[26px] text-white/70 md:mt-5 md:text-[18px] md:leading-[30px] lg:max-w-[480px]">
+              Klynt finds what makes pages feel unclear — and how to fix it.
             </p>
 
             <ul className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-5 sm:gap-y-2 lg:items-start lg:justify-start">
@@ -75,10 +72,6 @@ export function LandingTestHero() {
           </div>
 
           <div className="relative lg:pt-2">
-            <div
-              className="pointer-events-none absolute -inset-4 rounded-[40px] bg-[#2563EB]/8 blur-3xl md:-inset-6"
-              aria-hidden
-            />
             <LandingTestMockup />
           </div>
         </div>

@@ -6,8 +6,11 @@ export const DEMO_REPORT_URL = "https://zapier.com";
 
 export const DEMO_REPORT_PATH = `/report/${DEMO_REPORT_ID}`;
 
+export const DEMO_REPORT_PREVIEW_IMAGE = "/demo/zapier-preview.jpg";
+
 export const DEMO_REPORT = {
   url: DEMO_REPORT_URL,
+  previewImage: DEMO_REPORT_PREVIEW_IMAGE,
   score: 65,
   risk: "medium",
   summary:
