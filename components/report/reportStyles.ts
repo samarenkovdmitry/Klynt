@@ -8,7 +8,7 @@ export const REPORT_CARD_CLASS_ANIMATED =
   "rounded-[28px] border border-[#DCE2E7] bg-white px-[21px] py-[21px] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:px-[33px] md:py-[25px]";
 
 export const REPORT_CARD_HEADLINE_CLASS =
-  "text-[22px] font-medium leading-7 tracking-[-0.02em] text-[var(--ink-primary)]";
+  "text-[18px] font-medium leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[22px] md:leading-7";
 
 export const REPORT_SECTION_LABEL_CLASS =
   "text-[13px] font-medium uppercase tracking-[0.08em] text-[#8F99A2]";
@@ -17,10 +17,10 @@ export const REPORT_TAG_CLASS =
   "rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] px-[11px] py-[3px] text-[13px] font-medium leading-[19.5px] text-[#616C77]";
 
 export const REPORT_WHY_LABEL_CLASS =
-  "text-[15px] font-semibold leading-5 text-[var(--ink-primary)]";
+  "text-[15px] font-semibold leading-[20px] text-[var(--ink-primary)]";
 
 export const REPORT_WHY_BODY_CLASS =
-  "mt-1 text-[15px] font-normal leading-5 text-[rgba(6,28,47,0.5)]";
+  "mt-1 text-[15px] font-normal leading-[20px] text-[rgba(6,28,47,0.5)]";
 
 export const REPORT_ACTION_BUTTON_CLASS =
   "flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 py-3 text-[14px] font-medium text-[var(--ink-primary)] transition-colors duration-200 hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF] md:flex-none md:rounded-full md:px-5";

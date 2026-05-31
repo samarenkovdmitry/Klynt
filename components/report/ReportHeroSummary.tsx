@@ -235,27 +235,29 @@ export function ReportHeroSummary({
             </div>
 
             <div className="mt-6 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
-              <p className="text-[13px] leading-[18px]">
-                <span className="font-normal text-[rgba(6,28,47,0.5)]">
-                  AI confidence:{" "}
-                </span>
-                <span className="font-medium text-[var(--ink-primary)]">
-                  {confidenceValue}%
-                </span>
-                <span className="font-normal text-[rgba(6,28,47,0.5)]">
-                  {" "}
-                  – Based on visible UI structure, messaging clarity and conversion signals.{" "}
-                </span>
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+                <p className="min-w-0 text-[13px] leading-[18px]">
+                  <span className="font-normal text-[rgba(6,28,47,0.5)]">
+                    AI confidence:{" "}
+                  </span>
+                  <span className="font-medium text-[var(--ink-primary)]">
+                    {confidenceValue}%
+                  </span>
+                  <span className="font-normal text-[rgba(6,28,47,0.5)]">
+                    {" "}
+                    – Based on visible UI structure, messaging clarity and conversion signals.
+                  </span>
+                </p>
                 <a
                   href="https://klynt.one"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80"
+                  className="inline-flex shrink-0 items-center gap-1.5 self-end font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80"
                 >
                   Generated with
                   <KlyntFooterLogo />
                 </a>
-              </p>
+              </div>
             </div>
           </section>
         </div>

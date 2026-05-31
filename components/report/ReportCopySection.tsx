@@ -71,7 +71,7 @@ export function ReportCopySection({
                         Original
                       </div>
                     </div>
-                    <p className="text-[15px] leading-7 text-neutral-600">{item.before}</p>
+                    <p className="text-[16px] font-normal leading-5 text-neutral-600">{item.before}</p>
                   </div>
 
                   <div className="relative rounded-2xl border border-sky-200 bg-sky-50/70 p-5">
@@ -106,7 +106,7 @@ export function ReportCopySection({
                       </div>
                     </div>
 
-                    <p className="text-[16px] font-medium leading-7 text-[var(--ink-primary)] md:text-[17px]">
+                    <p className="text-[16px] font-medium leading-5 text-[var(--ink-primary)]">
                       {item.after}
                     </p>
                   </div>
