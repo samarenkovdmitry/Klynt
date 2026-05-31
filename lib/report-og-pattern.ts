@@ -1,46 +1,19 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
-import sharp from "sharp";
-
+import { REPORT_OG_PATTERN_SVG } from "@/lib/report-og-pattern-svg";
 import {
   REPORT_HERO_PATTERN_HEIGHT,
   REPORT_HERO_PATTERN_WIDTH,
 } from "@/lib/report-hero-pattern";
 import { REPORT_OG_HEIGHT, REPORT_OG_WIDTH } from "@/lib/report-preview-size";
 
-export async function buildReportOgPatternDataUrl(gridColor: string) {
-  const svgPath = path.join(process.cwd(), "public", "report", "klynt-analyze-bg.svg");
-  const svg = (await readFile(svgPath, "utf8")).replace(/fill="black"/g, `fill="${gridColor}"`);
+export const REPORT_OG_PATTERN_RENDER_WIDTH = Math.round(
+  REPORT_HERO_PATTERN_WIDTH * (REPORT_OG_HEIGHT / REPORT_HERO_PATTERN_HEIGHT)
+);
 
-  const patternWidth = Math.round(
-    REPORT_HERO_PATTERN_WIDTH * (REPORT_OG_HEIGHT / REPORT_HERO_PATTERN_HEIGHT)
-  );
+export const REPORT_OG_PATTERN_LEFT = Math.round(
+  (REPORT_OG_WIDTH - REPORT_OG_PATTERN_RENDER_WIDTH) / 2
+);
 
-  const pattern = await sharp(Buffer.from(svg))
-    .resize(patternWidth, REPORT_OG_HEIGHT, { fit: "fill" })
-    .png()
-    .toBuffer();
-
-  const left = Math.round((REPORT_OG_WIDTH - patternWidth) / 2);
-
-  const canvas = await sharp({
-    create: {
-      width: REPORT_OG_WIDTH,
-      height: REPORT_OG_HEIGHT,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    },
-  })
-    .composite([
-      {
-        input: pattern,
-        top: 0,
-        left,
-      },
-    ])
-    .png()
-    .toBuffer();
-
-  return `data:image/png;base64,${canvas.toString("base64")}`;
+export function buildReportOgPatternDataUrl(gridColor: string) {
+  const svg = REPORT_OG_PATTERN_SVG.replace(/fill="black"/g, `fill="${gridColor}"`);
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }

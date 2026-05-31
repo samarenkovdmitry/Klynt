@@ -9,14 +9,8 @@ const nextConfig = {
   output: "standalone",
 
   outputFileTracingIncludes: {
-    "/report/[id]/opengraph-image": [
-      "./public/report/klynt-analyze-bg.svg",
-      "./public/og-fallback.jpg",
-    ],
-    "/api/reports/[id]/opengraph-image": [
-      "./public/report/klynt-analyze-bg.svg",
-      "./public/og-fallback.jpg",
-    ],
+    "/report/[id]/opengraph-image": ["./public/og-fallback.jpg"],
+    "/api/reports/[id]/opengraph-image": ["./public/og-fallback.jpg"],
   },
 
   webpack: (config) => {

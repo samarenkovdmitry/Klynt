@@ -2,7 +2,11 @@ import { ImageResponse } from "@vercel/og";
 
 import type { AuditReport } from "@/lib/audit-report";
 import { FAMILJEN_GROTESK_400, FAMILJEN_GROTESK_700 } from "@/lib/report-og-font-data";
-import { buildReportOgPatternDataUrl } from "@/lib/report-og-pattern";
+import {
+  buildReportOgPatternDataUrl,
+  REPORT_OG_PATTERN_LEFT,
+  REPORT_OG_PATTERN_RENDER_WIDTH,
+} from "@/lib/report-og-pattern";
 import {
   formatOverallScore,
   formatReportDomain,
@@ -20,6 +24,11 @@ const SCORE_CIRCLE_SIZE = 88;
 
 type ReportOgInput = Pick<AuditReport, "url" | "score" | "verdict" | "summary">;
 
+type ComposeOptions = {
+  includePattern?: boolean;
+  includePreview?: boolean;
+};
+
 function toFontData(buffer: Buffer) {
   return new Uint8Array(buffer).buffer as ArrayBuffer;
 }
@@ -36,8 +45,10 @@ function truncateText(text: string, maxLength: number) {
 
 export async function composeReportOpenGraphImage(
   report: ReportOgInput,
-  previewBuffer: Buffer | null
+  previewBuffer: Buffer | null,
+  options: ComposeOptions = {}
 ) {
+  const { includePattern = true, includePreview = true } = options;
   const theme = getReportHeroTheme(report.score);
   const domain = formatReportDomain(report.url) || "Landing page";
   const scoreLabel = formatOverallScore(report.score);
@@ -45,10 +56,13 @@ export async function composeReportOpenGraphImage(
     report.verdict?.trim() || report.summary?.trim() || "UX clarity report",
     110
   );
-  const previewSrc = previewBuffer
-    ? `data:image/jpeg;base64,${previewBuffer.toString("base64")}`
+  const previewSrc =
+    includePreview && previewBuffer
+      ? `data:image/jpeg;base64,${previewBuffer.toString("base64")}`
+      : null;
+  const patternSrc = includePattern
+    ? buildReportOgPatternDataUrl(theme.gridColor)
     : null;
-  const patternSrc = await buildReportOgPatternDataUrl(theme.gridColor);
 
   return new ImageResponse(
     (
@@ -62,20 +76,21 @@ export async function composeReportOpenGraphImage(
           fontFamily: "Familjen Grotesk",
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={patternSrc}
-          alt=""
-          width={REPORT_OG_WIDTH}
-          height={REPORT_OG_HEIGHT}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-          }}
-        />
+        {patternSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={patternSrc}
+            alt=""
+            width={REPORT_OG_PATTERN_RENDER_WIDTH}
+            height={REPORT_OG_HEIGHT}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: REPORT_OG_PATTERN_LEFT,
+              height: "100%",
+            }}
+          />
+        ) : null}
 
         <div
           style={{
