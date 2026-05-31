@@ -6,12 +6,14 @@ import {
   RiCheckLine,
   RiCloseLine,
   RiFilePdfLine,
+  RiImageLine,
   RiLightbulbLine,
+  RiLink,
   RiPieChartLine,
   RiUpload2Line,
 } from "@remixicon/react";
 
-import { useAnalyzePage } from "@/hooks/useAnalyzePage";
+import { useAnalyzePage, type AnalyzeInputMode } from "@/hooks/useAnalyzePage";
 import { AppHeader } from "@/components/AppHeader";
 import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { Button } from "@/components/ui/Button";
@@ -24,6 +26,15 @@ const OUTCOMES = [
   { icon: RiLightbulbLine, label: "Prioritized fixes" },
   { icon: RiFilePdfLine, label: "Shareable PDF" },
 ] as const;
+
+const INPUT_TABS: {
+  id: AnalyzeInputMode;
+  label: string;
+  icon: typeof RiLink;
+}[] = [
+  { id: "url", label: "Website URL", icon: RiLink },
+  { id: "screenshot", label: "Screenshot", icon: RiImageLine },
+];
 
 export function AnalyzePageView() {
   const {
@@ -38,6 +49,8 @@ export function AnalyzePageView() {
     error,
     isRateLimited,
     progress,
+    inputMode,
+    setInputMode,
     showUrlError,
     urlValidationError,
     isButtonDisabled,
@@ -75,113 +88,144 @@ export function AnalyzePageView() {
           </ul>
 
           <div className="mt-8 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-8">
-            <div>
-              <FormLabel>Website URL</FormLabel>
+            <div
+              className="flex rounded-full bg-[#ECF0F6] p-1"
+              role="tablist"
+              aria-label="Analysis input type"
+            >
+              {INPUT_TABS.map(({ id, label, icon: Icon }) => {
+                const isActive = inputMode === id;
 
-              <div className="relative mt-3">
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(event) => setUrl(event.target.value)}
-                  onKeyDown={handleUrlKeyDown}
-                  placeholder="https://stripe.com"
-                  disabled={loading}
-                  aria-invalid={showUrlError ? true : undefined}
-                  aria-describedby={showUrlError ? "url-error" : undefined}
-                  className={`${inputFieldClass({
-                    disabled: loading,
-                    error: showUrlError,
-                    withClearButton: url.length > 0,
-                    withMargin: false,
-                  })} h-[52px] bg-white md:h-[54px]`}
-                />
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    disabled={loading}
+                    onClick={() => setInputMode(id)}
+                    className={[
+                      "flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2.5 text-[14px] font-medium transition",
+                      isActive
+                        ? "bg-white text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+                        : "text-[#8E99A2] hover:text-[var(--ink-primary)]",
+                      loading ? "cursor-not-allowed opacity-60" : "",
+                    ].join(" ")}
+                  >
+                    <Icon size={16} className="shrink-0" aria-hidden />
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
 
-                {url.length > 0 && !loading && (
+            <div className="mt-5 md:mt-6">
+              {inputMode === "url" ? (
+                <div role="tabpanel">
+                  <FormLabel>Website URL</FormLabel>
+
+                  <div className="relative mt-3">
+                    <input
+                      type="text"
+                      value={url}
+                      onChange={(event) => setUrl(event.target.value)}
+                      onKeyDown={handleUrlKeyDown}
+                      placeholder="https://stripe.com"
+                      disabled={loading}
+                      aria-invalid={showUrlError ? true : undefined}
+                      aria-describedby={showUrlError ? "url-error" : undefined}
+                      className={`${inputFieldClass({
+                        disabled: loading,
+                        error: showUrlError,
+                        withClearButton: url.length > 0,
+                        withMargin: false,
+                      })} h-[52px] bg-white md:h-[54px]`}
+                    />
+
+                    {url.length > 0 && !loading && (
+                      <button
+                        type="button"
+                        onClick={clearUrl}
+                        aria-label="Clear URL"
+                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
+                      >
+                        <RiCloseLine size={18} aria-hidden />
+                      </button>
+                    )}
+                  </div>
+
+                  {showUrlError && urlValidationError && (
+                    <p id="url-error" role="alert" className="mt-2 text-[13px] text-[#D14343]">
+                      {urlValidationError}
+                    </p>
+                  )}
+
+                  <p className="mt-3 text-[13px] leading-5 text-[#8E99A2]">
+                    Klynt captures the page and analyzes layout, copy, and conversion flow.
+                  </p>
+                </div>
+              ) : (
+                <div role="tabpanel">
+                  <FormLabel>Upload screenshot</FormLabel>
+
                   <button
                     type="button"
-                    onClick={clearUrl}
-                    aria-label="Clear URL"
-                    className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
+                    onClick={openFilePicker}
+                    disabled={loading}
+                    className={[
+                      "mt-3 w-full rounded-[24px] border-2 border-dashed text-left transition",
+                      uploadedImage
+                        ? "border-[#A4F4CF] bg-[#ECFDF5]"
+                        : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
+                      loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                    ].join(" ")}
                   >
-                    <RiCloseLine size={18} aria-hidden />
+                    {!uploadedImage ? (
+                      <span className="flex items-center gap-4 px-4 py-5 md:px-5">
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(37,99,235,0.08)]">
+                          <RiUpload2Line size={22} className="text-[#2563EB]" aria-hidden />
+                        </span>
+                        <span className="min-w-0 text-left">
+                          <span className="block text-[15px] font-medium text-[var(--ink-primary)]">
+                            Click to upload screenshot
+                          </span>
+                          <span className="mt-0.5 block text-[13px] text-[#8E99A2]">
+                            PNG or JPG, up to 20 MB · full-page works best
+                          </span>
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-between gap-4 px-4 py-4 md:px-5">
+                        <span className="flex min-w-0 items-center gap-3">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#009966]">
+                            <RiCheckLine size={18} className="text-white" aria-hidden />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block truncate text-[15px] font-medium text-[var(--ink-primary)]">
+                              {imageName}
+                            </span>
+                            <span className="mt-0.5 block text-[13px] text-[#009966]">
+                              {imageSize} · Ready for analysis
+                            </span>
+                          </span>
+                        </span>
+                        <span className="shrink-0 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-medium text-[var(--ink-primary)]">
+                          Replace
+                        </span>
+                      </span>
+                    )}
                   </button>
-                )}
-              </div>
 
-              {showUrlError && urlValidationError && (
-                <p id="url-error" role="alert" className="mt-2 text-[13px] text-[#D14343]">
-                  {urlValidationError}
-                </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={loading}
+                  />
+                </div>
               )}
-            </div>
-
-            <div className="my-5 flex items-center gap-4 md:my-6">
-              <div className="h-px flex-1 bg-[rgba(6,28,47,0.08)]" />
-              <span className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#8E99A2]">
-                Or
-              </span>
-              <div className="h-px flex-1 bg-[rgba(6,28,47,0.08)]" />
-            </div>
-
-            <div>
-              <FormLabel>Upload screenshot</FormLabel>
-
-              <button
-                type="button"
-                onClick={openFilePicker}
-                disabled={loading}
-                className={[
-                  "mt-3 w-full rounded-[24px] border-2 border-dashed text-left transition",
-                  uploadedImage
-                    ? "border-[#A4F4CF] bg-[#ECFDF5]"
-                    : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
-                  loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-                ].join(" ")}
-              >
-                {!uploadedImage ? (
-                  <span className="flex items-center gap-4 px-4 py-5 md:px-5">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(37,99,235,0.08)]">
-                      <RiUpload2Line size={22} className="text-[#2563EB]" aria-hidden />
-                    </span>
-                    <span className="min-w-0 text-left">
-                      <span className="block text-[15px] font-medium text-[var(--ink-primary)]">
-                        Click to upload screenshot
-                      </span>
-                      <span className="mt-0.5 block text-[13px] text-[#8E99A2]">
-                        PNG or JPG, up to 20 MB · full-page works best
-                      </span>
-                    </span>
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-between gap-4 px-4 py-4 md:px-5">
-                    <span className="flex min-w-0 items-center gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#009966]">
-                        <RiCheckLine size={18} className="text-white" aria-hidden />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block truncate text-[15px] font-medium text-[var(--ink-primary)]">
-                          {imageName}
-                        </span>
-                        <span className="mt-0.5 block text-[13px] text-[#009966]">
-                          {imageSize} · Ready for analysis
-                        </span>
-                      </span>
-                    </span>
-                    <span className="shrink-0 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-medium text-[var(--ink-primary)]">
-                      Replace
-                    </span>
-                  </span>
-                )}
-              </button>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={loading}
-              />
             </div>
           </div>
 

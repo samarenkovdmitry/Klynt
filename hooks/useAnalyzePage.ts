@@ -129,6 +129,8 @@ function getLoadingLabel(progress: number) {
   return step ? step.label : "Analyzing…";
 }
 
+export type AnalyzeInputMode = "url" | "screenshot";
+
 export function useAnalyzePage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -142,10 +144,13 @@ export function useAnalyzePage() {
   const [url, setUrl] = useState("");
   const [progress, setProgress] = useState(0);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [inputMode, setInputMode] = useState<AnalyzeInputMode>("url");
 
   const urlValidationError = url.trim() ? validateWebsiteUrl(url) : null;
-  const showUrlError = formSubmitted && Boolean(urlValidationError);
-  const isButtonDisabled = !url.trim() && !uploadedImage;
+  const showUrlError =
+    formSubmitted && inputMode === "url" && Boolean(urlValidationError);
+  const isButtonDisabled =
+    inputMode === "url" ? !url.trim() : !uploadedImage;
 
   function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -187,8 +192,12 @@ export function useAnalyzePage() {
     try {
       setFormSubmitted(true);
 
-      if (!url.trim() && !uploadedImage) return;
-      if (url.trim() && validateWebsiteUrl(url)) return;
+      if (inputMode === "url") {
+        if (!url.trim()) return;
+        if (validateWebsiteUrl(url)) return;
+      } else if (!uploadedImage) {
+        return;
+      }
 
       setLoading(true);
       setProgress(0);
@@ -202,9 +211,10 @@ export function useAnalyzePage() {
       }, PROGRESS_TICK_MS);
 
       const form = new FormData();
-      form.append("url", url);
 
-      if (uploadedImage) {
+      if (inputMode === "url") {
+        form.append("url", url);
+      } else if (uploadedImage) {
         form.append("screenshot", uploadedImage);
       }
 
@@ -324,6 +334,8 @@ export function useAnalyzePage() {
     error,
     isRateLimited,
     progress,
+    inputMode,
+    setInputMode,
     showUrlError,
     urlValidationError,
     isButtonDisabled,
