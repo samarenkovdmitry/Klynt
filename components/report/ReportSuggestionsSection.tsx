@@ -5,6 +5,7 @@ import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import { PreLaunchWaitlistCard } from "@/components/pre-launch/PreLaunchWaitlist";
 import {
+  REPORT_CARD_HEADLINE_BOTTOM_CLASS,
   REPORT_CARD_CLASS_ANIMATED,
   REPORT_CARD_HEADLINE_CLASS,
   REPORT_SECTION_LABEL_CLASS,
@@ -47,7 +48,7 @@ function SuggestionCard({
                 <p className={REPORT_SECTION_LABEL_CLASS}>{item.section}</p>
               ) : null}
               <p
-                className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""} mb-4 md:mb-0`}
+                className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""} ${REPORT_CARD_HEADLINE_BOTTOM_CLASS}`}
               >
                 {item.recommendation}
               </p>
@@ -63,7 +64,7 @@ function SuggestionCard({
           </div>
 
           {item.why && (
-            <div className={REPORT_WHY_DIVIDER_CLASS}>
+            <div className={`mt-4 ${REPORT_WHY_DIVIDER_CLASS}`}>
               <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
               <p className={REPORT_WHY_BODY_CLASS}>{item.why}</p>
             </div>

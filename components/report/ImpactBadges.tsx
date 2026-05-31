@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { RiFlashlightFill } from "@remixicon/react";
+import { RiSparklingFill } from "@remixicon/react";
 
 import type { ImpactEntry } from "@/lib/report-impact";
 import {
@@ -24,13 +24,13 @@ const IMPACT_PILL_CLASS =
 
 function PriorityBadgeIcon({ label }: { label: PriorityLabel }) {
   if (label === "Quick Win") {
-    return <RiFlashlightFill size={12} className="text-[#D08700]" aria-hidden />;
+    return <RiSparklingFill size={12} className="text-[#D08700]" aria-hidden />;
   }
 
   if (label === "High Impact") {
     return (
       <span
-        className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#009966]"
+        className="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-[#009966]"
         aria-hidden
       />
     );

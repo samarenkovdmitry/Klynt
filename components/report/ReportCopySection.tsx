@@ -3,6 +3,7 @@ import type { ReportCopyItem } from "@/lib/audit-report";
 import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
+  REPORT_CARD_HEADLINE_BOTTOM_CLASS,
   REPORT_CARD_CLASS_ANIMATED,
   REPORT_CARD_HEADLINE_CLASS,
   REPORT_SECTION_LABEL_CLASS,
@@ -47,7 +48,7 @@ export function ReportCopySection({
                     ) : null}
                     {item.why ? (
                       <p
-                        className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""} mb-4 md:mb-0`}
+                        className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""} ${REPORT_CARD_HEADLINE_BOTTOM_CLASS}`}
                       >
                         {item.why}
                       </p>
@@ -63,7 +64,7 @@ export function ReportCopySection({
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                   <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
                     <div className="mb-3 flex items-center justify-between">
                       <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-400">

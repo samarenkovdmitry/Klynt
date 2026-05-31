@@ -7,7 +7,7 @@ type ReportCtaSectionProps = {
 
 export function ReportCtaSection({ onRerun, onExport }: ReportCtaSectionProps) {
   return (
-    <section className="overflow-hidden rounded-[32px] border border-[rgba(6,28,47,0.05)] bg-white px-[25px] py-[33px] text-center shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:px-10 md:py-8">
+    <section className="overflow-hidden rounded-[32px] border border-[rgba(6,28,47,0.05)] bg-white px-[25px] py-8 text-center shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:px-10 md:py-16">
       <div className="mx-auto max-w-[760px]">
         <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">Next Step</p>
 

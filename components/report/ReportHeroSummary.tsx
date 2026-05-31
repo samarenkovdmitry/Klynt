@@ -237,7 +237,7 @@ export function ReportHeroSummary({
             <div className="mt-6 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
                 <p className="min-w-0 text-[13px] leading-[18px]">
-                  <span className="font-normal text-[var(--ink-primary)]">
+                  <span className="font-medium text-[var(--ink-primary)]">
                     AI confidence: {confidenceValue}%
                   </span>
                   <span className="font-normal text-[rgba(6,28,47,0.5)]">

@@ -122,9 +122,9 @@ export function AppFooter() {
           </div>
         </div>
 
-        <div className="mt-8 hidden flex-col items-center gap-4 border-t border-[rgba(6,28,47,0.06)] pt-6 text-center text-[14px] text-[#8E99A2] md:mt-10 md:flex md:flex-row md:items-center md:justify-between md:text-left">
+        <div className="mt-8 hidden border-t border-[rgba(6,28,47,0.06)] pt-6 text-[14px] text-[#8E99A2] md:mt-10 md:flex md:items-center md:justify-between">
           <p className="font-normal">© 2026 Klynt – UX Clarity Analyzer</p>
-          <div className="flex flex-wrap items-center justify-center gap-5 font-medium md:justify-start md:gap-7">
+          <div className="flex flex-wrap items-center gap-7 font-medium">
             {legalLinks.map((link) => (
               <Link
                 key={link.href}

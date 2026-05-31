@@ -3,6 +3,8 @@ import { ReportListCard } from "@/components/report/ReportListCard";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_TAG_CLASS,
+  REPORT_CARD_CONTENT_GAP_CLASS,
+  REPORT_CARD_HEADLINE_BOTTOM_CLASS,
   REPORT_WHY_BODY_CLASS,
   REPORT_WHY_DIVIDER_CLASS,
   REPORT_WHY_LABEL_CLASS,
@@ -32,7 +34,7 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
               impactEntries={impactEntries}
             >
               {issue.bullets && issue.bullets.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className={`${REPORT_CARD_CONTENT_GAP_CLASS} flex flex-wrap gap-2`}>
                   {issue.bullets.slice(0, 3).map((bullet, i) => (
                     <span key={i} className={REPORT_TAG_CLASS}>
                       {bullet}
@@ -42,7 +44,9 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
               )}
 
               {issue.why && (
-                <div className={REPORT_WHY_DIVIDER_CLASS}>
+                <div
+                  className={`${issue.bullets && issue.bullets.length > 0 ? "mt-4" : REPORT_CARD_CONTENT_GAP_CLASS} ${REPORT_WHY_DIVIDER_CLASS}`}
+                >
                   <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
                   <p className={REPORT_WHY_BODY_CLASS}>{issue.why}</p>
                 </div>
