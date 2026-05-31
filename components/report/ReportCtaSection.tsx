@@ -1,4 +1,4 @@
-import { RiArrowRightUpLine, RiDownload2Line } from "@remixicon/react";
+import { RiArrowRightUpLine, RiShare2Line } from "@remixicon/react";
 
 type ReportCtaSectionProps = {
   onRerun: () => void;
@@ -35,7 +35,7 @@ export function ReportCtaSection({ onRerun, onExport }: ReportCtaSectionProps) {
             onClick={onExport}
             className="inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-full border border-[rgba(6,28,47,0.14)] bg-white px-6 text-[15px] font-semibold text-[var(--ink-primary)] transition hover:bg-[#F8FAFC] sm:w-auto"
           >
-            <RiDownload2Line size={18} aria-hidden />
+            <RiShare2Line size={18} aria-hidden />
             Export PDF
           </button>
         </div>
