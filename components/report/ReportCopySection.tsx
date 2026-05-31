@@ -36,7 +36,7 @@ export function ReportCopySection({
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="mb-4 flex items-start justify-between gap-3 md:hidden">
                       <ReportIndexBadge index={index} />
@@ -53,13 +53,9 @@ export function ReportCopySection({
                         {item.why}
                       </p>
                     ) : null}
-
-                    <div className="hidden md:block lg:hidden">
-                      <PriorityBadgeFromImpact item={item} className="mt-4" />
-                    </div>
                   </div>
 
-                  <div className="hidden shrink-0 lg:block">
+                  <div className="hidden shrink-0 md:block">
                     <PriorityBadgeFromImpact item={item} />
                   </div>
                 </div>

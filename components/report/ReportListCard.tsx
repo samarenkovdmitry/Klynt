@@ -31,24 +31,20 @@ export function ReportListCard({
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0 flex-1">
               <div className="mb-4 flex items-start justify-between gap-3 md:hidden">
                 <ReportIndexBadge index={index} />
                 <ImpactPercentageBadges
                   entries={impactEntries}
-                  className="justify-end"
+                  className="ml-auto shrink-0 justify-end"
                 />
               </div>
 
               <p className={REPORT_CARD_HEADLINE_CLASS}>{title}</p>
-
-              <div className="hidden md:block lg:hidden">
-                <ImpactPercentageBadges entries={impactEntries} className="mt-4" />
-              </div>
             </div>
 
-            <div className="hidden shrink-0 lg:block">
+            <div className="hidden shrink-0 md:block">
               <ImpactPercentageBadges entries={impactEntries} />
             </div>
           </div>

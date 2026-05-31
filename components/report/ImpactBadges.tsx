@@ -53,7 +53,7 @@ export function ImpactPercentageBadges({ entries, className = "" }: ImpactBadges
   const entry = entries[0];
 
   return (
-    <div className={`flex max-w-full flex-wrap gap-2 lg:justify-end ${className}`}>
+    <div className={`flex max-w-full shrink-0 flex-wrap gap-2 md:justify-end ${className}`}>
       <div
         className={`${IMPACT_PILL_CLASS} border-[#FFC9C9] bg-[#FEF2F2] text-[#FB2C36]`}
       >
