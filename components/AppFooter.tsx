@@ -41,38 +41,72 @@ const socialLinks: {
 export function AppFooter() {
   return (
     <footer className="mt-auto w-full shrink-0 border-t border-[rgba(6,28,47,0.06)] bg-white px-6 py-[33px] md:px-6 md:py-10">
-      <div className={`${LANDING_UPDATE_CONTAINER} flex flex-col items-center text-center`}>
-        <p className="text-[14px] font-normal text-[#8E99A2]">
-          © 2026 Klynt – UX Clarity Analyzer
-        </p>
+      <div className={LANDING_UPDATE_CONTAINER}>
+        <div className="flex flex-col items-center text-center md:hidden">
+          <p className="text-[14px] font-normal text-[#8E99A2]">
+            © 2026 Klynt – UX Clarity Analyzer
+          </p>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px] font-medium text-[#8E99A2] md:mt-4">
-          {legalLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="transition hover:text-[#061C2F]"
-            >
-              {link.label}
-            </Link>
-          ))}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px] font-medium text-[#8E99A2]">
+            {legalLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition hover:text-[#061C2F]"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-10 flex items-center justify-center gap-11">
+            {socialLinks.map((link) => {
+              const Icon = link.icon;
+
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-[#8E99A2] transition hover:text-[#061C2F]"
+                  aria-label={link.label}
+                >
+                  <Icon size={24} />
+                </a>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="mt-10 flex items-center justify-center gap-11 md:mt-10">
-          {socialLinks.map((link) => {
-            const Icon = link.icon;
-
-            return (
-              <a
-                key={link.label}
+        <div className="hidden items-center justify-between md:flex">
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-2 text-[14px] text-[#8E99A2]">
+            <p className="font-normal">© 2026 Klynt – UX Clarity Analyzer</p>
+            {legalLinks.map((link) => (
+              <Link
+                key={link.href}
                 href={link.href}
-                className="text-[#8E99A2] transition hover:text-[#061C2F]"
-                aria-label={link.label}
+                className="font-medium transition hover:text-[#061C2F]"
               >
-                <Icon size={24} />
-              </a>
-            );
-          })}
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-4">
+            {socialLinks.map((link) => {
+              const Icon = link.icon;
+
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-[#8E99A2] transition hover:text-[#061C2F]"
+                  aria-label={link.label}
+                >
+                  <Icon size={24} />
+                </a>
+              );
+            })}
+          </div>
         </div>
       </div>
     </footer>
