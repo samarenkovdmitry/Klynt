@@ -1,71 +1,71 @@
 import type { AuditReport } from "@/lib/audit-report";
 
-export const DEMO_REPORT_ID = "29e49814-abac-4211-a226-a05dae07a710";
+export const DEMO_REPORT_ID = "x4pxi2jb2o";
 
-export const DEMO_REPORT_URL = "https://stripe.com";
+export const DEMO_REPORT_URL = "https://zapier.com";
 
 export const DEMO_REPORT_PATH = `/report/${DEMO_REPORT_ID}`;
 
 export const DEMO_REPORT = {
   url: DEMO_REPORT_URL,
-  score: 76,
+  score: 65,
   risk: "medium",
   summary:
-    "Stripe reads as credible and mature, but the hero leads with category language instead of a concrete first outcome, so evaluators need extra scrolling to understand fit.",
-  verdict: "Strong trust signals with moderate hero clarity friction",
+    "The headline and subtext lack clarity on the specific AI automation benefits for target users.",
+  verdict: "Headline unclear about AI automation benefits for users.",
   key_observation:
-    "Get started and Contact sales compete above the fold before users know which path matches their stage.",
-  confidence: 86,
-  generatedAt: "2025-05-19T12:00:00.000Z",
+    "Headline does not specify who benefits from AI tools, reducing immediate relevance.",
+  confidence: 85,
+  generatedAt: "2026-05-31T18:14:21.738Z",
   breakdown: {
-    clarity: 71,
-    trust: 84,
-    conversion: 69,
-    navigation: 80,
-    visuals: 82,
+    clarity: 65,
+    trust: 65,
+    conversion: 55,
+    navigation: 70,
+    visuals: 60,
   },
   issues: [
     {
       category: "Clarity",
       title:
-        "The hero headline says 'Financial infrastructure' without naming payments, billing, or issuing in one line, so new visitors can't quickly map Stripe to their job.",
-      bullets: ["Broad category", "Hero copy", "First scan"],
-      why: "When the category is abstract, evaluators bounce to compare simpler alternatives before exploring product tiles.",
+        "The hero headline does not specify who the AI tools are for, making it unclear if it fits the visitor's needs.",
+      bullets: ["Low clarity"],
+      why: "Visitors cannot quickly determine if the product addresses their specific problems, reducing engagement.",
       impact_metric_1: "clarity",
-      impact_value_1: -16,
+      impact_value_1: -20,
       impact_metric_2: "",
       impact_value_2: 0,
     },
     {
       category: "Conversion",
       title:
-        "Get started, Contact sales, and Sign up with Google all compete above the fold, so users pause instead of choosing a clear next step.",
-      bullets: ["Multiple CTAs", "Decision friction", "Hero actions"],
-      why: "Parallel primary actions increase hesitation for teams that are still qualifying fit.",
-      impact_metric_1: "conversion",
-      impact_value_1: -18,
+        "The primary CTA 'Start free with email' lacks context about what the user will get or do next.",
+      bullets: ["Weak CTA"],
+      why: "Uncertain expectations can lead to hesitation or abandonment before signing up.",
+      impact_metric_1: "cta",
+      impact_value_1: -15,
       impact_metric_2: "",
       impact_value_2: 0,
     },
     {
       category: "Trust",
       title:
-        "Enterprise proof points sit lower on the page, so smaller teams may not see Fortune 100 adoption signals during the first screen.",
-      bullets: ["Proof below fold", "Enterprise buyers", "Late validation"],
-      why: "B2B buyers look for social proof early; missing it at the top slows commitment.",
+        "The trust signals (agent counts, app integrations, calls) are presented without context or explanation.",
+      bullets: ["Missing trust signals"],
+      why: "Lack of context makes these signals less credible and less impactful for new visitors.",
       impact_metric_1: "trust",
-      impact_value_1: -12,
+      impact_value_1: -18,
       impact_metric_2: "",
       impact_value_2: 0,
     },
     {
       category: "Visuals",
       title:
-        "The solutions grid gives similar weight to every product line, so nothing guides first-time visitors toward the one workflow they need most.",
-      bullets: ["Flat hierarchy", "Product grid", "Mid-page"],
-      why: "Equal visual priority makes scanning slower and pushes users to hunt for relevance.",
+        "The icons representing AI tools are generic and do not visually communicate specific benefits or features.",
+      bullets: ["Weak hierarchy"],
+      why: "Icons do not enhance understanding or guide users toward desired actions effectively.",
       impact_metric_1: "visuals",
-      impact_value_1: -10,
+      impact_value_1: -12,
       impact_metric_2: "",
       impact_value_2: 0,
     },
@@ -73,53 +73,52 @@ export const DEMO_REPORT = {
   suggestions: [
     {
       category: "Clarity",
-      section: "Hero headline",
+      section: "Hero headline and subtext",
       recommendation:
-        "Add a one-line qualifier under the headline: 'Payments, billing, and financial tools for internet businesses.'",
-      why: "Concrete scope helps visitors self-qualify in the first screen.",
-      priority: "quick_win",
+        "Specify the target user and core AI automation benefit in the headline.",
+      why: "Clear messaging immediately communicates relevance, increasing engagement.",
+      priority: "high_impact",
     },
     {
       category: "Conversion",
-      section: "Hero CTAs",
+      section: "Primary CTA button",
       recommendation:
-        "Make Get started the single primary action and move Contact sales to a secondary text link.",
-      why: "One obvious path reduces decision friction for first-time evaluators.",
+        "Add a descriptive subtext to the CTA explaining what signing up offers.",
+      why: "Clarifies user expectations, reducing hesitation and increasing sign-ups.",
       priority: "high_impact",
     },
     {
       category: "Trust",
-      section: "Above the fold",
+      section: "Trust signals area",
       recommendation:
-        "Add a compact proof strip with $1.9T volume or Fortune 100 usage directly under the hero subhead.",
-      why: "Early credibility increases willingness to explore deeper product sections.",
+        "Include brief explanations or context for agent counts and integrations.",
+      why: "Enhances credibility and reassures visitors about product reliability.",
       priority: "medium_impact",
     },
   ],
   copy: [
     {
       section: "Hero headline",
-      before: "Financial infrastructure to grow your revenue.",
-      after:
-        "Payments and financial tools to grow revenue — from first transaction to global scale.",
-      why: "Names the core jobs so visitors understand fit immediately.",
-      priority: "quick_win",
+      before: "Your tools. Your rules. Any AI.",
+      after: "AI automation tools designed for marketing teams to streamline workflows.",
+      why: "Specifies the target audience and core benefit, improving clarity.",
+      priority: "high_impact",
     },
     {
-      section: "Primary CTA",
-      before: "Get started",
-      after: "Start accepting payments",
-      why: "Signals a concrete first outcome instead of a generic signup.",
-      priority: "quick_win",
-    },
-    {
-      section: "Hero subhead",
+      section: "Subtext",
       before:
-        "Accept payments, offer financial services, and implement custom revenue models—from your first transaction to your billionth.",
+        "Zapier gives teams one place to set guardrails, manage model access, and see everything — so everyone can build AI confidently, on any model, without waiting for permission.",
       after:
-        "Run payments, billing, and payouts in one platform — built for startups, platforms, and enterprises.",
-      why: "Balances breadth with audience clarity in one scan.",
+        "Manage AI workflows and permissions easily, empowering your team to build with confidence.",
+      why: "Simplifies and clarifies the value proposition for target users.",
       priority: "medium_impact",
+    },
+    {
+      section: "CTA button",
+      before: "Start free with email",
+      after: "Get started with a free AI automation trial",
+      why: "Provides clarity on what the user will receive and the action's benefit.",
+      priority: "quick_win",
     },
   ],
 } satisfies AuditReport;
