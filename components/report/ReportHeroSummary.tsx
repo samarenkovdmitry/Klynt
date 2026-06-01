@@ -133,7 +133,7 @@ export function ReportHeroSummary({
     <div className="space-y-3">
       <ReportShareStrip onShare={onShare} onExport={onExport} />
 
-      <div className="overflow-hidden rounded-[24px] border border-black/[0.10] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] ring-1 ring-inset ring-black/[0.08] md:rounded-[32px]">
+      <div className="overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:rounded-[32px]">
         <div className="relative overflow-hidden">
           <section
             className="relative overflow-hidden px-5 pb-8 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]"
@@ -217,7 +217,7 @@ export function ReportHeroSummary({
                 description={frictionDescription}
               />
 
-              <div className="flex min-w-0 flex-col border-t border-[rgba(32,52,94,0.09)] py-4 md:border-t-0 md:py-0 md:h-full">
+              <div className="flex min-w-0 flex-col border-t border-[rgba(6,28,47,0.06)] py-4 md:h-full md:border-t-0 md:py-0">
                 <div className="flex items-center gap-2">
                   <span
                     className="inline-flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-[12px] font-bold leading-none tracking-[-0.05em] text-white"
@@ -233,7 +233,7 @@ export function ReportHeroSummary({
               </div>
             </div>
 
-            <div className="mt-0 border-t border-[rgba(32,52,94,0.09)] pt-5 md:mt-6">
+            <div className="mt-5 md:mt-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
                 <p className="min-w-0 text-[13px] leading-[18px]">
                   <span className="font-medium text-[var(--ink-primary)]">
