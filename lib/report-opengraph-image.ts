@@ -12,6 +12,7 @@ import {
   loadReportForPublicMetadata,
 } from "@/lib/report-seo-loader";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
+import { absoluteUrl, getSiteUrl } from "@/lib/site";
 
 export const REPORT_OG_IMAGE_HEADERS = {
   "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
@@ -57,26 +58,65 @@ function pngOgResponse(buffer: Buffer) {
   });
 }
 
-async function defaultOgResponse() {
-  const fallback = await loadDefaultOpenGraphImage();
+async function materializeImageResponse(response: Response) {
+  const buffer = Buffer.from(await response.arrayBuffer());
 
   try {
-    const png = await sharp(fallback).png({ compressionLevel: 8 }).toBuffer();
+    const png = await sharp(buffer).png({ compressionLevel: 8 }).toBuffer();
     return pngOgResponse(png);
   } catch (error) {
-    console.error("[report opengraph-image] fallback png convert failed", error);
-    return pngOgResponse(fallback);
+    console.error("[report opengraph-image] materialize png failed", error);
+    return pngOgResponse(buffer);
   }
 }
 
-function withOgHeaders(response: Response) {
-  response.headers.set(
-    "Cache-Control",
-    "public, max-age=86400, stale-while-revalidate=604800"
-  );
-  response.headers.set("Content-Type", "image/png");
+async function loadDefaultOpenGraphImageFromNetwork(siteUrl = getSiteUrl()) {
+  const fallbackUrl = absoluteUrl("/opengraph-image.jpg", siteUrl);
 
-  return response;
+  try {
+    const response = await fetch(fallbackUrl, {
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return Buffer.from(await response.arrayBuffer());
+  } catch (error) {
+    console.error("[report opengraph-image] network fallback failed", error);
+    return null;
+  }
+}
+
+async function defaultOgResponse(siteUrl = getSiteUrl()) {
+  try {
+    const fallback = await loadDefaultOpenGraphImage();
+
+    try {
+      const png = await sharp(fallback).png({ compressionLevel: 8 }).toBuffer();
+      return pngOgResponse(png);
+    } catch (error) {
+      console.error("[report opengraph-image] fallback png convert failed", error);
+      return pngOgResponse(fallback);
+    }
+  } catch (error) {
+    console.error("[report opengraph-image] local fallback load failed", error);
+  }
+
+  const fromNetwork = await loadDefaultOpenGraphImageFromNetwork(siteUrl);
+
+  if (fromNetwork) {
+    try {
+      const png = await sharp(fromNetwork).png({ compressionLevel: 8 }).toBuffer();
+      return pngOgResponse(png);
+    } catch (error) {
+      console.error("[report opengraph-image] network fallback png convert failed", error);
+      return pngOgResponse(fromNetwork);
+    }
+  }
+
+  return Response.redirect(absoluteUrl("/opengraph-image.jpg", siteUrl), 307);
 }
 
 async function normalizePreviewForOg(buffer: Buffer | null) {
@@ -143,9 +183,13 @@ async function composeOgResponse(
       const preview =
         options.includePreview && previewBuffer ? previewBuffer : null;
 
-      return withOgHeaders(
-        await composeReportOpenGraphImage(report, preview, options)
+      const imageResponse = await composeReportOpenGraphImage(
+        report,
+        preview,
+        options
       );
+
+      return await materializeImageResponse(imageResponse);
     } catch (error) {
       console.error("[report opengraph-image] compose attempt failed", options, error);
     }
@@ -169,44 +213,56 @@ export async function generateReportOgPreviewDataUrl(
   return `data:image/png;base64,${buffer.toString("base64")}`;
 }
 
-export async function buildReportOpenGraphResponse(reportId: string) {
-  if (!canGenerateReportMetadata(reportId)) {
-    return defaultOgResponse();
-  }
-
-  if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
-    return defaultOgResponse();
-  }
-
-  let report: AuditReport | null;
-
+export async function buildReportOpenGraphResponse(
+  reportId: string,
+  siteUrl = getSiteUrl()
+) {
   try {
-    report = await loadReportForPublicMetadata(reportId);
-  } catch (error) {
-    console.error("[report opengraph-image] report load failed", error);
-    return defaultOgResponse();
-  }
-
-  if (!report) {
-    return defaultOgResponse();
-  }
-
-  if (report.ogPreviewImage) {
-    const stored = await resolvePreviewImageBuffer(report.ogPreviewImage);
-
-    if (stored) {
-      return pngOgResponse(stored);
+    if (!canGenerateReportMetadata(reportId)) {
+      return defaultOgResponse(siteUrl);
     }
+
+    if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
+      return defaultOgResponse(siteUrl);
+    }
+
+    let report: AuditReport | null;
+
+    try {
+      report = await loadReportForPublicMetadata(reportId);
+    } catch (error) {
+      console.error("[report opengraph-image] report load failed", error);
+      return defaultOgResponse(siteUrl);
+    }
+
+    if (!report) {
+      return defaultOgResponse(siteUrl);
+    }
+
+    if (report.ogPreviewImage) {
+      const stored = await resolvePreviewImageBuffer(report.ogPreviewImage);
+
+      if (stored) {
+        try {
+          return await materializeImageResponse(pngOgResponse(stored));
+        } catch (error) {
+          console.error("[report opengraph-image] stored og preview failed", error);
+        }
+      }
+    }
+
+    const composed = await composeOgResponse(report);
+
+    if (composed) {
+      return composed;
+    }
+
+    console.error("[report opengraph-image] all compose attempts failed", reportId);
+    return defaultOgResponse(siteUrl);
+  } catch (error) {
+    console.error("[report opengraph-image] unexpected failure", reportId, error);
+    return defaultOgResponse(siteUrl);
   }
-
-  const composed = await composeOgResponse(report);
-
-  if (composed) {
-    return composed;
-  }
-
-  console.error("[report opengraph-image] all compose attempts failed", reportId);
-  return defaultOgResponse();
 }
 
 /** @deprecated Use buildReportOpenGraphResponse instead. */
