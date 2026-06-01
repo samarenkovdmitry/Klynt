@@ -2,7 +2,9 @@
 
 import {
   RiBrainLine,
+  RiFilePdf2Line,
   RiFocus3Line,
+  RiShare2Line,
   RiShieldCheckLine,
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
@@ -22,6 +24,7 @@ import type {
   ReportMetricObservations,
 } from "@/lib/audit-report";
 import { getMetricObservationFallbacks } from "@/lib/metric-observations";
+import { normalizeRisk } from "@/lib/report-metrics";
 import {
   formatAnalyzedDate,
   formatOverallScore,
@@ -30,6 +33,7 @@ import {
   getFrictionScore,
   getMetricBarColor,
   getReportHeroTheme,
+  getTierLabel,
 } from "@/lib/report-hero-theme";
 
 type ReportHeroSummaryProps = {
@@ -98,12 +102,22 @@ function getFrictionDescription(value: number, breakdown?: ReportBreakdown) {
   return getMetricObservationFallbacks(breakdown).friction ?? "";
 }
 
+function isDistinctInsight(insight: string, summary?: string) {
+  if (!insight) return false;
+
+  const normalizedInsight = insight.trim().toLowerCase();
+  const normalizedSummary = summary?.trim().toLowerCase() ?? "";
+
+  return normalizedInsight !== normalizedSummary;
+}
+
 export function ReportHeroSummary({
   url,
   generatedAt,
   score = 0,
   verdict,
   summary,
+  risk,
   breakdown,
   confidence = 0,
   keyObservation,
@@ -119,10 +133,10 @@ export function ReportHeroSummary({
   const trust = Math.max(0, Math.min(100, Number(breakdown?.trust ?? 0)));
   const clarity = Math.max(0, Math.min(100, Number(breakdown?.clarity ?? 0)));
   const friction = Math.max(0, Math.min(100, getFrictionScore(breakdown)));
-  const topIssueTitle = issues[0]?.title;
+  const topIssueTitle = issues[0]?.title?.trim() || verdict?.trim();
   const overallScore = formatOverallScore(score);
   const confidenceValue = Math.max(0, Math.min(100, Number(confidence)));
-  const fallbacks = getMetricObservationFallbacks(breakdown, verdict);
+  const tierLabel = risk ? normalizeRisk(risk) : getTierLabel(theme.tier);
   const trustDescription =
     metricObservations?.trust?.trim() || getTrustDescription(trust);
   const clarityDescription =
@@ -130,10 +144,8 @@ export function ReportHeroSummary({
   const frictionDescription =
     metricObservations?.friction?.trim() ||
     getFrictionDescription(friction, breakdown);
-  const overallDescription =
-    metricObservations?.overall?.trim() || fallbacks.overall || summary || "";
-  const keyInsight =
-    keyObservation?.trim() || metricObservations?.overall?.trim() || "";
+  const keyInsight = keyObservation?.trim() ?? "";
+  const showKeyInsight = isDistinctInsight(keyInsight, summary);
 
   return (
     <div
@@ -147,8 +159,8 @@ export function ReportHeroSummary({
           <ReportHeroPattern heroBg={theme.heroBg} />
 
           <div className="relative z-[1]">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 text-[14px]">
                 <div className="flex min-w-0 items-center gap-2">
                   {url && (
                     <img
@@ -170,55 +182,69 @@ export function ReportHeroSummary({
                     <span className="font-medium text-[var(--ink-primary)]">{domain}</span>
                   )}
                 </div>
+
                 <span className="hidden h-4 w-px bg-[rgba(6,28,47,0.1)] sm:inline-block" />
+
                 <span className="text-[rgba(6,28,47,0.5)]">
                   {formatAnalyzedDate(generatedAt)}
                 </span>
+
+                <span className="hidden h-4 w-px bg-[rgba(6,28,47,0.1)] sm:inline-block" />
+
+                <span
+                  className="inline-flex h-7 min-w-[34px] items-center justify-center rounded-full px-2 text-[13px] font-bold leading-none tracking-[-0.03em] text-white"
+                  style={{ backgroundColor: theme.badgeBg }}
+                >
+                  {overallScore}
+                </span>
+
+                <span
+                  className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[12px] font-medium leading-[18px]"
+                  style={{
+                    color: theme.badgeBg,
+                    borderColor: `${theme.badgeBg}33`,
+                    backgroundColor: `${theme.badgeBg}14`,
+                  }}
+                >
+                  {tierLabel}
+                </span>
               </div>
 
-              <div className="flex shrink-0 items-center gap-1.5 text-[13px] text-[rgba(6,28,47,0.5)]">
+              <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
                   onClick={onShare}
-                  className="font-medium transition-colors hover:text-[var(--ink-primary)]"
+                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#2563EB] px-4 text-[14px] font-semibold text-white transition hover:bg-[#1D4ED8]"
                 >
+                  <RiShare2Line size={16} aria-hidden />
                   Share
                 </button>
-                <span aria-hidden className="text-[rgba(6,28,47,0.25)]">
-                  ·
-                </span>
                 <button
                   type="button"
                   onClick={onExport}
-                  className="font-medium transition-colors hover:text-[var(--ink-primary)]"
+                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-[rgba(6,28,47,0.12)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:bg-[#F8FAFC]"
                 >
+                  <RiFilePdf2Line size={16} aria-hidden />
                   Export PDF
                 </button>
               </div>
             </div>
 
-            <div className="mt-4 flex flex-col gap-5 md:mt-5 md:flex-row md:items-start md:justify-between md:gap-6">
-              <div className="min-w-0 flex-1 md:max-w-[647px]">
-                <div className="flex items-start gap-3">
-                  <span
-                    className="mt-0.5 inline-flex h-9 shrink-0 items-center justify-center rounded-full px-2.5 text-[16px] font-bold leading-none tracking-[-0.03em] text-white md:h-8 md:min-w-[38px] md:text-[15px]"
-                    style={{ backgroundColor: theme.badgeBg }}
-                  >
-                    {overallScore}
-                  </span>
-                  <h1 className="min-w-0 text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
-                    {verdict || "UX assessment complete"}
-                  </h1>
-                </div>
+            <div className="mt-5 flex flex-col gap-5 md:mt-6 md:flex-row md:items-start md:justify-between md:gap-8">
+              <div className="min-w-0 flex-1 md:max-w-[560px] md:pt-1">
+                <p className="text-[13px] font-medium uppercase tracking-[0.08em] text-[rgba(6,28,47,0.45)]">
+                  UX Report
+                </p>
 
-                <p className="mt-2 text-[15px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
+                <p className="mt-2 text-[17px] font-normal leading-[26px] text-[var(--ink-primary)] md:text-[18px] md:leading-[28px]">
                   {summary || "No summary generated."}
                 </p>
 
-                {keyInsight && (
-                  <p className="mt-3 text-[15px] leading-[22px] md:text-[16px] md:leading-[24px]">
+                {showKeyInsight && (
+                  <p className="mt-3 text-[15px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[24px]">
                     <span className="font-medium text-[var(--ink-primary)]">Key insight</span>
-                    <span className="text-[rgba(6,28,47,0.5)]"> — {keyInsight}</span>
+                    {" — "}
+                    {keyInsight}
                   </p>
                 )}
               </div>
@@ -234,7 +260,7 @@ export function ReportHeroSummary({
         </section>
 
         <section className="bg-white px-5 py-6 md:px-[30px] md:py-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-8 xl:grid-cols-4 xl:gap-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:items-stretch md:gap-6">
             <MetricCard
               icon={RiShieldCheckLine}
               label="Trust Signals"
@@ -253,13 +279,6 @@ export function ReportHeroSummary({
               value={friction}
               description={frictionDescription}
             />
-
-            <div className="flex min-w-0 flex-col border-t border-[rgba(6,28,47,0.06)] py-4 md:h-full md:border-t-0 md:py-0">
-              <p className="text-[16px] font-semibold text-[var(--ink-primary)]">
-                Overall Assessment
-              </p>
-              <p className={REPORT_METRIC_DESCRIPTION_CLASS}>{overallDescription}</p>
-            </div>
           </div>
 
           <div className="mt-5 md:mt-6">

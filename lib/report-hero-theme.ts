@@ -35,6 +35,12 @@ export function getReportHeroTheme(score: number): ReportHeroTheme {
   };
 }
 
+export function getTierLabel(tier: HealthTier) {
+  if (tier === "healthy") return "Healthy";
+  if (tier === "medium") return "At risk";
+  return "Critical";
+}
+
 export function formatOverallScore(score: number) {
   return (Math.max(0, Math.min(100, Number(score))) / 10).toFixed(1);
 }
