@@ -5,11 +5,6 @@ import {
   REPORT_SURFACE_SHADOW_CLASS,
 } from "@/components/report/reportStyles";
 
-const STRIP_ACTION_CLASS =
-  "inline-flex h-[37px] flex-1 items-center justify-center gap-2 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-4 text-[14px] font-medium leading-[21px] text-[var(--ink-primary)] transition hover:bg-[#F8FAFC] md:w-auto md:flex-none md:px-4";
-
-const STRIP_ACTION_ICON_CLASS = "text-[var(--ink-primary)]";
-
 type ReportShareStripProps = {
   onShare: () => void;
   onExport: () => void;
@@ -27,14 +22,22 @@ export function ReportShareStrip({ onShare, onExport }: ReportShareStripProps) {
           </p>
         </div>
 
-        <div className="flex w-full shrink-0 flex-row gap-2 md:w-auto md:justify-end">
-          <button type="button" onClick={onShare} className={STRIP_ACTION_CLASS}>
-            <RiShare2Line size={18} className={STRIP_ACTION_ICON_CLASS} aria-hidden />
-            <span>Share</span>
+        <div className="flex w-full shrink-0 items-center justify-center gap-4 md:w-auto md:justify-end">
+          <button
+            type="button"
+            onClick={onShare}
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#2563EB] px-4 text-[14px] font-semibold text-white transition hover:bg-[#1D4ED8]"
+          >
+            <RiShare2Line size={16} aria-hidden />
+            Share
           </button>
-          <button type="button" onClick={onExport} className={STRIP_ACTION_CLASS}>
-            <RiFilePdf2Line size={18} className={STRIP_ACTION_ICON_CLASS} aria-hidden />
-            <span>Export</span>
+          <button
+            type="button"
+            onClick={onExport}
+            className="inline-flex h-9 items-center gap-1.5 text-[14px] font-medium text-[rgba(6,28,47,0.55)] transition hover:text-[var(--ink-primary)]"
+          >
+            <RiFilePdf2Line size={16} aria-hidden />
+            Export PDF
           </button>
         </div>
       </div>

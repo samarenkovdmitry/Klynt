@@ -3,6 +3,8 @@ export const REPORT_SECTION_TITLE_CLASS =
 
 export const REPORT_SURFACE_BORDER_CLASS = "border border-[rgba(6,28,47,0.06)]";
 
+export const REPORT_HERO_CARD_BORDER_CLASS = "border border-[rgba(6,28,47,0.09)]";
+
 export const REPORT_SURFACE_SHADOW_CLASS = "shadow-[0_10px_40px_rgba(0,0,0,0.03)]";
 
 export const REPORT_CARD_CLASS = [

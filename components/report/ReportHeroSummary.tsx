@@ -133,7 +133,7 @@ export function ReportHeroSummary({
     <div className="space-y-3">
       <ReportShareStrip onShare={onShare} onExport={onExport} />
 
-      <div className="overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:rounded-[32px]">
+      <div className="overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.09)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:rounded-[32px]">
         <div className="relative overflow-hidden">
           <section
             className="relative overflow-hidden px-5 pb-8 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]"

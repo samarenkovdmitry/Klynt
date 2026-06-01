@@ -1,8 +1,3 @@
-"use client";
-
-import { useId, useState } from "react";
-import { RiInformationLine } from "@remixicon/react";
-
 import { REPORT_PREVIEW_HEIGHT, REPORT_PREVIEW_WIDTH } from "@/lib/report-preview-size";
 
 type ReportPagePreviewProps = {
@@ -14,9 +9,6 @@ export function ReportPagePreview({
   previewImage,
   topIssueTitle,
 }: ReportPagePreviewProps) {
-  const tooltipId = useId();
-  const [showTooltip, setShowTooltip] = useState(false);
-
   return (
     <div className="mx-auto w-[310px]">
       {previewImage ? (
@@ -38,50 +30,16 @@ export function ReportPagePreview({
       )}
 
       {topIssueTitle && (
-        <>
-          <p className="mt-3 text-center text-[15px] leading-[19px] text-[var(--ink-primary)] md:hidden">
-            {topIssueTitle}
+        <div className="mt-3">
+          <p className="mb-1.5 text-[11px] font-medium text-[rgba(6,28,47,0.45)] md:text-[12px]">
+            Top issue
           </p>
-
-          <div className="mt-2 hidden justify-center md:flex">
-            <div className="inline-flex h-[21px] max-w-[278px] items-center rounded-[13px] bg-white pl-[9px] pr-1 shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
-              <p className="min-w-0 flex-1 truncate text-[15px] leading-[19px] text-[var(--ink-primary)]">
-                {topIssueTitle}
-              </p>
-
-              <span
-                className="group relative ml-1.5 flex shrink-0 items-center"
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
-                onFocus={() => setShowTooltip(true)}
-                onBlur={() => setShowTooltip(false)}
-              >
-                <span
-                  className="inline-flex items-center justify-center"
-                  aria-describedby={tooltipId}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <RiInformationLine
-                    size={16}
-                    className="text-[rgba(6,28,47,0.45)]"
-                    aria-hidden
-                  />
-                </span>
-
-                <span
-                  id={tooltipId}
-                  role="tooltip"
-                  className={`pointer-events-none absolute bottom-[calc(100%+8px)] right-0 z-10 w-[min(280px,calc(100vw-2rem))] rounded-[13px] bg-white px-3 py-2 text-left text-[14px] leading-[19px] text-[var(--ink-primary)] shadow-[0_10px_40px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.06] transition-opacity duration-150 ${
-                    showTooltip ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  {topIssueTitle}
-                </span>
-              </span>
-            </div>
+          <div className="rounded-[13px] border border-[rgba(6,28,47,0.08)] bg-white px-3 py-2 shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+            <p className="line-clamp-2 text-[13px] leading-[18px] text-[var(--ink-primary)] md:text-[14px] md:leading-[20px]">
+              {topIssueTitle}
+            </p>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

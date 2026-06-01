@@ -1,37 +1,8 @@
-import {
-  getReportHeroPatternDesktopMaskStyle,
-  getReportHeroPatternMobileMaskStyle,
-  REPORT_HERO_PATTERN_HEIGHT,
-  REPORT_HERO_PATTERN_WIDTH,
-  type ReportHeroPatternMaskStyle,
-} from "@/lib/report-hero-pattern";
-
 type ReportHeroPatternProps = {
   gridColor: string;
   heroBg: string;
   className?: string;
 };
-
-function TintedPattern({
-  gridColor,
-  maskStyle,
-  className = "",
-}: {
-  gridColor: string;
-  maskStyle: ReportHeroPatternMaskStyle;
-  className?: string;
-}) {
-  return (
-    <div
-      className={className}
-      style={{
-        backgroundColor: gridColor,
-        ...maskStyle,
-      }}
-      aria-hidden
-    />
-  );
-}
 
 const PATTERN_FADE_MASK =
   "linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%)";
@@ -41,40 +12,36 @@ export function ReportHeroPattern({
   heroBg,
   className = "",
 }: ReportHeroPatternProps) {
+  const dotGridStyle = {
+    backgroundImage: `radial-gradient(circle, ${gridColor} 1px, transparent 1px)`,
+    backgroundSize: "24px 24px",
+  } as const;
+
   return (
     <>
       <div
-        className={`pointer-events-none absolute right-0 top-0 hidden w-[620px] max-w-[60%] md:block ${className}`}
+        className={`pointer-events-none absolute right-0 top-0 hidden w-[min(620px,60%)] opacity-50 md:block ${className}`}
         style={{
-          height: REPORT_HERO_PATTERN_HEIGHT,
-          WebkitMaskImage: PATTERN_FADE_MASK,
-          maskImage: PATTERN_FADE_MASK,
+          height: "100%",
+          minHeight: 280,
+          WebkitMaskImage: `${PATTERN_FADE_MASK}, linear-gradient(to left, #000 20%, transparent 88%)`,
+          maskImage: `${PATTERN_FADE_MASK}, linear-gradient(to left, #000 20%, transparent 88%)`,
+          WebkitMaskComposite: "source-in",
+          maskComposite: "intersect",
+          ...dotGridStyle,
         }}
         aria-hidden
-      >
-        <TintedPattern
-          gridColor={gridColor}
-          maskStyle={getReportHeroPatternDesktopMaskStyle()}
-          className="h-full w-full"
-        />
-      </div>
+      />
 
       <div
-        className={`pointer-events-none absolute left-0 top-0 md:hidden ${className}`}
+        className={`pointer-events-none absolute inset-x-0 top-0 h-[240px] opacity-40 md:hidden ${className}`}
         style={{
-          width: REPORT_HERO_PATTERN_WIDTH,
-          height: REPORT_HERO_PATTERN_HEIGHT,
           WebkitMaskImage: PATTERN_FADE_MASK,
           maskImage: PATTERN_FADE_MASK,
+          ...dotGridStyle,
         }}
         aria-hidden
-      >
-        <TintedPattern
-          gridColor={gridColor}
-          maskStyle={getReportHeroPatternMobileMaskStyle()}
-          className="h-full w-full"
-        />
-      </div>
+      />
 
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-20 md:hidden"

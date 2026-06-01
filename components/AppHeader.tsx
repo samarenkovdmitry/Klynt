@@ -15,9 +15,12 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: "/", label: "Home", isActive: (p) => p === "/" },
   { href: "/analyze", label: "Analyze" },
-  { href: DEMO_REPORT_PATH, label: "View demo" },
+  {
+    href: DEMO_REPORT_PATH,
+    label: "Sample report",
+    isActive: (p) => p.startsWith("/report"),
+  },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -61,6 +64,8 @@ function isNavActive(item: NavItem, pathname: string) {
 export function AppHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
+  const isReport = pathname.startsWith("/report");
+  const showSubtitle = !isLanding && !isReport;
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -88,7 +93,7 @@ export function AppHeader() {
             : "border-b border-[rgba(6,28,47,0.10)] bg-white",
         ].join(" ")}
       >
-        <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between gap-4 px-4 md:px-6">
+        <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between gap-4 px-4 md:px-6">
           <Link
             href="/"
             className="flex min-w-0 items-center gap-3.5 sm:gap-4 md:gap-5"
@@ -100,7 +105,7 @@ export function AppHeader() {
               alt="Klynt"
               className="h-[30px] w-[100px] shrink-0"
             />
-            {!isLanding && (
+            {!showSubtitle ? null : (
               <>
                 <span
                   className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
