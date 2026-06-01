@@ -68,6 +68,11 @@ export function LandingTestMockup() {
   const topIssue = data.issues[0];
   const overallScore = formatOverallScore(score);
   const issueCount = data.issues.length;
+  const deliverableBullets = [
+    `${issueCount} issues ranked by impact`,
+    `${data.suggestions.length} suggested improvements`,
+    `${data.copy.length} copy refinements`,
+  ] as const;
 
   return (
     <Link
@@ -109,6 +114,20 @@ export function LandingTestMockup() {
                 >
                   {data.summary}
                 </p>
+                <ul className="mt-3 space-y-1">
+                  {deliverableBullets.map((line) => (
+                    <li
+                      key={line}
+                      className="flex gap-2 text-[11px] leading-[16px] text-[rgba(6,28,47,0.45)] md:text-[12px] md:leading-[17px]"
+                    >
+                      <span
+                        className="mt-[6px] h-1 w-1 shrink-0 rounded-full bg-[rgba(6,28,47,0.25)]"
+                        aria-hidden
+                      />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <div className="overflow-hidden rounded-lg border border-black/[0.08] bg-[#F8FAFC] shadow-[0_8px_28px_rgba(0,0,0,0.05)]">
