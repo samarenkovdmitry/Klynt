@@ -63,9 +63,11 @@ type MetricCardProps = {
 };
 
 const HERO_ACTION_BUTTON_CLASS =
-  "inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-white/90 px-4 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(6,28,47,0.08)] transition hover:bg-white";
+  "inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-white/90 px-4 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(6,28,47,0.08)] transition-[background-color,box-shadow] hover:bg-white hover:shadow-[0_2px_8px_rgba(6,28,47,0.12)]";
 
 const HERO_GRID_LINE = "rgba(6,28,47,0.07)";
+const HERO_GRID_SIZE = "24px 24px";
+const HERO_GRID_POSITION = "12px 14px";
 const HERO_GRID_MASK =
   "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 24%, #000 46%, #000 100%)";
 
@@ -179,7 +181,8 @@ function ScoreStatusChip({
 function HeroRightPanel({ gridColor }: { gridColor: string }) {
   const gridStyle = {
     backgroundImage: `linear-gradient(${HERO_GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${HERO_GRID_LINE} 1px, transparent 1px)`,
-    backgroundSize: "20px 20px",
+    backgroundSize: HERO_GRID_SIZE,
+    backgroundPosition: HERO_GRID_POSITION,
     WebkitMaskImage: HERO_GRID_MASK,
     maskImage: HERO_GRID_MASK,
   } as const;
@@ -187,12 +190,12 @@ function HeroRightPanel({ gridColor }: { gridColor: string }) {
   return (
     <>
       <div
-        className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(500px,54%)] md:block"
+        className="pointer-events-none absolute bottom-0 right-0 top-3 hidden w-[min(500px,54%)] md:block"
         style={gridStyle}
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(500px,54%)] md:block"
+        className="pointer-events-none absolute bottom-0 right-0 top-3 hidden w-[min(500px,54%)] md:block"
         style={{
           background: `radial-gradient(ellipse 85% 80% at 72% 42%, ${gridColor}55, transparent 72%)`,
           WebkitMaskImage: HERO_GRID_MASK,
@@ -263,8 +266,8 @@ export function ReportHeroSummary({
           />
 
           <div className="relative z-[1]">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
+            <div className="relative min-h-9 sm:flex sm:min-h-0 sm:items-center sm:justify-between sm:gap-4">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 pr-[152px] text-[14px] sm:pr-0">
                 <div className="flex min-w-0 items-center gap-2">
                   {url && (
                     <img
@@ -294,7 +297,7 @@ export function ReportHeroSummary({
                 </span>
               </div>
 
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="absolute right-0 top-0 flex shrink-0 items-center gap-2 sm:static sm:justify-end">
                 <button type="button" onClick={onShare} className={HERO_ACTION_BUTTON_CLASS}>
                   <RiShare2Line size={16} aria-hidden />
                   Share

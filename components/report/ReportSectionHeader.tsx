@@ -3,6 +3,7 @@ type ReportSectionHeaderProps = {
   count: number;
   countNoun?: string;
   eyebrow?: string;
+  withTopRule?: boolean;
 };
 
 export function ReportSectionHeader({
@@ -10,9 +11,10 @@ export function ReportSectionHeader({
   count,
   countNoun = "items",
   eyebrow,
+  withTopRule = true,
 }: ReportSectionHeaderProps) {
   return (
-    <div className="border-t border-[rgba(6,28,47,0.06)] pt-10">
+    <div className={withTopRule ? "border-t border-[rgba(6,28,47,0.06)] pt-10" : ""}>
       {eyebrow ? (
         <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#8F99A2]">
           {eyebrow}

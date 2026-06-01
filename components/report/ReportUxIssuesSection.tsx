@@ -18,12 +18,13 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
   if (issues.length === 0) return null;
 
   return (
-    <section>
+    <section className="mt-10">
       <ReportSectionHeader
         eyebrow="Findings"
         title="UX Issues"
         count={issues.length}
         countNoun="issues"
+        withTopRule={false}
       />
 
       <div className="mt-6 space-y-4">
