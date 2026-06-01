@@ -11,16 +11,18 @@ import {
   formatOverallScore,
   formatReportDomain,
   getReportHeroTheme,
+  getTierLabel,
 } from "@/lib/report-hero-theme";
 import {
+  REPORT_OG_BROWSER_CHROME_HEIGHT,
   REPORT_OG_HEIGHT,
+  REPORT_OG_PREVIEW_HEIGHT,
+  REPORT_OG_PREVIEW_WIDTH,
   REPORT_OG_WIDTH,
 } from "@/lib/report-preview-size";
 
-const PREVIEW_WIDTH = 520;
-const PREVIEW_HEIGHT = 400;
-const LEFT_WIDTH = 600;
-const SCORE_CIRCLE_SIZE = 88;
+const LEFT_WIDTH = 560;
+const CONTENT_PADDING = 48;
 
 type ReportOgInput = Pick<AuditReport, "url" | "score" | "verdict" | "summary">;
 
@@ -43,6 +45,10 @@ function truncateText(text: string, maxLength: number) {
   return `${trimmed.slice(0, maxLength - 1).trimEnd()}…`;
 }
 
+function hexWithAlpha(hex: string, alphaHex: string) {
+  return `${hex}${alphaHex}`;
+}
+
 export async function composeReportOpenGraphImage(
   report: ReportOgInput,
   previewBuffer: Buffer | null,
@@ -52,9 +58,10 @@ export async function composeReportOpenGraphImage(
   const theme = getReportHeroTheme(report.score);
   const domain = formatReportDomain(report.url) || "Landing page";
   const scoreLabel = formatOverallScore(report.score);
+  const tierLabel = getTierLabel(theme.tier);
   const headline = truncateText(
     report.verdict?.trim() || report.summary?.trim() || "UX clarity report",
-    110
+    96
   );
   const previewSrc =
     includePreview && previewBuffer
@@ -63,6 +70,10 @@ export async function composeReportOpenGraphImage(
   const patternSrc = includePattern
     ? buildReportOgPatternDataUrl(theme.gridColor)
     : null;
+  const chipBorder = hexWithAlpha(theme.badgeBg, "33");
+  const chipBg = hexWithAlpha(theme.badgeBg, "14");
+  const frameHeight =
+    REPORT_OG_BROWSER_CHROME_HEIGHT + REPORT_OG_PREVIEW_HEIGHT;
 
   return new ImageResponse(
     (
@@ -88,9 +99,19 @@ export async function composeReportOpenGraphImage(
               top: 0,
               left: REPORT_OG_PATTERN_LEFT,
               height: "100%",
+              opacity: 0.9,
             }}
           />
         ) : null}
+
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(to right, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.28) 42%, rgba(255,255,255,0.42) 100%)",
+          }}
+        />
 
         <div
           style={{
@@ -101,23 +122,52 @@ export async function composeReportOpenGraphImage(
             justifyContent: "space-between",
             width: "100%",
             height: "100%",
-            padding: "52px",
+            padding: CONTENT_PADDING,
           }}
         >
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between",
+              justifyContent: "center",
               height: "100%",
               width: LEFT_WIDTH,
-              paddingRight: 36,
+              paddingRight: 32,
+              gap: 18,
             }}
           >
             <div
               style={{
-                fontSize: 30,
-                color: "rgba(6, 28, 47, 0.45)",
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 28,
+                  fontWeight: 700,
+                  color: "#061C2F",
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                Klynt
+              </div>
+              <div
+                style={{
+                  fontSize: 18,
+                  color: "rgba(6, 28, 47, 0.45)",
+                }}
+              >
+                UX clarity report
+              </div>
+            </div>
+
+            <div
+              style={{
+                fontSize: 28,
+                fontWeight: 500,
+                color: "#061C2F",
               }}
             >
               {domain}
@@ -125,10 +175,10 @@ export async function composeReportOpenGraphImage(
 
             <div
               style={{
-                fontSize: 46,
+                fontSize: 42,
                 fontWeight: 700,
                 color: "#061C2F",
-                lineHeight: 1.18,
+                lineHeight: 1.16,
                 maxWidth: LEFT_WIDTH,
               }}
             >
@@ -139,64 +189,133 @@ export async function composeReportOpenGraphImage(
               style={{
                 display: "flex",
                 alignItems: "center",
-                flexShrink: 0,
+                alignSelf: "flex-start",
+                height: 56,
+                paddingLeft: 6,
+                paddingRight: 22,
+                borderRadius: 999,
+                border: `2px solid ${chipBorder}`,
+                backgroundColor: chipBg,
               }}
             >
               <div
                 style={{
-                  fontSize: 32,
-                  color: "rgba(6, 28, 47, 0.45)",
-                  flexShrink: 0,
-                }}
-              >
-                UX clarity score
-              </div>
-              <div
-                style={{
-                  width: SCORE_CIRCLE_SIZE,
-                  height: SCORE_CIRCLE_SIZE,
-                  borderRadius: SCORE_CIRCLE_SIZE / 2,
-                  backgroundColor: theme.badgeBg,
-                  color: "#ffffff",
-                  fontSize: 36,
-                  fontWeight: 700,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginLeft: 18,
-                  flexShrink: 0,
+                  minWidth: 52,
+                  height: 42,
+                  paddingLeft: 14,
+                  paddingRight: 14,
+                  borderRadius: 999,
+                  backgroundColor: theme.badgeBg,
+                  color: "#ffffff",
+                  fontSize: 24,
+                  fontWeight: 700,
                 }}
               >
                 {scoreLabel}
               </div>
+              <div
+                style={{
+                  marginLeft: 12,
+                  fontSize: 22,
+                  fontWeight: 500,
+                  color: theme.badgeBg,
+                }}
+              >
+                {tierLabel}
+              </div>
             </div>
           </div>
 
-          {previewSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewSrc}
-              alt=""
-              width={PREVIEW_WIDTH}
-              height={PREVIEW_HEIGHT}
-              style={{
-                borderRadius: 16,
-                objectFit: "cover",
-                objectPosition: "top",
-                flexShrink: 0,
-              }}
-            />
-          ) : (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: REPORT_OG_PREVIEW_WIDTH,
+              height: frameHeight,
+              borderRadius: 14,
+              border: "2px solid rgba(0, 0, 0, 0.08)",
+              backgroundColor: "#F8FAFC",
+              overflow: "hidden",
+              boxShadow: "0 12px 36px rgba(6, 28, 47, 0.10)",
+              flexShrink: 0,
+            }}
+          >
             <div
               style={{
-                width: PREVIEW_WIDTH,
-                height: PREVIEW_HEIGHT,
-                borderRadius: 16,
-                backgroundColor: "rgba(6, 28, 47, 0.08)",
-                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                height: REPORT_OG_BROWSER_CHROME_HEIGHT,
+                paddingLeft: 14,
+                paddingRight: 14,
+                borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+                backgroundColor: "#ffffff",
               }}
-            />
-          )}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 999,
+                    backgroundColor: "#FF5F57",
+                  }}
+                />
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 999,
+                    backgroundColor: "#FFBD2E",
+                  }}
+                />
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 999,
+                    backgroundColor: "#28CA41",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  marginLeft: 10,
+                  fontSize: 16,
+                  color: "rgba(6, 28, 47, 0.45)",
+                }}
+              >
+                {domain}
+              </div>
+            </div>
+
+            {previewSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={previewSrc}
+                alt=""
+                width={REPORT_OG_PREVIEW_WIDTH}
+                height={REPORT_OG_PREVIEW_HEIGHT}
+                style={{
+                  width: REPORT_OG_PREVIEW_WIDTH,
+                  height: REPORT_OG_PREVIEW_HEIGHT,
+                  objectFit: "cover",
+                  objectPosition: "top center",
+                  display: "flex",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: REPORT_OG_PREVIEW_WIDTH,
+                  height: REPORT_OG_PREVIEW_HEIGHT,
+                  backgroundColor: "rgba(6, 28, 47, 0.06)",
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
     ),

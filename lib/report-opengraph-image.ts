@@ -23,8 +23,10 @@ const FALLBACK_IMAGE_PATHS = [
   path.join(process.cwd(), ".next", "server", "app", "opengraph-image.jpg"),
 ];
 
-const PREVIEW_OG_WIDTH = 520;
-const PREVIEW_OG_HEIGHT = 400;
+import {
+  REPORT_OG_PREVIEW_HEIGHT,
+  REPORT_OG_PREVIEW_WIDTH,
+} from "@/lib/report-preview-size";
 
 const COMPOSE_ATTEMPTS = [
   { includePattern: true, includePreview: true },
@@ -83,11 +85,11 @@ async function normalizePreviewForOg(buffer: Buffer | null) {
 
   try {
     return await sharp(buffer)
-      .resize(PREVIEW_OG_WIDTH, PREVIEW_OG_HEIGHT, {
+      .resize(REPORT_OG_PREVIEW_WIDTH, REPORT_OG_PREVIEW_HEIGHT, {
         fit: "cover",
         position: "top",
       })
-      .jpeg({ quality: 82, mozjpeg: true })
+      .jpeg({ quality: 84, mozjpeg: true })
       .toBuffer();
   } catch (error) {
     console.error("[report opengraph-image] preview normalize failed", error);
