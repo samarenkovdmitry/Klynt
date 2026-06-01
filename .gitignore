@@ -45,6 +45,7 @@ debug_*
 *.jpeg
 *.jpg
 !public/avatars/*.jpg
+!public/demo/*.jpg
 !app/opengraph-image.jpg
 !app/twitter-image.jpg
 *.png

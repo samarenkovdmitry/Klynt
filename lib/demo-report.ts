@@ -14,10 +14,10 @@ export const DEMO_REPORT = {
   score: 65,
   risk: "medium",
   summary:
-    "The headline and subtext lack clarity on the specific AI automation benefits for target users.",
+    "Visitors can't tell who the product is for or what they'll get in the first few seconds.",
   verdict: "Headline unclear about AI automation benefits for users.",
   key_observation:
-    "Headline does not specify who benefits from AI tools, reducing immediate relevance.",
+    "Without a named audience in the hero, new visitors struggle to judge fit before scrolling.",
   confidence: 85,
   generatedAt: "2026-05-31T18:14:21.738Z",
   breakdown: {

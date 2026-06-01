@@ -98,13 +98,20 @@ export function LandingTestMockup() {
             </div>
 
             <div className="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_200px] md:grid-cols-[minmax(0,1fr)_220px] md:gap-5">
-              <p
-                className={`text-[17px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[20px] ${textClamp}`}
-              >
-                {data.verdict}
-              </p>
+              <div className="min-w-0">
+                <p
+                  className={`text-[17px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[20px] ${textClamp}`}
+                >
+                  {data.verdict}
+                </p>
+                <p
+                  className={`mt-2 text-[13px] leading-[1.5] text-[rgba(6,28,47,0.5)] md:text-[14px] md:leading-[20px] ${textClamp}`}
+                >
+                  {data.summary}
+                </p>
+              </div>
 
-              <div className="overflow-hidden rounded-lg border border-black/[0.08] bg-[#F8FAFC] shadow-[0_8px_28px_rgba(0,0,0,0.05)] sm:row-span-1">
+              <div className="overflow-hidden rounded-lg border border-black/[0.08] bg-[#F8FAFC] shadow-[0_8px_28px_rgba(0,0,0,0.05)]">
                 <div className="flex items-center gap-1.5 border-b border-black/[0.06] bg-white px-2.5 py-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#FF5F57]" />
                   <span className="h-1.5 w-1.5 rounded-full bg-[#FFBD2E]" />
