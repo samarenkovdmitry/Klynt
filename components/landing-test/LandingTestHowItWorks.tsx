@@ -1,58 +1,57 @@
 import {
-  EDITORIAL_BODY,
-  EDITORIAL_CONTAINER,
-  EDITORIAL_LABEL,
-  EDITORIAL_SECTION,
-} from "./landingEditorialStyles";
+  LANDING_CONTAINER,
+  LANDING_EYEBROW,
+  LANDING_LEAD,
+  LANDING_SECTION,
+  LANDING_TITLE,
+} from "./landingPageStyles";
 
 const STEPS = [
   {
-    number: "01",
-    title: "Paste a URL",
-    description: "Analyze any landing page or marketing site.",
+    step: "1",
+    title: "Add your page",
+    description: "Paste a URL or upload a screenshot — any landing or marketing page.",
   },
   {
-    number: "02",
-    title: "Review findings",
-    description: "Get UX issues, explanations, and impact estimates.",
+    step: "2",
+    title: "Klynt analyzes UX",
+    description:
+      "Layout, messaging, trust signals, and conversion flow — only from what's visible on screen.",
   },
   {
-    number: "03",
-    title: "Improve",
-    description: "Apply suggested fixes and stronger copy.",
+    step: "3",
+    title: "Ship improvements",
+    description:
+      "Prioritized issues, plain-language explanations, and copy suggestions you can act on.",
   },
 ] as const;
 
 export function LandingTestHowItWorks() {
   return (
-    <section className={EDITORIAL_SECTION} aria-labelledby="how-it-works-heading">
-      <div className={EDITORIAL_CONTAINER}>
-        <p className={EDITORIAL_LABEL}>How it works</p>
-        <h2 id="how-it-works-heading" className="sr-only">
-          How it works
+    <section className={LANDING_SECTION} aria-labelledby="how-heading">
+      <div className={LANDING_CONTAINER}>
+        <p className={LANDING_EYEBROW}>How it works</p>
+        <h2 id="how-heading" className={LANDING_TITLE}>
+          From URL to actionable report in minutes
         </h2>
+        <p className={LANDING_LEAD}>No setup, no account. Most analyses finish in under a minute.</p>
 
-        <ol className="mt-10 lg:mt-14">
-          {STEPS.map((step, index) => (
+        <ol className="mt-12 grid grid-cols-1 gap-0 lg:mt-16 lg:grid-cols-3 lg:gap-8">
+          {STEPS.map((item, index) => (
             <li
-              key={step.number}
+              key={item.step}
               className={[
-                "grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-white/[0.06] py-8 md:grid-cols-[72px_1fr] md:gap-x-10 md:py-10",
-                index === STEPS.length - 1 ? "pb-0" : "",
+                "relative border-t border-white/[0.06] py-8 lg:border-t-0 lg:py-0",
+                index > 0 ? "lg:border-l lg:border-white/[0.06] lg:pl-8" : "",
               ].join(" ")}
             >
-              <span
-                className="pt-0.5 text-[13px] font-medium tabular-nums leading-none text-white/30 md:text-[14px]"
-                aria-hidden
-              >
-                {step.number}
-              </span>
-              <div>
-                <h3 className="text-[18px] font-medium leading-[24px] text-white md:text-[20px] md:leading-[28px]">
-                  {step.title}
-                </h3>
-                <p className={`mt-2 max-w-[480px] ${EDITORIAL_BODY}`}>{step.description}</p>
-              </div>
+              <span className="text-[13px] font-medium tabular-nums text-white/30">{item.step}</span>
+              <h3 className="mt-3 text-[17px] font-medium leading-[24px] text-white md:text-[18px]">
+                {item.title}
+              </h3>
+              <p className="mt-2 max-w-[320px] text-[14px] leading-[22px] text-white/50 md:text-[15px] md:leading-[24px]">
+                {item.description}
+              </p>
             </li>
           ))}
         </ol>
