@@ -83,34 +83,3 @@ export function StepReportVisual() {
     </div>
   );
 }
-
-export function CtaAnalyzeVisual() {
-  return (
-    <div
-      className={`${UI_FRAME} mx-auto w-full max-w-[340px] lg:mx-0 lg:max-w-none`}
-      aria-hidden
-    >
-      <div className="border-b border-white/[0.06] px-3.5 py-2.5">
-        <p className="text-[11px] font-medium text-white/35">AI UX Review</p>
-      </div>
-      <div className="px-3.5 py-4">
-        <div className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2.5">
-          <span className="text-[12px] text-white/40">Paste URL or upload screenshot</span>
-        </div>
-        <div className="mt-3 flex gap-2">
-          <span className="flex-1 rounded-full border border-white/[0.08] py-2 text-center text-[11px] text-white/35">
-            Website URL
-          </span>
-          <span className="flex-1 rounded-full border border-white/[0.08] py-2 text-center text-[11px] text-white/35">
-            Screenshot
-          </span>
-        </div>
-        <div className="mt-4 flex justify-center">
-          <span className="rounded-full bg-[#2563EB] px-5 py-2 text-[12px] font-medium text-white">
-            Analyze UX
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}

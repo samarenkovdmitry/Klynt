@@ -2,7 +2,7 @@ import type { Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Familjen_Grotesk } from "next/font/google";
-import { AppFooter } from "@/components/AppFooter";
+import { AppFooterWrapper } from "@/components/AppFooterWrapper";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
 
@@ -31,7 +31,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-screen flex-col bg-white">
         <div className="flex flex-1 flex-col">{children}</div>
-        <AppFooter />
+        <AppFooterWrapper />
         <Analytics />
         <SpeedInsights />
       </body>
