@@ -6,16 +6,13 @@ import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
+import { LANDING_CONTAINER } from "./landingPageStyles";
+
 const HEADER_HEIGHT_PX = 68;
 
 const navItems = [
-  {
-    href: "/",
-    label: "Home",
-    match: (p: string) => p === "/",
-  },
   { href: "/analyze", label: "Analyze", match: (p: string) => p.startsWith("/analyze") },
-  { href: DEMO_REPORT_PATH, label: "View demo", match: (p: string) => p.startsWith("/report") },
+  { href: DEMO_REPORT_PATH, label: "Sample report", match: (p: string) => p.startsWith("/report") },
   { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") },
 ];
 
@@ -50,7 +47,7 @@ export function LandingTestHeader() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-transparent bg-transparent pt-[env(safe-area-inset-top,0px)]">
-        <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between px-4 md:px-6">
+        <div className={`${LANDING_CONTAINER} flex h-[68px] items-center justify-between px-4 md:px-6`}>
           <Link href="/" className="shrink-0" aria-label="Klynt — home">
             <img src="/klynt-logo-light.svg" alt="Klynt" className="h-[30px] w-[100px] shrink-0" />
           </Link>

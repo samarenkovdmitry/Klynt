@@ -80,7 +80,7 @@ export function AppFooter({ variant = "light" }: AppFooterProps) {
             ))}
           </div>
 
-          <div className="mt-10 flex items-center justify-center gap-11">
+          <div className="mt-10 flex items-center justify-center gap-5 md:gap-4">
             {socialLinks.map((link) => {
               const Icon = link.icon;
 
@@ -88,10 +88,10 @@ export function AppFooter({ variant = "light" }: AppFooterProps) {
                 <a
                   key={link.label}
                   href={link.href}
-                  className={styles.social}
+                  className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
                   aria-label={link.label}
                 >
-                  <Icon size={24} />
+                  <Icon size={20} />
                 </a>
               );
             })}
@@ -110,7 +110,7 @@ export function AppFooter({ variant = "light" }: AppFooterProps) {
             ))}
           </div>
 
-          <div className="flex shrink-0 items-center gap-4">
+          <div className="flex shrink-0 items-center gap-2">
             {socialLinks.map((link) => {
               const Icon = link.icon;
 
@@ -118,10 +118,10 @@ export function AppFooter({ variant = "light" }: AppFooterProps) {
                 <a
                   key={link.label}
                   href={link.href}
-                  className={styles.social}
+                  className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
                   aria-label={link.label}
                 >
-                  <Icon size={24} />
+                  <Icon size={20} />
                 </a>
               );
             })}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  RiArrowRightSLine,
   RiBrainLine,
   RiFocus3Line,
   RiShare2Line,
@@ -64,9 +65,10 @@ export function LandingTestMockup() {
   const trust = Math.max(0, Math.min(100, Number(data.breakdown?.trust)));
   const clarity = Math.max(0, Math.min(100, Number(data.breakdown?.clarity)));
   const friction = Math.max(0, Math.min(100, getFrictionScore(data.breakdown)));
-  const topIssue = data.issues[0]?.title;
+  const topIssue = data.issues[0];
+  const copyFix = data.copy[0];
   const overallScore = formatOverallScore(score);
-  const confidence = Math.max(0, Math.min(100, Number(data.confidence)));
+  const issueCount = data.issues.length;
 
   return (
     <Link
@@ -118,12 +120,39 @@ export function LandingTestMockup() {
                     {data.key_observation}
                   </p>
                 </div>
+
+                {topIssue && (
+                  <div className="mt-4 rounded-[10px] border border-[rgba(32,52,94,0.08)] bg-[#F8FAFC] px-3 py-2.5 md:mt-5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[rgba(6,28,47,0.45)]">
+                      {topIssue.category}
+                    </p>
+                    <p
+                      className={`mt-1 text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px] ${textClamp}`}
+                    >
+                      {topIssue.title}
+                    </p>
+                  </div>
+                )}
+
+                {copyFix && (
+                  <div className="mt-3 rounded-[10px] border border-[rgba(32,52,94,0.08)] px-3 py-2.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[rgba(6,28,47,0.45)]">
+                      Suggested copy
+                    </p>
+                    <p className="mt-1.5 truncate text-[11px] leading-[16px] text-[rgba(6,28,47,0.45)] line-through md:text-[12px]">
+                      {copyFix.before}
+                    </p>
+                    <p className="mt-1 truncate text-[12px] leading-[17px] font-medium text-[var(--ink-primary)] md:text-[13px]">
+                      {copyFix.after}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="mx-auto shrink-0 sm:mx-0">
-                <div className="relative w-[200px] md:w-[210px]">
+                <div className="relative w-[200px] md:w-[220px]">
                   <div className="overflow-hidden rounded-lg border border-black/[0.08] bg-[#F8FAFC] shadow-[0_8px_28px_rgba(0,0,0,0.05)]">
-                    <div className="flex items-center gap-1.5 border-b border-black/[0.06] px-2.5 py-1.5">
+                    <div className="flex items-center gap-1.5 border-b border-black/[0.06] bg-white px-2.5 py-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-[#FF5F57]" />
                       <span className="h-1.5 w-1.5 rounded-full bg-[#FFBD2E]" />
                       <span className="h-1.5 w-1.5 rounded-full bg-[#28CA41]" />
@@ -131,24 +160,19 @@ export function LandingTestMockup() {
                         {domain}
                       </span>
                     </div>
-                    <div className="space-y-1.5 px-2.5 py-2.5">
-                      <div className="h-1.5 w-3/4 rounded bg-[rgba(6,28,47,0.10)]" />
-                      <div className="h-1.5 w-1/2 rounded bg-[rgba(6,28,47,0.07)]" />
-                      <div className="mt-2 h-12 rounded-md bg-[rgba(6,28,47,0.05)]" />
-                      <div className="flex gap-1.5">
-                        <div className="h-5 flex-1 rounded bg-[#FF4F00]/20" />
-                        <div className="h-5 flex-1 rounded border border-[rgba(6,28,47,0.08)] bg-white" />
-                      </div>
-                    </div>
+                    {data.previewImage ? (
+                      <img
+                        src={data.previewImage}
+                        alt=""
+                        width={440}
+                        height={270}
+                        className="block h-[128px] w-full object-cover object-top md:h-[136px]"
+                        draggable={false}
+                      />
+                    ) : (
+                      <div className="h-[128px] bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7] md:h-[136px]" />
+                    )}
                   </div>
-
-                  {topIssue && (
-                    <div className="absolute -bottom-2.5 left-1/2 w-[calc(100%-12px)] -translate-x-1/2 rounded-[11px] bg-white px-2 py-1 shadow-[0_6px_24px_rgba(0,0,0,0.10)] ring-1 ring-black/[0.06]">
-                      <p className="truncate text-[10px] leading-[14px] text-[var(--ink-primary)] md:text-[11px] md:leading-[15px]">
-                        {topIssue}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -173,10 +197,9 @@ export function LandingTestMockup() {
                   Overall Assessment
                 </p>
               </div>
-              <p className="text-[12px] text-[rgba(6,28,47,0.5)] md:text-[13px]">
-                <span className="font-medium text-[var(--ink-primary)]">
-                  AI confidence: {confidence}%
-                </span>
+              <p className="inline-flex items-center gap-0.5 text-[12px] font-medium text-[rgba(6,28,47,0.55)] md:text-[13px]">
+                View {issueCount} issues
+                <RiArrowRightSLine size={16} className="text-[rgba(6,28,47,0.4)]" aria-hidden />
               </p>
             </div>
           </div>
