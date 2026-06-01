@@ -109,15 +109,18 @@ async function resolvePreviewImageBuffer(previewImage?: string) {
   }
 
   if (previewImage.startsWith("/")) {
-    try {
-      const filePath = path.join(
-        process.cwd(),
-        "public",
-        previewImage.replace(/^\//, "")
-      );
-      return await readFile(filePath);
-    } catch {
-      return null;
+    const relativePath = previewImage.replace(/^\//, "");
+    const candidatePaths = [
+      path.join(process.cwd(), "public", relativePath),
+      path.join(process.cwd(), ".next", "standalone", "public", relativePath),
+    ];
+
+    for (const filePath of candidatePaths) {
+      try {
+        return await readFile(filePath);
+      } catch {
+        continue;
+      }
     }
   }
 

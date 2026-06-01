@@ -8,7 +8,6 @@ import { FAMILJEN_GROTESK_400, FAMILJEN_GROTESK_700 } from "@/lib/report-og-font
 import {
   formatOverallScore,
   formatReportDomain,
-  formatReportHref,
   getReportHeroTheme,
   getTierLabel,
 } from "@/lib/report-hero-theme";
@@ -25,8 +24,6 @@ const LEFT_PANEL_WIDTH = REPORT_OG_WIDTH / 2;
 const RIGHT_PANEL_WIDTH = REPORT_OG_WIDTH / 2;
 const SCORE_PILL_HEIGHT = 76;
 const OG_GRID_LINE = "rgba(6, 28, 47, 0.07)";
-const OG_GRID_MASK =
-  "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.28) 20%, #000 42%, #000 100%)";
 
 type ReportOgInput = Pick<AuditReport, "url" | "score" | "verdict" | "summary">;
 
@@ -35,7 +32,7 @@ type ComposeOptions = {
   includePreview?: boolean;
 };
 
-let klyntLogoDataUrlPromise: Promise<string> | null = null;
+let klyntLogoDataUrlPromise: Promise<string | null> | null = null;
 
 function toFontData(buffer: Buffer) {
   return new Uint8Array(buffer).buffer as ArrayBuffer;
@@ -55,24 +52,26 @@ function hexWithAlpha(hex: string, alphaHex: string) {
   return `${hex}${alphaHex}`;
 }
 
-function getFaviconUrl(url?: string) {
-  const href = formatReportHref(url);
-
-  if (!href) {
-    return null;
-  }
-
-  return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(href)}&sz=32`;
-}
-
-async function getKlyntLogoDataUrl() {
+async function getKlyntLogoDataUrl(): Promise<string | null> {
   if (!klyntLogoDataUrlPromise) {
-    klyntLogoDataUrlPromise = readFile(
+    const candidatePaths = [
       path.join(process.cwd(), "public", "klynt-logo-dark.svg"),
-      "utf8"
-    ).then(
-      (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-    );
+      path.join(process.cwd(), ".next", "standalone", "public", "klynt-logo-dark.svg"),
+    ];
+
+    klyntLogoDataUrlPromise = (async () => {
+      for (const filePath of candidatePaths) {
+        try {
+          const svg = await readFile(filePath, "utf8");
+          return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+        } catch {
+          continue;
+        }
+      }
+
+      console.error("[report opengraph-image] logo load failed for all paths");
+      return null;
+    })();
   }
 
   return klyntLogoDataUrlPromise;
@@ -96,7 +95,6 @@ export async function composeReportOpenGraphImage(
     includePreview && previewBuffer
       ? `data:image/jpeg;base64,${previewBuffer.toString("base64")}`
       : null;
-  const faviconUrl = getFaviconUrl(report.url);
   const logoSrc = await getKlyntLogoDataUrl();
   const chipBorder = hexWithAlpha(theme.badgeBg, "33");
   const chipBg = hexWithAlpha(theme.badgeBg, "14");
@@ -120,19 +118,36 @@ export async function composeReportOpenGraphImage(
           fontFamily: "Familjen Grotesk",
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={logoSrc}
-          alt=""
-          width={88}
-          height={26}
-          style={{
-            position: "absolute",
-            top: CONTENT_PADDING,
-            right: CONTENT_PADDING,
-            zIndex: 3,
-          }}
-        />
+        {logoSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={logoSrc}
+            alt=""
+            width={88}
+            height={26}
+            style={{
+              position: "absolute",
+              top: CONTENT_PADDING,
+              right: CONTENT_PADDING,
+              zIndex: 3,
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              position: "absolute",
+              top: CONTENT_PADDING,
+              right: CONTENT_PADDING,
+              zIndex: 3,
+              fontSize: 24,
+              fontWeight: 700,
+              color: "#061C2F",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Klynt
+          </div>
+        )}
 
         <div
           style={{
@@ -155,29 +170,15 @@ export async function composeReportOpenGraphImage(
               maxWidth: LEFT_PANEL_WIDTH - CONTENT_PADDING - 120,
             }}
           >
-            {faviconUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={faviconUrl}
-                alt=""
-                width={22}
-                height={22}
-                style={{
-                  borderRadius: 4,
-                  flexShrink: 0,
-                }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 4,
-                  backgroundColor: "rgba(6, 28, 47, 0.08)",
-                  flexShrink: 0,
-                }}
-              />
-            )}
+            <div
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: 4,
+                backgroundColor: "rgba(6, 28, 47, 0.08)",
+                flexShrink: 0,
+              }}
+            />
             <div
               style={{
                 fontSize: 24,
@@ -271,19 +272,28 @@ export async function composeReportOpenGraphImage(
               <div
                 style={{
                   position: "absolute",
-                  inset: 0,
+                  top: 0,
+                  right: 0,
+                  width: "54%",
+                  height: "100%",
                   ...gridBackground,
-                  maskImage: OG_GRID_MASK,
-                  WebkitMaskImage: OG_GRID_MASK,
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: "46%",
+                  width: "14%",
+                  height: "100%",
+                  background: `linear-gradient(to right, ${theme.heroBg}, transparent)`,
                 }}
               />
               <div
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background: `radial-gradient(ellipse 85% 80% at 72% 42%, ${theme.gridColor}55, transparent 72%)`,
-                  maskImage: OG_GRID_MASK,
-                  WebkitMaskImage: OG_GRID_MASK,
+                  background: `radial-gradient(ellipse 85% 80% at 78% 42%, ${theme.gridColor}55, transparent 72%)`,
                 }}
               />
             </>
