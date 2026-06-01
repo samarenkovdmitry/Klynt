@@ -10,7 +10,7 @@ export function ReportPagePreview({
   topIssueTitle,
 }: ReportPagePreviewProps) {
   return (
-    <div className="mx-auto w-[310px]">
+    <div className="relative mx-auto w-[310px] pb-5">
       {previewImage ? (
         <img
           src={previewImage}
@@ -30,12 +30,10 @@ export function ReportPagePreview({
       )}
 
       {topIssueTitle && (
-        <div className="mt-3">
-          <p className="mb-1.5 text-[11px] font-medium text-[rgba(6,28,47,0.45)] md:text-[12px]">
-            Top issue
-          </p>
-          <div className="rounded-[10px] border border-[rgba(32,52,94,0.08)] bg-[#F8FAFC] px-3 py-2.5">
-            <p className="line-clamp-2 text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px]">
+        <div className="absolute bottom-0 left-1/2 z-10 w-[calc(100%-20px)] -translate-x-1/2">
+          <div className="rounded-full border border-[rgba(6,28,47,0.08)] bg-white px-3.5 py-2 shadow-[0_4px_20px_rgba(6,28,47,0.10)]">
+            <p className="truncate text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px]">
+              <span className="font-medium text-[rgba(6,28,47,0.45)]">Top issue · </span>
               {topIssueTitle}
             </p>
           </div>

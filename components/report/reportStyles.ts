@@ -7,14 +7,16 @@ export const REPORT_HERO_CARD_BORDER_CLASS = "border border-[rgba(6,28,47,0.09)]
 
 export const REPORT_SURFACE_SHADOW_CLASS = "shadow-[0_10px_40px_rgba(0,0,0,0.03)]";
 
+export const REPORT_HERO_RADIUS_CLASS = "rounded-[20px]";
+
 export const REPORT_CARD_CLASS = [
-  "rounded-[28px] bg-white px-[21px] py-[21px] transition-all hover:-translate-y-[1px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:px-[33px] md:py-[25px]",
+  "rounded-[18px] bg-white px-[21px] py-[21px] transition-all hover:-translate-y-[1px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:px-[33px] md:py-[25px]",
   REPORT_SURFACE_BORDER_CLASS,
   REPORT_SURFACE_SHADOW_CLASS,
 ].join(" ");
 
 export const REPORT_CARD_CLASS_ANIMATED = [
-  "rounded-[28px] bg-white px-[21px] py-[21px] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:px-[33px] md:py-[25px]",
+  "rounded-[18px] bg-white px-[21px] py-[21px] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:px-[33px] md:py-[25px]",
   REPORT_SURFACE_BORDER_CLASS,
   REPORT_SURFACE_SHADOW_CLASS,
 ].join(" ");

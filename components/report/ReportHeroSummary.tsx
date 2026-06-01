@@ -10,7 +10,12 @@ import type { RemixiconComponentType } from "@remixicon/react";
 import { KlyntFooterLogo } from "@/components/report/KlyntFooterLogo";
 import { ReportHeroPattern } from "@/components/report/ReportHeroPattern";
 import { ReportPagePreview } from "@/components/report/ReportPagePreview";
-import { ReportShareStrip } from "@/components/report/ReportShareStrip";
+import {
+  REPORT_HERO_CARD_BORDER_CLASS,
+  REPORT_HERO_RADIUS_CLASS,
+  REPORT_METRIC_DESCRIPTION_CLASS,
+  REPORT_SURFACE_SHADOW_CLASS,
+} from "@/components/report/reportStyles";
 import type {
   ReportBreakdown,
   ReportIssue,
@@ -26,7 +31,6 @@ import {
   getMetricBarColor,
   getReportHeroTheme,
 } from "@/lib/report-hero-theme";
-import { REPORT_METRIC_DESCRIPTION_CLASS } from "@/components/report/reportStyles";
 
 type ReportHeroSummaryProps = {
   url?: string;
@@ -102,6 +106,7 @@ export function ReportHeroSummary({
   summary,
   breakdown,
   confidence = 0,
+  keyObservation,
   previewImage,
   metricObservations,
   issues = [],
@@ -127,139 +132,159 @@ export function ReportHeroSummary({
     getFrictionDescription(friction, breakdown);
   const overallDescription =
     metricObservations?.overall?.trim() || fallbacks.overall || summary || "";
+  const keyInsight =
+    keyObservation?.trim() || metricObservations?.overall?.trim() || "";
 
   return (
-    <div className="space-y-3">
-      <ReportShareStrip onShare={onShare} onExport={onExport} />
+    <div
+      className={`overflow-hidden bg-white ${REPORT_HERO_RADIUS_CLASS} ${REPORT_HERO_CARD_BORDER_CLASS} ${REPORT_SURFACE_SHADOW_CLASS}`}
+    >
+      <div className="relative overflow-hidden">
+        <section
+          className="relative overflow-hidden px-5 pb-5 pt-5 md:px-[30px] md:pb-6 md:pt-6"
+          style={{ backgroundColor: theme.heroBg }}
+        >
+          <ReportHeroPattern heroBg={theme.heroBg} />
 
-      <div className="overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.09)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:rounded-[32px]">
-        <div className="relative overflow-hidden">
-          <section
-            className="relative overflow-hidden border-l-4 px-5 pb-6 pt-5 md:px-[30px] md:pb-6 md:pt-6"
-            style={{
-              backgroundColor: theme.heroBg,
-              borderLeftColor: theme.badgeBg,
-            }}
-          >
-            <ReportHeroPattern gridColor={theme.gridColor} heroBg={theme.heroBg} />
-
-            <div className="relative z-[1]">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
-                  <div className="flex min-w-0 items-center gap-2">
-                    {url && (
-                      <img
-                        src={`https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=32`}
-                        alt=""
-                        className="h-4 w-4 shrink-0 rounded-sm"
-                      />
-                    )}
-                    {reportHref ? (
-                      <a
-                        href={reportHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium text-[var(--ink-primary)] transition-opacity hover:opacity-70"
-                      >
-                        {domain}
-                      </a>
-                    ) : (
-                      <span className="font-medium text-[var(--ink-primary)]">{domain}</span>
-                    )}
-                  </div>
-                  <span className="hidden h-4 w-px bg-[rgba(6,28,47,0.1)] sm:inline-block" />
-                  <span className="text-[rgba(6,28,47,0.5)]">
-                    {formatAnalyzedDate(generatedAt)}
-                  </span>
+          <div className="relative z-[1]">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
+                <div className="flex min-w-0 items-center gap-2">
+                  {url && (
+                    <img
+                      src={`https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=32`}
+                      alt=""
+                      className="h-4 w-4 shrink-0 rounded-sm"
+                    />
+                  )}
+                  {reportHref ? (
+                    <a
+                      href={reportHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-[var(--ink-primary)] transition-opacity hover:opacity-70"
+                    >
+                      {domain}
+                    </a>
+                  ) : (
+                    <span className="font-medium text-[var(--ink-primary)]">{domain}</span>
+                  )}
                 </div>
+                <span className="hidden h-4 w-px bg-[rgba(6,28,47,0.1)] sm:inline-block" />
+                <span className="text-[rgba(6,28,47,0.5)]">
+                  {formatAnalyzedDate(generatedAt)}
+                </span>
+              </div>
 
-                <div className="flex shrink-0 flex-col items-end gap-1">
+              <div className="flex shrink-0 items-center gap-1.5 text-[13px] text-[rgba(6,28,47,0.5)]">
+                <button
+                  type="button"
+                  onClick={onShare}
+                  className="font-medium transition-colors hover:text-[var(--ink-primary)]"
+                >
+                  Share
+                </button>
+                <span aria-hidden className="text-[rgba(6,28,47,0.25)]">
+                  ·
+                </span>
+                <button
+                  type="button"
+                  onClick={onExport}
+                  className="font-medium transition-colors hover:text-[var(--ink-primary)]"
+                >
+                  Export PDF
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-4 flex flex-col gap-5 md:mt-5 md:flex-row md:items-start md:justify-between md:gap-6">
+              <div className="min-w-0 flex-1 md:max-w-[647px]">
+                <div className="flex items-start gap-3">
                   <span
-                    className="inline-flex h-11 min-w-[52px] items-center justify-center rounded-full px-3.5 text-[20px] font-bold leading-none tracking-[-0.04em] text-white"
+                    className="mt-0.5 inline-flex h-9 shrink-0 items-center justify-center rounded-full px-2.5 text-[16px] font-bold leading-none tracking-[-0.03em] text-white md:h-8 md:min-w-[38px] md:text-[15px]"
                     style={{ backgroundColor: theme.badgeBg }}
                   >
                     {overallScore}
                   </span>
-                  <span className="text-[11px] font-medium text-[rgba(6,28,47,0.45)] md:text-[12px]">
-                    UX score
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-5 flex flex-col gap-6 md:mt-6 md:flex-row md:items-start md:justify-between md:gap-8">
-                <div className="min-w-0 flex-1 md:max-w-[647px] md:pr-4">
-                  <h1 className="text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
+                  <h1 className="min-w-0 text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
                     {verdict || "UX assessment complete"}
                   </h1>
+                </div>
 
-                  <p className="mt-2 text-[15px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
-                    {summary || "No summary generated."}
+                <p className="mt-2 text-[15px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
+                  {summary || "No summary generated."}
+                </p>
+
+                {keyInsight && (
+                  <p className="mt-3 text-[15px] leading-[22px] md:text-[16px] md:leading-[24px]">
+                    <span className="font-medium text-[var(--ink-primary)]">Key insight</span>
+                    <span className="text-[rgba(6,28,47,0.5)]"> — {keyInsight}</span>
                   </p>
-                </div>
+                )}
+              </div>
 
-                <div className="flex shrink-0 justify-center md:justify-end">
-                  <ReportPagePreview
-                    previewImage={previewImage}
-                    topIssueTitle={topIssueTitle}
-                  />
-                </div>
+              <div className="flex shrink-0 justify-center md:justify-end">
+                <ReportPagePreview
+                  previewImage={previewImage}
+                  topIssueTitle={topIssueTitle}
+                />
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section className="bg-white px-5 py-6 md:px-[30px] md:py-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-8 xl:grid-cols-4 xl:gap-6">
-              <MetricCard
-                icon={RiShieldCheckLine}
-                label="Trust Signals"
-                value={trust}
-                description={trustDescription}
-              />
-              <MetricCard
-                icon={RiFocus3Line}
-                label="Decision Clarity"
-                value={clarity}
-                description={clarityDescription}
-              />
-              <MetricCard
-                icon={RiBrainLine}
-                label="Cognitive Friction"
-                value={friction}
-                description={frictionDescription}
-              />
+        <section className="bg-white px-5 py-6 md:px-[30px] md:py-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-8 xl:grid-cols-4 xl:gap-6">
+            <MetricCard
+              icon={RiShieldCheckLine}
+              label="Trust Signals"
+              value={trust}
+              description={trustDescription}
+            />
+            <MetricCard
+              icon={RiFocus3Line}
+              label="Decision Clarity"
+              value={clarity}
+              description={clarityDescription}
+            />
+            <MetricCard
+              icon={RiBrainLine}
+              label="Cognitive Friction"
+              value={friction}
+              description={frictionDescription}
+            />
 
-              <div className="flex min-w-0 flex-col border-t border-[rgba(6,28,47,0.06)] py-4 md:h-full md:border-t-0 md:py-0">
-                <p className="text-[16px] font-semibold text-[var(--ink-primary)]">
-                  Overall Assessment
-                </p>
-                <p className={REPORT_METRIC_DESCRIPTION_CLASS}>{overallDescription}</p>
-              </div>
+            <div className="flex min-w-0 flex-col border-t border-[rgba(6,28,47,0.06)] py-4 md:h-full md:border-t-0 md:py-0">
+              <p className="text-[16px] font-semibold text-[var(--ink-primary)]">
+                Overall Assessment
+              </p>
+              <p className={REPORT_METRIC_DESCRIPTION_CLASS}>{overallDescription}</p>
             </div>
+          </div>
 
-            <div className="mt-5 md:mt-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
-                <p className="min-w-0 text-[13px] leading-[18px]">
-                  <span className="font-medium text-[var(--ink-primary)]">
-                    AI confidence: {confidenceValue}%
-                  </span>
-                  <span className="font-normal text-[rgba(6,28,47,0.5)]">
-                    {" "}
-                    – Based on visible UI structure, messaging clarity and conversion signals.
-                  </span>
-                </p>
-                <a
-                  href="https://klynt.one"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1.5 self-start text-[13px] leading-[18px] font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80 md:self-auto"
-                >
-                  Generated with
-                  <KlyntFooterLogo />
-                </a>
-              </div>
+          <div className="mt-5 md:mt-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+              <p className="min-w-0 text-[13px] leading-[18px]">
+                <span className="font-medium text-[var(--ink-primary)]">
+                  AI confidence: {confidenceValue}%
+                </span>
+                <span className="font-normal text-[rgba(6,28,47,0.5)]">
+                  {" "}
+                  – Based on visible UI structure, messaging clarity and conversion signals.
+                </span>
+              </p>
+              <a
+                href="https://klynt.one"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center gap-1.5 self-start text-[13px] leading-[18px] font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80 md:self-auto"
+              >
+                Generated with
+                <KlyntFooterLogo />
+              </a>
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
     </div>
   );
