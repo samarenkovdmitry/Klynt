@@ -63,7 +63,11 @@ type MetricCardProps = {
 };
 
 const HERO_ACTION_BUTTON_CLASS =
-  "inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-[rgba(6,28,47,0.12)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:bg-[#F8FAFC]";
+  "inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-white/90 px-4 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(6,28,47,0.08)] transition hover:bg-white";
+
+const HERO_GRID_LINE = "rgba(6,28,47,0.07)";
+const HERO_GRID_MASK =
+  "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 24%, #000 46%, #000 100%)";
 
 function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) {
   const barColor = getMetricBarColor(value);
@@ -153,22 +157,50 @@ function ScoreStatusChip({
 }) {
   return (
     <div
-      className="inline-flex h-7 items-center gap-1.5 rounded-full border pl-1 pr-2.5"
+      className="inline-flex h-8 items-center gap-2 rounded-full border pl-1 pr-3"
       style={{
         borderColor: `${badgeBg}33`,
         backgroundColor: `${badgeBg}14`,
       }}
     >
       <span
-        className="inline-flex h-5 min-w-[26px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold leading-none tracking-[-0.03em] text-white"
+        className="inline-flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-[12px] font-bold leading-none tracking-[-0.03em] text-white md:text-[13px]"
         style={{ backgroundColor: badgeBg }}
       >
         {score}
       </span>
-      <span className="text-[12px] font-medium leading-none" style={{ color: badgeBg }}>
+      <span className="text-[13px] font-medium leading-none" style={{ color: badgeBg }}>
         {tierLabel}
       </span>
     </div>
+  );
+}
+
+function HeroRightPanel({ gridColor }: { gridColor: string }) {
+  const gridStyle = {
+    backgroundImage: `linear-gradient(${HERO_GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${HERO_GRID_LINE} 1px, transparent 1px)`,
+    backgroundSize: "20px 20px",
+    WebkitMaskImage: HERO_GRID_MASK,
+    maskImage: HERO_GRID_MASK,
+  } as const;
+
+  return (
+    <>
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(500px,54%)] md:block"
+        style={gridStyle}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(500px,54%)] md:block"
+        style={{
+          background: `radial-gradient(ellipse 85% 80% at 72% 42%, ${gridColor}55, transparent 72%)`,
+          WebkitMaskImage: HERO_GRID_MASK,
+          maskImage: HERO_GRID_MASK,
+        }}
+        aria-hidden
+      />
+    </>
   );
 }
 
@@ -217,13 +249,15 @@ export function ReportHeroSummary({
     >
       <div className="relative overflow-hidden">
         <section
-          className="relative overflow-hidden px-5 pb-5 pt-5 md:px-[30px] md:pb-6 md:pt-6"
+          className="relative overflow-hidden px-5 pb-5 pt-5 md:px-[30px] md:pb-7 md:pt-6"
           style={{ backgroundColor: theme.heroBg }}
         >
+          <HeroRightPanel gridColor={theme.gridColor} />
+
           <div
-            className="pointer-events-none absolute inset-y-0 right-0 w-[min(520px,58%)]"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-10"
             style={{
-              background: `radial-gradient(ellipse 75% 70% at 72% 38%, ${theme.gridColor}66, transparent 72%)`,
+              background: "linear-gradient(to bottom, transparent, #ffffff)",
             }}
             aria-hidden
           />
@@ -300,14 +334,13 @@ export function ReportHeroSummary({
                   domain={domain}
                   previewImage={previewImage}
                   topIssueTitle={topIssueTitle}
-                  atmosphereColor={`${theme.gridColor}88`}
                 />
               </div>
             </div>
           </div>
         </section>
 
-        <section className="bg-white px-5 py-6 md:px-[30px] md:py-6">
+        <section className="relative bg-white px-5 pb-6 pt-5 md:px-[30px] md:pb-6 md:pt-5">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-6 xl:grid-cols-4">
             <MetricCard
               icon={RiShieldCheckLine}
