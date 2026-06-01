@@ -3,6 +3,7 @@ import path from "node:path";
 
 import sharp from "sharp";
 
+import type { AuditReport } from "@/lib/audit-report";
 import { composeReportOpenGraphImage } from "@/lib/report-og-image";
 import { previewImageToBuffer } from "@/lib/report-seo";
 import {
@@ -25,6 +26,13 @@ const FALLBACK_IMAGE_PATHS = [
 const PREVIEW_OG_WIDTH = 520;
 const PREVIEW_OG_HEIGHT = 400;
 
+const COMPOSE_ATTEMPTS = [
+  { includePattern: true, includePreview: true },
+  { includePattern: false, includePreview: true },
+  { includePattern: true, includePreview: false },
+  { includePattern: false, includePreview: false },
+] as const;
+
 async function loadDefaultOpenGraphImage() {
   for (const filePath of FALLBACK_IMAGE_PATHS) {
     try {
@@ -37,22 +45,35 @@ async function loadDefaultOpenGraphImage() {
   throw new Error("Default Open Graph image not found");
 }
 
+function pngOgResponse(buffer: Buffer) {
+  return new Response(new Uint8Array(buffer), {
+    headers: {
+      ...REPORT_OG_IMAGE_HEADERS,
+      "Content-Type": "image/png",
+    },
+  });
+}
+
+async function defaultOgResponse() {
+  const fallback = await loadDefaultOpenGraphImage();
+
+  try {
+    const png = await sharp(fallback).png({ compressionLevel: 8 }).toBuffer();
+    return pngOgResponse(png);
+  } catch (error) {
+    console.error("[report opengraph-image] fallback png convert failed", error);
+    return pngOgResponse(fallback);
+  }
+}
+
 function withOgHeaders(response: Response) {
   response.headers.set(
     "Cache-Control",
     "public, max-age=86400, stale-while-revalidate=604800"
   );
+  response.headers.set("Content-Type", "image/png");
 
   return response;
-}
-
-function defaultOgResponse(buffer: Buffer) {
-  return new Response(new Uint8Array(buffer), {
-    headers: {
-      ...REPORT_OG_IMAGE_HEADERS,
-      "Content-Type": "image/jpeg",
-    },
-  });
 }
 
 async function normalizePreviewForOg(buffer: Buffer | null) {
@@ -74,38 +95,41 @@ async function normalizePreviewForOg(buffer: Buffer | null) {
   }
 }
 
-const COMPOSE_ATTEMPTS = [
-  { includePattern: true, includePreview: true },
-  { includePattern: false, includePreview: true },
-  { includePattern: true, includePreview: false },
-  { includePattern: false, includePreview: false },
-] as const;
-
-export async function buildReportOpenGraphResponse(reportId: string) {
-  if (!canGenerateReportMetadata(reportId)) {
-    return defaultOgResponse(await loadDefaultOpenGraphImage());
+async function resolvePreviewImageBuffer(previewImage?: string) {
+  if (!previewImage) {
+    return null;
   }
 
-  if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
-    return defaultOgResponse(await loadDefaultOpenGraphImage());
+  const fromDataOrRemote = await previewImageToBuffer(previewImage);
+
+  if (fromDataOrRemote) {
+    return fromDataOrRemote;
   }
 
-  let report;
-
-  try {
-    report = await loadReportForPublicMetadata(reportId);
-  } catch (error) {
-    console.error("[report opengraph-image] report load failed", error);
-    return defaultOgResponse(await loadDefaultOpenGraphImage());
+  if (previewImage.startsWith("/")) {
+    try {
+      const filePath = path.join(
+        process.cwd(),
+        "public",
+        previewImage.replace(/^\//, "")
+      );
+      return await readFile(filePath);
+    } catch {
+      return null;
+    }
   }
 
-  if (!report) {
-    return defaultOgResponse(await loadDefaultOpenGraphImage());
-  }
+  return null;
+}
 
+async function composeOgResponse(
+  report: AuditReport,
+  previewImage?: string
+) {
   const rawPreview =
-    (await previewImageToBuffer(report.previewImage)) ??
-    (await previewImageToBuffer(report.ogPreviewImage));
+    (previewImage ? await resolvePreviewImageBuffer(previewImage) : null) ??
+    (await resolvePreviewImageBuffer(report.previewImage)) ??
+    (await resolvePreviewImageBuffer(report.ogPreviewImage));
   const previewBuffer = await normalizePreviewForOg(rawPreview);
 
   for (const options of COMPOSE_ATTEMPTS) {
@@ -121,8 +145,62 @@ export async function buildReportOpenGraphResponse(reportId: string) {
     }
   }
 
+  return null;
+}
+
+/** Pre-render a 1200×630 PNG data URL when a report is created. */
+export async function generateReportOgPreviewDataUrl(
+  report: AuditReport,
+  previewImage?: string
+): Promise<string | undefined> {
+  const response = await composeOgResponse(report, previewImage);
+
+  if (!response) {
+    return undefined;
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  return `data:image/png;base64,${buffer.toString("base64")}`;
+}
+
+export async function buildReportOpenGraphResponse(reportId: string) {
+  if (!canGenerateReportMetadata(reportId)) {
+    return defaultOgResponse();
+  }
+
+  if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
+    return defaultOgResponse();
+  }
+
+  let report: AuditReport | null;
+
+  try {
+    report = await loadReportForPublicMetadata(reportId);
+  } catch (error) {
+    console.error("[report opengraph-image] report load failed", error);
+    return defaultOgResponse();
+  }
+
+  if (!report) {
+    return defaultOgResponse();
+  }
+
+  if (report.ogPreviewImage) {
+    const stored = await resolvePreviewImageBuffer(report.ogPreviewImage);
+
+    if (stored) {
+      return pngOgResponse(stored);
+    }
+  }
+
+  const composed = await composeOgResponse(report);
+
+  if (composed) {
+    return composed;
+  }
+
   console.error("[report opengraph-image] all compose attempts failed", reportId);
-  return defaultOgResponse(await loadDefaultOpenGraphImage());
+  return defaultOgResponse();
 }
 
 /** @deprecated Use buildReportOpenGraphResponse instead. */

@@ -29,10 +29,6 @@ export function LegalDocumentPage({
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
           <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[240px_minmax(0,1fr)]">
             <aside className="lg:sticky lg:top-[88px] lg:self-start">
-              <p className="hidden text-[13px] font-medium uppercase tracking-[0.08em] text-[#8F99A2] lg:block">
-                On this page
-              </p>
-
               <nav
                 aria-label="Table of contents"
                 className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 lg:mx-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0 lg:pb-0"
@@ -51,10 +47,7 @@ export function LegalDocumentPage({
 
             <article className="min-w-0">
               <header className="border-b border-[rgba(6,28,47,0.06)] pb-6">
-                <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">
-                  Legal
-                </p>
-                <h1 className="mt-3 text-[32px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[40px] md:leading-[1.05]">
+                <h1 className="text-[32px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[40px] md:leading-[1.05]">
                   {title}
                 </h1>
                 <p className="mt-3 text-[14px] text-[#8E99A2]">
