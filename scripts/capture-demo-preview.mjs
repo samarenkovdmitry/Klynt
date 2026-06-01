@@ -40,11 +40,7 @@ async function main() {
     });
 
     await sharp(screenshot)
-      .resize(620, 380, {
-        fit: "contain",
-        position: "north",
-        background: { r: 248, g: 250, b: 252, alpha: 1 },
-      })
+      .resize(620, 380, { fit: "cover", position: "top" })
       .sharpen({ sigma: 0.35 })
       .jpeg({ quality: 86, mozjpeg: true })
       .toFile(OUTPUT);

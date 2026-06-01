@@ -15,9 +15,8 @@ export {
 export async function buildReportPreviewImage(base64: string): Promise<string> {
   const optimized = await sharp(Buffer.from(base64, "base64"))
     .resize(REPORT_PREVIEW_WIDTH, REPORT_PREVIEW_HEIGHT, {
-      fit: "contain",
-      position: "north",
-      background: { r: 248, g: 250, b: 252, alpha: 1 },
+      fit: "cover",
+      position: "top",
     })
     .sharpen({ sigma: 0.35 })
     .jpeg({ quality: 84, mozjpeg: true })

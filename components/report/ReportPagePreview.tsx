@@ -1,6 +1,4 @@
 import {
-  REPORT_PREVIEW_DISPLAY_HEIGHT,
-  REPORT_PREVIEW_DISPLAY_WIDTH,
   REPORT_PREVIEW_HEIGHT,
   REPORT_PREVIEW_WIDTH,
 } from "@/lib/report-preview-size";
@@ -10,6 +8,8 @@ type ReportPagePreviewProps = {
   previewImage?: string;
   topIssueTitle?: string;
 };
+
+const PREVIEW_ASPECT_CLASS = "aspect-[620/380]";
 
 export function ReportPagePreview({
   domain,
@@ -29,22 +29,18 @@ export function ReportPagePreview({
         </div>
 
         {previewImage ? (
-          <div
-            className="flex w-full items-start justify-center bg-[#F8FAFC]"
-            style={{ height: REPORT_PREVIEW_DISPLAY_HEIGHT }}
-          >
+          <div className={`relative w-full overflow-hidden bg-[#F8FAFC] ${PREVIEW_ASPECT_CLASS}`}>
             <img
               src={previewImage}
               alt="Analyzed page preview"
               width={REPORT_PREVIEW_WIDTH}
               height={REPORT_PREVIEW_HEIGHT}
-              className="max-h-full max-w-full object-contain object-top"
+              className="h-full w-full object-cover object-top"
             />
           </div>
         ) : (
           <div
-            className="relative w-full overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7]"
-            style={{ height: REPORT_PREVIEW_DISPLAY_HEIGHT }}
+            className={`relative w-full overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7] ${PREVIEW_ASPECT_CLASS}`}
           >
             <div className="absolute inset-x-4 top-4 space-y-2">
               <div className="h-2.5 w-2/3 rounded bg-[rgba(6,28,47,0.08)]" />

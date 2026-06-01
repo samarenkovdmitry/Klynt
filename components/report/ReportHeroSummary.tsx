@@ -26,7 +26,6 @@ import type {
   ReportMetricObservations,
 } from "@/lib/audit-report";
 import { getMetricObservationFallbacks } from "@/lib/metric-observations";
-import { normalizeRisk } from "@/lib/report-metrics";
 import {
   formatAnalyzedDate,
   formatOverallScore,
@@ -63,11 +62,11 @@ type MetricCardProps = {
 };
 
 const HERO_ACTION_BUTTON_CLASS =
-  "inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-white/90 px-4 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(6,28,47,0.08)] transition-[background-color,box-shadow] hover:bg-white hover:shadow-[0_2px_8px_rgba(6,28,47,0.12)]";
+  "inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-white/90 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(6,28,47,0.08)] transition-[background-color,box-shadow] hover:bg-white hover:shadow-[0_2px_8px_rgba(6,28,47,0.12)] w-9 px-0 sm:w-auto sm:px-4";
 
 const HERO_GRID_LINE = "rgba(6,28,47,0.07)";
 const HERO_GRID_SIZE = "24px 24px";
-const HERO_GRID_POSITION = "12px 14px";
+const HERO_GRID_POSITION = "0 7px";
 const HERO_GRID_MASK =
   "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 24%, #000 46%, #000 100%)";
 
@@ -142,8 +141,8 @@ function LabeledTakeaway({
     <p
       className={`${className} text-[15px] leading-[22px] md:text-[16px] md:leading-[24px]`}
     >
-      <span className="font-medium text-[var(--ink-primary)]">{label}</span>
-      <span className="text-[rgba(6,28,47,0.5)]"> — {children}</span>
+      <span className="font-medium text-[var(--ink-primary)]">{label}:</span>
+      <span className="text-[rgba(6,28,47,0.5)]"> {children}</span>
     </p>
   );
 }
@@ -190,12 +189,12 @@ function HeroRightPanel({ gridColor }: { gridColor: string }) {
   return (
     <>
       <div
-        className="pointer-events-none absolute bottom-0 right-0 top-3 hidden w-[min(500px,54%)] md:block"
+        className="pointer-events-none absolute -right-3 -top-3 bottom-0 hidden w-[min(512px,calc(54%+12px))] md:block"
         style={gridStyle}
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute bottom-0 right-0 top-3 hidden w-[min(500px,54%)] md:block"
+        className="pointer-events-none absolute -right-3 -top-3 bottom-0 hidden w-[min(512px,calc(54%+12px))] md:block"
         style={{
           background: `radial-gradient(ellipse 85% 80% at 72% 42%, ${gridColor}55, transparent 72%)`,
           WebkitMaskImage: HERO_GRID_MASK,
@@ -213,7 +212,6 @@ export function ReportHeroSummary({
   score = 0,
   verdict,
   summary,
-  risk,
   breakdown,
   confidence = 0,
   keyObservation,
@@ -233,7 +231,7 @@ export function ReportHeroSummary({
   const topIssueTitle = issues[0]?.title?.trim() || verdict?.trim();
   const overallScore = formatOverallScore(score);
   const confidenceValue = Math.max(0, Math.min(100, Number(confidence)));
-  const tierLabel = risk ? normalizeRisk(risk) : getTierLabel(theme.tier);
+  const tierLabel = getTierLabel(theme.tier);
   const trustDescription =
     metricObservations?.trust?.trim() || getTrustDescription(trust);
   const clarityDescription =
@@ -267,7 +265,7 @@ export function ReportHeroSummary({
 
           <div className="relative z-[1]">
             <div className="relative min-h-9 sm:flex sm:min-h-0 sm:items-center sm:justify-between sm:gap-4">
-              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 pr-[152px] text-[14px] sm:pr-0">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 pr-[5.25rem] text-[14px] sm:pr-0">
                 <div className="flex min-w-0 items-center gap-2">
                   {url && (
                     <img
@@ -297,14 +295,24 @@ export function ReportHeroSummary({
                 </span>
               </div>
 
-              <div className="absolute right-0 top-0 flex shrink-0 items-center gap-2 sm:static sm:justify-end">
-                <button type="button" onClick={onShare} className={HERO_ACTION_BUTTON_CLASS}>
+              <div className="absolute right-0 top-0 flex shrink-0 items-center gap-1.5 sm:static sm:gap-2 sm:justify-end">
+                <button
+                  type="button"
+                  onClick={onShare}
+                  className={HERO_ACTION_BUTTON_CLASS}
+                  aria-label="Share report"
+                >
                   <RiShare2Line size={16} aria-hidden />
-                  Share
+                  <span className="hidden sm:inline">Share</span>
                 </button>
-                <button type="button" onClick={onExport} className={HERO_ACTION_BUTTON_CLASS}>
+                <button
+                  type="button"
+                  onClick={onExport}
+                  className={HERO_ACTION_BUTTON_CLASS}
+                  aria-label="Export PDF"
+                >
                   <RiFilePdf2Line size={16} aria-hidden />
-                  Export PDF
+                  <span className="hidden sm:inline">Export PDF</span>
                 </button>
               </div>
             </div>
