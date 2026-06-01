@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import {
   RiBrainLine,
   RiFilePdf2Line,
@@ -121,6 +123,55 @@ function isDistinctInsight(insight: string, summary?: string, verdict?: string) 
   );
 }
 
+function LabeledTakeaway({
+  label,
+  children,
+  className = "mt-3",
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <p
+      className={`${className} text-[15px] leading-[22px] md:text-[16px] md:leading-[24px]`}
+    >
+      <span className="font-medium text-[var(--ink-primary)]">{label}</span>
+      <span className="text-[rgba(6,28,47,0.5)]"> — {children}</span>
+    </p>
+  );
+}
+
+function ScoreStatusChip({
+  score,
+  tierLabel,
+  badgeBg,
+}: {
+  score: string;
+  tierLabel: string;
+  badgeBg: string;
+}) {
+  return (
+    <div
+      className="inline-flex h-7 items-center gap-1.5 rounded-full border pl-1 pr-2.5"
+      style={{
+        borderColor: `${badgeBg}33`,
+        backgroundColor: `${badgeBg}14`,
+      }}
+    >
+      <span
+        className="inline-flex h-5 min-w-[26px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold leading-none tracking-[-0.03em] text-white"
+        style={{ backgroundColor: badgeBg }}
+      >
+        {score}
+      </span>
+      <span className="text-[12px] font-medium leading-none" style={{ color: badgeBg }}>
+        {tierLabel}
+      </span>
+    </div>
+  );
+}
+
 export function ReportHeroSummary({
   url,
   generatedAt,
@@ -169,9 +220,17 @@ export function ReportHeroSummary({
           className="relative overflow-hidden px-5 pb-5 pt-5 md:px-[30px] md:pb-6 md:pt-6"
           style={{ backgroundColor: theme.heroBg }}
         >
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 w-[min(520px,58%)]"
+            style={{
+              background: `radial-gradient(ellipse 75% 70% at 72% 38%, ${theme.gridColor}66, transparent 72%)`,
+            }}
+            aria-hidden
+          />
+
           <div className="relative z-[1]">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 text-[14px]">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
                 <div className="flex min-w-0 items-center gap-2">
                   {url && (
                     <img
@@ -199,26 +258,6 @@ export function ReportHeroSummary({
                 <span className="text-[rgba(6,28,47,0.5)]">
                   {formatAnalyzedDate(generatedAt)}
                 </span>
-
-                <span className="hidden h-4 w-px bg-[rgba(6,28,47,0.1)] sm:inline-block" />
-
-                <span
-                  className="inline-flex h-7 min-w-[34px] items-center justify-center rounded-full px-2 text-[13px] font-bold leading-none tracking-[-0.03em] text-white"
-                  style={{ backgroundColor: theme.badgeBg }}
-                >
-                  {overallScore}
-                </span>
-
-                <span
-                  className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[12px] font-medium leading-[18px]"
-                  style={{
-                    color: theme.badgeBg,
-                    borderColor: `${theme.badgeBg}33`,
-                    backgroundColor: `${theme.badgeBg}14`,
-                  }}
-                >
-                  {tierLabel}
-                </span>
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
@@ -239,23 +278,29 @@ export function ReportHeroSummary({
                   {verdict || "UX assessment complete"}
                 </h1>
 
-                <p className="mt-2 text-[15px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
+                <div className="mt-3">
+                  <ScoreStatusChip
+                    score={overallScore}
+                    tierLabel={tierLabel}
+                    badgeBg={theme.badgeBg}
+                  />
+                </div>
+
+                <LabeledTakeaway label="Visitor takeaway" className="mt-4">
                   {summary || "No summary generated."}
-                </p>
+                </LabeledTakeaway>
 
                 {showKeyInsight && (
-                  <p className="mt-3 text-[15px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[24px]">
-                    <span className="font-medium text-[var(--ink-primary)]">Key insight</span>
-                    {" — "}
-                    {keyInsight}
-                  </p>
+                  <LabeledTakeaway label="Key insight">{keyInsight}</LabeledTakeaway>
                 )}
               </div>
 
               <div className="flex shrink-0 justify-center md:justify-end">
                 <ReportPagePreview
+                  domain={domain}
                   previewImage={previewImage}
                   topIssueTitle={topIssueTitle}
+                  atmosphereColor={`${theme.gridColor}88`}
                 />
               </div>
             </div>
