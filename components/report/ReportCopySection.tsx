@@ -7,6 +7,7 @@ import {
   REPORT_CARD_CLASS_ANIMATED,
   REPORT_CARD_HEADLINE_CLASS,
   REPORT_SECTION_LABEL_CLASS,
+  REPORT_SECTION_SPACING_CLASS,
 } from "@/components/report/reportStyles";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
 
@@ -16,6 +17,9 @@ type ReportCopySectionProps = {
   onCopy: (text: string, index: number) => void;
 };
 
+const COPY_FIELD_HEADER_CLASS =
+  "mb-3 grid h-9 grid-cols-[1fr_36px] items-center gap-3";
+
 export function ReportCopySection({
   copy = [],
   copiedIndex,
@@ -24,13 +28,8 @@ export function ReportCopySection({
   if (copy.length === 0) return null;
 
   return (
-    <section>
-      <ReportSectionHeader
-        eyebrow="Copy"
-        title="Copy Refinement"
-        count={copy.length}
-        countNoun="refinements"
-      />
+    <section className={REPORT_SECTION_SPACING_CLASS}>
+      <ReportSectionHeader title="Copy Refinement" count={copy.length} />
 
       <div className="mt-5 space-y-4">
         {copy.map((item, index) => (
@@ -67,28 +66,27 @@ export function ReportCopySection({
 
                 <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
                   <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
-                    <div className="mb-3 flex items-center justify-between">
+                    <div className={COPY_FIELD_HEADER_CLASS}>
                       <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
                         Before
                       </p>
-                      <div className="rounded-full border border-neutral-200 bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-500">
-                        Original
-                      </div>
+                      <span className="sr-only">Original copy</span>
                     </div>
                     <p className="text-[16px] font-normal leading-5 text-neutral-600">{item.before}</p>
                   </div>
 
                   <div className="relative rounded-2xl border border-sky-200 bg-sky-50/70 p-5">
-                    <div className="mb-3 flex items-center justify-between gap-3">
+                    <div className={COPY_FIELD_HEADER_CLASS}>
                       <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-sky-700">
                         Improved
                       </p>
 
-                      <div className="relative">
+                      <div className="relative justify-self-end">
                         <button
                           type="button"
                           onClick={() => onCopy(item.after ?? "", index)}
                           className="flex h-9 w-9 items-center justify-center rounded-xl border border-sky-200 bg-white text-sky-700 transition hover:bg-sky-100"
+                          aria-label="Copy improved text"
                         >
                           {copiedIndex === index ? (
                             <RiCheckLine size={18} />

@@ -1,3 +1,7 @@
+export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
+
+export const REPORT_SECTION_SPACING_CLASS = "mt-12";
+
 export const REPORT_SECTION_TITLE_CLASS =
   "text-[24px] md:text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]";
 

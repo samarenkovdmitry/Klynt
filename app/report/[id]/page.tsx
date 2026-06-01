@@ -11,6 +11,7 @@ import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
 import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
+import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { useReportData } from "@/hooks/useReportData";
 
@@ -55,7 +56,7 @@ export default function ReportPage() {
       <AppHeader />
 
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-4 text-[var(--ink-primary)] md:px-6 md:pt-6">
-        <div className="mx-auto max-w-[1040px]">
+        <div className={REPORT_PAGE_CONTAINER_CLASS}>
           <ReportHeroSummary
             url={data.url}
             generatedAt={data.generatedAt}

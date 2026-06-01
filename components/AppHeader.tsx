@@ -40,8 +40,8 @@ function navLinkClass(isActive: boolean, isLanding: boolean) {
   return [
     base,
     isActive
-      ? "bg-[#F4F8FF] font-semibold text-[#061C2F]"
-      : "text-[#061C2F]/65 hover:bg-[#F8FAFC] hover:text-[#061C2F]",
+      ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
+      : "text-[#061C2F]/65 hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
   ].join(" ");
 }
 
@@ -49,8 +49,8 @@ function mobileNavLinkClass(isActive: boolean) {
   return [
     "block w-full rounded-xl px-4 py-3 text-left text-[15px] font-medium transition-colors",
     isActive
-      ? "bg-[#F4F8FF] text-[#061C2F] font-semibold"
-      : "text-[#061C2F]/80 hover:bg-[#F8FAFC] hover:text-[#061C2F]",
+      ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
+      : "text-[#061C2F]/80 hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
   ].join(" ");
 }
 
@@ -158,7 +158,7 @@ export function AppHeader() {
       <div className="md:hidden" aria-hidden={!menuOpen}>
         <button
           type="button"
-          className={`fixed inset-0 z-40 bg-[#061C2F]/40 ${menuOpen ? "" : "pointer-events-none invisible"}`}
+          className={`fixed inset-0 z-40 bg-[#18181B]/45 ${menuOpen ? "" : "pointer-events-none invisible"}`}
           aria-label="Close menu"
           tabIndex={menuOpen ? 0 : -1}
           onClick={() => setMenuOpen(false)}

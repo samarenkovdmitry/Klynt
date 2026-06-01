@@ -55,16 +55,18 @@ const variantStyles = {
 
 type AppFooterProps = {
   variant?: keyof typeof variantStyles;
+  containerClass?: string;
 };
 
-export function AppFooter({ variant = "light" }: AppFooterProps) {
+export function AppFooter({ variant = "light", containerClass }: AppFooterProps) {
   const styles = variantStyles[variant];
+  const container = containerClass ?? LANDING_UPDATE_CONTAINER;
 
   return (
     <footer
       className={`mt-auto w-full shrink-0 px-6 py-[33px] md:px-6 md:py-10 ${styles.footer}`}
     >
-      <div className={LANDING_UPDATE_CONTAINER}>
+      <div className={container}>
         <div className="flex flex-col items-center text-center md:hidden">
           <p className={`text-[14px] font-normal ${styles.text}`}>
             © 2026 Klynt – UX Clarity Analyzer

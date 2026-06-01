@@ -9,6 +9,7 @@ import {
   REPORT_CARD_CLASS_ANIMATED,
   REPORT_CARD_HEADLINE_CLASS,
   REPORT_SECTION_LABEL_CLASS,
+  REPORT_SECTION_SPACING_CLASS,
   REPORT_WHY_BODY_CLASS,
   REPORT_WHY_DIVIDER_CLASS,
   REPORT_WHY_LABEL_CLASS,
@@ -85,13 +86,8 @@ export function ReportSuggestionsSection({
   const blurredSuggestions = restSuggestions.slice(0, 2);
 
   return (
-    <section>
-      <ReportSectionHeader
-        eyebrow="Recommendations"
-        title="Suggested Improvements"
-        count={suggestions.length}
-        countNoun="improvements"
-      />
+    <section className={REPORT_SECTION_SPACING_CLASS}>
+      <ReportSectionHeader title="Suggested Improvements" count={suggestions.length} />
 
       <div className="mt-5 space-y-4">
         <SuggestionCard item={firstSuggestion} index={0} />
