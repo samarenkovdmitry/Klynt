@@ -6,15 +6,18 @@ type ButtonTone = "light" | "dark";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
-  /** Secondary only: light surfaces (report CTA) vs dark surfaces (landing hero/CTA). */
+  /** Light surfaces (app/report) vs dark surfaces (landing hero/CTA). Applies to primary and secondary. */
   tone?: ButtonTone;
   icon?: ReactNode;
   href?: string;
   fullWidth?: boolean;
 };
 
-const primaryStyles =
-  "border border-transparent bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-primary-hover)]";
+const primaryStyles: Record<ButtonTone, string> = {
+  light:
+    "border border-transparent bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-primary-hover)]",
+  dark: "border border-transparent bg-white text-[#18181B] hover:bg-[#F4F4F5]",
+};
 
 const accentStyles =
   "border border-transparent bg-[var(--brand-primary)] text-white shadow-[0_10px_30px_rgba(37,99,235,0.22)] hover:-translate-y-px hover:bg-[var(--brand-primary-hover)] hover:shadow-[0_14px_34px_rgba(37,99,235,0.28)]";
@@ -43,7 +46,7 @@ export function Button({
       ? secondaryStyles[tone]
       : variant === "accent"
         ? accentStyles
-        : primaryStyles;
+        : primaryStyles[tone];
 
   const classes = [
     "inline-flex h-[52px] min-h-[52px] items-center justify-center gap-2 rounded-2xl px-6",

@@ -46,7 +46,7 @@ const variantStyles = {
     social: "text-[#8E99A2] transition hover:text-[#061C2F]",
   },
   dark: {
-    footer: "border-t border-white/[0.06] bg-[#111113]",
+    footer: "border-t border-white/[0.06] bg-[#18181B]",
     text: "text-white/40",
     link: "transition hover:text-white/80",
     social: "text-white/40 transition hover:text-white/75",

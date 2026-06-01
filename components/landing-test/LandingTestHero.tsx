@@ -49,6 +49,7 @@ export function LandingTestHero() {
             <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
               <Button
                 href="/analyze"
+                tone="dark"
                 icon={<RiArrowRightLine size={18} aria-hidden />}
                 fullWidth={false}
                 className={HERO_BUTTON_CLASS}

@@ -1,7 +1,12 @@
-/** Neutral charcoal base — Luma-style, no blue tint in flat areas */
-export const LANDING_DARK = "#111113";
+/** Neutral charcoal base — Luma-style, slightly lifted from near-black */
+export const LANDING_DARK = "#18181B";
 
-export const LANDING_DARK_BG = "bg-[#111113]";
+export const LANDING_DARK_BG = "bg-[#18181B]";
+
+/** Raised surface for inline UI previews on dark landing */
+export const LANDING_SURFACE = "#1C1C1F";
+
+export const LANDING_SURFACE_BG = "bg-[#1C1C1F]";
 
 export const LANDING_SECTION =
   "border-t border-white/[0.06] px-5 py-20 md:px-6 md:py-28";

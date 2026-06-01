@@ -24,6 +24,7 @@ export function LandingTestCtaSection() {
         <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5 md:mt-10">
           <Button
             href="/analyze"
+            tone="dark"
             icon={<RiArrowRightLine size={18} aria-hidden />}
             fullWidth={false}
             className={LANDING_BUTTON}
