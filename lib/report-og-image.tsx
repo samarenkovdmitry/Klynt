@@ -22,8 +22,10 @@ import {
 const CONTENT_PADDING = 52;
 const LEFT_PANEL_WIDTH = REPORT_OG_WIDTH / 2;
 const RIGHT_PANEL_WIDTH = REPORT_OG_WIDTH / 2;
-const SCORE_PILL_HEIGHT = 76;
-const OG_GRID_LINE = "rgba(6, 28, 47, 0.07)";
+const SCORE_PILL_HEIGHT = 80;
+const LOGO_WIDTH = 128;
+const LOGO_HEIGHT = 38;
+const OG_GRID_LINE = "rgba(6, 28, 47, 0.11)";
 
 type ReportOgInput = Pick<AuditReport, "url" | "score" | "verdict" | "summary">;
 
@@ -123,8 +125,8 @@ export async function composeReportOpenGraphImage(
           <img
             src={logoSrc}
             alt=""
-            width={88}
-            height={26}
+            width={LOGO_WIDTH}
+            height={LOGO_HEIGHT}
             style={{
               position: "absolute",
               top: CONTENT_PADDING,
@@ -139,7 +141,7 @@ export async function composeReportOpenGraphImage(
               top: CONTENT_PADDING,
               right: CONTENT_PADDING,
               zIndex: 3,
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: 700,
               color: "#061C2F",
               letterSpacing: "-0.03em",
@@ -164,24 +166,12 @@ export async function composeReportOpenGraphImage(
         >
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              maxWidth: LEFT_PANEL_WIDTH - CONTENT_PADDING - 120,
+              maxWidth: LEFT_PANEL_WIDTH - CONTENT_PADDING - LOGO_WIDTH - 24,
             }}
           >
             <div
               style={{
-                width: 22,
-                height: 22,
-                borderRadius: 4,
-                backgroundColor: "rgba(6, 28, 47, 0.08)",
-                flexShrink: 0,
-              }}
-            />
-            <div
-              style={{
-                fontSize: 24,
+                fontSize: 28,
                 fontWeight: 500,
                 color: "#061C2F",
               }}
@@ -231,14 +221,14 @@ export async function composeReportOpenGraphImage(
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                minWidth: 58,
-                height: 58,
+                minWidth: 60,
+                height: 60,
                 paddingLeft: 16,
                 paddingRight: 16,
                 borderRadius: 999,
                 backgroundColor: theme.badgeBg,
                 color: "#ffffff",
-                fontSize: 34,
+                fontSize: 36,
                 fontWeight: 700,
               }}
             >
@@ -247,7 +237,7 @@ export async function composeReportOpenGraphImage(
             <div
               style={{
                 marginLeft: 14,
-                fontSize: 26,
+                fontSize: 28,
                 fontWeight: 500,
                 color: theme.badgeBg,
               }}
@@ -272,10 +262,7 @@ export async function composeReportOpenGraphImage(
               <div
                 style={{
                   position: "absolute",
-                  top: 0,
-                  right: 0,
-                  width: "54%",
-                  height: "100%",
+                  inset: 0,
                   ...gridBackground,
                 }}
               />
@@ -283,8 +270,8 @@ export async function composeReportOpenGraphImage(
                 style={{
                   position: "absolute",
                   top: 0,
-                  right: "46%",
-                  width: "14%",
+                  left: 0,
+                  width: "22%",
                   height: "100%",
                   background: `linear-gradient(to right, ${theme.heroBg}, transparent)`,
                 }}
@@ -293,7 +280,7 @@ export async function composeReportOpenGraphImage(
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background: `radial-gradient(ellipse 85% 80% at 78% 42%, ${theme.gridColor}55, transparent 72%)`,
+                  background: `radial-gradient(ellipse 90% 85% at 78% 42%, ${theme.gridColor}66, transparent 70%)`,
                 }}
               />
             </>
