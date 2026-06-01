@@ -29,10 +29,10 @@ import {
 } from "@/lib/report-preview-size";
 
 const COMPOSE_ATTEMPTS = [
-  { includePattern: true, includePreview: true },
-  { includePattern: false, includePreview: true },
-  { includePattern: true, includePreview: false },
-  { includePattern: false, includePreview: false },
+  { includeGrid: true, includePreview: true },
+  { includeGrid: false, includePreview: true },
+  { includeGrid: true, includePreview: false },
+  { includeGrid: false, includePreview: false },
 ] as const;
 
 async function loadDefaultOpenGraphImage() {
