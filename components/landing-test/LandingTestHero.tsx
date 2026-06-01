@@ -28,17 +28,13 @@ export function LandingTestHero() {
       <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-14 pt-8 md:px-6 md:pb-20 md:pt-12">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12 xl:gap-16">
           <div className="mx-auto max-w-[640px] text-center lg:mx-0 lg:max-w-none lg:text-left">
-            <p className="text-[14px] font-normal leading-5 text-white/50 md:text-[15px]">
-              AI UX Review
-            </p>
-
-            <h1 className="mt-3 max-w-[560px] text-[36px] font-semibold leading-[1.1] tracking-[-0.02em] text-white md:text-[48px] md:leading-[1.06] lg:max-w-none xl:text-[52px]">
-              Clarity drives conversion
+            <h1 className="max-w-[560px] text-[36px] font-semibold leading-[1.1] tracking-[-0.02em] text-white md:text-[48px] md:leading-[1.06] lg:max-w-none xl:text-[52px]">
+              See what first-time visitors don&apos;t understand.
             </h1>
 
-            <p className="mt-4 max-w-[520px] text-[16px] font-normal leading-[26px] text-white/70 md:mt-5 md:text-[17px] md:leading-[28px] lg:max-w-[480px]">
-              Paste a URL or upload a screenshot. Klynt flags friction, weak copy, and trust
-              gaps — with fixes you can ship.
+            <p className="mt-4 max-w-[560px] text-[16px] font-normal leading-[26px] text-white/70 md:mt-5 md:text-[17px] md:leading-[28px] lg:max-w-[520px]">
+              Paste a URL or upload a screenshot. Get a UX report with issues, explanations, and
+              prioritized fixes.
             </p>
 
             <ul className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-5 sm:gap-y-2 lg:items-start lg:justify-start">

@@ -100,10 +100,7 @@ export function LandingTestMockup() {
             </div>
           </div>
 
-          <div
-            className="relative overflow-hidden px-4 pb-5 pt-5 md:px-5 md:pb-6 md:pt-6"
-            style={{ backgroundColor: theme.heroBg }}
-          >
+          <div className="relative overflow-hidden bg-white px-4 pb-5 pt-5 md:px-5 md:pb-6 md:pt-6">
             <div className="relative z-[1] flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
               <div className="min-w-0 flex-1">
                 <p

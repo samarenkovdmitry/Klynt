@@ -52,7 +52,7 @@ export function LandingTestHeader() {
       <header className="sticky top-0 z-50 w-full border-b border-transparent bg-transparent pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between px-4 md:px-6">
           <Link href="/" className="shrink-0" aria-label="Klynt — home">
-            <img src="/klynt-logo-light.svg" alt="Klynt" className="h-auto w-[108px]" />
+            <img src="/klynt-logo-light.svg" alt="Klynt" className="h-[30px] w-[100px] shrink-0" />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
