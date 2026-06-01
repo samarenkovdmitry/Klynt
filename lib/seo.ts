@@ -12,7 +12,7 @@ const OG_IMAGE = {
   url: "/opengraph-image.jpg",
   width: 1024,
   height: 537,
-  alt: `${SITE_NAME} — Clarity drives conversion`,
+  alt: `${SITE_NAME} — UX Clarity Analyzer`,
 };
 
 type PageSeoOptions = {

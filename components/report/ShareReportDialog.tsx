@@ -15,7 +15,16 @@ import {
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
+import { Button } from "@/components/ui/Button";
 import { inputFieldClass } from "@/components/ui/inputClasses";
+import {
+  REPORT_HERO_RADIUS_CLASS,
+  REPORT_SURFACE_BORDER_CLASS,
+} from "@/components/report/reportStyles";
+import {
+  formatOverallScore,
+  formatReportDomain,
+} from "@/lib/report-hero-theme";
 import {
   getShareTargets,
   type ReportShareContext,
@@ -35,6 +44,9 @@ const SHARE_ICONS: Record<string, RemixiconComponentType> = {
   reddit: RiReddit2Line,
   email: RiMailLine,
 };
+
+const SOCIAL_BUTTON_CLASS =
+  "flex min-w-0 flex-col items-center gap-1.5 rounded-[14px] border border-[rgba(6,28,47,0.08)] bg-white px-2 py-2.5 text-[var(--ink-primary)] transition hover:border-[rgba(6,28,47,0.12)] hover:bg-[rgba(6,28,47,0.03)]";
 
 function ShareNetworkIcon({ id }: { id: string }) {
   const Icon = SHARE_ICONS[id] ?? RiShareForwardLine;
@@ -70,6 +82,24 @@ function ShareNetworkIcon({ id }: { id: string }) {
   return <Icon size={20} aria-hidden />;
 }
 
+function buildSharePreview(context?: ReportShareContext) {
+  const domain = formatReportDomain(context?.url);
+  const score =
+    context?.score != null && Number.isFinite(Number(context.score))
+      ? formatOverallScore(context.score)
+      : null;
+
+  if (domain && score) {
+    return `UX report for ${domain} · ${score}/10`;
+  }
+
+  if (domain) {
+    return `UX report for ${domain}`;
+  }
+
+  return "Share this UX clarity report";
+}
+
 export function ShareReportDialog({
   open,
   onClose,
@@ -80,6 +110,7 @@ export function ShareReportDialog({
   const [canNativeShare, setCanNativeShare] = useState(false);
 
   const targets = getShareTargets(shareUrl, shareContext);
+  const previewLine = buildSharePreview(shareContext);
 
   useEffect(() => {
     setCanNativeShare(typeof navigator !== "undefined" && "share" in navigator);
@@ -135,7 +166,7 @@ export function ShareReportDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center"
+      className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-4"
       role="presentation"
     >
       <button
@@ -149,93 +180,107 @@ export function ShareReportDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="share-report-title"
-        className="share-dialog-enter relative z-10 mx-auto min-w-0 w-[min(100%,500px)] max-w-full rounded-[28px] bg-white px-5 py-6 shadow-[0_24px_64px_rgba(6,28,47,0.18)] md:px-7 md:py-7"
+        className={`share-dialog-enter relative z-10 mx-auto flex max-h-[min(92dvh,720px)] min-w-0 w-full max-w-[480px] flex-col ${REPORT_HERO_RADIUS_CLASS} ${REPORT_SURFACE_BORDER_CLASS} bg-white shadow-[0_24px_64px_rgba(6,28,47,0.16)] sm:max-h-none`}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              id="share-report-title"
-              className="text-[22px] font-semibold tracking-[-0.03em] text-[var(--ink-primary)] md:text-[24px]"
-            >
-              Share report
-            </h2>
-            <p className="mt-1 text-[14px] leading-6 text-[var(--ink-secondary)]">
-              Send this link to your team or post it on social.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--stroke-light)] text-[var(--ink-secondary)] transition hover:bg-[#F8FBFF] hover:text-[var(--ink-primary)]"
-            aria-label="Close"
-          >
-            <RiCloseLine size={20} />
-          </button>
+        <div
+          className="flex shrink-0 justify-center pt-3 sm:hidden"
+          aria-hidden
+        >
+          <span className="h-1 w-10 rounded-full bg-[rgba(6,28,47,0.12)]" />
         </div>
 
-        <div className="mt-6">
-          <label
-            htmlFor="share-report-url"
-            className="text-[13px] font-medium text-[var(--ink-secondary)]"
-          >
-            Report link
-          </label>
-          <div className="mt-2 flex gap-2">
+        <div className="overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h2
+                id="share-report-title"
+                className="text-[20px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)] sm:text-[22px]"
+              >
+                Share report
+              </h2>
+              <p className="mt-1 text-[14px] leading-6 text-[rgba(6,28,47,0.5)]">
+                {previewLine}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[rgba(6,28,47,0.55)] transition hover:bg-[rgba(6,28,47,0.06)] hover:text-[var(--ink-primary)]"
+              aria-label="Close"
+            >
+              <RiCloseLine size={20} />
+            </button>
+          </div>
+
+          <div className="mt-5">
+            <label
+              htmlFor="share-report-url"
+              className="text-[13px] font-medium text-[rgba(6,28,47,0.55)]"
+            >
+              Report link
+            </label>
             <input
               id="share-report-url"
               type="text"
               readOnly
               value={shareUrl}
-              className={`${inputFieldClass({ withMargin: false })} h-[48px] min-w-0 flex-1 text-[14px]`}
+              className={`${inputFieldClass({ withMargin: false })} mt-2 h-[48px] w-full bg-[#FAFBFC] text-[14px]`}
               onFocus={(e) => e.target.select()}
             />
-            <button
+
+            <Button
               type="button"
+              variant="accent"
+              fullWidth
+              className="!mt-3 !h-[48px] !min-h-[48px] !rounded-full !text-[15px] hover:!translate-y-0"
+              icon={
+                copied ? (
+                  <RiCheckLine size={18} className="text-white" aria-hidden />
+                ) : (
+                  <RiFileCopyLine size={18} aria-hidden />
+                )
+              }
               onClick={() => void handleCopy()}
-              aria-label={copied ? "Link copied" : "Copy report link"}
-              className="flex h-[48px] w-[48px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-[var(--stroke-light)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF] sm:w-auto"
             >
-              {copied ? (
-                <RiCheckLine size={18} className="text-emerald-600" aria-hidden />
-              ) : (
-                <RiFileCopyLine size={18} aria-hidden />
-              )}
-              <span className="hidden sm:inline">
-                {copied ? "Copied" : "Copy"}
-              </span>
-            </button>
+              {copied ? "Link copied" : "Copy link"}
+            </Button>
           </div>
-        </div>
 
-        <p className="mt-6 text-[13px] font-medium text-[var(--ink-secondary)]">
-          Share to
-        </p>
+          <div className="my-6 h-px bg-[rgba(6,28,47,0.06)]" />
 
-        <div className="mt-3 flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
-          {targets.map((target) => (
-            <a
-              key={target.id}
-              href={target.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[var(--stroke-light)] bg-white text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
-              aria-label={`Share on ${target.label}`}
-            >
-              <ShareNetworkIcon id={target.id} />
-            </a>
-          ))}
+          <p className="text-[13px] font-medium text-[rgba(6,28,47,0.55)]">
+            Or share via
+          </p>
 
-          {canNativeShare && (
+          <div className="mt-3 grid grid-cols-4 gap-2">
+            {targets.map((target) => (
+              <a
+                key={target.id}
+                href={target.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={SOCIAL_BUTTON_CLASS}
+                aria-label={`Share on ${target.label}`}
+              >
+                <ShareNetworkIcon id={target.id} />
+                <span className="w-full truncate text-center text-[11px] font-medium text-[rgba(6,28,47,0.55)]">
+                  {target.label}
+                </span>
+              </a>
+            ))}
+          </div>
+
+          {canNativeShare ? (
             <button
               type="button"
               onClick={() => void handleNativeShare()}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[var(--stroke-light)] bg-white text-[var(--ink-primary)] transition hover:border-[rgba(20,168,232,0.25)] hover:bg-[#F8FBFF]"
-              aria-label="More share options"
+              className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[rgba(6,28,47,0.08)] bg-white text-[14px] font-medium text-[var(--ink-primary)] transition hover:bg-[rgba(6,28,47,0.03)]"
             >
-              <RiMoreFill size={20} aria-hidden />
+              <RiMoreFill size={18} aria-hidden />
+              More share options
             </button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

@@ -15,7 +15,6 @@ import {
 
 import { useAnalyzePage, type AnalyzeInputMode } from "@/hooks/useAnalyzePage";
 import { AppHeader } from "@/components/AppHeader";
-import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { Button } from "@/components/ui/Button";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
@@ -268,10 +267,6 @@ export function AnalyzePageView() {
               </div>
             )}
           </div>
-
-          {!loading && (
-            <TrustBadgeRow variant="light" className="mt-5" />
-          )}
 
           {error && (
             <div

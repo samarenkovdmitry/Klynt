@@ -1,33 +1,38 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import { ImageResponse } from "@vercel/og";
 
 import type { AuditReport } from "@/lib/audit-report";
 import { FAMILJEN_GROTESK_400, FAMILJEN_GROTESK_700 } from "@/lib/report-og-font-data";
 import {
-  buildReportOgPatternDataUrl,
-  REPORT_OG_PATTERN_LEFT,
-  REPORT_OG_PATTERN_RENDER_WIDTH,
-} from "@/lib/report-og-pattern";
-import {
   formatOverallScore,
   formatReportDomain,
   getReportHeroTheme,
+  getTierLabel,
 } from "@/lib/report-hero-theme";
 import {
+  REPORT_OG_BROWSER_CHROME_HEIGHT,
   REPORT_OG_HEIGHT,
+  REPORT_OG_PREVIEW_HEIGHT,
+  REPORT_OG_PREVIEW_WIDTH,
   REPORT_OG_WIDTH,
 } from "@/lib/report-preview-size";
 
-const PREVIEW_WIDTH = 520;
-const PREVIEW_HEIGHT = 400;
-const LEFT_WIDTH = 600;
-const SCORE_CIRCLE_SIZE = 88;
+const CONTENT_PADDING = 52;
+const LEFT_PANEL_WIDTH = REPORT_OG_WIDTH / 2;
+const RIGHT_PANEL_WIDTH = REPORT_OG_WIDTH / 2;
+const SCORE_PILL_HEIGHT = 76;
+const OG_GRID_LINE = "rgba(6, 28, 47, 0.07)";
 
 type ReportOgInput = Pick<AuditReport, "url" | "score" | "verdict" | "summary">;
 
 type ComposeOptions = {
-  includePattern?: boolean;
+  includeGrid?: boolean;
   includePreview?: boolean;
 };
+
+let klyntLogoDataUrlPromise: Promise<string | null> | null = null;
 
 function toFontData(buffer: Buffer) {
   return new Uint8Array(buffer).buffer as ArrayBuffer;
@@ -43,26 +48,63 @@ function truncateText(text: string, maxLength: number) {
   return `${trimmed.slice(0, maxLength - 1).trimEnd()}…`;
 }
 
+function hexWithAlpha(hex: string, alphaHex: string) {
+  return `${hex}${alphaHex}`;
+}
+
+async function getKlyntLogoDataUrl(): Promise<string | null> {
+  if (!klyntLogoDataUrlPromise) {
+    const candidatePaths = [
+      path.join(process.cwd(), "public", "klynt-logo-dark.svg"),
+      path.join(process.cwd(), ".next", "standalone", "public", "klynt-logo-dark.svg"),
+    ];
+
+    klyntLogoDataUrlPromise = (async () => {
+      for (const filePath of candidatePaths) {
+        try {
+          const svg = await readFile(filePath, "utf8");
+          return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+        } catch {
+          continue;
+        }
+      }
+
+      console.error("[report opengraph-image] logo load failed for all paths");
+      return null;
+    })();
+  }
+
+  return klyntLogoDataUrlPromise;
+}
+
 export async function composeReportOpenGraphImage(
   report: ReportOgInput,
   previewBuffer: Buffer | null,
   options: ComposeOptions = {}
 ) {
-  const { includePattern = true, includePreview = true } = options;
+  const { includeGrid = true, includePreview = true } = options;
   const theme = getReportHeroTheme(report.score);
   const domain = formatReportDomain(report.url) || "Landing page";
   const scoreLabel = formatOverallScore(report.score);
+  const tierLabel = getTierLabel(theme.tier);
   const headline = truncateText(
     report.verdict?.trim() || report.summary?.trim() || "UX clarity report",
-    110
+    88
   );
   const previewSrc =
     includePreview && previewBuffer
       ? `data:image/jpeg;base64,${previewBuffer.toString("base64")}`
       : null;
-  const patternSrc = includePattern
-    ? buildReportOgPatternDataUrl(theme.gridColor)
-    : null;
+  const logoSrc = await getKlyntLogoDataUrl();
+  const chipBorder = hexWithAlpha(theme.badgeBg, "33");
+  const chipBg = hexWithAlpha(theme.badgeBg, "14");
+  const frameHeight =
+    REPORT_OG_BROWSER_CHROME_HEIGHT + REPORT_OG_PREVIEW_HEIGHT;
+  const gridBackground = {
+    backgroundImage: `linear-gradient(${OG_GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${OG_GRID_LINE} 1px, transparent 1px)`,
+    backgroundSize: "24px 24px",
+    backgroundPosition: "0 7px",
+  } as const;
 
   return new ImageResponse(
     (
@@ -76,127 +118,276 @@ export async function composeReportOpenGraphImage(
           fontFamily: "Familjen Grotesk",
         }}
       >
-        {patternSrc ? (
+        {logoSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={patternSrc}
+            src={logoSrc}
             alt=""
-            width={REPORT_OG_PATTERN_RENDER_WIDTH}
-            height={REPORT_OG_HEIGHT}
+            width={88}
+            height={26}
             style={{
               position: "absolute",
-              top: 0,
-              left: REPORT_OG_PATTERN_LEFT,
-              height: "100%",
+              top: CONTENT_PADDING,
+              right: CONTENT_PADDING,
+              zIndex: 3,
             }}
           />
-        ) : null}
+        ) : (
+          <div
+            style={{
+              position: "absolute",
+              top: CONTENT_PADDING,
+              right: CONTENT_PADDING,
+              zIndex: 3,
+              fontSize: 24,
+              fontWeight: 700,
+              color: "#061C2F",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Klynt
+          </div>
+        )}
 
         <div
           style={{
-            position: "relative",
             display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
+            width: LEFT_PANEL_WIDTH,
             height: "100%",
-            padding: "52px",
+            padding: CONTENT_PADDING,
+            paddingRight: 36,
+            flexDirection: "column",
+            justifyContent: "space-between",
+            position: "relative",
+            zIndex: 2,
           }}
         >
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              height: "100%",
-              width: LEFT_WIDTH,
-              paddingRight: 36,
+              alignItems: "center",
+              gap: 10,
+              maxWidth: LEFT_PANEL_WIDTH - CONTENT_PADDING - 120,
             }}
           >
             <div
               style={{
-                fontSize: 30,
-                color: "rgba(6, 28, 47, 0.45)",
-              }}
-            >
-              {domain}
-            </div>
-
-            <div
-              style={{
-                fontSize: 46,
-                fontWeight: 700,
-                color: "#061C2F",
-                lineHeight: 1.18,
-                maxWidth: LEFT_WIDTH,
-              }}
-            >
-              {headline}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                flexShrink: 0,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 32,
-                  color: "rgba(6, 28, 47, 0.45)",
-                  flexShrink: 0,
-                }}
-              >
-                UX clarity score
-              </div>
-              <div
-                style={{
-                  width: SCORE_CIRCLE_SIZE,
-                  height: SCORE_CIRCLE_SIZE,
-                  borderRadius: SCORE_CIRCLE_SIZE / 2,
-                  backgroundColor: theme.badgeBg,
-                  color: "#ffffff",
-                  fontSize: 36,
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginLeft: 18,
-                  flexShrink: 0,
-                }}
-              >
-                {scoreLabel}
-              </div>
-            </div>
-          </div>
-
-          {previewSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewSrc}
-              alt=""
-              width={PREVIEW_WIDTH}
-              height={PREVIEW_HEIGHT}
-              style={{
-                borderRadius: 16,
-                objectFit: "cover",
-                objectPosition: "top",
-                flexShrink: 0,
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: PREVIEW_WIDTH,
-                height: PREVIEW_HEIGHT,
-                borderRadius: 16,
+                width: 22,
+                height: 22,
+                borderRadius: 4,
                 backgroundColor: "rgba(6, 28, 47, 0.08)",
                 flexShrink: 0,
               }}
             />
-          )}
+            <div
+              style={{
+                fontSize: 24,
+                fontWeight: 500,
+                color: "#061C2F",
+              }}
+            >
+              {domain}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              flex: 1,
+              paddingTop: 28,
+              paddingBottom: 28,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 44,
+                fontWeight: 700,
+                color: "#061C2F",
+                lineHeight: 1.18,
+                maxWidth: LEFT_PANEL_WIDTH - CONTENT_PADDING - 36,
+              }}
+            >
+              {headline}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              alignSelf: "flex-start",
+              height: SCORE_PILL_HEIGHT,
+              paddingLeft: 8,
+              paddingRight: 28,
+              borderRadius: 999,
+              border: `2px solid ${chipBorder}`,
+              backgroundColor: chipBg,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minWidth: 58,
+                height: 58,
+                paddingLeft: 16,
+                paddingRight: 16,
+                borderRadius: 999,
+                backgroundColor: theme.badgeBg,
+                color: "#ffffff",
+                fontSize: 34,
+                fontWeight: 700,
+              }}
+            >
+              {scoreLabel}
+            </div>
+            <div
+              style={{
+                marginLeft: 14,
+                fontSize: 26,
+                fontWeight: 500,
+                color: theme.badgeBg,
+              }}
+            >
+              {tierLabel}
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            width: RIGHT_PANEL_WIDTH,
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {includeGrid ? (
+            <>
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: "54%",
+                  height: "100%",
+                  ...gridBackground,
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: "46%",
+                  width: "14%",
+                  height: "100%",
+                  background: `linear-gradient(to right, ${theme.heroBg}, transparent)`,
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: `radial-gradient(ellipse 85% 80% at 78% 42%, ${theme.gridColor}55, transparent 72%)`,
+                }}
+              />
+            </>
+          ) : null}
+
+          <div
+            style={{
+              position: "relative",
+              zIndex: 2,
+              display: "flex",
+              flexDirection: "column",
+              width: REPORT_OG_PREVIEW_WIDTH,
+              height: frameHeight,
+              borderRadius: 16,
+              border: "2px solid rgba(0, 0, 0, 0.08)",
+              backgroundColor: "#F8FAFC",
+              overflow: "hidden",
+              boxShadow: "0 14px 40px rgba(6, 28, 47, 0.12)",
+              flexShrink: 0,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                height: REPORT_OG_BROWSER_CHROME_HEIGHT,
+                paddingLeft: 14,
+                paddingRight: 14,
+                borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+                backgroundColor: "#ffffff",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 999,
+                    backgroundColor: "#FF5F57",
+                  }}
+                />
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 999,
+                    backgroundColor: "#FFBD2E",
+                  }}
+                />
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 999,
+                    backgroundColor: "#28CA41",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  marginLeft: 10,
+                  fontSize: 15,
+                  color: "rgba(6, 28, 47, 0.45)",
+                }}
+              >
+                {domain}
+              </div>
+            </div>
+
+            {previewSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={previewSrc}
+                alt=""
+                width={REPORT_OG_PREVIEW_WIDTH}
+                height={REPORT_OG_PREVIEW_HEIGHT}
+                style={{
+                  width: REPORT_OG_PREVIEW_WIDTH,
+                  height: REPORT_OG_PREVIEW_HEIGHT,
+                  objectFit: "cover",
+                  objectPosition: "top center",
+                  display: "flex",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: REPORT_OG_PREVIEW_WIDTH,
+                  height: REPORT_OG_PREVIEW_HEIGHT,
+                  backgroundColor: "rgba(6, 28, 47, 0.06)",
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
     ),

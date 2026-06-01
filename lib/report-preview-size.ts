@@ -8,3 +8,11 @@ export const REPORT_PREVIEW_HEIGHT = 380;
 
 export const REPORT_OG_WIDTH = 1200;
 export const REPORT_OG_HEIGHT = 630;
+
+/** OG browser-frame content area — same 620:380 ratio as the report hero preview. */
+export const REPORT_OG_PREVIEW_WIDTH = 500;
+export const REPORT_OG_PREVIEW_HEIGHT = Math.round(
+  (REPORT_OG_PREVIEW_WIDTH * REPORT_PREVIEW_HEIGHT) / REPORT_PREVIEW_WIDTH
+);
+
+export const REPORT_OG_BROWSER_CHROME_HEIGHT = 46;

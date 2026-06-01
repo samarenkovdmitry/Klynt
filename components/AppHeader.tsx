@@ -111,8 +111,11 @@ export function AppHeader() {
                   className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
                   aria-hidden
                 />
-                <span className="truncate text-[12px] font-semibold tracking-[-0.02em] text-[rgba(6,28,47,0.65)] sm:text-[13px] md:text-[14px]">
+                <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
                   UX Clarity Analyzer
+                </span>
+                <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:hidden">
+                  UX Analyzer
                 </span>
               </>
             )}

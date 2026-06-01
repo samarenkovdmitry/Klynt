@@ -35,7 +35,7 @@ export function ReportCtaSection({ onRerun, onExport }: ReportCtaSectionProps) {
         <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center">
           <Button
             type="button"
-            tone="dark"
+            variant="accent"
             fullWidth={false}
             className={`${CTA_BUTTON_CLASS} sm:min-w-[200px]`}
             icon={<RiArrowRightLine size={18} aria-hidden />}

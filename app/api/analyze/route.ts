@@ -14,6 +14,7 @@ import { generateReportId } from "@/lib/report-id";
 import { buildReportPreviewImage } from "@/lib/report-preview";
 import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
+import { generateReportOgPreviewDataUrl } from "@/lib/report-opengraph-image";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
 export const runtime = "nodejs";
@@ -708,6 +709,19 @@ json.confidence = Number.isFinite(Number(json.confidence))
       generatedAt: new Date().toISOString(),
     };
 
+    try {
+      const ogPreviewImage = await generateReportOgPreviewDataUrl(
+        reportPayload,
+        previewImage
+      );
+
+      if (ogPreviewImage) {
+        reportPayload.ogPreviewImage = ogPreviewImage;
+      }
+    } catch (ogError) {
+      console.error("[analyze] Failed to pre-render OG image:", ogError);
+    }
+
     if (isAuditReport(reportPayload)) {
       try {
         await saveReportToDb({
@@ -726,6 +740,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
       url: auditedUrl,
       generatedAt: reportPayload.generatedAt,
       previewImage,
+      ogPreviewImage: reportPayload.ogPreviewImage,
       metric_observations: metricObservations,
     });
   } catch (error: any) {
