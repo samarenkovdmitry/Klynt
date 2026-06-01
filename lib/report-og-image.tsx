@@ -11,6 +11,7 @@ import {
   getReportHeroTheme,
   getTierLabel,
 } from "@/lib/report-hero-theme";
+import { buildReportOgPatternDataUrl } from "@/lib/report-og-pattern";
 import {
   REPORT_OG_BROWSER_CHROME_HEIGHT,
   REPORT_OG_HEIGHT,
@@ -25,7 +26,10 @@ const RIGHT_PANEL_WIDTH = REPORT_OG_WIDTH / 2;
 const SCORE_PILL_HEIGHT = 80;
 const LOGO_WIDTH = 128;
 const LOGO_HEIGHT = 38;
-const OG_GRID_LINE = "rgba(6, 28, 47, 0.11)";
+const OG_INK_MUTED = "#061C2F73";
+const OG_INK_FAINT = "#061C2F0F";
+const OG_BORDER_FAINT = "#00000014";
+const OG_BORDER_SOFT = "#0000000F";
 
 type ReportOgInput = Pick<AuditReport, "url" | "score" | "verdict" | "summary">;
 
@@ -98,15 +102,13 @@ export async function composeReportOpenGraphImage(
       ? `data:image/jpeg;base64,${previewBuffer.toString("base64")}`
       : null;
   const logoSrc = await getKlyntLogoDataUrl();
+  const patternSrc = includeGrid
+    ? buildReportOgPatternDataUrl(theme.gridColor)
+    : null;
   const chipBorder = hexWithAlpha(theme.badgeBg, "33");
   const chipBg = hexWithAlpha(theme.badgeBg, "14");
   const frameHeight =
     REPORT_OG_BROWSER_CHROME_HEIGHT + REPORT_OG_PREVIEW_HEIGHT;
-  const gridBackground = {
-    backgroundImage: `linear-gradient(${OG_GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${OG_GRID_LINE} 1px, transparent 1px)`,
-    backgroundSize: "24px 24px",
-    backgroundPosition: "0 7px",
-  } as const;
 
   return new ImageResponse(
     (
@@ -115,28 +117,34 @@ export async function composeReportOpenGraphImage(
           width: "100%",
           height: "100%",
           display: "flex",
+          flexDirection: "row",
           position: "relative",
           backgroundColor: theme.heroBg,
           fontFamily: "Familjen Grotesk",
         }}
       >
         {logoSrc ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={logoSrc}
-            alt=""
-            width={LOGO_WIDTH}
-            height={LOGO_HEIGHT}
+          <div
             style={{
+              display: "flex",
               position: "absolute",
               top: CONTENT_PADDING,
               right: CONTENT_PADDING,
               zIndex: 3,
             }}
-          />
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={logoSrc}
+              alt=""
+              width={LOGO_WIDTH}
+              height={LOGO_HEIGHT}
+            />
+          </div>
         ) : (
           <div
             style={{
+              display: "flex",
               position: "absolute",
               top: CONTENT_PADDING,
               right: CONTENT_PADDING,
@@ -166,13 +174,14 @@ export async function composeReportOpenGraphImage(
         >
           <div
             style={{
+              display: "flex",
               maxWidth: LEFT_PANEL_WIDTH - CONTENT_PADDING - LOGO_WIDTH - 24,
             }}
           >
             <div
               style={{
                 fontSize: 28,
-                fontWeight: 500,
+                fontWeight: 400,
                 color: "#061C2F",
               }}
             >
@@ -238,7 +247,7 @@ export async function composeReportOpenGraphImage(
               style={{
                 marginLeft: 14,
                 fontSize: 28,
-                fontWeight: 500,
+                fontWeight: 400,
                 color: theme.badgeBg,
               }}
             >
@@ -257,13 +266,26 @@ export async function composeReportOpenGraphImage(
             justifyContent: "center",
           }}
         >
-          {includeGrid ? (
-            <>
-              <div
+          {patternSrc ? (
+            <div
+              style={{
+                display: "flex",
+                position: "absolute",
+                inset: 0,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={patternSrc}
+                alt=""
+                width={Math.round(RIGHT_PANEL_WIDTH * 0.92)}
+                height={REPORT_OG_HEIGHT}
                 style={{
                   position: "absolute",
-                  inset: 0,
-                  ...gridBackground,
+                  top: 0,
+                  right: 0,
+                  height: "100%",
+                  opacity: 0.42,
                 }}
               />
               <div
@@ -271,7 +293,7 @@ export async function composeReportOpenGraphImage(
                   position: "absolute",
                   top: 0,
                   left: 0,
-                  width: "22%",
+                  width: "24%",
                   height: "100%",
                   background: `linear-gradient(to right, ${theme.heroBg}, transparent)`,
                 }}
@@ -280,10 +302,10 @@ export async function composeReportOpenGraphImage(
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background: `radial-gradient(ellipse 90% 85% at 78% 42%, ${theme.gridColor}66, transparent 70%)`,
+                  background: `radial-gradient(circle at 78% 42%, ${theme.gridColor}66, transparent 68%)`,
                 }}
               />
-            </>
+            </div>
           ) : null}
 
           <div
@@ -295,10 +317,9 @@ export async function composeReportOpenGraphImage(
               width: REPORT_OG_PREVIEW_WIDTH,
               height: frameHeight,
               borderRadius: 16,
-              border: "2px solid rgba(0, 0, 0, 0.08)",
+              border: `2px solid ${OG_BORDER_FAINT}`,
               backgroundColor: "#F8FAFC",
               overflow: "hidden",
-              boxShadow: "0 14px 40px rgba(6, 28, 47, 0.12)",
               flexShrink: 0,
             }}
           >
@@ -309,11 +330,11 @@ export async function composeReportOpenGraphImage(
                 height: REPORT_OG_BROWSER_CHROME_HEIGHT,
                 paddingLeft: 14,
                 paddingRight: 14,
-                borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+                borderBottom: `1px solid ${OG_BORDER_SOFT}`,
                 backgroundColor: "#ffffff",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
                     width: 10,
@@ -326,6 +347,7 @@ export async function composeReportOpenGraphImage(
                   style={{
                     width: 10,
                     height: 10,
+                    marginLeft: 6,
                     borderRadius: 999,
                     backgroundColor: "#FFBD2E",
                   }}
@@ -334,6 +356,7 @@ export async function composeReportOpenGraphImage(
                   style={{
                     width: 10,
                     height: 10,
+                    marginLeft: 6,
                     borderRadius: 999,
                     backgroundColor: "#28CA41",
                   }}
@@ -343,7 +366,7 @@ export async function composeReportOpenGraphImage(
                 style={{
                   marginLeft: 10,
                   fontSize: 15,
-                  color: "rgba(6, 28, 47, 0.45)",
+                  color: OG_INK_MUTED,
                 }}
               >
                 {domain}
@@ -370,7 +393,7 @@ export async function composeReportOpenGraphImage(
                 style={{
                   width: REPORT_OG_PREVIEW_WIDTH,
                   height: REPORT_OG_PREVIEW_HEIGHT,
-                  backgroundColor: "rgba(6, 28, 47, 0.06)",
+                  backgroundColor: OG_INK_FAINT,
                 }}
               />
             )}
