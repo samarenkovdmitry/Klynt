@@ -1,4 +1,7 @@
-export const LANDING_DARK = "#12161F";
+/** Neutral charcoal base — Luma-style, no blue tint in flat areas */
+export const LANDING_DARK = "#111113";
+
+export const LANDING_DARK_BG = "bg-[#111113]";
 
 export const LANDING_SECTION =
   "border-t border-white/[0.06] px-5 py-20 md:px-6 md:py-28";

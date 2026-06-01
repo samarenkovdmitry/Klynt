@@ -22,7 +22,7 @@ const HERO_BUTTON_CLASS =
 
 export function LandingTestHero() {
   return (
-    <section className="relative overflow-hidden bg-[#12161F]">
+    <section className="relative overflow-hidden">
       <LandingTestHeader />
 
       <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-14 pt-8 md:px-6 md:pb-20 md:pt-12">
@@ -69,10 +69,6 @@ export function LandingTestHero() {
           </div>
 
           <div className="relative lg:pt-2">
-            <div
-              className="pointer-events-none absolute -inset-4 rounded-[40px] bg-[#2563EB]/8 blur-3xl md:-inset-6"
-              aria-hidden
-            />
             <LandingTestMockup />
           </div>
         </div>

@@ -15,6 +15,7 @@ import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 import {
   LANDING_CONTAINER,
+  LANDING_DARK_BG,
   LANDING_EYEBROW,
   LANDING_LEAD,
   LANDING_LINK,
@@ -94,7 +95,7 @@ export function LandingTestReportScope() {
             const Icon = item.icon;
 
             return (
-              <li key={item.title} className="bg-[#12161F] p-5 sm:p-6 md:p-7">
+              <li key={item.title} className={`${LANDING_DARK_BG} p-5 sm:p-6 md:p-7`}>
                 <Icon size={18} className="text-white/35" aria-hidden />
                 <p className="mt-3 text-[16px] font-medium leading-[22px] text-white md:text-[17px]">
                   {item.title}
@@ -120,7 +121,7 @@ export function LandingTestReportScope() {
               const Icon = item.icon;
 
               return (
-                <li key={item.title} className="bg-[#12161F] p-4 md:p-5">
+                <li key={item.title} className={`${LANDING_DARK_BG} p-4 md:p-5`}>
                   <Icon size={16} className="text-white/35" aria-hidden />
                   <p className="mt-2.5 text-[14px] font-medium leading-[20px] text-white md:text-[15px]">
                     {item.title}
