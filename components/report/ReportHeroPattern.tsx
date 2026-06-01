@@ -20,7 +20,7 @@ export function ReportHeroPattern({
   return (
     <>
       <div
-        className={`pointer-events-none absolute right-0 top-0 hidden w-[min(620px,60%)] opacity-50 md:block ${className}`}
+        className={`pointer-events-none absolute right-0 top-0 hidden w-[min(620px,60%)] opacity-[0.35] md:block ${className}`}
         style={{
           height: "100%",
           minHeight: 280,
@@ -34,7 +34,7 @@ export function ReportHeroPattern({
       />
 
       <div
-        className={`pointer-events-none absolute inset-x-0 top-0 h-[240px] opacity-40 md:hidden ${className}`}
+        className={`pointer-events-none absolute inset-x-0 top-0 h-[240px] opacity-[0.28] md:hidden ${className}`}
         style={{
           WebkitMaskImage: PATTERN_FADE_MASK,
           maskImage: PATTERN_FADE_MASK,

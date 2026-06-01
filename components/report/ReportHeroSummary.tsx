@@ -102,7 +102,6 @@ export function ReportHeroSummary({
   summary,
   breakdown,
   confidence = 0,
-  keyObservation,
   previewImage,
   metricObservations,
   issues = [],
@@ -136,14 +135,17 @@ export function ReportHeroSummary({
       <div className="overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.09)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:rounded-[32px]">
         <div className="relative overflow-hidden">
           <section
-            className="relative overflow-hidden px-5 pb-8 pt-6 md:px-[30px] md:pb-8 md:pt-[30px]"
-            style={{ backgroundColor: theme.heroBg }}
+            className="relative overflow-hidden border-l-4 px-5 pb-6 pt-5 md:px-[30px] md:pb-6 md:pt-6"
+            style={{
+              backgroundColor: theme.heroBg,
+              borderLeftColor: theme.badgeBg,
+            }}
           >
             <ReportHeroPattern gridColor={theme.gridColor} heroBg={theme.heroBg} />
 
-            <div className="relative z-[1] flex flex-col gap-8 md:flex-row md:items-center md:justify-between md:gap-10">
-              <div className="min-w-0 flex-1 md:max-w-[647px] md:pr-5">
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
+            <div className="relative z-[1]">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
                   <div className="flex min-w-0 items-center gap-2">
                     {url && (
                       <img
@@ -171,27 +173,36 @@ export function ReportHeroSummary({
                   </span>
                 </div>
 
-                <h1 className="mt-7 text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:mt-10 md:text-[26px] md:leading-[1.2]">
-                  {verdict || "UX assessment complete"}
-                </h1>
-
-                <p className="mb-7 mt-2 text-[15px] leading-[19px] text-[rgba(6,28,47,0.5)] md:mb-10 md:text-[16px] md:leading-[25px]">
-                  {summary || "No summary generated."}
-                </p>
-
-                <div className="mt-6 md:mt-8">
-                  <p className="text-[14px] text-[rgba(6,28,47,0.5)]">Key Insight</p>
-                  <p className="mt-0 text-[16px] leading-[19px] text-[var(--ink-primary)] md:leading-[26px]">
-                    {keyObservation || "No key observation available."}
-                  </p>
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <span
+                    className="inline-flex h-11 min-w-[52px] items-center justify-center rounded-full px-3.5 text-[20px] font-bold leading-none tracking-[-0.04em] text-white"
+                    style={{ backgroundColor: theme.badgeBg }}
+                  >
+                    {overallScore}
+                  </span>
+                  <span className="text-[11px] font-medium text-[rgba(6,28,47,0.45)] md:text-[12px]">
+                    UX score
+                  </span>
                 </div>
               </div>
 
-              <div className="flex shrink-0 justify-center md:justify-end">
-                <ReportPagePreview
-                  previewImage={previewImage}
-                  topIssueTitle={topIssueTitle}
-                />
+              <div className="mt-5 flex flex-col gap-6 md:mt-6 md:flex-row md:items-start md:justify-between md:gap-8">
+                <div className="min-w-0 flex-1 md:max-w-[647px] md:pr-4">
+                  <h1 className="text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
+                    {verdict || "UX assessment complete"}
+                  </h1>
+
+                  <p className="mt-2 text-[15px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
+                    {summary || "No summary generated."}
+                  </p>
+                </div>
+
+                <div className="flex shrink-0 justify-center md:justify-end">
+                  <ReportPagePreview
+                    previewImage={previewImage}
+                    topIssueTitle={topIssueTitle}
+                  />
+                </div>
               </div>
             </div>
           </section>
@@ -218,17 +229,9 @@ export function ReportHeroSummary({
               />
 
               <div className="flex min-w-0 flex-col border-t border-[rgba(6,28,47,0.06)] py-4 md:h-full md:border-t-0 md:py-0">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="inline-flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-[12px] font-bold leading-none tracking-[-0.05em] text-white"
-                    style={{ backgroundColor: theme.badgeBg }}
-                  >
-                    {overallScore}
-                  </span>
-                  <p className="text-[16px] font-semibold text-[var(--ink-primary)]">
-                    Overall Assessment
-                  </p>
-                </div>
+                <p className="text-[16px] font-semibold text-[var(--ink-primary)]">
+                  Overall Assessment
+                </p>
                 <p className={REPORT_METRIC_DESCRIPTION_CLASS}>{overallDescription}</p>
               </div>
             </div>

@@ -73,7 +73,7 @@ export default function ReportPage() {
             onExport={handleExport}
           />
 
-          <div className="mt-8 space-y-8">
+          <div className="space-y-0">
             <ReportUxIssuesSection issues={data.issues} />
             <ReportSuggestionsSection
               suggestions={data.suggestions}

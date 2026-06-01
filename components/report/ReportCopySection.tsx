@@ -25,7 +25,12 @@ export function ReportCopySection({
 
   return (
     <section>
-      <ReportSectionHeader title="Copy Refinement" count={copy.length} />
+      <ReportSectionHeader
+        eyebrow="Copy"
+        title="Copy Refinement"
+        count={copy.length}
+        countNoun="refinements"
+      />
 
       <div className="mt-5 space-y-4">
         {copy.map((item, index) => (

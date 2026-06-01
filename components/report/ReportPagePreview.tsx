@@ -34,8 +34,8 @@ export function ReportPagePreview({
           <p className="mb-1.5 text-[11px] font-medium text-[rgba(6,28,47,0.45)] md:text-[12px]">
             Top issue
           </p>
-          <div className="rounded-[13px] border border-[rgba(6,28,47,0.08)] bg-white px-3 py-2 shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
-            <p className="line-clamp-2 text-[13px] leading-[18px] text-[var(--ink-primary)] md:text-[14px] md:leading-[20px]">
+          <div className="rounded-[10px] border border-[rgba(32,52,94,0.08)] bg-[#F8FAFC] px-3 py-2.5">
+            <p className="line-clamp-2 text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px]">
               {topIssueTitle}
             </p>
           </div>

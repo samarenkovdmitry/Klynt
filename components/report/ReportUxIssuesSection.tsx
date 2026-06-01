@@ -19,9 +19,14 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
 
   return (
     <section>
-      <ReportSectionHeader title="UX Issues" count={issues.length} />
+      <ReportSectionHeader
+        eyebrow="Findings"
+        title="UX Issues"
+        count={issues.length}
+        countNoun="issues"
+      />
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-6 space-y-4">
         {issues.map((issue, index) => {
           const impactEntries = getImpactEntries(issue);
 

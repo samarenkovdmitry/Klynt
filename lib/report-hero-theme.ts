@@ -10,17 +10,17 @@ export type ReportHeroTheme = {
 
 const THEMES: Record<HealthTier, Omit<ReportHeroTheme, "tier">> = {
   healthy: {
-    heroBg: "#E4FFF6",
+    heroBg: "#F5FFFB",
     gridColor: "#C8F2E4",
     badgeBg: "#10B981",
   },
   medium: {
-    heroBg: "#FFF1E5",
-    gridColor: "#F6DDC7",
+    heroBg: "#FFFBF7",
+    gridColor: "#F6E4D4",
     badgeBg: "#FF7A00",
   },
   critical: {
-    heroBg: "#FFEDED",
+    heroBg: "#FFF7F7",
     gridColor: "#F9D5D5",
     badgeBg: "#FF5A4F",
   },

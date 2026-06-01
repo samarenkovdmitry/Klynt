@@ -86,7 +86,12 @@ export function ReportSuggestionsSection({
 
   return (
     <section>
-      <ReportSectionHeader title="Suggested Improvements" count={suggestions.length} />
+      <ReportSectionHeader
+        eyebrow="Recommendations"
+        title="Suggested Improvements"
+        count={suggestions.length}
+        countNoun="improvements"
+      />
 
       <div className="mt-5 space-y-4">
         <SuggestionCard item={firstSuggestion} index={0} />
