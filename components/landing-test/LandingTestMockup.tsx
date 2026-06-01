@@ -66,7 +66,6 @@ export function LandingTestMockup() {
   const clarity = Math.max(0, Math.min(100, Number(data.breakdown?.clarity)));
   const friction = Math.max(0, Math.min(100, getFrictionScore(data.breakdown)));
   const topIssue = data.issues[0];
-  const copyFix = data.copy[0];
   const overallScore = formatOverallScore(score);
   const issueCount = data.issues.length;
 
@@ -85,7 +84,7 @@ export function LandingTestMockup() {
           className="pointer-events-none select-none"
           style={{ WebkitUserSelect: "none", userSelect: "none" }}
         >
-          <div className="relative overflow-hidden bg-white px-4 pb-5 pt-4 md:px-5 md:pb-6 md:pt-5">
+          <div className="relative overflow-hidden bg-white px-4 pb-4 pt-4 md:px-5 md:pb-5 md:pt-5">
             <div className="mb-4 flex items-center justify-between gap-3 md:mb-5">
               <p className="text-[12px] font-medium text-[rgba(6,28,47,0.45)] md:text-[13px]">
                 Share-ready report
@@ -98,84 +97,49 @@ export function LandingTestMockup() {
               </span>
             </div>
 
-            <div className="relative z-[1] flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
-              <div className="min-w-0 flex-1">
-                <p
-                  className={`text-[17px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[20px] ${textClamp}`}
-                >
-                  {data.verdict}
-                </p>
+            <div className="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_200px] md:grid-cols-[minmax(0,1fr)_220px] md:gap-5">
+              <p
+                className={`text-[17px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[20px] ${textClamp}`}
+              >
+                {data.verdict}
+              </p>
 
-                <p
-                  className={`mt-2 text-[13px] leading-[1.5] text-[rgba(6,28,47,0.5)] md:text-[14px] md:leading-[20px] ${textClamp}`}
-                >
-                  {data.summary}
-                </p>
-
-                <div className="mt-4 md:mt-5">
-                  <p className="text-[12px] text-[rgba(6,28,47,0.5)] md:text-[13px]">Key Insight</p>
-                  <p
-                    className={`mt-0.5 text-[13px] leading-[1.45] font-medium text-[var(--ink-primary)] md:text-[14px] md:leading-[20px] ${textClamp}`}
-                  >
-                    {data.key_observation}
-                  </p>
+              <div className="overflow-hidden rounded-lg border border-black/[0.08] bg-[#F8FAFC] shadow-[0_8px_28px_rgba(0,0,0,0.05)] sm:row-span-1">
+                <div className="flex items-center gap-1.5 border-b border-black/[0.06] bg-white px-2.5 py-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF5F57]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FFBD2E]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#28CA41]" />
+                  <span className="ml-1 truncate text-[9px] text-[rgba(6,28,47,0.45)]">
+                    {domain}
+                  </span>
                 </div>
-
-                {topIssue && (
-                  <div className="mt-4 rounded-[10px] border border-[rgba(32,52,94,0.08)] bg-[#F8FAFC] px-3 py-2.5 md:mt-5">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[rgba(6,28,47,0.45)]">
-                      {topIssue.category}
-                    </p>
-                    <p
-                      className={`mt-1 text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px] ${textClamp}`}
-                    >
-                      {topIssue.title}
-                    </p>
-                  </div>
+                {data.previewImage ? (
+                  <img
+                    src={data.previewImage}
+                    alt=""
+                    width={440}
+                    height={270}
+                    className="block aspect-[310/190] w-full object-cover object-top"
+                    draggable={false}
+                  />
+                ) : (
+                  <div className="aspect-[310/190] w-full bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7]" />
                 )}
-
-                {copyFix && (
-                  <div className="mt-3 rounded-[10px] border border-[rgba(32,52,94,0.08)] px-3 py-2.5">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[rgba(6,28,47,0.45)]">
-                      Suggested copy
-                    </p>
-                    <p className="mt-1.5 truncate text-[11px] leading-[16px] text-[rgba(6,28,47,0.45)] line-through md:text-[12px]">
-                      {copyFix.before}
-                    </p>
-                    <p className="mt-1 truncate text-[12px] leading-[17px] font-medium text-[var(--ink-primary)] md:text-[13px]">
-                      {copyFix.after}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="mx-auto shrink-0 sm:mx-0">
-                <div className="relative w-[200px] md:w-[220px]">
-                  <div className="overflow-hidden rounded-lg border border-black/[0.08] bg-[#F8FAFC] shadow-[0_8px_28px_rgba(0,0,0,0.05)]">
-                    <div className="flex items-center gap-1.5 border-b border-black/[0.06] bg-white px-2.5 py-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#FF5F57]" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#FFBD2E]" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#28CA41]" />
-                      <span className="ml-1 truncate text-[9px] text-[rgba(6,28,47,0.45)]">
-                        {domain}
-                      </span>
-                    </div>
-                    {data.previewImage ? (
-                      <img
-                        src={data.previewImage}
-                        alt=""
-                        width={440}
-                        height={270}
-                        className="block h-[128px] w-full object-cover object-top md:h-[136px]"
-                        draggable={false}
-                      />
-                    ) : (
-                      <div className="h-[128px] bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7] md:h-[136px]" />
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
+
+            {topIssue && (
+              <div className="mt-4 rounded-[10px] border border-[rgba(32,52,94,0.08)] bg-[#F8FAFC] px-3 py-2.5 md:mt-5">
+                <p className="text-[11px] font-medium text-[rgba(6,28,47,0.45)] md:text-[12px]">
+                  Top issue
+                </p>
+                <p
+                  className={`mt-1 text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px] ${textClamp}`}
+                >
+                  {topIssue.title}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="border-t border-[rgba(32,52,94,0.09)] bg-white">
