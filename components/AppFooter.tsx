@@ -20,7 +20,7 @@ const socialLinks: {
   label: string;
   icon: RemixiconComponentType;
 }[] = [
-  { href: "https://x.com/klynt_ai", label: "X", icon: RiTwitterXLine },
+  { href: "https://x.com/useklynt", label: "X", icon: RiTwitterXLine },
   {
     href: "https://www.linkedin.com/in/smrnkov/",
     label: "LinkedIn",
