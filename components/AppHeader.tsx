@@ -19,7 +19,7 @@ const navItems: NavItem[] = [
   {
     href: DEMO_REPORT_PATH,
     label: "Sample report",
-    isActive: (p) => p.startsWith("/report"),
+    isActive: (p) => p === DEMO_REPORT_PATH || p.startsWith(`${DEMO_REPORT_PATH}/`),
   },
   { href: "/contact", label: "Contact" },
 ];
