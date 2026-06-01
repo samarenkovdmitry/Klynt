@@ -19,13 +19,14 @@ export function normalizeMetricObservations(
   const trust = normalizeObservation(data.trust);
   const clarity = normalizeObservation(data.clarity);
   const friction = normalizeObservation(data.friction);
+  const visuals = normalizeObservation(data.visuals);
   const overall = normalizeObservation(data.overall);
 
-  if (!trust && !clarity && !friction && !overall) {
+  if (!trust && !clarity && !friction && !visuals && !overall) {
     return undefined;
   }
 
-  return { trust, clarity, friction, overall };
+  return { trust, clarity, friction, visuals, overall };
 }
 
 export function getMetricObservationFallbacks(
@@ -34,11 +35,13 @@ export function getMetricObservationFallbacks(
     trust?: number;
     conversion?: number;
     navigation?: number;
+    visuals?: number;
   },
   verdict?: string
 ): ReportMetricObservations {
   const trust = Number(breakdown?.trust ?? 0);
   const clarity = Number(breakdown?.clarity ?? 0);
+  const visuals = Number(breakdown?.visuals ?? 0);
   const friction = Math.round(
     (100 - clarity + 100 - Number(breakdown?.conversion ?? 0) + Number(breakdown?.navigation ?? 0)) /
       3
@@ -63,6 +66,12 @@ export function getMetricObservationFallbacks(
         : friction >= 40
           ? "Noticeable visual or messaging friction may interrupt early comprehension."
           : "The first screen likely feels focused and relatively easy to process.",
+    visuals:
+      visuals >= 70
+        ? "Visual hierarchy likely guides attention toward the primary message and action."
+        : visuals >= 40
+          ? "Some hierarchy is visible, but competing elements may dilute the focal point."
+          : "Users may struggle to spot the primary message or action at first glance.",
     overall:
       verdict?.trim() ||
       "The page likely communicates value, but early clarity still shapes conversion confidence.",

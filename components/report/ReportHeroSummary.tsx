@@ -4,13 +4,13 @@ import {
   RiBrainLine,
   RiFilePdf2Line,
   RiFocus3Line,
+  RiLayoutGridLine,
   RiShare2Line,
   RiShieldCheckLine,
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
 import { KlyntFooterLogo } from "@/components/report/KlyntFooterLogo";
-import { ReportHeroPattern } from "@/components/report/ReportHeroPattern";
 import { ReportPagePreview } from "@/components/report/ReportPagePreview";
 import {
   REPORT_HERO_CARD_BORDER_CLASS,
@@ -60,6 +60,9 @@ type MetricCardProps = {
   value: number;
 };
 
+const HERO_ACTION_BUTTON_CLASS =
+  "inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-[rgba(6,28,47,0.12)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:bg-[#F8FAFC]";
+
 function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) {
   const barColor = getMetricBarColor(value);
 
@@ -102,13 +105,20 @@ function getFrictionDescription(value: number, breakdown?: ReportBreakdown) {
   return getMetricObservationFallbacks(breakdown).friction ?? "";
 }
 
-function isDistinctInsight(insight: string, summary?: string) {
+function getVisualsDescription(value: number, breakdown?: ReportBreakdown) {
+  return getMetricObservationFallbacks(breakdown).visuals ?? "";
+}
+
+function isDistinctInsight(insight: string, summary?: string, verdict?: string) {
   if (!insight) return false;
 
   const normalizedInsight = insight.trim().toLowerCase();
   const normalizedSummary = summary?.trim().toLowerCase() ?? "";
+  const normalizedVerdict = verdict?.trim().toLowerCase() ?? "";
 
-  return normalizedInsight !== normalizedSummary;
+  return (
+    normalizedInsight !== normalizedSummary && normalizedInsight !== normalizedVerdict
+  );
 }
 
 export function ReportHeroSummary({
@@ -133,6 +143,7 @@ export function ReportHeroSummary({
   const trust = Math.max(0, Math.min(100, Number(breakdown?.trust ?? 0)));
   const clarity = Math.max(0, Math.min(100, Number(breakdown?.clarity ?? 0)));
   const friction = Math.max(0, Math.min(100, getFrictionScore(breakdown)));
+  const visuals = Math.max(0, Math.min(100, Number(breakdown?.visuals ?? 0)));
   const topIssueTitle = issues[0]?.title?.trim() || verdict?.trim();
   const overallScore = formatOverallScore(score);
   const confidenceValue = Math.max(0, Math.min(100, Number(confidence)));
@@ -144,8 +155,10 @@ export function ReportHeroSummary({
   const frictionDescription =
     metricObservations?.friction?.trim() ||
     getFrictionDescription(friction, breakdown);
+  const visualsDescription =
+    metricObservations?.visuals?.trim() || getVisualsDescription(visuals, breakdown);
   const keyInsight = keyObservation?.trim() ?? "";
-  const showKeyInsight = isDistinctInsight(keyInsight, summary);
+  const showKeyInsight = isDistinctInsight(keyInsight, summary, verdict);
 
   return (
     <div
@@ -156,8 +169,6 @@ export function ReportHeroSummary({
           className="relative overflow-hidden px-5 pb-5 pt-5 md:px-[30px] md:pb-6 md:pt-6"
           style={{ backgroundColor: theme.heroBg }}
         >
-          <ReportHeroPattern heroBg={theme.heroBg} />
-
           <div className="relative z-[1]">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 text-[14px]">
@@ -211,19 +222,11 @@ export function ReportHeroSummary({
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <button
-                  type="button"
-                  onClick={onShare}
-                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#2563EB] px-4 text-[14px] font-semibold text-white transition hover:bg-[#1D4ED8]"
-                >
+                <button type="button" onClick={onShare} className={HERO_ACTION_BUTTON_CLASS}>
                   <RiShare2Line size={16} aria-hidden />
                   Share
                 </button>
-                <button
-                  type="button"
-                  onClick={onExport}
-                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-[rgba(6,28,47,0.12)] bg-white px-4 text-[14px] font-medium text-[var(--ink-primary)] transition hover:bg-[#F8FAFC]"
-                >
+                <button type="button" onClick={onExport} className={HERO_ACTION_BUTTON_CLASS}>
                   <RiFilePdf2Line size={16} aria-hidden />
                   Export PDF
                 </button>
@@ -231,12 +234,12 @@ export function ReportHeroSummary({
             </div>
 
             <div className="mt-5 flex flex-col gap-5 md:mt-6 md:flex-row md:items-start md:justify-between md:gap-8">
-              <div className="min-w-0 flex-1 md:max-w-[560px] md:pt-1">
-                <p className="text-[13px] font-medium uppercase tracking-[0.08em] text-[rgba(6,28,47,0.45)]">
-                  UX Report
-                </p>
+              <div className="min-w-0 flex-1 md:max-w-[560px]">
+                <h1 className="text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
+                  {verdict || "UX assessment complete"}
+                </h1>
 
-                <p className="mt-2 text-[17px] font-normal leading-[26px] text-[var(--ink-primary)] md:text-[18px] md:leading-[28px]">
+                <p className="mt-2 text-[15px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
                   {summary || "No summary generated."}
                 </p>
 
@@ -260,7 +263,7 @@ export function ReportHeroSummary({
         </section>
 
         <section className="bg-white px-5 py-6 md:px-[30px] md:py-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:items-stretch md:gap-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-6 xl:grid-cols-4">
             <MetricCard
               icon={RiShieldCheckLine}
               label="Trust Signals"
@@ -278,6 +281,12 @@ export function ReportHeroSummary({
               label="Cognitive Friction"
               value={friction}
               description={frictionDescription}
+            />
+            <MetricCard
+              icon={RiLayoutGridLine}
+              label="Visual Hierarchy"
+              value={visuals}
+              description={visualsDescription}
             />
           </div>
 

@@ -5,22 +5,42 @@ type ReportPagePreviewProps = {
   topIssueTitle?: string;
 };
 
+const GRID_LINE = "rgba(6,28,47,0.09)";
+
+function PreviewGridBackdrop() {
+  return (
+    <div
+      className="pointer-events-none absolute -inset-x-5 -inset-y-3 rounded-[20px]"
+      style={{
+        backgroundImage: `linear-gradient(${GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${GRID_LINE} 1px, transparent 1px)`,
+        backgroundSize: "20px 20px",
+        WebkitMaskImage:
+          "radial-gradient(ellipse 85% 90% at 50% 45%, #000 15%, transparent 72%)",
+        maskImage: "radial-gradient(ellipse 85% 90% at 50% 45%, #000 15%, transparent 72%)",
+      }}
+      aria-hidden
+    />
+  );
+}
+
 export function ReportPagePreview({
   previewImage,
   topIssueTitle,
 }: ReportPagePreviewProps) {
   return (
     <div className="relative mx-auto w-[310px] pb-5">
+      <PreviewGridBackdrop />
+
       {previewImage ? (
         <img
           src={previewImage}
           alt="Analyzed page preview"
           width={REPORT_PREVIEW_WIDTH}
           height={REPORT_PREVIEW_HEIGHT}
-          className="block h-[190px] w-[310px] rounded-lg border border-black/[0.09] object-cover object-top shadow-[0_10px_40px_rgba(0,0,0,0.03)]"
+          className="relative z-[1] block h-[190px] w-[310px] rounded-lg border border-black/[0.09] object-cover object-top shadow-[0_10px_40px_rgba(0,0,0,0.03)]"
         />
       ) : (
-        <div className="relative h-[190px] w-[310px] overflow-hidden rounded-lg border border-black/[0.09] bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+        <div className="relative z-[1] h-[190px] w-[310px] overflow-hidden rounded-lg border border-black/[0.09] bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
           <div className="absolute inset-x-4 top-4 space-y-2">
             <div className="h-2.5 w-2/3 rounded bg-[rgba(6,28,47,0.08)]" />
             <div className="h-2.5 w-1/2 rounded bg-[rgba(6,28,47,0.06)]" />

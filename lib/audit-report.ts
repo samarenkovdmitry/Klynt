@@ -52,6 +52,7 @@ export type ReportMetricObservations = {
   trust?: string;
   clarity?: string;
   friction?: string;
+  visuals?: string;
   overall?: string;
 };
 
