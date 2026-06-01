@@ -48,6 +48,7 @@ debug_*
 !public/demo/*.jpg
 !app/opengraph-image.jpg
 !app/twitter-image.jpg
+!public/og-fallback.jpg
 *.png
 !public/favicon-16x16.png
 !public/favicon-32x32.png

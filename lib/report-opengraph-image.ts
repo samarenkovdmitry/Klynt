@@ -19,6 +19,7 @@ export const REPORT_OG_IMAGE_HEADERS = {
 
 const FALLBACK_IMAGE_PATHS = [
   path.join(process.cwd(), "public", "og-fallback.jpg"),
+  path.join(process.cwd(), ".next", "standalone", "public", "og-fallback.jpg"),
   path.join(process.cwd(), "app", "opengraph-image.jpg"),
   path.join(process.cwd(), ".next", "server", "app", "opengraph-image.jpg"),
 ];
