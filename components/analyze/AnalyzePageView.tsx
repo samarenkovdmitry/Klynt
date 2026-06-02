@@ -77,7 +77,7 @@ export function AnalyzePageView() {
             </p>
           </header>
 
-          <ul className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2">
+          <ul className="mt-6 flex flex-row flex-wrap gap-x-5 gap-y-1.5 sm:gap-x-6">
             {OUTCOMES.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-2 text-[14px] text-[#8E99A2]">
                 <Icon size={16} className="shrink-0" aria-hidden />

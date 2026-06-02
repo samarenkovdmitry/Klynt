@@ -178,13 +178,14 @@ export function LandingTestMockup() {
               <MockMetric icon={RiBrainLine} label="Friction" value={friction} />
             </div>
 
-            <div className="flex flex-col gap-2 border-t border-[rgba(32,52,94,0.06)] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between md:px-5 md:py-4">
+            <div className="flex items-center justify-between gap-2 border-t border-[rgba(32,52,94,0.06)] px-4 py-3.5 md:px-5 md:py-4">
               <ScoreStatusChip
                 score={overallScore}
                 tierLabel={tierLabel}
                 badgeBg={theme.badgeBg}
+                className="w-fit shrink-0"
               />
-              <p className="inline-flex items-center gap-0.5 text-[12px] font-medium text-[rgba(6,28,47,0.55)] md:text-[13px]">
+              <p className="inline-flex shrink-0 items-center gap-0.5 text-[12px] font-medium text-[rgba(6,28,47,0.55)] md:text-[13px]">
                 View {issueCount} issues
                 <RiArrowRightSLine size={16} className="text-[rgba(6,28,47,0.4)]" aria-hidden />
               </p>

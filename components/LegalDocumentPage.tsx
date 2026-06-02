@@ -27,17 +27,17 @@ export function LegalDocumentPage({
 
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
-          <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[240px_minmax(0,1fr)]">
-            <aside className="lg:sticky lg:top-[88px] lg:self-start">
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[240px_minmax(0,1fr)]">
+            <aside className="hidden min-w-0 lg:block lg:sticky lg:top-[88px] lg:self-start">
               <nav
                 aria-label="Table of contents"
-                className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 lg:mx-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0 lg:pb-0"
+                className="flex flex-col gap-0.5"
               >
                 {sections.map((section) => (
                   <Link
                     key={section.id}
                     href={`#${section.id}`}
-                    className="shrink-0 rounded-full border border-[rgba(6,28,47,0.08)] px-3 py-1.5 text-[13px] font-medium text-[rgba(6,28,47,0.65)] transition hover:border-[rgba(6,28,47,0.12)] hover:bg-[rgba(6,28,47,0.03)] hover:text-[var(--ink-primary)] lg:shrink lg:rounded-lg lg:border-0 lg:px-2 lg:py-2 lg:hover:bg-[rgba(6,28,47,0.04)]"
+                    className="rounded-lg px-2 py-2 text-[13px] font-medium text-[rgba(6,28,47,0.65)] transition hover:bg-[rgba(6,28,47,0.04)] hover:text-[var(--ink-primary)]"
                   >
                     {section.title}
                   </Link>

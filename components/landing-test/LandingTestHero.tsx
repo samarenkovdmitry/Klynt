@@ -38,7 +38,7 @@ export function LandingTestHero() {
               prioritized fixes.
             </p>
 
-            <ul className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-5 sm:gap-y-2 lg:items-start lg:justify-start">
+            <ul className="mt-6 hidden flex-row flex-wrap items-center justify-center gap-x-5 gap-y-1.5 sm:flex lg:justify-start">
               {OUTCOMES.map(({ icon: Icon, label }) => (
                 <li key={label} className="flex items-center gap-2 text-[13px] text-white/45 md:text-[14px]">
                   <Icon size={15} className="shrink-0 text-white/60" aria-hidden />
