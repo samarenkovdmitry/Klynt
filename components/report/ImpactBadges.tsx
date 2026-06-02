@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import {
   RiFocus3Line,
-  RiMoreLine,
   RiSparklingFill,
 } from "@remixicon/react";
 
@@ -42,7 +41,7 @@ function PriorityBadgeIcon({ label }: { label: PriorityLabel }) {
     return <RiFocus3Line size={14} className="text-[#10B981]" aria-hidden />;
   }
 
-  return <RiMoreLine size={14} className="text-[#616C77]" aria-hidden />;
+  return null;
 }
 
 function renderPriorityIcon(label: PriorityLabel): ReactNode {
@@ -66,11 +65,13 @@ export function ImpactPercentageBadges({ entries, className = "" }: ImpactBadges
 export function PriorityBadge({ label, className = "" }: PriorityBadgeProps) {
   if (!label) return null;
 
+  const icon = renderPriorityIcon(label);
+
   return (
     <div
-      className={`${IMPACT_PILL_CLASS} gap-2 ${PRIORITY_BADGE_CLASS[label]} ${className}`}
+      className={`${IMPACT_PILL_CLASS} ${icon ? "gap-2" : ""} ${PRIORITY_BADGE_CLASS[label]} ${className}`}
     >
-      {renderPriorityIcon(label)}
+      {icon}
       {label}
     </div>
   );
