@@ -41,3 +41,10 @@ export function getProductHuntCountdownLabel(days = getDaysUntilProductHuntLaunc
 
   return `${days} days until Product Hunt launch 🚀`;
 }
+
+export type ReportWaitlistLockedSummary = {
+  domain: string;
+  remainingIssues: number;
+  remainingSuggestions: number;
+  remainingCopy: number;
+};

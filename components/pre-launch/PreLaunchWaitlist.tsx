@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { RiProductHuntFill } from "@remixicon/react";
+import { RiCheckLine, RiProductHuntFill } from "@remixicon/react";
 
+import type { ReportWaitlistLockedSummary } from "@/lib/pre-launch";
 import { Button } from "@/components/ui/Button";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import {
@@ -32,36 +33,97 @@ export function PreLaunchProductHuntBanner() {
 
 type PreLaunchWaitlistCardProps = {
   reportId: string;
+  locked: ReportWaitlistLockedSummary;
   onUnlock: () => void;
-  overlay?: boolean;
 };
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
+function buildWaitlistHeadline({
+  domain,
+  remainingIssues,
+  remainingSuggestions,
+  remainingCopy,
+}: ReportWaitlistLockedSummary) {
+  const parts: string[] = [];
+
+  if (remainingIssues > 0) {
+    parts.push(
+      `${remainingIssues} more UX issue${remainingIssues === 1 ? "" : "s"}`
+    );
+  }
+
+  if (remainingSuggestions > 0) {
+    parts.push(
+      `${remainingSuggestions} prioritized fix${remainingSuggestions === 1 ? "" : "es"}`
+    );
+  }
+
+  if (remainingCopy > 0) {
+    parts.push(
+      `${remainingCopy} copy rewrite${remainingCopy === 1 ? "" : "s"}`
+    );
+  }
+
+  if (parts.length === 0) {
+    return domain ? `Get the full report for ${domain}` : "Get the full UX report";
+  }
+
+  const summary =
+    parts.length === 1
+      ? parts[0]
+      : parts.length === 2
+        ? `${parts[0]} and ${parts[1]}`
+        : `${parts.slice(0, -1).join(", ")}, and ${parts[parts.length - 1]}`;
+
+  return domain ? `${summary} for ${domain}` : summary;
+}
+
+function buildLockedBullets({
+  remainingIssues,
+  remainingSuggestions,
+  remainingCopy,
+}: ReportWaitlistLockedSummary) {
+  const bullets: string[] = [];
+
+  if (remainingIssues > 0) {
+    bullets.push(
+      `${remainingIssues} UX issue${remainingIssues === 1 ? "" : "s"} with explanations`
+    );
+  }
+
+  if (remainingSuggestions > 0) {
+    bullets.push(
+      `${remainingSuggestions} prioritized fix${remainingSuggestions === 1 ? "" : "es"} for this page`
+    );
+  }
+
+  if (remainingCopy > 0) {
+    bullets.push(
+      `${remainingCopy} before/after copy rewrite${remainingCopy === 1 ? "" : "s"}`
+    );
+  }
+
+  bullets.push("Shareable PDF export");
+
+  return bullets;
+}
+
 export function PreLaunchWaitlistCard({
   reportId,
+  locked,
   onUnlock,
-  overlay = false,
 }: PreLaunchWaitlistCardProps) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const days = useMemo(() => getDaysUntilProductHuntLaunch(), []);
-  const phMessage = useMemo(() => {
-    if (days === 0) {
-      return "Launching on Product Hunt today — join the waitlist to unlock the rest of this report.";
-    }
-
-    if (days === 1) {
-      return "Launching on Product Hunt in 1 day — join the waitlist to unlock the rest of this report.";
-    }
-
-    return `Launching on Product Hunt in ${days} days — join the waitlist to unlock the rest of this report.`;
-  }, [days]);
+  const headline = useMemo(() => buildWaitlistHeadline(locked), [locked]);
+  const bullets = useMemo(() => buildLockedBullets(locked), [locked]);
+  const phLabel = useMemo(() => getProductHuntCountdownLabel(), []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -103,13 +165,8 @@ export function PreLaunchWaitlistCard({
 
   if (submitted) {
     return (
-      <div
-        className={[
-          "rounded-[28px] border border-emerald-200 bg-emerald-50 px-5 py-6 text-center md:px-8 md:py-8",
-          overlay ? "shadow-[0_16px_48px_rgba(6,28,47,0.12)]" : "",
-        ].join(" ")}
-      >
-        <p className="text-[18px] font-semibold tracking-[-0.02em] text-emerald-900 md:text-[20px]">
+      <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-5 py-6 text-center md:px-8 md:py-7">
+        <p className="text-[20px] font-semibold tracking-[-0.02em] text-emerald-900 md:text-[22px]">
           Full report unlocked
         </p>
         <p className="mt-2 text-[14px] leading-6 text-emerald-800 md:text-[15px]">
@@ -121,23 +178,32 @@ export function PreLaunchWaitlistCard({
   }
 
   return (
-    <div
-      className={[
-        "rounded-[28px] border border-[var(--stroke-light)] bg-white px-5 py-6 md:px-8 md:py-8",
-        overlay
-          ? "shadow-[0_16px_48px_rgba(6,28,47,0.12)]"
-          : "shadow-[0_10px_40px_rgba(0,0,0,0.03)]",
-      ].join(" ")}
-    >
-      <h4 className="text-center text-[24px] font-semibold tracking-[-0.03em] text-[var(--ink-primary)] md:text-[28px]">
-        Get the full UX analysis
+    <div className="rounded-[20px] border border-[rgba(6,28,47,0.08)] bg-white px-5 py-6 md:px-8 md:py-7">
+      <h4 className="max-w-[640px] text-[22px] font-semibold leading-[1.2] tracking-[-0.03em] text-[var(--ink-primary)] md:text-[26px]">
+        {headline}
       </h4>
 
-      <p className="mx-auto mt-3 max-w-[520px] text-center text-[14px] leading-6 text-[var(--ink-secondary)] md:text-[15px]">
-        {phMessage}
+      <p className="mt-3 max-w-[560px] text-[15px] leading-6 text-[rgba(6,28,47,0.55)]">
+        We&apos;ll email you the full report link — no spam, one send.
       </p>
 
-      <form onSubmit={handleSubmit} className="mx-auto mt-6 max-w-[420px]">
+      <ul className="mt-5 space-y-2.5">
+        {bullets.map((bullet) => (
+          <li
+            key={bullet}
+            className="flex items-start gap-2.5 text-[14px] leading-5 text-[rgba(6,28,47,0.72)]"
+          >
+            <RiCheckLine
+              size={16}
+              className="mt-0.5 shrink-0 text-[#10B981]"
+              aria-hidden
+            />
+            {bullet}
+          </li>
+        ))}
+      </ul>
+
+      <form onSubmit={handleSubmit} className="mt-6 max-w-[420px]">
         <input
           type="email"
           name="email"
@@ -147,7 +213,7 @@ export function PreLaunchWaitlistCard({
           onChange={(e) => setEmail(e.target.value)}
           disabled={submitting}
           aria-invalid={error ? true : undefined}
-          className={`${inputFieldClass({ disabled: submitting, withMargin: false })} h-[54px] md:h-[58px]`}
+          className={`${inputFieldClass({ disabled: submitting, withMargin: false })} h-[52px] md:h-[54px]`}
         />
 
         {error && (
@@ -160,11 +226,16 @@ export function PreLaunchWaitlistCard({
           type="submit"
           variant="accent"
           disabled={submitting}
-          className="mt-4 h-[54px] min-h-[54px] w-full text-[16px]"
+          className="mt-3 h-[52px] min-h-[52px] w-full text-[15px] md:mt-4"
         >
-          {submitting ? "Joining…" : "Unlock full report"}
+          {submitting ? "Sending…" : "Send me the full report"}
         </Button>
       </form>
+
+      <p className="mt-4 flex items-center gap-2 text-[13px] text-[rgba(6,28,47,0.45)]">
+        <RiProductHuntFill size={16} className="shrink-0 text-[#DA552F]" aria-hidden />
+        {phLabel}
+      </p>
     </div>
   );
 }

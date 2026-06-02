@@ -10,9 +10,11 @@ import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
 import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
+import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
+import { formatReportDomain } from "@/lib/report-hero-theme";
 import { useReportData } from "@/hooks/useReportData";
 
 export default function ReportPage() {
@@ -21,7 +23,7 @@ export default function ReportPage() {
   const reportId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const { data, loadState } = useReportData(reportId);
-  const { unlocked, waitlistActive, unlock } = usePreLaunchWaitlist(
+  const { waitlistActive, unlock } = usePreLaunchWaitlist(
     reportId === DEMO_REPORT_ID
   );
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -51,6 +53,10 @@ export default function ReportPage() {
     return <ReportPageStates loadState={loadState} />;
   }
 
+  const issues = data.issues ?? [];
+  const suggestions = data.suggestions ?? [];
+  const copy = data.copy ?? [];
+
   return (
     <>
       <AppHeader />
@@ -75,18 +81,28 @@ export default function ReportPage() {
           />
 
           <div className="space-y-0">
-            <ReportUxIssuesSection issues={data.issues} />
+            <ReportUxIssuesSection issues={issues} waitlistActive={waitlistActive} />
             <ReportSuggestionsSection
-              suggestions={data.suggestions}
-              reportId={reportId}
+              suggestions={suggestions}
               waitlistActive={waitlistActive}
-              onWaitlistUnlock={unlock}
             />
-            {unlocked && (
-              <ReportCopySection
-                copy={data.copy}
-                copiedIndex={copiedIndex}
-                onCopy={handleCopy}
+            <ReportCopySection
+              copy={copy}
+              copiedIndex={copiedIndex}
+              onCopy={handleCopy}
+              waitlistActive={waitlistActive}
+            />
+
+            {waitlistActive && reportId && (
+              <ReportWaitlistGate
+                reportId={reportId}
+                locked={{
+                  domain: formatReportDomain(data.url),
+                  remainingIssues: Math.max(0, issues.length - 1),
+                  remainingSuggestions: Math.max(0, suggestions.length - 1),
+                  remainingCopy: Math.max(0, copy.length - 1),
+                }}
+                onUnlock={unlock}
               />
             )}
           </div>

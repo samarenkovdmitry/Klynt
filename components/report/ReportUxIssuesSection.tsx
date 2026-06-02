@@ -1,5 +1,6 @@
 import type { ReportIssue } from "@/lib/audit-report";
 import { ReportListCard } from "@/components/report/ReportListCard";
+import { ReportLockedSkeletonCard } from "@/components/report/ReportLockedSkeletons";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_TAG_CLASS,
@@ -12,17 +13,24 @@ import { getImpactEntries } from "@/lib/report-impact";
 
 type ReportUxIssuesSectionProps = {
   issues?: ReportIssue[];
+  waitlistActive?: boolean;
 };
 
-export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProps) {
+export function ReportUxIssuesSection({
+  issues = [],
+  waitlistActive = false,
+}: ReportUxIssuesSectionProps) {
   if (issues.length === 0) return null;
+
+  const visibleIssues = waitlistActive ? issues.slice(0, 1) : issues;
+  const lockedIssueCount = waitlistActive ? Math.max(0, issues.length - 1) : 0;
 
   return (
     <section className="mt-10">
       <ReportSectionHeader title="UX Issues" count={issues.length} />
 
       <div className="mt-6 space-y-4">
-        {issues.map((issue, index) => {
+        {visibleIssues.map((issue, index) => {
           const impactEntries = getImpactEntries(issue);
 
           return (
@@ -51,6 +59,10 @@ export function ReportUxIssuesSection({ issues = [] }: ReportUxIssuesSectionProp
             </ReportListCard>
           );
         })}
+
+        {Array.from({ length: lockedIssueCount }, (_, offset) => (
+          <ReportLockedSkeletonCard key={`locked-issue-${offset}`} index={offset + 1} />
+        ))}
       </div>
     </section>
   );
