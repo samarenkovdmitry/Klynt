@@ -1,22 +1,59 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { RiLoader4Line } from "@remixicon/react";
+
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import type { ReportLoadState } from "@/hooks/useReportData";
+
+const LOADING_UI_DELAY_MS = 300;
 
 type ReportPageStatesProps = {
   loadState: ReportLoadState;
 };
 
 export function ReportPageStates({ loadState }: ReportPageStatesProps) {
+  const [showLoadingUi, setShowLoadingUi] = useState(false);
+
+  useEffect(() => {
+    if (loadState !== "loading") {
+      setShowLoadingUi(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setShowLoadingUi(true);
+    }, LOADING_UI_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadState]);
+
   if (loadState === "loading") {
     return (
       <>
         <AppHeader />
         <main className="flex min-h-[calc(100dvh-68px)] items-center justify-center bg-white px-6">
-          <div className="rounded-3xl border border-neutral-200 bg-white px-8 py-6 shadow-sm">
-            <p className="text-[15px] text-[var(--ink-secondary)]">
-              Loading report...
-            </p>
-          </div>
+          {showLoadingUi && (
+            <div
+              className="rounded-3xl border border-neutral-200 bg-white px-8 py-6 shadow-sm"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="flex items-center gap-3">
+                <RiLoader4Line
+                  size={20}
+                  className="shrink-0 animate-spin text-[#2563EB]"
+                  aria-hidden
+                />
+                <p className="text-[15px] text-[var(--ink-secondary)]">
+                  Loading report...
+                </p>
+              </div>
+            </div>
+          )}
         </main>
       </>
     );
