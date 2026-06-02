@@ -17,7 +17,7 @@ export type HowItWorksStep = {
   description: string;
 };
 
-export type BentoVariant = "red" | "emerald" | "sky";
+export type BentoVariant = "red" | "emerald";
 
 export type AnalysisBentoCard = {
   id: string;
@@ -95,7 +95,7 @@ export const ANALYSIS_BENTO_CARDS: AnalysisBentoCard[] = [
   },
   {
     id: "copy-refinement",
-    variant: "sky",
+    variant: "emerald",
     pillLabel: "Copy Refinement",
     title: "Rewrite vague copy",
     description:

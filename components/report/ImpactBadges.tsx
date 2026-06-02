@@ -1,9 +1,13 @@
 import type { ReactNode } from "react";
-import { RiSparklingFill } from "@remixicon/react";
+import {
+  RiFocus3Line,
+  RiSparklingFill,
+} from "@remixicon/react";
 
 import type { ImpactEntry } from "@/lib/report-impact";
 import {
   getPriorityLabel,
+  ISSUE_IMPACT_BADGE_CLASS,
   PRIORITY_BADGE_CLASS,
   type PriorityItem,
   type PriorityLabel,
@@ -22,25 +26,22 @@ type PriorityBadgeProps = {
 const IMPACT_PILL_CLASS =
   "inline-flex h-[37px] shrink-0 items-center rounded-full border px-[15px] text-[13px] font-semibold leading-[19.5px]";
 
+function formatImpactMetric(key: string) {
+  if (!key) return key;
+
+  return key.charAt(0).toUpperCase() + key.slice(1);
+}
+
 function PriorityBadgeIcon({ label }: { label: PriorityLabel }) {
   if (label === "Quick Win") {
     return <RiSparklingFill size={12} className="text-[#D08700]" aria-hidden />;
   }
 
   if (label === "High Impact") {
-    return (
-      <span
-        className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#009966]"
-        aria-hidden
-      />
-    );
+    return <RiFocus3Line size={14} className="text-[#10B981]" aria-hidden />;
   }
 
-  return (
-    <span className="text-[12px] leading-none text-[#616C77]" aria-hidden>
-      ◐
-    </span>
-  );
+  return null;
 }
 
 function renderPriorityIcon(label: PriorityLabel): ReactNode {
@@ -54,10 +55,8 @@ export function ImpactPercentageBadges({ entries, className = "" }: ImpactBadges
 
   return (
     <div className={`flex max-w-full shrink-0 flex-wrap gap-2 md:justify-end ${className}`}>
-      <div
-        className={`${IMPACT_PILL_CLASS} border-[#FFC9C9] bg-[#FEF2F2] text-[#FB2C36]`}
-      >
-        -{Math.abs(entry.value)}% {entry.key}
+      <div className={`${IMPACT_PILL_CLASS} ${ISSUE_IMPACT_BADGE_CLASS}`}>
+        -{Math.abs(entry.value)}% {formatImpactMetric(entry.key)}
       </div>
     </div>
   );
@@ -66,11 +65,13 @@ export function ImpactPercentageBadges({ entries, className = "" }: ImpactBadges
 export function PriorityBadge({ label, className = "" }: PriorityBadgeProps) {
   if (!label) return null;
 
+  const icon = renderPriorityIcon(label);
+
   return (
     <div
-      className={`${IMPACT_PILL_CLASS} gap-2 ${PRIORITY_BADGE_CLASS[label]} ${className}`}
+      className={`${IMPACT_PILL_CLASS} ${icon ? "gap-2" : ""} ${PRIORITY_BADGE_CLASS[label]} ${className}`}
     >
-      {renderPriorityIcon(label)}
+      {icon}
       {label}
     </div>
   );

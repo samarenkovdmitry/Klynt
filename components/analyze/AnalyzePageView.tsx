@@ -196,14 +196,14 @@ export function AnalyzePageView() {
                     ) : (
                       <span className="flex items-center justify-between gap-4 px-4 py-4 md:px-5">
                         <span className="flex min-w-0 items-center gap-3">
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#009966]">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#10B981]">
                             <RiCheckLine size={18} className="text-white" aria-hidden />
                           </span>
                           <span className="min-w-0">
                             <span className="block truncate text-[15px] font-medium text-[var(--ink-primary)]">
                               {imageName}
                             </span>
-                            <span className="mt-0.5 block text-[13px] text-[#009966]">
+                            <span className="mt-0.5 block text-[13px] text-[#10B981]">
                               {imageSize} · Ready for analysis
                             </span>
                           </span>

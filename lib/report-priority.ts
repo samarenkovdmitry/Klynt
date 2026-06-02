@@ -78,6 +78,16 @@ export function getPriorityLabel(item: PriorityItem): PriorityLabel {
 
 export const PRIORITY_BADGE_CLASS: Record<PriorityLabel, string> = {
   "Quick Win": "border-[#FCE664] bg-[#FEFCE8] text-[#D08700]",
-  "High Impact": "border-[#A4F4CF] bg-[#ECFDF5] text-[#009966]",
+  "High Impact": "border-emerald-200 bg-[#ECFDF5] text-[#10B981]",
   "Medium Impact": "border-[#E5E5E5] bg-[#FAFAFA] text-[#616C77]",
 };
+
+export const ISSUE_IMPACT_BADGE_CLASS =
+  "border-[#F9D5D5] bg-[#FFEFEF] text-[#FF5A4F]";
+
+export const IMPROVED_COPY_PANEL_CLASS = "border-emerald-200 bg-[#ECFDF5]";
+export const IMPROVED_COPY_LABEL_CLASS = "text-emerald-700";
+export const IMPROVED_COPY_BUTTON_CLASS =
+  "border-emerald-200 bg-white text-emerald-700 transition hover:bg-emerald-50";
+export const IMPROVED_COPY_TOAST_CLASS =
+  "border-emerald-200 bg-white text-emerald-700";

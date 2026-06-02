@@ -39,7 +39,7 @@ export type InsideReportItem = {
   title: string;
   tags?: string[];
   impact: string;
-  impactTone: "red" | "green" | "sky";
+  impactTone: "red" | "green";
   footer: string;
   showSkeleton?: boolean;
   showComparison?: boolean;
@@ -150,7 +150,7 @@ export const INSIDE_REPORT_ITEMS: InsideReportItem[] = [
   {
     title: "Hero Headline",
     impact: "+15% clarity",
-    impactTone: "sky",
+    impactTone: "green",
     footer: "",
     showComparison: true,
   },
