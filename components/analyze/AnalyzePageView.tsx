@@ -42,16 +42,9 @@ const INPUT_TABS: {
 type AnalyzeErrorAlertProps = {
   errorKind: Exclude<AnalyzeErrorKind, null>;
   error: string;
-  onRetry: () => void;
-  onUploadScreenshot: () => void;
 };
 
-function AnalyzeErrorAlert({
-  errorKind,
-  error,
-  onRetry,
-  onUploadScreenshot,
-}: AnalyzeErrorAlertProps) {
+function AnalyzeErrorAlert({ errorKind, error }: AnalyzeErrorAlertProps) {
   const isRateLimited = errorKind === "rate_limit";
 
   const title =
@@ -97,32 +90,6 @@ function AnalyzeErrorAlert({
       >
         {body}
       </p>
-
-      {!isRateLimited && (
-        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          {errorKind === "url_analysis" && (
-            <Button
-              type="button"
-              variant="primary"
-              fullWidth={false}
-              className="h-11 min-h-11 px-4 text-[14px]"
-              icon={<RiUpload2Line className="size-4" aria-hidden />}
-              onClick={onUploadScreenshot}
-            >
-              Upload screenshot
-            </Button>
-          )}
-          <Button
-            type="button"
-            variant={errorKind === "url_analysis" ? "secondary" : "primary"}
-            fullWidth={false}
-            className="h-11 min-h-11 px-4 text-[14px]"
-            onClick={onRetry}
-          >
-            Try again
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
@@ -321,19 +288,12 @@ export function AnalyzePageView() {
             </div>
           </div>
 
-          <div className="mt-6">
-            {!loading ? (
-              <Button
-                type="button"
-                variant="primary"
-                disabled={isButtonDisabled}
-                onClick={handleAnalyze}
-                icon={<RiArrowRightLine size={18} aria-hidden />}
-                className="!rounded-full"
-              >
-                Analyze UX
-              </Button>
-            ) : (
+          {error && errorKind && (
+            <AnalyzeErrorAlert errorKind={errorKind} error={error} />
+          )}
+
+          <div className={error && errorKind ? "mt-4" : "mt-6"}>
+            {loading ? (
               <div className="rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -358,17 +318,48 @@ export function AnalyzePageView() {
                   Evaluating hierarchy, clarity, trust and conversion flow
                 </p>
               </div>
+            ) : errorKind === "url_analysis" ? (
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="button"
+                  variant="primary"
+                  onClick={switchToScreenshotUpload}
+                  icon={<RiUpload2Line size={18} aria-hidden />}
+                  className="!rounded-full"
+                >
+                  Upload screenshot
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleAnalyze}
+                  className="!rounded-full"
+                >
+                  Try again
+                </Button>
+              </div>
+            ) : errorKind === "screenshot_analysis" || errorKind === "storage" ? (
+              <Button
+                type="button"
+                variant="primary"
+                onClick={handleAnalyze}
+                className="!rounded-full"
+              >
+                Try again
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="primary"
+                disabled={isButtonDisabled}
+                onClick={handleAnalyze}
+                icon={<RiArrowRightLine size={18} aria-hidden />}
+                className="!rounded-full"
+              >
+                Analyze UX
+              </Button>
             )}
           </div>
-
-          {error && errorKind && (
-            <AnalyzeErrorAlert
-              errorKind={errorKind}
-              error={error}
-              onRetry={handleAnalyze}
-              onUploadScreenshot={switchToScreenshotUpload}
-            />
-          )}
 
           <p className="mt-6 text-center text-[13px] leading-5 text-[#8E99A2]">
             Your URLs and screenshots are processed securely and never shared.{" "}
