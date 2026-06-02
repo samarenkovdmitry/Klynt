@@ -5,9 +5,8 @@ import chromium from "@sparticuz/chromium";
 import sharp from "sharp";
 
 import { isAuditReport, type AuditReport } from "@/lib/audit-report";
-import {
-  normalizeMetricObservations,
-} from "@/lib/metric-observations";
+import { normalizeMetricObservations } from "@/lib/metric-observations";
+import { normalizeReportHeroCopy } from "@/lib/report-hero-copy";
 import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/lib/page-screenshot";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
@@ -521,6 +520,18 @@ Return ONLY valid JSON (no markdown):
 
 Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
 Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; why fields max 28 words each.
+
+Hero copy — three distinct layers. Never paraphrase one layer as another:
+- verdict: auditor diagnosis in 6-10 words. Name the main UX or conversion problem on THIS page.
+  Good: "Hero headline hides who the product is for."
+  Bad: "Messaging clarity issues"
+- summary: visitor first-impression in 14-22 words. Describe what a new visitor likely feels, misunderstands, or fails to decide. Empathy and behavior, not a restated diagnosis.
+  Good: "New visitors likely pause because the hero never names the audience or immediate payoff."
+  Bad: repeating the verdict with different wording
+- key_observation: one non-obvious insight in max 14 words. A second-angle finding (trust gap, expectation mismatch, hierarchy surprise) that is NOT the same point as verdict or summary.
+  Good: "Trust badges appear before the value prop, which can feel like marketing noise."
+  Bad: another headline-clarity sentence
+
 issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
 Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
 Bad title: "Weak visual hierarchy"
@@ -599,47 +610,6 @@ if (screenshotsBase64[1]) {
 
     const json = extractJSON(raw);
 
-// -----------------------------
-// FALLBACKS
-// -----------------------------
-
-if (
-  typeof json.summary !== "string" ||
-  json.summary.trim().length < 10
-) {
-  const topIssue = json.issues?.[0]?.title || "conversion clarity";
-
-  json.summary =
-    `Strong visual presentation, but ${topIssue.toLowerCase()} reduces overall conversion confidence.`;
-}
-
-if (
-  typeof json.verdict !== "string" ||
-  json.verdict.trim().length < 6
-) {
-  if (json.score >= 80) {
-    json.verdict =
-      "Strong UX with minor conversion friction";
-  } else if (json.score >= 60) {
-    json.verdict =
-      "Clear structure with moderate UX friction";
-  } else {
-    json.verdict =
-      "Weak clarity and conversion communication";
-  }
-}
-
-if (
-  typeof json.key_observation !== "string" ||
-  json.key_observation.trim().length < 8
-) {
-  const topIssue =
-    json.issues?.[0]?.title ||
-    "Primary messaging lacks clarity";
-
-  json.key_observation = topIssue;
-}
-
 json.confidence = Number.isFinite(Number(json.confidence))
   ? Math.max(70, Math.min(98, Number(json.confidence)))
   : 82;
@@ -681,6 +651,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
     );
 
     json.copy = json.copy.map((item: any) => normalizePriorityItem(item));
+
+    Object.assign(json, normalizeReportHeroCopy(json));
 
     const reportId = generateReportId();
     const auditedUrl =
