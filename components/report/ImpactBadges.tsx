@@ -29,6 +29,10 @@ const IMPACT_PILL_CLASS =
 function formatImpactMetric(key: string) {
   if (!key) return key;
 
+  if (key.toLowerCase() === "cta") {
+    return "CTA";
+  }
+
   return key.charAt(0).toUpperCase() + key.slice(1);
 }
 

@@ -11,6 +11,7 @@ import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/l
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
 import { buildReportPreviewImage } from "@/lib/report-preview";
+import { mapIssueImpact } from "@/lib/report-impact";
 import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
 import { generateReportOgPreviewDataUrl } from "@/lib/report-opengraph-image";
@@ -102,39 +103,6 @@ function clampPercent(n: any) {
   if (Number.isNaN(v)) return 0;
 
   return Math.max(0, Math.min(100, v));
-}
-
-function mapImpact(impactObj: Record<string, number>) {
-  if (!impactObj || typeof impactObj !== "object") {
-    return {
-      impact_metric_1: "",
-      impact_value_1: 0,
-      impact_metric_2: "",
-      impact_value_2: 0,
-    };
-  }
-
-  const entries = Object.entries(impactObj)
-    .filter(([_, v]) => typeof v === "number" && v !== 0)
-    .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
-
-  if (entries.length === 0) {
-    return {
-      impact_metric_1: "",
-      impact_value_1: 0,
-      impact_metric_2: "",
-      impact_value_2: 0,
-    };
-  }
-
-  const [m1, v1] = entries[0];
-
-  return {
-    impact_metric_1: m1,
-    impact_value_1: v1,
-    impact_metric_2: "",
-    impact_value_2: 0,
-  };
 }
 
 function normalizePriorityItem(item: Record<string, unknown>) {
@@ -639,12 +607,16 @@ json.confidence = Number.isFinite(Number(json.confidence))
       : [];
     json.copy = Array.isArray(json.copy) ? json.copy.slice(0, 3) : [];
 
-    json.issues = json.issues.map((item: any) => ({
-     ...item,
-     title: normalizeIssueTitle(item),
-     bullets: normalizeSignals(item.bullets || []),
-     ...mapImpact(item.impact || {}),
-     }));
+    json.issues = json.issues.map((item: any) => {
+      const { impact, ...rest } = item;
+
+      return {
+        ...rest,
+        title: normalizeIssueTitle(item),
+        bullets: normalizeSignals(item.bullets || []),
+        ...mapIssueImpact(item),
+      };
+    });
 
     json.suggestions = json.suggestions.map((item: any) =>
       normalizePriorityItem(item)
