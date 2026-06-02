@@ -1,3 +1,5 @@
+import { ScoreStatusChip } from "@/components/report/ScoreStatusChip";
+
 import { LANDING_SURFACE_BG } from "./landingPageStyles";
 
 const UI_FRAME = `overflow-hidden rounded-[12px] border border-white/[0.08] ${LANDING_SURFACE_BG} shadow-[0_8px_32px_rgba(0,0,0,0.14)]`;
@@ -63,12 +65,7 @@ export function StepReportVisual() {
   return (
     <div className={REPORT_FRAME} aria-hidden>
       <div className="px-3.5 py-3">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-5 min-w-[28px] items-center justify-center rounded-full bg-[#FF7A00] px-1.5 text-[10px] font-bold text-white">
-            6.5
-          </span>
-          <span className="text-[12px] font-medium text-[#18181B]/80">Overall Assessment</span>
-        </div>
+        <ScoreStatusChip score="6.5" tierLabel="At risk" badgeBg="#FF7A00" />
         <ul className="mt-3 space-y-2 border-t border-black/[0.06] pt-3">
           {[
             "Hero headline lacks a clear first outcome",
