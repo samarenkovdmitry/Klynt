@@ -17,6 +17,7 @@ import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { useReportData } from "@/hooks/useReportData";
+import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
 
 export default function ReportPage() {
   const params = useParams();
@@ -27,6 +28,7 @@ export default function ReportPage() {
   const { waitlistActive, unlock } = usePreLaunchWaitlist(
     reportId === DEMO_REPORT_ID
   );
+  const gateInView = useWaitlistGateInView(waitlistActive);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
@@ -71,7 +73,7 @@ export default function ReportPage() {
       <main
         className={[
           "min-h-[calc(100dvh-68px)] bg-white px-4 pt-4 text-[var(--ink-primary)] md:px-6 md:pt-6",
-          waitlistActive ? "pb-24 md:pb-12" : "pb-12",
+          waitlistActive && !gateInView ? "pb-24 md:pb-12" : "pb-12",
         ].join(" ")}
       >
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
@@ -121,7 +123,7 @@ export default function ReportPage() {
         </div>
       </main>
 
-      {waitlistActive && <ReportWaitlistStickyBar />}
+      {waitlistActive && <ReportWaitlistStickyBar visible={!gateInView} />}
 
       <ShareReportDialog
         open={shareOpen}
