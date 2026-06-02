@@ -95,7 +95,11 @@ export default function ReportPage() {
           />
 
           <div className="space-y-0">
-            <ReportUxIssuesSection issues={issues} waitlistActive={waitlistActive} />
+            <ReportUxIssuesSection
+              issues={issues}
+              breakdown={data.breakdown}
+              waitlistActive={waitlistActive}
+            />
 
             {waitlistActive && reportId ? (
               <ReportWaitlistGate

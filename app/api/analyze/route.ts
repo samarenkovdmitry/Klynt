@@ -503,7 +503,9 @@ Hero copy — three distinct layers. Never paraphrase one layer as another:
 issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
 Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
 Bad title: "Weak visual hierarchy"
-Impact: issues ONLY — use negative ints (-5 to -25) in issues[].impact; pick exactly 1 top key per issue.
+Impact: REQUIRED on every issue — include issues[].impact with exactly one negative integer from -5 to -25.
+Example: "impact": { "clarity": -18 }. Allowed keys: clarity, navigation, visuals, trust, conversion, cta.
+Never omit impact. Never use 0.
 priority: suggestions[] and copy[] ONLY — required enum, no impact field:
 - quick_win: low effort, visible UX payoff (copy tweak, one CTA, small layout fix)
 - high_impact: materially improves understanding or conversion; may need more design/dev work
@@ -607,14 +609,14 @@ json.confidence = Number.isFinite(Number(json.confidence))
       : [];
     json.copy = Array.isArray(json.copy) ? json.copy.slice(0, 3) : [];
 
-    json.issues = json.issues.map((item: any) => {
+    json.issues = json.issues.map((item: any, index: number) => {
       const { impact, ...rest } = item;
 
       return {
         ...rest,
         title: normalizeIssueTitle(item),
         bullets: normalizeSignals(item.bullets || []),
-        ...mapIssueImpact(item),
+        ...mapIssueImpact(item, json.breakdown, index),
       };
     });
 
