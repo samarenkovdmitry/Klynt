@@ -165,7 +165,7 @@ export function PreLaunchWaitlistCard({
 
   if (submitted) {
     return (
-      <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-5 py-6 text-center md:px-8 md:py-7">
+      <div className="mx-auto max-w-[640px] rounded-[20px] border border-emerald-200 bg-emerald-50 px-5 py-6 text-center md:px-8 md:py-7">
         <p className="text-[20px] font-semibold tracking-[-0.02em] text-emerald-900 md:text-[22px]">
           Full report unlocked
         </p>
@@ -178,12 +178,12 @@ export function PreLaunchWaitlistCard({
   }
 
   return (
-    <div className="rounded-[20px] border border-[rgba(6,28,47,0.08)] bg-white px-5 py-6 md:px-8 md:py-7">
-      <h4 className="max-w-[640px] text-[22px] font-semibold leading-[1.2] tracking-[-0.03em] text-[var(--ink-primary)] md:text-[26px]">
+    <div className="mx-auto max-w-[640px] rounded-[20px] border border-[rgba(6,28,47,0.08)] bg-white px-5 py-6 md:px-8 md:py-7">
+      <h4 className="text-[22px] font-semibold leading-[1.2] tracking-[-0.03em] text-[var(--ink-primary)] md:text-[26px]">
         {headline}
       </h4>
 
-      <p className="mt-3 max-w-[560px] text-[15px] leading-6 text-[rgba(6,28,47,0.55)]">
+      <p className="mt-3 text-[15px] leading-6 text-[rgba(6,28,47,0.55)]">
         We&apos;ll email you the full report link — no spam, one send.
       </p>
 
@@ -203,7 +203,7 @@ export function PreLaunchWaitlistCard({
         ))}
       </ul>
 
-      <form onSubmit={handleSubmit} className="mt-6 max-w-[420px]">
+      <form onSubmit={handleSubmit} className="mt-6">
         <input
           type="email"
           name="email"
