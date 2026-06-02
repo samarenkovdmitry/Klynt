@@ -1,6 +1,12 @@
 import { RiCheckLine, RiFileCopyLine } from "@remixicon/react";
 import type { ReportCopyItem } from "@/lib/audit-report";
 import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
+import {
+  IMPROVED_COPY_BUTTON_CLASS,
+  IMPROVED_COPY_LABEL_CLASS,
+  IMPROVED_COPY_PANEL_CLASS,
+  IMPROVED_COPY_TOAST_CLASS,
+} from "@/lib/report-priority";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_CARD_HEADLINE_BOTTOM_CLASS,
@@ -75,9 +81,11 @@ export function ReportCopySection({
                     <p className="text-[16px] font-normal leading-5 text-neutral-600">{item.before}</p>
                   </div>
 
-                  <div className="relative rounded-2xl border border-sky-200 bg-sky-50/70 p-5">
+                  <div className={`relative rounded-2xl border p-5 ${IMPROVED_COPY_PANEL_CLASS}`}>
                     <div className={COPY_FIELD_HEADER_CLASS}>
-                      <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-sky-700">
+                      <p
+                        className={`text-[12px] font-semibold uppercase tracking-[0.08em] ${IMPROVED_COPY_LABEL_CLASS}`}
+                      >
                         Improved
                       </p>
 
@@ -85,7 +93,7 @@ export function ReportCopySection({
                         <button
                           type="button"
                           onClick={() => onCopy(item.after ?? "", index)}
-                          className="flex h-9 w-9 items-center justify-center rounded-xl border border-sky-200 bg-white text-sky-700 transition hover:bg-sky-100"
+                          className={`flex h-9 w-9 items-center justify-center rounded-xl border ${IMPROVED_COPY_BUTTON_CLASS}`}
                           aria-label="Copy improved text"
                         >
                           {copiedIndex === index ? (
@@ -96,7 +104,9 @@ export function ReportCopySection({
                         </button>
 
                         {copiedIndex === index && (
-                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-medium text-sky-700 shadow-sm">
+                          <div
+                            className={`absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border px-3 py-1 text-[11px] font-medium shadow-sm ${IMPROVED_COPY_TOAST_CLASS}`}
+                          >
                             Copied
                           </div>
                         )}

@@ -11,9 +11,8 @@ import {
 } from "./landingUpdateStyles";
 
 const impactStyles = {
-  red: "border-red-200 bg-[#FFF3F3] text-[#D94848]",
-  green: "border-emerald-200 bg-[#ECFDF5] text-[#2E7D4F]",
-  sky: "border-sky-200 bg-sky-50 text-sky-700",
+  red: "border-[#F9D5D5] bg-[#FFEFEF] text-[#FF5A4F]",
+  green: "border-emerald-200 bg-[#ECFDF5] text-[#10B981]",
 } as const;
 
 const impactBadgeClass =
@@ -101,13 +100,13 @@ export function LandingTestInsideReport() {
                     <div className="mt-3 h-2 w-full rounded-full bg-[#E5E7EB]" />
                   </div>
 
-                  <div className="rounded-[16px] border border-sky-200 bg-sky-50/70 p-4 md:rounded-[20px]">
-                    <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-sky-700">
+                  <div className="rounded-[16px] border border-emerald-200 bg-[#ECFDF5] p-4 md:rounded-[20px]">
+                    <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-emerald-700">
                       Improved
                     </p>
                     <div className="mt-3 space-y-2">
-                      <div className="h-2 w-full rounded-full bg-[#38B3F7]" />
-                      <div className="h-2 w-[70%] rounded-full bg-[#38B3F7]" />
+                      <div className="h-2 w-full rounded-full bg-[#10B981]" />
+                      <div className="h-2 w-[70%] rounded-full bg-[#10B981]" />
                     </div>
                   </div>
                 </div>

@@ -9,15 +9,13 @@ import {
 } from "@/components/landing/landingStyles";
 
 const pillStyles: Record<BentoVariant, string> = {
-  red: "border-red-200 bg-[#FFF3F3] text-[#D94848]",
-  emerald: "border-emerald-200 bg-[#E8F7EE] text-[#2E7D4F]",
-  sky: "border-sky-200 bg-sky-50 text-sky-700",
+  red: "border-[#F9D5D5] bg-[#FFEFEF] text-[#FF5A4F]",
+  emerald: "border-emerald-200 bg-[#ECFDF5] text-[#10B981]",
 };
 
 const visualAreaStyles: Record<BentoVariant, string> = {
-  red: "bg-red-100",
-  emerald: "bg-emerald-100",
-  sky: "bg-sky-100",
+  red: "bg-[#FFF5F5]",
+  emerald: "bg-emerald-50",
 };
 
 function CategoryPill({
@@ -42,7 +40,7 @@ function BentoVisualUxIssues() {
       <div className="h-2 w-16 rounded-full bg-[#E5E7EB]" />
       <div className="mt-2.5 h-2.5 w-[85%] rounded-full bg-[#E5E7EB]" />
       <div className="mt-3 flex flex-wrap gap-1.5">
-        <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-500">
+        <span className="rounded-full border border-[#F9D5D5] bg-[#FFEFEF] px-2 py-0.5 text-[10px] font-semibold text-[#FF5A4F]">
           -12% conversion
         </span>
         <span className="rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[10px] font-medium text-[#667085]">
@@ -92,12 +90,12 @@ function BentoVisualCopyRefinement() {
         </p>
       </div>
 
-      <div className="rounded-xl border border-sky-200 bg-sky-50/70 px-3 py-2.5">
+      <div className="rounded-xl border border-emerald-200 bg-[#ECFDF5] px-3 py-2.5">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-sky-700">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-emerald-700">
             After
           </p>
-          <span className="shrink-0 rounded-full border border-sky-200 bg-white px-2 py-0.5 text-[10px] font-semibold text-sky-700">
+          <span className="shrink-0 rounded-full border border-emerald-200 bg-white px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
             +15% clarity
           </span>
         </div>
