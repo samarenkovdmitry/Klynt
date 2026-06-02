@@ -131,12 +131,20 @@ function getLoadingLabel(progress: number) {
 
 export type AnalyzeInputMode = "url" | "screenshot";
 
+export type AnalyzeErrorKind =
+  | "rate_limit"
+  | "url_analysis"
+  | "screenshot_analysis"
+  | "storage"
+  | null;
+
 export function useAnalyzePage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorKind, setErrorKind] = useState<AnalyzeErrorKind>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [imageName, setImageName] = useState("");
@@ -171,6 +179,27 @@ export function useAnalyzePage() {
     }
   }
 
+  function clearAnalysisError() {
+    setError(null);
+    setErrorKind(null);
+    setIsRateLimited(false);
+  }
+
+  function failAnalysis(
+    kind: Exclude<AnalyzeErrorKind, null>,
+    message: string
+  ) {
+    setErrorKind(kind);
+    setError(message);
+    setIsRateLimited(kind === "rate_limit");
+  }
+
+  function switchToScreenshotUpload() {
+    clearAnalysisError();
+    setInputMode("screenshot");
+    openFilePicker();
+  }
+
   function handleUrlKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key !== "Enter" || loading) return;
 
@@ -201,8 +230,7 @@ export function useAnalyzePage() {
 
       setLoading(true);
       setProgress(0);
-      setError(null);
-      setIsRateLimited(false);
+      clearAnalysisError();
 
       const startedAt = performance.now();
       progressTimer = setInterval(() => {
@@ -230,17 +258,24 @@ export function useAnalyzePage() {
         setProgress(0);
         setLoading(false);
         const retryAfter = Number(res.headers.get("Retry-After"));
-        setIsRateLimited(true);
-        setError(getRateLimitMessage(Number.isFinite(retryAfter) ? retryAfter : null));
+        failAnalysis(
+          "rate_limit",
+          getRateLimitMessage(Number.isFinite(retryAfter) ? retryAfter : null)
+        );
         return;
       }
+
+      const analysisFailureKind: Exclude<AnalyzeErrorKind, null | "rate_limit" | "storage"> =
+        inputMode === "url" ? "url_analysis" : "screenshot_analysis";
 
       if (!res.ok || !json) {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
-        setIsRateLimited(false);
-        setError(json?.error || "Something went wrong during analysis. Please try again.");
+        failAnalysis(
+          analysisFailureKind,
+          json?.error || "Something went wrong during analysis. Please try again."
+        );
         return;
       }
 
@@ -248,8 +283,8 @@ export function useAnalyzePage() {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
-        setIsRateLimited(false);
-        setError(
+        failAnalysis(
+          analysisFailureKind,
           json?.error || "Analysis returned an incomplete report. Please try again."
         );
         return;
@@ -292,7 +327,8 @@ export function useAnalyzePage() {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
-        setError(
+        failAnalysis(
+          "storage",
           "Could not save the report in this browser. Try again or free up storage."
         );
         return;
@@ -311,8 +347,8 @@ export function useAnalyzePage() {
     } catch (caught: unknown) {
       stopProgressTimer();
       setProgress(0);
-      setIsRateLimited(false);
-      setError(
+      failAnalysis(
+        inputMode === "url" ? "url_analysis" : "screenshot_analysis",
         caught instanceof Error
           ? caught.message
           : "Something went wrong while analyzing the website."
@@ -332,6 +368,7 @@ export function useAnalyzePage() {
     imageSize,
     loading,
     error,
+    errorKind,
     isRateLimited,
     progress,
     inputMode,
@@ -344,5 +381,6 @@ export function useAnalyzePage() {
     handleImageUpload,
     handleUrlKeyDown,
     openFilePicker,
+    switchToScreenshotUpload,
   };
 }
