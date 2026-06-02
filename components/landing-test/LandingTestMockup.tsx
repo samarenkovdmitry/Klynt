@@ -10,12 +10,14 @@ import {
 } from "@remixicon/react";
 
 import { DEMO_REPORT, DEMO_REPORT_PATH } from "@/lib/demo-report";
+import { ScoreStatusChip } from "@/components/report/ScoreStatusChip";
 import {
   formatOverallScore,
   formatReportDomain,
   getFrictionScore,
   getMetricBarColor,
   getReportHeroTheme,
+  getTierLabel,
 } from "@/lib/report-hero-theme";
 
 const textClamp = "line-clamp-2";
@@ -67,6 +69,7 @@ export function LandingTestMockup() {
   const friction = Math.max(0, Math.min(100, getFrictionScore(data.breakdown)));
   const topIssue = data.issues[0];
   const overallScore = formatOverallScore(score);
+  const tierLabel = getTierLabel(theme.tier);
   const issueCount = data.issues.length;
   const deliverableBullets = [
     `${issueCount} issues ranked by impact`,
@@ -105,12 +108,12 @@ export function LandingTestMockup() {
             <div className="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_200px] md:grid-cols-[minmax(0,1fr)_220px] md:gap-5">
               <div className="min-w-0">
                 <p
-                  className={`text-[17px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[20px] ${textClamp}`}
+                  className={`text-[19px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[20px] ${textClamp}`}
                 >
                   {data.verdict}
                 </p>
                 <p
-                  className={`mt-2 text-[13px] leading-[1.5] text-[rgba(6,28,47,0.5)] md:text-[14px] md:leading-[20px] ${textClamp}`}
+                  className={`mt-2 text-[14px] leading-[1.5] text-[rgba(6,28,47,0.5)] md:leading-[20px] ${textClamp}`}
                 >
                   {data.summary}
                 </p>
@@ -176,17 +179,11 @@ export function LandingTestMockup() {
             </div>
 
             <div className="flex flex-col gap-2 border-t border-[rgba(32,52,94,0.06)] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between md:px-5 md:py-4">
-              <div className="flex items-center gap-2">
-                <span
-                  className="inline-flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-[11px] font-bold leading-none tracking-[-0.05em] text-white md:text-[12px]"
-                  style={{ backgroundColor: theme.badgeBg }}
-                >
-                  {overallScore}
-                </span>
-                <p className="text-[13px] font-semibold text-[var(--ink-primary)] md:text-[14px]">
-                  Overall Assessment
-                </p>
-              </div>
+              <ScoreStatusChip
+                score={overallScore}
+                tierLabel={tierLabel}
+                badgeBg={theme.badgeBg}
+              />
               <p className="inline-flex items-center gap-0.5 text-[12px] font-medium text-[rgba(6,28,47,0.55)] md:text-[13px]">
                 View {issueCount} issues
                 <RiArrowRightSLine size={16} className="text-[rgba(6,28,47,0.4)]" aria-hidden />
