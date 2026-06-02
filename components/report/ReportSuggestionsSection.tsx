@@ -2,7 +2,6 @@
 
 import type { ReportSuggestion } from "@/lib/audit-report";
 import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
-import { ReportLockedSkeletonCard } from "@/components/report/ReportLockedSkeletons";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_CARD_HEADLINE_BOTTOM_CLASS,
@@ -77,9 +76,6 @@ export function ReportSuggestionsSection({
   if (suggestions.length === 0) return null;
 
   const visibleSuggestions = waitlistActive ? suggestions.slice(0, 1) : suggestions;
-  const lockedSuggestionCount = waitlistActive
-    ? Math.max(0, suggestions.length - 1)
-    : 0;
 
   return (
     <section className={REPORT_SECTION_SPACING_CLASS}>
@@ -88,13 +84,6 @@ export function ReportSuggestionsSection({
       <div className="mt-5 space-y-4">
         {visibleSuggestions.map((item, index) => (
           <SuggestionCard key={index} item={item} index={index} />
-        ))}
-
-        {Array.from({ length: lockedSuggestionCount }, (_, offset) => (
-          <ReportLockedSkeletonCard
-            key={`locked-suggestion-${offset}`}
-            index={offset + 1}
-          />
         ))}
       </div>
     </section>

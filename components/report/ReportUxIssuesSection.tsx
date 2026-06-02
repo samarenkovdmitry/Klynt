@@ -1,6 +1,6 @@
 import type { ReportIssue } from "@/lib/audit-report";
 import { ReportListCard } from "@/components/report/ReportListCard";
-import { ReportLockedSkeletonCard } from "@/components/report/ReportLockedSkeletons";
+import { ReportLockedSectionCard } from "@/components/report/ReportLockedSectionCard";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_TAG_CLASS,
@@ -60,9 +60,13 @@ export function ReportUxIssuesSection({
           );
         })}
 
-        {Array.from({ length: lockedIssueCount }, (_, offset) => (
-          <ReportLockedSkeletonCard key={`locked-issue-${offset}`} index={offset + 1} />
-        ))}
+        {lockedIssueCount > 0 && (
+          <ReportLockedSectionCard
+            title="UX Issues"
+            count={lockedIssueCount}
+            description="with explanations"
+          />
+        )}
       </div>
     </section>
   );

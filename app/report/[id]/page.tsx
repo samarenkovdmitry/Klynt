@@ -6,11 +6,14 @@ import { AppHeader } from "@/components/AppHeader";
 import { ReportCopySection } from "@/components/report/ReportCopySection";
 import { ReportCtaSection } from "@/components/report/ReportCtaSection";
 import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
+import { ReportLockedSectionsPreview } from "@/components/report/ReportLockedSectionsPreview";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
 import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
 import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
+import { ReportWaitlistPreviewBanner } from "@/components/report/ReportWaitlistPreviewBanner";
+import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
@@ -56,12 +59,23 @@ export default function ReportPage() {
   const issues = data.issues ?? [];
   const suggestions = data.suggestions ?? [];
   const copy = data.copy ?? [];
+  const lockedSummary = {
+    domain: formatReportDomain(data.url),
+    remainingIssues: Math.max(0, issues.length - 1),
+    remainingSuggestions: Math.max(0, suggestions.length - 1),
+    remainingCopy: Math.max(0, copy.length - 1),
+  };
 
   return (
     <>
       <AppHeader />
 
-      <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-4 text-[var(--ink-primary)] md:px-6 md:pt-6">
+      <main
+        className={[
+          "min-h-[calc(100dvh-68px)] bg-white px-4 pt-4 text-[var(--ink-primary)] md:px-6 md:pt-6",
+          waitlistActive ? "pb-24 md:pb-12" : "pb-12",
+        ].join(" ")}
+      >
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
           <ReportHeroSummary
             url={data.url}
@@ -82,28 +96,29 @@ export default function ReportPage() {
 
           <div className="space-y-0">
             <ReportUxIssuesSection issues={issues} waitlistActive={waitlistActive} />
-            <ReportSuggestionsSection
-              suggestions={suggestions}
-              waitlistActive={waitlistActive}
-            />
-            <ReportCopySection
-              copy={copy}
-              copiedIndex={copiedIndex}
-              onCopy={handleCopy}
-              waitlistActive={waitlistActive}
-            />
 
-            {waitlistActive && reportId && (
-              <ReportWaitlistGate
-                reportId={reportId}
-                locked={{
-                  domain: formatReportDomain(data.url),
-                  remainingIssues: Math.max(0, issues.length - 1),
-                  remainingSuggestions: Math.max(0, suggestions.length - 1),
-                  remainingCopy: Math.max(0, copy.length - 1),
-                }}
-                onUnlock={unlock}
-              />
+            {waitlistActive && reportId ? (
+              <>
+                <ReportWaitlistPreviewBanner locked={lockedSummary} />
+                <ReportWaitlistGate
+                  reportId={reportId}
+                  locked={lockedSummary}
+                  onUnlock={unlock}
+                />
+                <ReportLockedSectionsPreview
+                  remainingSuggestions={lockedSummary.remainingSuggestions}
+                  remainingCopy={lockedSummary.remainingCopy}
+                />
+              </>
+            ) : (
+              <>
+                <ReportSuggestionsSection suggestions={suggestions} />
+                <ReportCopySection
+                  copy={copy}
+                  copiedIndex={copiedIndex}
+                  onCopy={handleCopy}
+                />
+              </>
             )}
           </div>
 
@@ -114,6 +129,8 @@ export default function ReportPage() {
           )}
         </div>
       </main>
+
+      {waitlistActive && <ReportWaitlistStickyBar />}
 
       <ShareReportDialog
         open={shareOpen}

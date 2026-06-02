@@ -1,7 +1,6 @@
 import { RiCheckLine, RiFileCopyLine, RiLock2Line } from "@remixicon/react";
 import type { ReportCopyItem } from "@/lib/audit-report";
 import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
-import { ReportLockedCopySkeletonCard } from "@/components/report/ReportLockedSkeletons";
 import {
   IMPROVED_COPY_BUTTON_CLASS,
   IMPROVED_COPY_LABEL_CLASS,
@@ -146,7 +145,6 @@ export function ReportCopySection({
   if (copy.length === 0) return null;
 
   const visibleCopy = waitlistActive ? copy.slice(0, 1) : copy;
-  const lockedCopyCount = waitlistActive ? Math.max(0, copy.length - 1) : 0;
 
   return (
     <section className={REPORT_SECTION_SPACING_CLASS}>
@@ -162,10 +160,6 @@ export function ReportCopySection({
             onCopy={onCopy}
             copyLocked={waitlistActive}
           />
-        ))}
-
-        {Array.from({ length: lockedCopyCount }, (_, offset) => (
-          <ReportLockedCopySkeletonCard key={`locked-copy-${offset}`} index={offset + 1} />
         ))}
       </div>
     </section>
