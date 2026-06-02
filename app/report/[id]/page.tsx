@@ -6,13 +6,11 @@ import { AppHeader } from "@/components/AppHeader";
 import { ReportCopySection } from "@/components/report/ReportCopySection";
 import { ReportCtaSection } from "@/components/report/ReportCtaSection";
 import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
-import { ReportLockedSectionsPreview } from "@/components/report/ReportLockedSectionsPreview";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
 import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
 import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
-import { ReportWaitlistPreviewBanner } from "@/components/report/ReportWaitlistPreviewBanner";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
@@ -98,18 +96,11 @@ export default function ReportPage() {
             <ReportUxIssuesSection issues={issues} waitlistActive={waitlistActive} />
 
             {waitlistActive && reportId ? (
-              <>
-                <ReportWaitlistPreviewBanner locked={lockedSummary} />
-                <ReportWaitlistGate
-                  reportId={reportId}
-                  locked={lockedSummary}
-                  onUnlock={unlock}
-                />
-                <ReportLockedSectionsPreview
-                  remainingSuggestions={lockedSummary.remainingSuggestions}
-                  remainingCopy={lockedSummary.remainingCopy}
-                />
-              </>
+              <ReportWaitlistGate
+                reportId={reportId}
+                locked={lockedSummary}
+                onUnlock={unlock}
+              />
             ) : (
               <>
                 <ReportSuggestionsSection suggestions={suggestions} />

@@ -1,6 +1,5 @@
 import type { ReportIssue } from "@/lib/audit-report";
 import { ReportListCard } from "@/components/report/ReportListCard";
-import { ReportLockedSectionCard } from "@/components/report/ReportLockedSectionCard";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_TAG_CLASS,
@@ -61,11 +60,10 @@ export function ReportUxIssuesSection({
         })}
 
         {lockedIssueCount > 0 && (
-          <ReportLockedSectionCard
-            title="UX Issues"
-            count={lockedIssueCount}
-            description="with explanations"
-          />
+          <p className="px-1 text-[14px] leading-5 text-[rgba(6,28,47,0.45)]">
+            +{lockedIssueCount} more issue{lockedIssueCount === 1 ? "" : "s"} in the full
+            report
+          </p>
         )}
       </div>
     </section>
