@@ -1,4 +1,4 @@
-import type { ReportIssue } from "@/lib/audit-report";
+import type { ReportBreakdown, ReportIssue } from "@/lib/audit-report";
 import { ReportListCard } from "@/components/report/ReportListCard";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
@@ -12,11 +12,13 @@ import { getImpactEntries } from "@/lib/report-impact";
 
 type ReportUxIssuesSectionProps = {
   issues?: ReportIssue[];
+  breakdown?: ReportBreakdown;
   waitlistActive?: boolean;
 };
 
 export function ReportUxIssuesSection({
   issues = [],
+  breakdown,
   waitlistActive = false,
 }: ReportUxIssuesSectionProps) {
   if (issues.length === 0) return null;
@@ -30,7 +32,7 @@ export function ReportUxIssuesSection({
 
       <div className="mt-6 space-y-4">
         {visibleIssues.map((issue, index) => {
-          const impactEntries = getImpactEntries(issue);
+          const impactEntries = getImpactEntries(issue, { breakdown, index });
 
           return (
             <ReportListCard
