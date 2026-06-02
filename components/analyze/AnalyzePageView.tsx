@@ -13,7 +13,11 @@ import {
   RiUpload2Line,
 } from "@remixicon/react";
 
-import { useAnalyzePage, type AnalyzeInputMode } from "@/hooks/useAnalyzePage";
+import {
+  useAnalyzePage,
+  type AnalyzeErrorKind,
+  type AnalyzeInputMode,
+} from "@/hooks/useAnalyzePage";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { FormLabel } from "@/components/ui/FormLabel";
@@ -35,6 +39,94 @@ const INPUT_TABS: {
   { id: "screenshot", label: "Screenshot", icon: RiImageLine },
 ];
 
+type AnalyzeErrorAlertProps = {
+  errorKind: Exclude<AnalyzeErrorKind, null>;
+  error: string;
+  onRetry: () => void;
+  onUploadScreenshot: () => void;
+};
+
+function AnalyzeErrorAlert({
+  errorKind,
+  error,
+  onRetry,
+  onUploadScreenshot,
+}: AnalyzeErrorAlertProps) {
+  const isRateLimited = errorKind === "rate_limit";
+
+  const title =
+    errorKind === "rate_limit"
+      ? "Rate limit reached"
+      : errorKind === "url_analysis"
+        ? "We couldn't analyze this URL"
+        : errorKind === "screenshot_analysis"
+          ? "We couldn't analyze this screenshot"
+          : "Couldn't save your report";
+
+  const body =
+    errorKind === "url_analysis"
+      ? "The site may block automated access, require login, or load too slowly. Upload a screenshot instead — you'll get the same UX report."
+      : errorKind === "screenshot_analysis"
+        ? error ||
+          "Something went wrong while reading your image. Try a PNG or JPG under 10 MB."
+        : error;
+
+  return (
+    <div
+      className={[
+        "mt-5 rounded-[20px] px-4 py-4 md:px-5 md:py-5",
+        isRateLimited
+          ? "border border-amber-200 bg-amber-50"
+          : "border border-[#FFD9D6] bg-[#FFF4F3]",
+      ].join(" ")}
+      role="alert"
+    >
+      <p
+        className={[
+          "text-[15px] font-medium",
+          isRateLimited ? "text-amber-800" : "text-[#D14343]",
+        ].join(" ")}
+      >
+        {title}
+      </p>
+      <p
+        className={[
+          "mt-1 text-[14px] leading-5",
+          isRateLimited ? "text-amber-700" : "text-[#9F5C5C]",
+        ].join(" ")}
+      >
+        {body}
+      </p>
+
+      {!isRateLimited && (
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          {errorKind === "url_analysis" && (
+            <Button
+              type="button"
+              variant="primary"
+              fullWidth={false}
+              className="h-11 min-h-11 px-4 text-[14px]"
+              icon={<RiUpload2Line className="size-4" aria-hidden />}
+              onClick={onUploadScreenshot}
+            >
+              Upload screenshot
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant={errorKind === "url_analysis" ? "secondary" : "primary"}
+            fullWidth={false}
+            className="h-11 min-h-11 px-4 text-[14px]"
+            onClick={onRetry}
+          >
+            Try again
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AnalyzePageView() {
   const {
     fileInputRef,
@@ -46,7 +138,7 @@ export function AnalyzePageView() {
     imageSize,
     loading,
     error,
-    isRateLimited,
+    errorKind,
     progress,
     inputMode,
     setInputMode,
@@ -58,6 +150,7 @@ export function AnalyzePageView() {
     handleImageUpload,
     handleUrlKeyDown,
     openFilePicker,
+    switchToScreenshotUpload,
   } = useAnalyzePage();
 
   return (
@@ -268,47 +361,13 @@ export function AnalyzePageView() {
             )}
           </div>
 
-          {error && (
-            <div
-              className={[
-                "mt-5 rounded-[20px] px-4 py-4",
-                isRateLimited
-                  ? "border border-amber-200 bg-amber-50"
-                  : "border border-[#FFD9D6] bg-[#FFF4F3]",
-              ].join(" ")}
-              role="alert"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p
-                    className={[
-                      "text-[15px] font-medium",
-                      isRateLimited ? "text-amber-800" : "text-[#D14343]",
-                    ].join(" ")}
-                  >
-                    {isRateLimited ? "Rate limit reached" : "Analysis failed"}
-                  </p>
-                  <p
-                    className={[
-                      "mt-1 text-[14px] leading-5",
-                      isRateLimited ? "text-amber-700" : "text-[#9F5C5C]",
-                    ].join(" ")}
-                  >
-                    {error}
-                  </p>
-                </div>
-
-                {!isRateLimited && (
-                  <button
-                    type="button"
-                    onClick={handleAnalyze}
-                    className="shrink-0 rounded-full bg-red-100 px-3 py-1.5 text-[12px] font-medium text-red-700 transition hover:bg-red-200"
-                  >
-                    Retry
-                  </button>
-                )}
-              </div>
-            </div>
+          {error && errorKind && (
+            <AnalyzeErrorAlert
+              errorKind={errorKind}
+              error={error}
+              onRetry={handleAnalyze}
+              onUploadScreenshot={switchToScreenshotUpload}
+            />
           )}
 
           <p className="mt-6 text-center text-[13px] leading-5 text-[#8E99A2]">
