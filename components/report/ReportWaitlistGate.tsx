@@ -1,7 +1,6 @@
 "use client";
 
 import { PreLaunchWaitlistCard } from "@/components/pre-launch/PreLaunchWaitlist";
-import { REPORT_SECTION_SPACING_CLASS } from "@/components/report/reportStyles";
 import type { ReportWaitlistLockedSummary } from "@/lib/pre-launch";
 
 type ReportWaitlistGateProps = {
@@ -16,7 +15,7 @@ export function ReportWaitlistGate({
   onUnlock,
 }: ReportWaitlistGateProps) {
   return (
-    <section className={REPORT_SECTION_SPACING_CLASS}>
+    <section id="waitlist-gate" className="mt-6 scroll-mt-24 md:mt-8">
       <PreLaunchWaitlistCard reportId={reportId} locked={locked} onUnlock={onUnlock} />
     </section>
   );

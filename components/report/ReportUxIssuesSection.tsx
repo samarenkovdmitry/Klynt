@@ -1,6 +1,5 @@
 import type { ReportIssue } from "@/lib/audit-report";
 import { ReportListCard } from "@/components/report/ReportListCard";
-import { ReportLockedSkeletonCard } from "@/components/report/ReportLockedSkeletons";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_TAG_CLASS,
@@ -60,9 +59,12 @@ export function ReportUxIssuesSection({
           );
         })}
 
-        {Array.from({ length: lockedIssueCount }, (_, offset) => (
-          <ReportLockedSkeletonCard key={`locked-issue-${offset}`} index={offset + 1} />
-        ))}
+        {lockedIssueCount > 0 && (
+          <p className="px-1 text-[14px] leading-5 text-[rgba(6,28,47,0.45)]">
+            +{lockedIssueCount} more issue{lockedIssueCount === 1 ? "" : "s"} in the full
+            report
+          </p>
+        )}
       </div>
     </section>
   );
