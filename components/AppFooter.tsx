@@ -22,7 +22,7 @@ const socialLinks: {
 }[] = [
   { href: "https://x.com/useklynt", label: "X", icon: RiTwitterXLine },
   {
-    href: "https://www.linkedin.com/in/smrnkov/",
+    href: "https://www.linkedin.com/in/dmitry-samarenkov/",
     label: "LinkedIn",
     icon: RiLinkedinBoxFill,
   },
@@ -32,7 +32,7 @@ const socialLinks: {
     icon: RiReddit2Line,
   },
   {
-    href: "https://www.producthunt.com/@dima_samarenkov",
+    href: "https://www.producthunt.com/@dmitry_klynt",
     label: "Product Hunt",
     icon: RiProductHuntFill,
   },
