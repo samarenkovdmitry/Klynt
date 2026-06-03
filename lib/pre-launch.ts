@@ -7,6 +7,14 @@ export const preLaunch = {
   enabled: true,
   /** ISO date (YYYY-MM-DD) of the Product Hunt launch day. */
   productHuntLaunchDate: "2026-06-02",
+  productHunt: {
+    /** Featured badge above landing hero (official PH embed). */
+    featuredBadgeEnabled: true,
+    productUrl:
+      "https://www.producthunt.com/products/klynt-3?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-klynt-3",
+    badgeImageUrl:
+      "https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1161583&theme=dark",
+  },
   waitlist: {
     enabled: true,
     /** Inclusive end date (YYYY-MM-DD). Waitlist gate is off through this day. */
@@ -17,6 +25,10 @@ export const preLaunch = {
 
 export function isPreLaunchEnabled() {
   return preLaunch.enabled;
+}
+
+export function isProductHuntFeaturedBadgeEnabled() {
+  return preLaunch.enabled && preLaunch.productHunt.featuredBadgeEnabled;
 }
 
 function isWaitlistPaused(now = new Date()): boolean {
