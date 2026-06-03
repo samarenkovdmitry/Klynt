@@ -10,6 +10,7 @@ import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 import { LandingTestHeader } from "./LandingTestHeader";
 import { LandingTestMockup } from "./LandingTestMockup";
+import { ProductHuntFeaturedBadge } from "./ProductHuntFeaturedBadge";
 import { LANDING_CONTAINER } from "./landingPageStyles";
 
 const OUTCOMES = [
@@ -29,6 +30,8 @@ export function LandingTestHero() {
       <div className={`relative z-10 ${LANDING_CONTAINER} px-5 pb-14 pt-8 md:px-6 md:pb-20 md:pt-12`}>
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12 xl:gap-16">
           <div className="mx-auto max-w-[640px] text-center lg:mx-0 lg:max-w-none lg:text-left">
+            <ProductHuntFeaturedBadge />
+
             <h1 className="max-w-[560px] text-[36px] font-semibold leading-[1.1] tracking-[-0.02em] text-white md:text-[48px] md:leading-[1.06] lg:max-w-none xl:text-[52px]">
               See what first-time visitors don&apos;t understand.
             </h1>
