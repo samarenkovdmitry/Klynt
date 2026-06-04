@@ -3,7 +3,7 @@ import { ReportListCard } from "@/components/report/ReportListCard";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_CARD_CONTENT_GAP_CLASS,
-  REPORT_ISSUE_TAG_CLASS,
+  REPORT_TAG_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_WHY_BODY_CLASS,
   REPORT_WHY_DIVIDER_CLASS,
@@ -51,7 +51,7 @@ export function ReportUxIssuesSection({
               {issue.bullets && issue.bullets.length > 0 && (
                 <div className={`${REPORT_CARD_CONTENT_GAP_CLASS} flex flex-wrap gap-2`}>
                   {issue.bullets.slice(0, 3).map((bullet, i) => (
-                    <span key={i} className={REPORT_ISSUE_TAG_CLASS}>
+                    <span key={i} className={REPORT_TAG_CLASS}>
                       {bullet}
                     </span>
                   ))}

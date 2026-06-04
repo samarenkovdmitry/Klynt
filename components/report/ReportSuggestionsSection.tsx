@@ -3,8 +3,8 @@ import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
   REPORT_ACTION_HEADLINE_CLASS,
-  REPORT_ACTION_LABEL_CLASS,
   REPORT_CONTEXT_LABEL_CLASS,
+  REPORT_CARD_HEADLINE_BOTTOM_CLASS,
   REPORT_SECTION_LABEL_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
@@ -47,17 +47,12 @@ function SuggestionCard({
               {item.section ? (
                 <p className={REPORT_SECTION_LABEL_CLASS}>{item.section}</p>
               ) : null}
-
               <p
                 className={[
-                  REPORT_ACTION_LABEL_CLASS,
-                  item.section ? "mt-3" : "",
+                  REPORT_ACTION_HEADLINE_CLASS,
+                  item.section ? "mt-2" : "",
+                  item.why ? "" : REPORT_CARD_HEADLINE_BOTTOM_CLASS,
                 ].join(" ")}
-              >
-                Recommended action
-              </p>
-              <p
-                className={`${REPORT_ACTION_HEADLINE_CLASS} mt-2 ${item.why ? "mb-0" : "mb-1"}`}
               >
                 {item.recommendation}
               </p>

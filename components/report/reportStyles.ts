@@ -33,19 +33,19 @@ export type ReportCardVariant = "issue" | "improvement" | "copy";
 
 const REPORT_CARD_VARIANT_CLASS: Record<ReportCardVariant, string> = {
   issue: [
-    "border-l-[4px] border-l-[#F59E0B] bg-[#FFFCF7]",
+    "border-l-[3px] border-l-[rgba(245,158,11,0.55)] bg-white",
     REPORT_SURFACE_BORDER_CLASS,
     REPORT_SURFACE_SHADOW_CLASS,
     REPORT_CARD_INTERACTION_CLASS,
   ].join(" "),
   improvement: [
-    "border-l-[4px] border-l-[#2563EB] bg-[#F8FBFF]",
+    "border-l-[3px] border-l-[rgba(37,99,235,0.45)] bg-white",
     REPORT_SURFACE_BORDER_CLASS,
     REPORT_SURFACE_SHADOW_CLASS,
     REPORT_CARD_INTERACTION_CLASS,
   ].join(" "),
   copy: [
-    "border-l-[4px] border-l-[#10B981] bg-[#F6FEF9]",
+    "border-l-[3px] border-l-[rgba(16,185,129,0.45)] bg-white",
     REPORT_SURFACE_BORDER_CLASS,
     REPORT_SURFACE_SHADOW_CLASS,
     REPORT_CARD_INTERACTION_CLASS,
@@ -65,12 +65,6 @@ export function getReportCardClass(
     .join(" ");
 }
 
-export const REPORT_ISSUE_TAG_CLASS =
-  "rounded-lg border border-[#FED7AA] bg-[#FFF7ED] px-[11px] py-[3px] text-[13px] font-medium leading-[19.5px] text-[#9A3412]";
-
-export const REPORT_ACTION_LABEL_CLASS =
-  "text-[12px] font-semibold uppercase tracking-[0.08em] text-[#2563EB]";
-
 export const REPORT_ACTION_HEADLINE_CLASS =
   "text-[18px] font-semibold leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[21px] md:leading-7";
 
@@ -80,7 +74,10 @@ export const REPORT_CONTEXT_LABEL_CLASS =
 export const REPORT_COPY_CONTEXT_CLASS =
   "text-[14px] leading-5 text-[rgba(6,28,47,0.5)]";
 
-export const REPORT_SECTION_SCROLL_MARGIN_CLASS = "scroll-mt-28";
+export const REPORT_COPY_HEADLINE_CLASS =
+  "text-[17px] font-semibold leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[18px]";
+
+export const REPORT_SECTION_SCROLL_MARGIN_CLASS = "scroll-mt-24";
 
 export const REPORT_CARD_HEADLINE_CLASS =
   "text-[18px] font-medium leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[22px] md:leading-7";
