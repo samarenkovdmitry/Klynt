@@ -63,8 +63,91 @@
   margin-top: 0;
 }
 
+.report-print-brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(6, 28, 47, 0.1);
+}
+
+.report-print-brand-logo {
+  display: block;
+  height: 22px;
+  width: auto;
+}
+
+.report-print-brand-eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a5560;
+}
+
+.report-print-title-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.report-print-title-primary {
+  min-width: 0;
+  flex: 1;
+}
+
+.report-print-domain {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #061c2f;
+}
+
+.report-print-title-meta {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #4a5560;
+}
+
+.report-print-title-meta-url {
+  display: block;
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+.report-print-title-link {
+  flex-shrink: 0;
+  max-width: 200px;
+  margin: 4px 0 0;
+  text-align: right;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.report-print-title-link-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #4a5560;
+}
+
+.report-print-title-link-url {
+  color: #1d4ed8;
+  word-break: break-all;
+}
+
 .report-print-section {
   margin-top: 28px;
+}
+
+.report-print-section--first {
+  margin-top: 24px;
 }
 
 .report-print-section-title {
@@ -154,14 +237,48 @@
   border-color: rgba(16, 185, 129, 0.2);
 }
 
-.report-print-page-footer {
+.report-print-closing {
   margin-top: 36px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(6, 28, 47, 0.08);
-  font-size: 12px;
-  color: #3d4f5f;
+  padding: 20px 22px 18px;
+  border-radius: 12px;
+  background: #fafbfc;
+  border: 1px solid rgba(6, 28, 47, 0.08);
   break-inside: avoid;
   page-break-inside: avoid;
+}
+
+.report-print-closing-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: #061c2f;
+}
+
+.report-print-closing-steps {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  color: #061c2f;
+}
+
+.report-print-closing-steps li {
+  margin-bottom: 8px;
+  padding-left: 4px;
+  line-height: 1.5;
+}
+
+.report-print-closing-steps li:last-child {
+  margin-bottom: 0;
+}
+
+.report-print-disclaimer {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(6, 28, 47, 0.08);
+  font-size: 11px;
+  line-height: 1.5;
+  color: #4a5560;
 }
 
 .report-print-insight {
@@ -200,9 +317,13 @@
   }
 
   .report-print-card,
-  .report-print-page-footer {
+  .report-print-closing {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  .report-print-closing {
+    background: #fafbfc !important;
   }
 
   .report-print-label {
