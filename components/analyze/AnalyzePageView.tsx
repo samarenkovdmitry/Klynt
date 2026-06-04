@@ -5,8 +5,11 @@ import {
   RiArrowRightLine,
   RiCheckLine,
   RiCloseLine,
+  RiFilePdfLine,
   RiImageLine,
+  RiLightbulbLine,
   RiLink,
+  RiPieChartLine,
   RiUpload2Line,
 } from "@remixicon/react";
 
@@ -19,6 +22,12 @@ import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
+
+const OUTCOMES = [
+  { icon: RiPieChartLine, label: "UX score breakdown" },
+  { icon: RiLightbulbLine, label: "Prioritized fixes" },
+  { icon: RiFilePdfLine, label: "Shareable PDF" },
+] as const;
 
 const INPUT_TABS: {
   id: AnalyzeInputMode;
@@ -121,6 +130,9 @@ function AnalyzeFormActions({
             style={{ width: `${progress}%` }}
           />
         </div>
+        <p className="mt-3 text-[13px] text-[rgba(6,28,47,0.5)]">
+          Evaluating hierarchy, clarity, trust and conversion flow
+        </p>
       </div>
     );
   }
@@ -206,21 +218,29 @@ export function AnalyzePageView() {
     <>
       <AppHeader />
 
-      <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-8">
+      <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
         <div className="mx-auto max-w-[640px]">
           <header>
-            <h1 className="text-[28px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[36px]">
-              Check your site&apos;s UX
+            <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">AI UX Review</p>
+            <h1 className="mt-3 text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[38px] md:leading-[1.05]">
+              Check your site&apos;s UX in minutes
             </h1>
-            <p className="mt-2 text-[15px] leading-[24px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
-              Paste a URL or upload a screenshot.
-            </p>
-            <p className="mt-3 text-[13px] text-[#8E99A2]">
-              UX score · Prioritized fixes · Shareable PDF
+            <p className="mt-3 max-w-[540px] text-[15px] leading-[24px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
+              Paste a URL or upload a screenshot. Klynt flags friction, weak copy, and trust
+              gaps — with fixes you can ship.
             </p>
           </header>
 
-          <div className="mt-6 rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-6">
+          <ul className="mt-6 flex flex-row flex-wrap gap-x-5 gap-y-2 sm:gap-x-6">
+            {OUTCOMES.map(({ icon: Icon, label }) => (
+              <li key={label} className="flex items-center gap-2 text-[14px] text-[#8E99A2]">
+                <Icon size={16} className="shrink-0" aria-hidden />
+                {label}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-8 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-8">
             <div
               className="flex rounded-full bg-[#ECF0F6] p-1"
               role="tablist"
@@ -252,7 +272,7 @@ export function AnalyzePageView() {
               })}
             </div>
 
-            <div className="mt-4 md:mt-5">
+            <div className="mt-5 md:mt-6">
               {inputMode === "url" ? (
                 <div role="tabpanel" aria-label="Website URL">
                   <div className="relative">
@@ -291,6 +311,10 @@ export function AnalyzePageView() {
                       {urlValidationError}
                     </p>
                   )}
+
+                  <p className="mt-3 text-[13px] leading-5 text-[#8E99A2]">
+                    Klynt captures the page and analyzes layout, copy, and conversion flow.
+                  </p>
                 </div>
               ) : (
                 <div role="tabpanel" aria-label="Screenshot upload">
@@ -299,7 +323,7 @@ export function AnalyzePageView() {
                     onClick={openFilePicker}
                     disabled={loading}
                     className={[
-                      "w-full rounded-[20px] border-2 border-dashed text-left transition",
+                      "w-full rounded-[24px] border-2 border-dashed text-left transition",
                       uploadedImage
                         ? "border-[#A4F4CF] bg-[#ECFDF5]"
                         : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
@@ -307,35 +331,35 @@ export function AnalyzePageView() {
                     ].join(" ")}
                   >
                     {!uploadedImage ? (
-                      <span className="flex items-center gap-3 px-4 py-3.5">
-                        <RiUpload2Line
-                          size={20}
-                          className="shrink-0 text-[#2563EB]"
-                          aria-hidden
-                        />
-                        <span className="min-w-0 text-[14px] leading-5">
-                          <span className="font-medium text-[var(--ink-primary)]">
-                            Upload screenshot
+                      <span className="flex items-center gap-4 px-4 py-5 md:px-5">
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(37,99,235,0.08)]">
+                          <RiUpload2Line size={22} className="text-[#2563EB]" aria-hidden />
+                        </span>
+                        <span className="min-w-0 text-left">
+                          <span className="block text-[15px] font-medium text-[var(--ink-primary)]">
+                            Click to upload screenshot
                           </span>
-                          <span className="text-[#8E99A2]"> · PNG or JPG, max 20 MB</span>
+                          <span className="mt-0.5 block text-[13px] text-[#8E99A2]">
+                            PNG or JPG, up to 20 MB · full-page works best
+                          </span>
                         </span>
                       </span>
                     ) : (
-                      <span className="flex items-center justify-between gap-3 px-4 py-3">
-                        <span className="flex min-w-0 items-center gap-2.5">
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#10B981]">
-                            <RiCheckLine size={16} className="text-white" aria-hidden />
+                      <span className="flex items-center justify-between gap-4 px-4 py-4 md:px-5">
+                        <span className="flex min-w-0 items-center gap-3">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#10B981]">
+                            <RiCheckLine size={18} className="text-white" aria-hidden />
                           </span>
                           <span className="min-w-0">
-                            <span className="block truncate text-[14px] font-medium text-[var(--ink-primary)]">
+                            <span className="block truncate text-[15px] font-medium text-[var(--ink-primary)]">
                               {imageName}
                             </span>
                             <span className="mt-0.5 block text-[13px] text-[#10B981]">
-                              {imageSize} · Ready
+                              {imageSize} · Ready for analysis
                             </span>
                           </span>
                         </span>
-                        <span className="shrink-0 text-[13px] font-medium text-[var(--ink-primary)]">
+                        <span className="shrink-0 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-medium text-[var(--ink-primary)]">
                           Replace
                         </span>
                       </span>
@@ -373,15 +397,19 @@ export function AnalyzePageView() {
             </div>
           </div>
 
-          <p className="mt-4 text-center text-[13px] leading-5 text-[#8E99A2]">
-            Processed securely ·{" "}
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <p className="text-center text-[13px] leading-5 text-[#8E99A2]">
+              Your URLs and screenshots are processed securely and never shared.
+            </p>
             <Link
               href={DEMO_REPORT_PATH}
-              className="font-medium text-[var(--ink-primary)] underline-offset-2 hover:underline"
+              className="inline-flex items-center gap-2 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-4 py-2.5 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition hover:border-[rgba(6,28,47,0.16)] hover:bg-[#FAFBFC]"
             >
+              <RiFilePdfLine size={16} className="text-[#2563EB]" aria-hidden />
               View sample report
+              <RiArrowRightLine size={16} className="text-[#8E99A2]" aria-hidden />
             </Link>
-          </p>
+          </div>
         </div>
       </main>
     </>
