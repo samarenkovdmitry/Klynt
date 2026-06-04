@@ -87,7 +87,7 @@ export function AppHeader() {
     <>
       <header
         className={[
-          "sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
+          "app-site-header sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
           isLanding
             ? "border-b border-transparent bg-transparent"
             : "border-b border-[rgba(6,28,47,0.10)] bg-white",

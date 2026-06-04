@@ -64,7 +64,7 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
 
   return (
     <footer
-      className={`mt-auto w-full shrink-0 px-6 py-[33px] md:px-6 md:py-10 ${styles.footer}`}
+      className={`app-site-footer mt-auto w-full shrink-0 px-6 py-[33px] md:px-6 md:py-10 ${styles.footer}`}
     >
       <div className={container}>
         <div className="flex flex-col items-center text-center md:hidden">
