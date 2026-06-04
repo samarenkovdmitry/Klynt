@@ -221,8 +221,7 @@ export function AnalyzePageView() {
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
         <div className="mx-auto max-w-[640px]">
           <header className="text-center">
-            <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">AI UX Review</p>
-            <h1 className="mt-3 text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[38px] md:leading-[1.05]">
+            <h1 className="text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[38px] md:leading-[1.05]">
               Check your site&apos;s UX in minutes
             </h1>
             <p className="mx-auto mt-3 max-w-[540px] text-[15px] leading-[24px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
