@@ -13,17 +13,74 @@ export const REPORT_SURFACE_SHADOW_CLASS = "shadow-[0_10px_40px_rgba(0,0,0,0.03)
 
 export const REPORT_HERO_RADIUS_CLASS = "rounded-[20px]";
 
+const REPORT_CARD_BASE_CLASS =
+  "rounded-[18px] px-[21px] py-[21px] transition-all duration-200 hover:-translate-y-[1px] md:px-[33px] md:py-[25px]";
+
+const REPORT_CARD_INTERACTION_CLASS =
+  "hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)]";
+
 export const REPORT_CARD_CLASS = [
-  "rounded-[18px] bg-white px-[21px] py-[21px] transition-all hover:-translate-y-[1px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:px-[33px] md:py-[25px]",
+  REPORT_CARD_BASE_CLASS,
+  "bg-white",
+  REPORT_CARD_INTERACTION_CLASS,
   REPORT_SURFACE_BORDER_CLASS,
   REPORT_SURFACE_SHADOW_CLASS,
 ].join(" ");
 
-export const REPORT_CARD_CLASS_ANIMATED = [
-  "rounded-[18px] bg-white px-[21px] py-[21px] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:px-[33px] md:py-[25px]",
-  REPORT_SURFACE_BORDER_CLASS,
-  REPORT_SURFACE_SHADOW_CLASS,
-].join(" ");
+export const REPORT_CARD_CLASS_ANIMATED = REPORT_CARD_CLASS;
+
+export type ReportCardVariant = "issue" | "improvement" | "copy";
+
+const REPORT_CARD_VARIANT_CLASS: Record<ReportCardVariant, string> = {
+  issue: [
+    "border-l-[4px] border-l-[#F59E0B] bg-[#FFFCF7]",
+    REPORT_SURFACE_BORDER_CLASS,
+    REPORT_SURFACE_SHADOW_CLASS,
+    REPORT_CARD_INTERACTION_CLASS,
+  ].join(" "),
+  improvement: [
+    "border-l-[4px] border-l-[#2563EB] bg-[#F8FBFF]",
+    REPORT_SURFACE_BORDER_CLASS,
+    REPORT_SURFACE_SHADOW_CLASS,
+    REPORT_CARD_INTERACTION_CLASS,
+  ].join(" "),
+  copy: [
+    "border-l-[4px] border-l-[#10B981] bg-[#F6FEF9]",
+    REPORT_SURFACE_BORDER_CLASS,
+    REPORT_SURFACE_SHADOW_CLASS,
+    REPORT_CARD_INTERACTION_CLASS,
+  ].join(" "),
+};
+
+export function getReportCardClass(
+  variant: ReportCardVariant,
+  options?: { featured?: boolean; animated?: boolean }
+) {
+  const featured = options?.featured
+    ? "shadow-[0_12px_36px_rgba(6,28,47,0.07)] ring-1 ring-[rgba(6,28,47,0.06)]"
+    : "";
+
+  return [REPORT_CARD_BASE_CLASS, REPORT_CARD_VARIANT_CLASS[variant], featured]
+    .filter(Boolean)
+    .join(" ");
+}
+
+export const REPORT_ISSUE_TAG_CLASS =
+  "rounded-lg border border-[#FED7AA] bg-[#FFF7ED] px-[11px] py-[3px] text-[13px] font-medium leading-[19.5px] text-[#9A3412]";
+
+export const REPORT_ACTION_LABEL_CLASS =
+  "text-[12px] font-semibold uppercase tracking-[0.08em] text-[#2563EB]";
+
+export const REPORT_ACTION_HEADLINE_CLASS =
+  "text-[18px] font-semibold leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[21px] md:leading-7";
+
+export const REPORT_CONTEXT_LABEL_CLASS =
+  "text-[13px] font-semibold uppercase tracking-[0.06em] text-[#8F99A2]";
+
+export const REPORT_COPY_CONTEXT_CLASS =
+  "text-[14px] leading-5 text-[rgba(6,28,47,0.5)]";
+
+export const REPORT_SECTION_SCROLL_MARGIN_CLASS = "scroll-mt-28";
 
 export const REPORT_CARD_HEADLINE_CLASS =
   "text-[18px] font-medium leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[22px] md:leading-7";

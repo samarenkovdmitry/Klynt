@@ -3,7 +3,6 @@ import { ImpactPercentageBadges } from "@/components/report/ImpactBadges";
 import type { ImpactEntry } from "@/lib/report-impact";
 import {
   REPORT_CARD_CLASS,
-  REPORT_CARD_CLASS_ANIMATED,
   REPORT_CARD_HEADLINE_CLASS,
 } from "@/components/report/reportStyles";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
@@ -12,7 +11,7 @@ type ReportListCardProps = {
   index: number;
   title: string;
   impactEntries: ImpactEntry[];
-  animated?: boolean;
+  cardClassName?: string;
   children?: ReactNode;
 };
 
@@ -20,11 +19,11 @@ export function ReportListCard({
   index,
   title,
   impactEntries,
-  animated = false,
+  cardClassName = REPORT_CARD_CLASS,
   children,
 }: ReportListCardProps) {
   return (
-    <div className={animated ? REPORT_CARD_CLASS_ANIMATED : REPORT_CARD_CLASS}>
+    <div className={cardClassName}>
       <div className="flex flex-col gap-5 md:flex-row md:gap-6">
         <div className="hidden items-start justify-center pt-0.5 md:flex">
           <ReportIndexBadge index={index} />

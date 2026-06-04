@@ -13,7 +13,9 @@ import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection
 import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
+import { ReportSectionNav } from "@/components/report/ReportSectionNav";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
+import { buildReportSectionNavItems } from "@/lib/report-sections";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
@@ -69,6 +71,16 @@ export default function ReportPage() {
     remainingCopy: Math.max(0, copy.length - 1),
   };
 
+  const sectionNavItems = buildReportSectionNavItems(
+    waitlistActive
+      ? { issues: issues.length }
+      : {
+          issues: issues.length,
+          improvements: suggestions.length,
+          copy: copy.length,
+        }
+  );
+
   return (
     <>
       <AppHeader />
@@ -96,6 +108,8 @@ export default function ReportPage() {
             onShare={handleShare}
             onExport={handleExport}
           />
+
+          <ReportSectionNav items={sectionNavItems} />
 
           <div className="space-y-0">
             <ReportUxIssuesSection
