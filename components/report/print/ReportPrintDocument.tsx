@@ -220,55 +220,38 @@ export function ReportPrintDocument({ data, reportId }: ReportPrintDocumentProps
   return (
     <div className="report-print-root">
       <div className="report-print-page">
-        <div className="report-print-title-block report-print-section">
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 20 }}>
-            <div>
-              <Image
-                src="/klynt-logo-dark.svg"
-                alt="Klynt"
-                width={88}
-                height={22}
-                style={{ height: 22, width: "auto" }}
-              />
-              <p
-                className="report-print-label"
-                style={{
-                  margin: "14px 0 0",
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                }}
-              >
-                UX Report
-              </p>
-              <h1
-                className="report-print-body"
-                style={{ margin: "6px 0 0", fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em" }}
-              >
-                {domain || "Landing page"}
-              </h1>
-              <p className="report-print-label" style={{ margin: "6px 0 0" }}>
+        <div className="report-print-title-block">
+          <div className="report-print-brand-bar">
+            <Image
+              src="/klynt-logo-dark.svg"
+              alt="Klynt"
+              width={88}
+              height={22}
+              className="report-print-brand-logo"
+            />
+            <p className="report-print-brand-eyebrow">UX Report</p>
+          </div>
+
+          <div className="report-print-title-main">
+            <div className="report-print-title-primary">
+              <h1 className="report-print-domain">{domain || "Landing page"}</h1>
+              <p className="report-print-title-meta">
                 {analyzedLabel}
+                {reportHref ? (
+                  <span className="report-print-title-meta-url">{reportHref}</span>
+                ) : null}
               </p>
-              {reportHref ? (
-                <p className="report-print-label" style={{ margin: "4px 0 0", fontSize: 13 }}>
-                  {reportHref}
-                </p>
-              ) : null}
             </div>
-            <p className="report-print-link" style={{ margin: 0, fontSize: 13, textAlign: "right" }}>
-              <span className="report-print-label" style={{ display: "block", marginBottom: 4 }}>
-                Interactive report
+            <div className="report-print-title-link">
+              <span className="report-print-title-link-label">Interactive report</span>
+              <span className="report-print-title-link-url">
+                {liveReportUrl.replace(/^https?:\/\//, "")}
               </span>
-              {liveReportUrl.replace(/^https?:\/\//, "")}
-            </p>
+            </div>
           </div>
         </div>
 
-        <hr className="report-print-divider" />
-
-        <section className="report-print-section">
+        <section className="report-print-section report-print-section--first">
           <h2 className="report-print-section-title">Executive summary</h2>
           <div
             style={{
@@ -472,15 +455,22 @@ export function ReportPrintDocument({ data, reportId }: ReportPrintDocumentProps
           </section>
         ) : null}
 
-        <div className="report-print-page-footer">
-          <p className="report-print-body" style={{ margin: "0 0 8px", fontWeight: 600 }}>
-            Next steps
-          </p>
-          <p className="report-print-muted" style={{ margin: "0 0 12px", lineHeight: 1.55 }}>
-            Start with quick wins, then re-run an analysis after you ship headline, CTA, and trust
-            updates.
-          </p>
-          <p className="report-print-muted" style={{ margin: 0, lineHeight: 1.55 }}>
+        <div className="report-print-closing">
+          <p className="report-print-section-title">Next steps</p>
+          <h2 className="report-print-closing-title">What to do with this report</h2>
+          <ol className="report-print-closing-steps">
+            <li>
+              Tackle quick wins from Recommendations first — headline, CTA, and trust signals
+              usually move the score fastest.
+            </li>
+            <li>
+              Re-run an analysis at klynt.one after you ship changes to compare your UX score.
+            </li>
+            <li>
+              Share this PDF or the live report with your team or client to align on priorities.
+            </li>
+          </ol>
+          <p className="report-print-disclaimer">
             AI-generated from visible page content. Not a substitute for user research. · Klynt ·
             klynt.one/report/{reportId}
           </p>
