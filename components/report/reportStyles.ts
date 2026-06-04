@@ -45,22 +45,11 @@ export function getReportCardClass(variant: ReportCardVariant) {
   return [REPORT_CARD_BASE_CLASS, REPORT_CARD_VARIANT_CLASS[variant]].join(" ");
 }
 
-/** Limits line length for card titles and recommendations on wide screens. */
-export const REPORT_CARD_HEADLINE_MEASURE_CLASS = "max-w-[42rem]";
-
-export const REPORT_ACTION_HEADLINE_CLASS =
-  "text-[18px] font-semibold leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[20px] md:leading-7";
-
-export const REPORT_COPY_CONTEXT_CLASS =
-  "text-[14px] leading-5 text-[rgba(6,28,47,0.5)]";
-
-export const REPORT_COPY_HEADLINE_CLASS =
-  "text-[17px] font-semibold leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[18px]";
+/** Primary title line inside issue, improvement, and copy cards. */
+export const REPORT_CARD_TITLE_CLASS =
+  "max-w-[42rem] text-[18px] font-semibold leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[20px] md:leading-7";
 
 export const REPORT_SECTION_SCROLL_MARGIN_CLASS = "scroll-mt-24";
-
-export const REPORT_CARD_HEADLINE_CLASS =
-  "text-[18px] font-medium leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[20px] md:leading-7";
 
 export const REPORT_CARD_CONTENT_GAP_CLASS = "mt-3 md:mt-4";
 
@@ -71,9 +60,6 @@ export const REPORT_SECTION_LABEL_CLASS =
 
 export const REPORT_TAG_CLASS =
   "rounded-lg border border-[rgba(6,28,47,0.10)] bg-white px-[11px] py-[3px] text-[13px] font-medium leading-[19.5px] text-[#616C77]";
-
-export const REPORT_WHY_LABEL_CLASS =
-  "text-[15px] font-semibold leading-[20px] text-[var(--ink-primary)]";
 
 export const REPORT_WHY_BODY_CLASS =
   "text-[15px] font-normal leading-[20px] text-[rgba(6,28,47,0.5)]";

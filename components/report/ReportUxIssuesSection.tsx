@@ -7,7 +7,6 @@ import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_WHY_BODY_CLASS,
   REPORT_WHY_DIVIDER_CLASS,
-  REPORT_WHY_LABEL_CLASS,
   REPORT_WHY_BODY_MEASURE_CLASS,
 } from "@/components/report/reportStyles";
 import { REPORT_SECTION_ANCHORS } from "@/lib/report-sections";
@@ -59,8 +58,7 @@ export function ReportUxIssuesSection({
               )}
 
               {issue.why && (
-                <div className={`mt-4 ${REPORT_WHY_DIVIDER_CLASS}`}>
-                  <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
+                <div className={REPORT_WHY_DIVIDER_CLASS}>
                   <p className={`${REPORT_WHY_BODY_CLASS} ${REPORT_WHY_BODY_MEASURE_CLASS}`}>
                     {issue.why}
                   </p>

@@ -10,11 +10,10 @@ import {
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import { ReportVariantCard } from "@/components/report/ReportVariantCard";
 import {
-  REPORT_CARD_HEADLINE_MEASURE_CLASS,
-  REPORT_COPY_CONTEXT_CLASS,
-  REPORT_COPY_HEADLINE_CLASS,
+  REPORT_CARD_TITLE_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
+  REPORT_WHY_BODY_CLASS,
   REPORT_WHY_BODY_MEASURE_CLASS,
 } from "@/components/report/reportStyles";
 import { REPORT_SECTION_ANCHORS } from "@/lib/report-sections";
@@ -58,17 +57,11 @@ function CopyCard({
                 <PriorityBadgeFromImpact item={item} className="justify-end" />
               </div>
 
-              {item.section ? (
-                <p
-                  className={`${REPORT_COPY_HEADLINE_CLASS} ${REPORT_CARD_HEADLINE_MEASURE_CLASS}`}
-                >
-                  {item.section}
-                </p>
-              ) : null}
+              {item.section ? <p className={REPORT_CARD_TITLE_CLASS}>{item.section}</p> : null}
               {item.why ? (
                 <p
                   className={[
-                    REPORT_COPY_CONTEXT_CLASS,
+                    REPORT_WHY_BODY_CLASS,
                     REPORT_WHY_BODY_MEASURE_CLASS,
                     item.section ? "mt-2 mb-4" : "mb-4",
                   ].join(" ")}

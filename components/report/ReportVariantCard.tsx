@@ -20,7 +20,7 @@ export function ReportVariantCard({ variant, children }: ReportVariantCardProps)
     <div className={`relative ${getReportCardClass(variant)}`}>
       <div
         className={[
-          "pointer-events-none absolute top-6 bottom-6 left-[14px] w-[3px] rounded-full md:top-7 md:bottom-7 md:left-[22px]",
+          "pointer-events-none absolute top-6 bottom-6 left-0 w-[3px] rounded-full md:top-7 md:bottom-7",
           ACCENT_BAR_CLASS[variant],
         ].join(" ")}
         aria-hidden

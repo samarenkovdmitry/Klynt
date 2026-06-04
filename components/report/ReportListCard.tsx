@@ -3,8 +3,7 @@ import { ImpactPercentageBadges } from "@/components/report/ImpactBadges";
 import { ReportVariantCard } from "@/components/report/ReportVariantCard";
 import type { ImpactEntry } from "@/lib/report-impact";
 import {
-  REPORT_CARD_HEADLINE_CLASS,
-  REPORT_CARD_HEADLINE_MEASURE_CLASS,
+  REPORT_CARD_TITLE_CLASS,
   type ReportCardVariant,
 } from "@/components/report/reportStyles";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
@@ -42,9 +41,7 @@ export function ReportListCard({
                 />
               </div>
 
-              <p className={`${REPORT_CARD_HEADLINE_CLASS} ${REPORT_CARD_HEADLINE_MEASURE_CLASS}`}>
-                {title}
-              </p>
+              <p className={REPORT_CARD_TITLE_CLASS}>{title}</p>
             </div>
 
             <div className="hidden shrink-0 md:block">
