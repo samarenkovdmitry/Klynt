@@ -9,7 +9,7 @@ export const preLaunch = {
   productHuntLaunchDate: "2026-06-02",
   productHunt: {
     /** Featured badge above landing hero (official PH embed). */
-    featuredBadgeEnabled: true,
+    featuredBadgeEnabled: false,
     productUrl:
       "https://www.producthunt.com/products/klynt-3?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-klynt-3",
     badgeImageUrl:
