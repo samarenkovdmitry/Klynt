@@ -54,7 +54,7 @@ export function ReportSectionHeader({
   return (
     <div className={withTopRule ? "border-t border-[rgba(6,28,47,0.06)] pt-10" : ""}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex gap-3.5 md:gap-4">
+        <div className="flex items-start gap-3.5 md:gap-4">
           <div
             className={[
               "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border md:h-12 md:w-12",
@@ -65,12 +65,12 @@ export function ReportSectionHeader({
             <Icon size={22} className={styles.iconColor} />
           </div>
 
-          <div className="min-w-0">
-            <h3 className="text-[22px] font-bold tracking-[-0.02em] text-[#061C2F] md:text-[24px]">
+          <div className="min-w-0 pt-0.5">
+            <h3 className="text-[22px] font-bold leading-tight tracking-[-0.02em] text-[#061C2F] md:text-[24px]">
               {displayTitle}
               <span className="font-normal text-[#7D8C99]"> · {count}</span>
             </h3>
-            <p className="mt-1.5 max-w-[560px] text-[14px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[15px] md:leading-[23px]">
+            <p className="mt-1 max-w-[560px] text-[14px] leading-[21px] text-[rgba(6,28,47,0.5)] md:text-[15px] md:leading-[22px]">
               {displayLead}
             </p>
           </div>

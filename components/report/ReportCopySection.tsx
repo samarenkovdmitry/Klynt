@@ -26,8 +26,11 @@ type ReportCopySectionProps = {
   waitlistActive?: boolean;
 };
 
-const COPY_FIELD_HEADER_CLASS =
-  "mb-3 grid h-9 grid-cols-[1fr_36px] items-center gap-3";
+const COPY_FIELD_HEADER_BAND_CLASS =
+  "mb-3 flex min-h-9 items-center";
+
+const COPY_FIELD_LABEL_CLASS =
+  "text-[12px] font-semibold uppercase tracking-[0.08em]";
 
 function CopyCard({
   item,
@@ -80,24 +83,21 @@ function CopyCard({
 
           <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
-              <div className={COPY_FIELD_HEADER_CLASS}>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
-                  Before
-                </p>
-                <span className="sr-only">Original copy</span>
+              <div className={COPY_FIELD_HEADER_BAND_CLASS}>
+                <p className={`${COPY_FIELD_LABEL_CLASS} text-neutral-400`}>Before</p>
               </div>
               <p className="text-[16px] font-normal leading-5 text-neutral-600">{item.before}</p>
             </div>
 
             <div className={`relative rounded-2xl border p-5 ${IMPROVED_COPY_PANEL_CLASS}`}>
-              <div className={COPY_FIELD_HEADER_CLASS}>
-                <p
-                  className={`text-[12px] font-semibold uppercase tracking-[0.08em] ${IMPROVED_COPY_LABEL_CLASS}`}
-                >
+              <div
+                className={`${COPY_FIELD_HEADER_BAND_CLASS} justify-between gap-3`}
+              >
+                <p className={`${COPY_FIELD_LABEL_CLASS} ${IMPROVED_COPY_LABEL_CLASS}`}>
                   Improved
                 </p>
 
-                <div className="relative justify-self-end">
+                <div className="relative shrink-0">
                   <button
                     type="button"
                     onClick={() => onCopy(item.after ?? "", index)}
