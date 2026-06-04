@@ -1,18 +1,18 @@
-"use client";
-
 import type { ReportSuggestion } from "@/lib/audit-report";
 import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
+import { ReportVariantCard } from "@/components/report/ReportVariantCard";
 import {
   REPORT_CARD_HEADLINE_BOTTOM_CLASS,
-  REPORT_CARD_CLASS_ANIMATED,
-  REPORT_CARD_HEADLINE_CLASS,
+  REPORT_CARD_TITLE_CLASS,
   REPORT_SECTION_LABEL_CLASS,
+  REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
   REPORT_WHY_BODY_CLASS,
+  REPORT_WHY_BODY_MEASURE_CLASS,
   REPORT_WHY_DIVIDER_CLASS,
-  REPORT_WHY_LABEL_CLASS,
 } from "@/components/report/reportStyles";
+import { REPORT_SECTION_ANCHORS } from "@/lib/report-sections";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
 
 type ReportSuggestionsSectionProps = {
@@ -20,15 +20,9 @@ type ReportSuggestionsSectionProps = {
   waitlistActive?: boolean;
 };
 
-function SuggestionCard({
-  item,
-  index,
-}: {
-  item: ReportSuggestion;
-  index: number;
-}) {
+function SuggestionCard({ item, index }: { item: ReportSuggestion; index: number }) {
   return (
-    <div className={REPORT_CARD_CLASS_ANIMATED}>
+    <ReportVariantCard variant="improvement">
       <div className="flex flex-col gap-5 md:flex-row md:gap-6">
         <div className="hidden items-start justify-center pt-0.5 md:flex">
           <ReportIndexBadge index={index} />
@@ -46,7 +40,11 @@ function SuggestionCard({
                 <p className={REPORT_SECTION_LABEL_CLASS}>{item.section}</p>
               ) : null}
               <p
-                className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""} ${REPORT_CARD_HEADLINE_BOTTOM_CLASS}`}
+                className={[
+                  REPORT_CARD_TITLE_CLASS,
+                  item.section ? "mt-2" : "",
+                  item.why ? "" : REPORT_CARD_HEADLINE_BOTTOM_CLASS,
+                ].join(" ")}
               >
                 {item.recommendation}
               </p>
@@ -59,13 +57,14 @@ function SuggestionCard({
 
           {item.why && (
             <div className={REPORT_WHY_DIVIDER_CLASS}>
-              <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
-              <p className={REPORT_WHY_BODY_CLASS}>{item.why}</p>
+              <p className={`${REPORT_WHY_BODY_CLASS} ${REPORT_WHY_BODY_MEASURE_CLASS}`}>
+                {item.why}
+              </p>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </ReportVariantCard>
   );
 }
 
@@ -78,10 +77,13 @@ export function ReportSuggestionsSection({
   const visibleSuggestions = waitlistActive ? suggestions.slice(0, 1) : suggestions;
 
   return (
-    <section className={REPORT_SECTION_SPACING_CLASS}>
-      <ReportSectionHeader title="Suggested Improvements" count={suggestions.length} />
+    <section
+      id={REPORT_SECTION_ANCHORS.improvements}
+      className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
+    >
+      <ReportSectionHeader variant="improvements" count={suggestions.length} />
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-6 space-y-4">
         {visibleSuggestions.map((item, index) => (
           <SuggestionCard key={index} item={item} index={index} />
         ))}

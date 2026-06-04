@@ -1,30 +1,30 @@
 import type { ReactNode } from "react";
 import { ImpactPercentageBadges } from "@/components/report/ImpactBadges";
+import { ReportVariantCard } from "@/components/report/ReportVariantCard";
 import type { ImpactEntry } from "@/lib/report-impact";
 import {
-  REPORT_CARD_CLASS,
-  REPORT_CARD_CLASS_ANIMATED,
-  REPORT_CARD_HEADLINE_CLASS,
+  REPORT_CARD_TITLE_CLASS,
+  type ReportCardVariant,
 } from "@/components/report/reportStyles";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
 
 type ReportListCardProps = {
+  variant: ReportCardVariant;
   index: number;
   title: string;
   impactEntries: ImpactEntry[];
-  animated?: boolean;
   children?: ReactNode;
 };
 
 export function ReportListCard({
+  variant,
   index,
   title,
   impactEntries,
-  animated = false,
   children,
 }: ReportListCardProps) {
   return (
-    <div className={animated ? REPORT_CARD_CLASS_ANIMATED : REPORT_CARD_CLASS}>
+    <ReportVariantCard variant={variant}>
       <div className="flex flex-col gap-5 md:flex-row md:gap-6">
         <div className="hidden items-start justify-center pt-0.5 md:flex">
           <ReportIndexBadge index={index} />
@@ -41,7 +41,7 @@ export function ReportListCard({
                 />
               </div>
 
-              <p className={REPORT_CARD_HEADLINE_CLASS}>{title}</p>
+              <p className={REPORT_CARD_TITLE_CLASS}>{title}</p>
             </div>
 
             <div className="hidden shrink-0 md:block">
@@ -52,6 +52,6 @@ export function ReportListCard({
           {children}
         </div>
       </div>
-    </div>
+    </ReportVariantCard>
   );
 }

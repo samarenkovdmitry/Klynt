@@ -2,12 +2,14 @@ import type { ReportBreakdown, ReportIssue } from "@/lib/audit-report";
 import { ReportListCard } from "@/components/report/ReportListCard";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
 import {
-  REPORT_TAG_CLASS,
   REPORT_CARD_CONTENT_GAP_CLASS,
+  REPORT_TAG_CLASS,
+  REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_WHY_BODY_CLASS,
   REPORT_WHY_DIVIDER_CLASS,
-  REPORT_WHY_LABEL_CLASS,
+  REPORT_WHY_BODY_MEASURE_CLASS,
 } from "@/components/report/reportStyles";
+import { REPORT_SECTION_ANCHORS } from "@/lib/report-sections";
 import { getImpactEntries } from "@/lib/report-impact";
 
 type ReportUxIssuesSectionProps = {
@@ -27,8 +29,11 @@ export function ReportUxIssuesSection({
   const lockedIssueCount = waitlistActive ? Math.max(0, issues.length - 1) : 0;
 
   return (
-    <section className="mt-10">
-      <ReportSectionHeader title="UX Issues" count={issues.length} />
+    <section
+      id={REPORT_SECTION_ANCHORS.issues}
+      className={`mt-10 ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
+    >
+      <ReportSectionHeader variant="issues" count={issues.length} />
 
       <div className="mt-6 space-y-4">
         {visibleIssues.map((issue, index) => {
@@ -37,6 +42,7 @@ export function ReportUxIssuesSection({
           return (
             <ReportListCard
               key={index}
+              variant="issue"
               index={index}
               title={issue.title ?? ""}
               impactEntries={impactEntries}
@@ -52,9 +58,10 @@ export function ReportUxIssuesSection({
               )}
 
               {issue.why && (
-                <div className={`mt-4 ${REPORT_WHY_DIVIDER_CLASS}`}>
-                  <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
-                  <p className={REPORT_WHY_BODY_CLASS}>{issue.why}</p>
+                <div className={REPORT_WHY_DIVIDER_CLASS}>
+                  <p className={`${REPORT_WHY_BODY_CLASS} ${REPORT_WHY_BODY_MEASURE_CLASS}`}>
+                    {issue.why}
+                  </p>
                 </div>
               )}
             </ReportListCard>

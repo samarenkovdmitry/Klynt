@@ -8,13 +8,15 @@ import {
   IMPROVED_COPY_TOAST_CLASS,
 } from "@/lib/report-priority";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
+import { ReportVariantCard } from "@/components/report/ReportVariantCard";
 import {
-  REPORT_CARD_HEADLINE_BOTTOM_CLASS,
-  REPORT_CARD_CLASS_ANIMATED,
-  REPORT_CARD_HEADLINE_CLASS,
-  REPORT_SECTION_LABEL_CLASS,
+  REPORT_CARD_TITLE_CLASS,
+  REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
+  REPORT_WHY_BODY_CLASS,
+  REPORT_WHY_BODY_MEASURE_CLASS,
 } from "@/components/report/reportStyles";
+import { REPORT_SECTION_ANCHORS } from "@/lib/report-sections";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
 
 type ReportCopySectionProps = {
@@ -24,8 +26,11 @@ type ReportCopySectionProps = {
   waitlistActive?: boolean;
 };
 
-const COPY_FIELD_HEADER_CLASS =
-  "mb-3 grid h-9 grid-cols-[1fr_36px] items-center gap-3";
+const COPY_FIELD_HEADER_BAND_CLASS =
+  "mb-3 flex min-h-9 items-center";
+
+const COPY_FIELD_LABEL_CLASS =
+  "text-[12px] font-semibold uppercase tracking-[0.08em]";
 
 function CopyCard({
   item,
@@ -41,7 +46,7 @@ function CopyCard({
   copyLocked?: boolean;
 }) {
   return (
-    <div className={REPORT_CARD_CLASS_ANIMATED}>
+    <ReportVariantCard variant="copy">
       <div className="flex flex-col gap-5 md:flex-row md:gap-6">
         <div className="hidden items-start justify-center pt-0.5 md:flex">
           <ReportIndexBadge index={index} />
@@ -55,15 +60,19 @@ function CopyCard({
                 <PriorityBadgeFromImpact item={item} className="justify-end" />
               </div>
 
-              {item.section ? (
-                <p className={REPORT_SECTION_LABEL_CLASS}>{item.section}</p>
-              ) : null}
+              {item.section ? <p className={REPORT_CARD_TITLE_CLASS}>{item.section}</p> : null}
               {item.why ? (
                 <p
-                  className={`${REPORT_CARD_HEADLINE_CLASS} ${item.section ? "mt-2" : ""} ${REPORT_CARD_HEADLINE_BOTTOM_CLASS}`}
+                  className={[
+                    REPORT_WHY_BODY_CLASS,
+                    REPORT_WHY_BODY_MEASURE_CLASS,
+                    item.section ? "mt-2 mb-4" : "mb-4",
+                  ].join(" ")}
                 >
                   {item.why}
                 </p>
+              ) : item.section ? (
+                <div className="mb-4" />
               ) : null}
             </div>
 
@@ -74,24 +83,21 @@ function CopyCard({
 
           <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
-              <div className={COPY_FIELD_HEADER_CLASS}>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
-                  Before
-                </p>
-                <span className="sr-only">Original copy</span>
+              <div className={COPY_FIELD_HEADER_BAND_CLASS}>
+                <p className={`${COPY_FIELD_LABEL_CLASS} text-neutral-400`}>Before</p>
               </div>
               <p className="text-[16px] font-normal leading-5 text-neutral-600">{item.before}</p>
             </div>
 
             <div className={`relative rounded-2xl border p-5 ${IMPROVED_COPY_PANEL_CLASS}`}>
-              <div className={COPY_FIELD_HEADER_CLASS}>
-                <p
-                  className={`text-[12px] font-semibold uppercase tracking-[0.08em] ${IMPROVED_COPY_LABEL_CLASS}`}
-                >
+              <div
+                className={`${COPY_FIELD_HEADER_BAND_CLASS} justify-between gap-3`}
+              >
+                <p className={`${COPY_FIELD_LABEL_CLASS} ${IMPROVED_COPY_LABEL_CLASS}`}>
                   Improved
                 </p>
 
-                <div className="relative justify-self-end">
+                <div className="relative shrink-0">
                   <button
                     type="button"
                     onClick={() => onCopy(item.after ?? "", index)}
@@ -103,7 +109,9 @@ function CopyCard({
                         : IMPROVED_COPY_BUTTON_CLASS,
                     ].join(" ")}
                     aria-label={
-                      copyLocked ? "Copy available after unlocking the full report" : "Copy improved text"
+                      copyLocked
+                        ? "Copy available after unlocking the full report"
+                        : "Copy improved text"
                     }
                   >
                     {copyLocked ? (
@@ -132,7 +140,7 @@ function CopyCard({
           </div>
         </div>
       </div>
-    </div>
+    </ReportVariantCard>
   );
 }
 
@@ -147,10 +155,13 @@ export function ReportCopySection({
   const visibleCopy = waitlistActive ? copy.slice(0, 1) : copy;
 
   return (
-    <section className={REPORT_SECTION_SPACING_CLASS}>
-      <ReportSectionHeader title="Copy Refinement" count={copy.length} />
+    <section
+      id={REPORT_SECTION_ANCHORS.copy}
+      className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
+    >
+      <ReportSectionHeader variant="copy" count={copy.length} />
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-6 space-y-4">
         {visibleCopy.map((item, index) => (
           <CopyCard
             key={index}
