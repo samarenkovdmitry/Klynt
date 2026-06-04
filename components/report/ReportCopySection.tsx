@@ -8,12 +8,14 @@ import {
   IMPROVED_COPY_TOAST_CLASS,
 } from "@/lib/report-priority";
 import { ReportSectionHeader } from "@/components/report/ReportSectionHeader";
+import { ReportVariantCard } from "@/components/report/ReportVariantCard";
 import {
+  REPORT_CARD_HEADLINE_MEASURE_CLASS,
   REPORT_COPY_CONTEXT_CLASS,
   REPORT_COPY_HEADLINE_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
-  getReportCardClass,
+  REPORT_WHY_BODY_MEASURE_CLASS,
 } from "@/components/report/reportStyles";
 import { REPORT_SECTION_ANCHORS } from "@/lib/report-sections";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
@@ -34,17 +36,15 @@ function CopyCard({
   copiedIndex,
   onCopy,
   copyLocked = false,
-  featured = false,
 }: {
   item: ReportCopyItem;
   index: number;
   copiedIndex: number | null;
   onCopy: (text: string, index: number) => void;
   copyLocked?: boolean;
-  featured?: boolean;
 }) {
   return (
-    <div className={getReportCardClass("copy", { featured })}>
+    <ReportVariantCard variant="copy">
       <div className="flex flex-col gap-5 md:flex-row md:gap-6">
         <div className="hidden items-start justify-center pt-0.5 md:flex">
           <ReportIndexBadge index={index} />
@@ -59,12 +59,17 @@ function CopyCard({
               </div>
 
               {item.section ? (
-                <p className={REPORT_COPY_HEADLINE_CLASS}>{item.section}</p>
+                <p
+                  className={`${REPORT_COPY_HEADLINE_CLASS} ${REPORT_CARD_HEADLINE_MEASURE_CLASS}`}
+                >
+                  {item.section}
+                </p>
               ) : null}
               {item.why ? (
                 <p
                   className={[
                     REPORT_COPY_CONTEXT_CLASS,
+                    REPORT_WHY_BODY_MEASURE_CLASS,
                     item.section ? "mt-2 mb-4" : "mb-4",
                   ].join(" ")}
                 >
@@ -142,7 +147,7 @@ function CopyCard({
           </div>
         </div>
       </div>
-    </div>
+    </ReportVariantCard>
   );
 }
 
@@ -172,7 +177,6 @@ export function ReportCopySection({
             copiedIndex={copiedIndex}
             onCopy={onCopy}
             copyLocked={waitlistActive}
-            featured={index === 0}
           />
         ))}
       </div>

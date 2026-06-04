@@ -32,44 +32,24 @@ export const REPORT_CARD_CLASS_ANIMATED = REPORT_CARD_CLASS;
 export type ReportCardVariant = "issue" | "improvement" | "copy";
 
 const REPORT_CARD_VARIANT_CLASS: Record<ReportCardVariant, string> = {
-  issue: [
-    "border-l-[3px] border-l-[rgba(245,158,11,0.55)] bg-white",
-    REPORT_SURFACE_BORDER_CLASS,
-    REPORT_SURFACE_SHADOW_CLASS,
-    REPORT_CARD_INTERACTION_CLASS,
-  ].join(" "),
-  improvement: [
-    "border-l-[3px] border-l-[rgba(37,99,235,0.45)] bg-white",
-    REPORT_SURFACE_BORDER_CLASS,
-    REPORT_SURFACE_SHADOW_CLASS,
-    REPORT_CARD_INTERACTION_CLASS,
-  ].join(" "),
-  copy: [
-    "border-l-[3px] border-l-[rgba(16,185,129,0.45)] bg-white",
-    REPORT_SURFACE_BORDER_CLASS,
-    REPORT_SURFACE_SHADOW_CLASS,
-    REPORT_CARD_INTERACTION_CLASS,
-  ].join(" "),
+  issue: ["bg-white", REPORT_SURFACE_BORDER_CLASS, REPORT_SURFACE_SHADOW_CLASS, REPORT_CARD_INTERACTION_CLASS].join(
+    " "
+  ),
+  improvement: ["bg-white", REPORT_SURFACE_BORDER_CLASS, REPORT_SURFACE_SHADOW_CLASS, REPORT_CARD_INTERACTION_CLASS].join(
+    " "
+  ),
+  copy: ["bg-white", REPORT_SURFACE_BORDER_CLASS, REPORT_SURFACE_SHADOW_CLASS, REPORT_CARD_INTERACTION_CLASS].join(" "),
 };
 
-export function getReportCardClass(
-  variant: ReportCardVariant,
-  options?: { featured?: boolean; animated?: boolean }
-) {
-  const featured = options?.featured
-    ? "shadow-[0_12px_36px_rgba(6,28,47,0.07)] ring-1 ring-[rgba(6,28,47,0.06)]"
-    : "";
-
-  return [REPORT_CARD_BASE_CLASS, REPORT_CARD_VARIANT_CLASS[variant], featured]
-    .filter(Boolean)
-    .join(" ");
+export function getReportCardClass(variant: ReportCardVariant) {
+  return [REPORT_CARD_BASE_CLASS, REPORT_CARD_VARIANT_CLASS[variant]].join(" ");
 }
 
-export const REPORT_ACTION_HEADLINE_CLASS =
-  "text-[18px] font-semibold leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[21px] md:leading-7";
+/** Limits line length for card titles and recommendations on wide screens. */
+export const REPORT_CARD_HEADLINE_MEASURE_CLASS = "max-w-[42rem]";
 
-export const REPORT_CONTEXT_LABEL_CLASS =
-  "text-[13px] font-semibold uppercase tracking-[0.06em] text-[#8F99A2]";
+export const REPORT_ACTION_HEADLINE_CLASS =
+  "text-[18px] font-semibold leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[20px] md:leading-7";
 
 export const REPORT_COPY_CONTEXT_CLASS =
   "text-[14px] leading-5 text-[rgba(6,28,47,0.5)]";
@@ -80,7 +60,7 @@ export const REPORT_COPY_HEADLINE_CLASS =
 export const REPORT_SECTION_SCROLL_MARGIN_CLASS = "scroll-mt-24";
 
 export const REPORT_CARD_HEADLINE_CLASS =
-  "text-[18px] font-medium leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[22px] md:leading-7";
+  "text-[18px] font-medium leading-6 tracking-[-0.02em] text-[var(--ink-primary)] md:text-[20px] md:leading-7";
 
 export const REPORT_CARD_CONTENT_GAP_CLASS = "mt-3 md:mt-4";
 
@@ -96,7 +76,9 @@ export const REPORT_WHY_LABEL_CLASS =
   "text-[15px] font-semibold leading-[20px] text-[var(--ink-primary)]";
 
 export const REPORT_WHY_BODY_CLASS =
-  "mt-1 text-[15px] font-normal leading-[20px] text-[rgba(6,28,47,0.5)]";
+  "text-[15px] font-normal leading-[20px] text-[rgba(6,28,47,0.5)]";
+
+export const REPORT_WHY_BODY_MEASURE_CLASS = "max-w-[40rem]";
 
 export const REPORT_WHY_DIVIDER_CLASS = "mt-4 border-t border-[rgba(6,28,47,0.06)] pt-4";
 

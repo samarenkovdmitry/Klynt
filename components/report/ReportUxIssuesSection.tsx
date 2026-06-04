@@ -8,7 +8,7 @@ import {
   REPORT_WHY_BODY_CLASS,
   REPORT_WHY_DIVIDER_CLASS,
   REPORT_WHY_LABEL_CLASS,
-  getReportCardClass,
+  REPORT_WHY_BODY_MEASURE_CLASS,
 } from "@/components/report/reportStyles";
 import { REPORT_SECTION_ANCHORS } from "@/lib/report-sections";
 import { getImpactEntries } from "@/lib/report-impact";
@@ -43,10 +43,10 @@ export function ReportUxIssuesSection({
           return (
             <ReportListCard
               key={index}
+              variant="issue"
               index={index}
               title={issue.title ?? ""}
               impactEntries={impactEntries}
-              cardClassName={getReportCardClass("issue", { featured: index === 0 })}
             >
               {issue.bullets && issue.bullets.length > 0 && (
                 <div className={`${REPORT_CARD_CONTENT_GAP_CLASS} flex flex-wrap gap-2`}>
@@ -61,7 +61,9 @@ export function ReportUxIssuesSection({
               {issue.why && (
                 <div className={`mt-4 ${REPORT_WHY_DIVIDER_CLASS}`}>
                   <p className={REPORT_WHY_LABEL_CLASS}>Why it matters</p>
-                  <p className={REPORT_WHY_BODY_CLASS}>{issue.why}</p>
+                  <p className={`${REPORT_WHY_BODY_CLASS} ${REPORT_WHY_BODY_MEASURE_CLASS}`}>
+                    {issue.why}
+                  </p>
                 </div>
               )}
             </ReportListCard>
