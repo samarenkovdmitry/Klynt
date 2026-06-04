@@ -20,7 +20,6 @@ import {
 } from "@/hooks/useAnalyzePage";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
-import { FormLabel } from "@/components/ui/FormLabel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
@@ -67,7 +66,7 @@ function AnalyzeErrorAlert({ errorKind, error }: AnalyzeErrorAlertProps) {
   return (
     <div
       className={[
-        "mt-5 rounded-[20px] px-4 py-4 md:px-5 md:py-5",
+        "rounded-[16px] px-4 py-3.5",
         isRateLimited
           ? "border border-amber-200 bg-amber-50"
           : "border border-[#FFD9D6] bg-[#FFF4F3]",
@@ -91,6 +90,101 @@ function AnalyzeErrorAlert({ errorKind, error }: AnalyzeErrorAlertProps) {
         {body}
       </p>
     </div>
+  );
+}
+
+function AnalyzeFormActions({
+  loading,
+  progress,
+  loadingLabel,
+  errorKind,
+  isButtonDisabled,
+  handleAnalyze,
+  switchToScreenshotUpload,
+}: {
+  loading: boolean;
+  progress: number;
+  loadingLabel: string;
+  errorKind: AnalyzeErrorKind;
+  isButtonDisabled: boolean;
+  handleAnalyze: () => void;
+  switchToScreenshotUpload: () => void;
+}) {
+  if (loading) {
+    return (
+      <div className="pt-1">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)]">
+              Generating UX report
+            </p>
+            <p className="mt-0.5 text-[14px] text-[rgba(6,28,47,0.5)]">{loadingLabel}</p>
+          </div>
+          <span className="rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-semibold tabular-nums text-[#2563EB]">
+            {Math.floor(progress)}%
+          </span>
+        </div>
+        <div className="mt-4 h-[6px] overflow-hidden rounded-full bg-[#E5E7EB]">
+          <div
+            className="h-full rounded-full bg-[#2563EB] transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="mt-3 text-[13px] text-[rgba(6,28,47,0.5)]">
+          Evaluating hierarchy, clarity, trust and conversion flow
+        </p>
+      </div>
+    );
+  }
+
+  if (errorKind === "url_analysis") {
+    return (
+      <div className="flex flex-col gap-2">
+        <Button
+          type="button"
+          variant="primary"
+          onClick={switchToScreenshotUpload}
+          icon={<RiUpload2Line size={18} aria-hidden />}
+          className="!rounded-full"
+        >
+          Upload screenshot
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleAnalyze}
+          className="!rounded-full"
+        >
+          Try again
+        </Button>
+      </div>
+    );
+  }
+
+  if (errorKind === "screenshot_analysis" || errorKind === "storage") {
+    return (
+      <Button
+        type="button"
+        variant="primary"
+        onClick={handleAnalyze}
+        className="!rounded-full"
+      >
+        Try again
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="primary"
+      disabled={isButtonDisabled}
+      onClick={handleAnalyze}
+      icon={<RiArrowRightLine size={18} aria-hidden />}
+      className="!rounded-full"
+    >
+      Analyze UX
+    </Button>
   );
 }
 
@@ -126,18 +220,17 @@ export function AnalyzePageView() {
 
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
         <div className="mx-auto max-w-[640px]">
-          <header>
-            <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">AI UX Review</p>
-            <h1 className="mt-3 text-[32px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[40px] md:leading-[1.05]">
+          <header className="text-center">
+            <h1 className="text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[38px] md:leading-[1.05]">
               Check your site&apos;s UX in minutes
             </h1>
-            <p className="mt-3 max-w-[540px] text-[16px] leading-[25px] text-[rgba(6,28,47,0.5)]">
+            <p className="mx-auto mt-3 max-w-[540px] text-[15px] leading-[24px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
               Paste a URL or upload a screenshot. Klynt flags friction, weak copy, and trust
               gaps — with fixes you can ship.
             </p>
           </header>
 
-          <ul className="mt-6 flex flex-row flex-wrap gap-x-5 gap-y-1.5 sm:gap-x-6">
+          <ul className="mt-6 flex flex-row flex-wrap justify-center gap-x-5 gap-y-2 sm:gap-x-6">
             {OUTCOMES.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-2 text-[14px] text-[#8E99A2]">
                 <Icon size={16} className="shrink-0" aria-hidden />
@@ -180,10 +273,8 @@ export function AnalyzePageView() {
 
             <div className="mt-5 md:mt-6">
               {inputMode === "url" ? (
-                <div role="tabpanel">
-                  <FormLabel>Website URL</FormLabel>
-
-                  <div className="relative mt-3">
+                <div role="tabpanel" aria-label="Website URL">
+                  <div className="relative">
                     <input
                       type="text"
                       value={url}
@@ -191,6 +282,7 @@ export function AnalyzePageView() {
                       onKeyDown={handleUrlKeyDown}
                       placeholder="https://stripe.com"
                       disabled={loading}
+                      aria-label="Website URL"
                       aria-invalid={showUrlError ? true : undefined}
                       aria-describedby={showUrlError ? "url-error" : undefined}
                       className={`${inputFieldClass({
@@ -224,15 +316,13 @@ export function AnalyzePageView() {
                   </p>
                 </div>
               ) : (
-                <div role="tabpanel">
-                  <FormLabel>Upload screenshot</FormLabel>
-
+                <div role="tabpanel" aria-label="Screenshot upload">
                   <button
                     type="button"
                     onClick={openFilePicker}
                     disabled={loading}
                     className={[
-                      "mt-3 w-full rounded-[24px] border-2 border-dashed text-left transition",
+                      "w-full rounded-[24px] border-2 border-dashed text-left transition",
                       uploadedImage
                         ? "border-[#A4F4CF] bg-[#ECFDF5]"
                         : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
@@ -286,79 +376,24 @@ export function AnalyzePageView() {
                 </div>
               )}
             </div>
-          </div>
 
-          {error && errorKind && (
-            <AnalyzeErrorAlert errorKind={errorKind} error={error} />
-          )}
-
-          <div className={error && errorKind ? "mt-4" : "mt-6"}>
-            {loading ? (
-              <div className="rounded-[28px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[16px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)] md:text-[18px]">
-                      Generating UX report
-                    </p>
-                    <p className="mt-1 text-[14px] text-[rgba(6,28,47,0.5)]">{loadingLabel}</p>
-                  </div>
-                  <span className="rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-semibold tabular-nums text-[#2563EB]">
-                    {Math.floor(progress)}%
-                  </span>
-                </div>
-
-                <div className="mt-5 h-[6px] overflow-hidden rounded-full bg-[#E5E7EB]">
-                  <div
-                    className="h-full rounded-full bg-[#2563EB] transition-all duration-500 ease-out"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-
-                <p className="mt-3 text-[13px] text-[rgba(6,28,47,0.5)]">
-                  Evaluating hierarchy, clarity, trust and conversion flow
-                </p>
+            {error && errorKind && (
+              <div className="mt-4">
+                <AnalyzeErrorAlert errorKind={errorKind} error={error} />
               </div>
-            ) : errorKind === "url_analysis" ? (
-              <div className="flex flex-col gap-2">
-                <Button
-                  type="button"
-                  variant="primary"
-                  onClick={switchToScreenshotUpload}
-                  icon={<RiUpload2Line size={18} aria-hidden />}
-                  className="!rounded-full"
-                >
-                  Upload screenshot
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleAnalyze}
-                  className="!rounded-full"
-                >
-                  Try again
-                </Button>
-              </div>
-            ) : errorKind === "screenshot_analysis" || errorKind === "storage" ? (
-              <Button
-                type="button"
-                variant="primary"
-                onClick={handleAnalyze}
-                className="!rounded-full"
-              >
-                Try again
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                variant="primary"
-                disabled={isButtonDisabled}
-                onClick={handleAnalyze}
-                icon={<RiArrowRightLine size={18} aria-hidden />}
-                className="!rounded-full"
-              >
-                Analyze UX
-              </Button>
             )}
+
+            <div className="mt-5 border-t border-[rgba(6,28,47,0.06)] pt-5">
+              <AnalyzeFormActions
+                loading={loading}
+                progress={progress}
+                loadingLabel={loadingLabel}
+                errorKind={errorKind}
+                isButtonDisabled={isButtonDisabled}
+                handleAnalyze={handleAnalyze}
+                switchToScreenshotUpload={switchToScreenshotUpload}
+              />
+            </div>
           </div>
 
           <p className="mt-6 text-center text-[13px] leading-5 text-[#8E99A2]">
