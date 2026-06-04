@@ -220,18 +220,18 @@ export function AnalyzePageView() {
 
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
         <div className="mx-auto max-w-[640px]">
-          <header>
+          <header className="text-center">
             <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">AI UX Review</p>
             <h1 className="mt-3 text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[38px] md:leading-[1.05]">
               Check your site&apos;s UX in minutes
             </h1>
-            <p className="mt-3 max-w-[540px] text-[15px] leading-[24px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
+            <p className="mx-auto mt-3 max-w-[540px] text-[15px] leading-[24px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
               Paste a URL or upload a screenshot. Klynt flags friction, weak copy, and trust
               gaps — with fixes you can ship.
             </p>
           </header>
 
-          <ul className="mt-6 flex flex-row flex-wrap gap-x-5 gap-y-2 sm:gap-x-6">
+          <ul className="mt-6 flex flex-row flex-wrap justify-center gap-x-5 gap-y-2 sm:gap-x-6">
             {OUTCOMES.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-2 text-[14px] text-[#8E99A2]">
                 <Icon size={16} className="shrink-0" aria-hidden />
@@ -397,19 +397,15 @@ export function AnalyzePageView() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col items-center gap-3">
-            <p className="text-center text-[13px] leading-5 text-[#8E99A2]">
-              Your URLs and screenshots are processed securely and never shared.
-            </p>
+          <p className="mt-6 text-center text-[13px] leading-5 text-[#8E99A2]">
+            Your URLs and screenshots are processed securely and never shared.{" "}
             <Link
               href={DEMO_REPORT_PATH}
-              className="inline-flex items-center gap-2 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-4 py-2.5 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition hover:border-[rgba(6,28,47,0.16)] hover:bg-[#FAFBFC]"
+              className="font-medium text-[var(--ink-primary)] underline-offset-2 hover:underline"
             >
-              <RiFilePdfLine size={16} className="text-[#2563EB]" aria-hidden />
-              View sample report
-              <RiArrowRightLine size={16} className="text-[#8E99A2]" aria-hidden />
+              View a sample report
             </Link>
-          </div>
+          </p>
         </div>
       </main>
     </>
