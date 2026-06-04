@@ -16,6 +16,7 @@ import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitli
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { formatReportDomain } from "@/lib/report-hero-theme";
+import { openReportPrintExport } from "@/lib/report-export";
 import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
 
@@ -45,7 +46,9 @@ export default function ReportPage() {
   }
 
   function handleExport() {
-    window.print();
+    if (reportId) {
+      openReportPrintExport(reportId);
+    }
   }
 
   function handleRerun() {

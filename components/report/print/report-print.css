@@ -1,0 +1,152 @@
+.report-print-root {
+  color: #061c2f;
+  background: #ffffff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.report-print-page {
+  box-sizing: border-box;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 40px 48px;
+}
+
+.report-print-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(6, 28, 47, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.report-print-section {
+  margin-top: 28px;
+}
+
+.report-print-section:first-of-type {
+  margin-top: 0;
+}
+
+.report-print-section-title {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8e99a2;
+}
+
+.report-print-divider {
+  margin: 28px 0;
+  border: none;
+  border-top: 1px solid rgba(6, 28, 47, 0.08);
+}
+
+.report-print-card {
+  border: 1px solid rgba(6, 28, 47, 0.08);
+  border-radius: 12px;
+  padding: 16px 18px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.report-print-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.report-print-table th,
+.report-print-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(6, 28, 47, 0.06);
+}
+
+.report-print-table th {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8e99a2;
+}
+
+.report-print-table td:last-child,
+.report-print-table th:last-child {
+  text-align: right;
+}
+
+.report-print-bar-track {
+  display: inline-block;
+  width: 80px;
+  height: 6px;
+  margin-left: 12px;
+  vertical-align: middle;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef2f6;
+}
+
+.report-print-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #061c2f;
+}
+
+.report-print-copy-block {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid rgba(6, 28, 47, 0.06);
+}
+
+.report-print-copy-block--after {
+  background: #f0fdf9;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.report-print-page-footer {
+  margin-top: 36px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(6, 28, 47, 0.08);
+  font-size: 12px;
+  color: #8e99a2;
+}
+
+@media print {
+  @page {
+    margin: 18mm 16mm;
+    size: A4;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  header,
+  footer,
+  .report-print-toolbar,
+  .no-print {
+    display: none !important;
+  }
+
+  .report-print-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .report-print-root {
+    font-size: 12pt;
+  }
+
+  .report-print-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
