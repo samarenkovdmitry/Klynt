@@ -99,7 +99,11 @@ body {
     background: white !important;
   }
 
-  header {
+  .app-site-header {
+    display: none !important;
+  }
+
+  .app-site-footer {
     display: none !important;
   }
 
