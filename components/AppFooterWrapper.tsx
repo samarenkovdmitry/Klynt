@@ -7,7 +7,8 @@ import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 
 export function AppFooterWrapper() {
   const pathname = usePathname();
-  const isLanding = pathname === "/";
+  const isDarkFooter =
+    pathname === "/" || pathname === "/landing-copy" || pathname?.startsWith("/landing-copy/");
   const isPrintRoute = pathname?.includes("/print");
 
   if (isPrintRoute) {
@@ -16,8 +17,8 @@ export function AppFooterWrapper() {
 
   return (
     <AppFooter
-      variant={isLanding ? "dark" : "light"}
-      containerClass={isLanding ? undefined : REPORT_PAGE_CONTAINER_CLASS}
+      variant={isDarkFooter ? "dark" : "light"}
+      containerClass={isDarkFooter ? undefined : REPORT_PAGE_CONTAINER_CLASS}
     />
   );
 }

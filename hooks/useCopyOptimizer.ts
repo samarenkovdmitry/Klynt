@@ -45,6 +45,13 @@ export function useCopyOptimizer() {
     setError(null);
   }
 
+  function resetToInput() {
+    setResult(null);
+    setError(null);
+    setShowUrlError(false);
+    setProgress(0);
+  }
+
   async function optimize() {
     const validationError = validateWebsiteUrl(url);
     if (validationError) {
@@ -110,5 +117,6 @@ export function useCopyOptimizer() {
     loadingLabel,
     optimize,
     handleUrlKeyDown,
+    resetToInput,
   };
 }

@@ -1,9 +1,13 @@
+import type { ReportPriority } from "@/lib/audit-report";
+import { normalizeReportPriority } from "@/lib/report-priority";
+
 export type CopyOptimizerLayer = "headline" | "subheadline" | "cta";
 
 export type CopyOptimizerField = {
   before: string;
   after: string;
   why?: string;
+  priority?: ReportPriority;
 };
 
 export type CopyOptimizerResult = {
@@ -17,6 +21,7 @@ type RawCopyLayer = {
   before?: string;
   after?: string;
   why?: string;
+  priority?: string;
 };
 
 const LAYER_LABELS: Record<CopyOptimizerLayer, string> = {
@@ -92,6 +97,7 @@ export function normalizeCopyOptimizerResponse(
       before: String(item.before ?? "").trim(),
       after: String(item.after ?? "").trim(),
       why: String(item.why ?? "").trim() || undefined,
+      priority: normalizeReportPriority(item.priority),
     };
   }
 

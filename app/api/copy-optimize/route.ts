@@ -58,19 +58,22 @@ Return ONLY valid JSON (no markdown):
       "layer": "headline",
       "before": "exact visible hero headline",
       "after": "clearer rewrite",
-      "why": "max 24 words"
+      "why": "max 24 words",
+      "priority": "quick_win"|"high_impact"|"medium_impact"
     },
     {
       "layer": "subheadline",
       "before": "exact visible supporting line under the headline",
       "after": "clearer rewrite",
-      "why": "max 24 words"
+      "why": "max 24 words",
+      "priority": "quick_win"|"high_impact"|"medium_impact"
     },
     {
       "layer": "cta",
       "before": "exact visible primary CTA label",
       "after": "clearer rewrite",
-      "why": "max 24 words"
+      "why": "max 24 words",
+      "priority": "quick_win"|"high_impact"|"medium_impact"
     }
   ]
 }
@@ -81,7 +84,8 @@ Rules:
 - subheadline = the next supporting paragraph or subtext directly under the headline (NOT the CTA).
 - cta = primary button label above the fold.
 - If a layer is missing on the page, set before to "" and still propose a sensible after based on what is visible.
-- Improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
+- Improve clarity (what/who/outcome), not hype. Preserve brand tone.
+- priority on each layer: quick_win = low effort visible payoff; high_impact = strongest clarity/conversion lift; medium_impact = helpful but secondary.`;
 
 export async function POST(req: Request) {
   try {

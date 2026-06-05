@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { RiCheckLine, RiFileCopyLine } from "@remixicon/react";
 
+import { PriorityBadge } from "@/components/report/ImpactBadges";
 import {
   IMPROVED_COPY_BUTTON_CLASS,
   IMPROVED_COPY_LABEL_CLASS,
   IMPROVED_COPY_PANEL_CLASS,
   IMPROVED_COPY_TOAST_CLASS,
+  getPriorityLabel,
 } from "@/lib/report-priority";
 import type { CopyOptimizerField, CopyOptimizerLayer } from "@/lib/copy-optimize";
 import { getCopyOptimizerLayerLabel } from "@/lib/copy-optimize";
@@ -24,6 +26,7 @@ type CopyOptimizerFieldCardProps = {
 
 export function CopyOptimizerFieldCard({ layer, field }: CopyOptimizerFieldCardProps) {
   const [copied, setCopied] = useState(false);
+  const priorityLabel = field.priority ? getPriorityLabel({ priority: field.priority }) : null;
 
   async function handleCopy() {
     if (!field.after) return;
@@ -34,10 +37,13 @@ export function CopyOptimizerFieldCard({ layer, field }: CopyOptimizerFieldCardP
   }
 
   return (
-    <article className="rounded-[18px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:p-6">
-      <h3 className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)] md:text-[16px]">
-        {getCopyOptimizerLayerLabel(layer)}
-      </h3>
+    <article className="rounded-[18px] border border-[rgba(6,28,47,0.06)] bg-white p-5 shadow-[0_16px_48px_rgba(0,0,0,0.08)] md:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <h3 className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)] md:text-[16px]">
+          {getCopyOptimizerLayerLabel(layer)}
+        </h3>
+        {priorityLabel ? <PriorityBadge label={priorityLabel} className="shrink-0" /> : null}
+      </div>
 
       {field.why ? (
         <p className={`mt-2 ${REPORT_WHY_BODY_CLASS} ${REPORT_WHY_BODY_MEASURE_CLASS}`}>
