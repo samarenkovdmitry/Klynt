@@ -18,7 +18,7 @@ export const preLaunch = {
   waitlist: {
     enabled: true,
     /** Inclusive end date (YYYY-MM-DD). Waitlist gate is off through this day. */
-    pausedUntil: "2026-06-04",
+    pausedUntil: "2026-06-12",
     storageKey: "klynt-waitlist-unlocked",
   },
 } as const;
