@@ -15,13 +15,6 @@ export function CopyOptimizerAtmosphere() {
             "radial-gradient(ellipse 48% 44% at 14% 28%, rgba(245, 158, 11, 0.18) 0%, transparent 70%)",
         }}
       />
-      <div
-        className="absolute inset-x-0 bottom-0 h-[50vh]"
-        style={{
-          background:
-            "radial-gradient(ellipse 90% 70% at 50% 100%, rgba(6, 182, 212, 0.14) 0%, rgba(6, 182, 212, 0.04) 44%, transparent 74%)",
-        }}
-      />
     </div>
   );
 }

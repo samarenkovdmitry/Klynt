@@ -75,14 +75,14 @@ export function CopyOptimizerPageView() {
 
             <div className="mt-7 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white p-5 text-[var(--ink-primary)] shadow-[0_24px_80px_rgba(0,0,0,0.28)] md:p-7">
               {hasResult && !loading ? (
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="min-w-0 truncate text-[15px] font-medium text-[var(--ink-primary)]">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="min-w-0 flex-1 truncate text-[15px] font-medium text-[var(--ink-primary)]">
                     {formatReportDomain(displayUrl) || displayUrl}
                   </p>
                   <button
                     type="button"
                     onClick={resetToInput}
-                    className="shrink-0 self-start text-[13px] font-medium text-[#8E99A2] underline-offset-2 transition hover:text-[var(--ink-primary)] hover:underline sm:self-center"
+                    className="shrink-0 text-[13px] font-medium text-[#8E99A2] underline-offset-2 transition hover:text-[var(--ink-primary)] hover:underline"
                   >
                     Analyze another URL
                   </button>
