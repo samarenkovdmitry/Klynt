@@ -37,8 +37,8 @@ export function LandingTestHero() {
             </h1>
 
             <p className="mt-4 max-w-[560px] text-[16px] font-normal leading-[26px] text-white/70 md:mt-5 md:text-[17px] md:leading-[28px] lg:max-w-[520px]">
-              Paste a URL or upload a screenshot. Get a UX report with issues, explanations, and
-              prioritized fixes.
+              Paste a URL or screenshot. Get a prioritized UX report — issues, explanations, and
+              fixes in about a minute.
             </p>
 
             <ul className="mt-6 hidden flex-row flex-wrap items-center justify-center gap-x-5 gap-y-1.5 sm:flex lg:justify-start">
