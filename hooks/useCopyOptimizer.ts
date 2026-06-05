@@ -2,7 +2,9 @@
 
 import { useState, type KeyboardEvent } from "react";
 
+import { COPY_OPTIMIZE_FALLBACK_ERROR, isJsonParseErrorMessage } from "@/lib/api-errors";
 import type { CopyOptimizerResult } from "@/lib/copy-optimize";
+import { parseApiJsonResponse } from "@/lib/parse-api-response";
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
 
 const ESTIMATED_MS = 12_000;
@@ -75,19 +77,26 @@ export function useCopyOptimizer() {
         body: JSON.stringify({ url: url.trim() }),
       });
 
-      const payload = (await response.json()) as CopyOptimizerResult & { error?: string };
+      const { data: payload, error: responseError } =
+        await parseApiJsonResponse<CopyOptimizerResult & { error?: string }>(
+          response,
+          COPY_OPTIMIZE_FALLBACK_ERROR
+        );
 
-      if (!response.ok) {
-        throw new Error(payload.error || "Copy optimization failed. Please try again.");
+      if (responseError || !payload) {
+        throw new Error(responseError || COPY_OPTIMIZE_FALLBACK_ERROR);
       }
 
       setProgress(100);
       setResult(payload);
     } catch (optimizeError) {
+      const message =
+        optimizeError instanceof Error ? optimizeError.message.trim() : "";
+
       setError(
-        optimizeError instanceof Error
-          ? optimizeError.message
-          : "Copy optimization failed. Please try again."
+        !message || isJsonParseErrorMessage(message)
+          ? COPY_OPTIMIZE_FALLBACK_ERROR
+          : message
       );
     } finally {
       window.clearInterval(progressTimer);

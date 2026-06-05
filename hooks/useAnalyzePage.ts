@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { generateReportId } from "@/lib/report-id";
 import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
+import { ANALYZE_FALLBACK_ERROR } from "@/lib/api-errors";
+import { parseApiJsonResponse } from "@/lib/parse-api-response";
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
 
 type FlatIssue = {
@@ -260,8 +262,6 @@ export function useAnalyzePage() {
         body: form,
       });
 
-      const json = await res.json().catch(() => null);
-
       if (res.status === 429) {
         stopProgressTimer();
         setProgress(0);
@@ -274,17 +274,18 @@ export function useAnalyzePage() {
         return;
       }
 
+      const { data: json, error: responseError } = await parseApiJsonResponse<
+        AuditResponseFlat & { reportId?: string; error?: string }
+      >(res, ANALYZE_FALLBACK_ERROR);
+
       const analysisFailureKind: Exclude<AnalyzeErrorKind, null | "rate_limit" | "storage"> =
         inputMode === "url" ? "url_analysis" : "screenshot_analysis";
 
-      if (!res.ok || !json) {
+      if (responseError || !json) {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
-        failAnalysis(
-          analysisFailureKind,
-          json?.error || "Something went wrong during analysis. Please try again."
-        );
+        failAnalysis(analysisFailureKind, responseError || ANALYZE_FALLBACK_ERROR);
         return;
       }
 
