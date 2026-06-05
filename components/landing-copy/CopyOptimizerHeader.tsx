@@ -13,10 +13,10 @@ const HEADER_HEIGHT_PX = 68;
 const navItems = [
   {
     href: "/landing-copy",
-    label: "Copy optimizer",
+    label: "Hero copy",
     match: (p: string) => p.startsWith("/landing-copy"),
   },
-  { href: "/analyze", label: "Analyze", match: (p: string) => p.startsWith("/analyze") },
+  { href: "/analyze", label: "UX audit", match: (p: string) => p.startsWith("/analyze") },
   {
     href: DEMO_REPORT_PATH,
     label: "Sample report",

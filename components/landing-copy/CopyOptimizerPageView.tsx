@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef } from "react";
 import {
   RiAlignLeft,
@@ -89,47 +88,45 @@ export function CopyOptimizerPageView() {
         <div className={`${LANDING_CONTAINER} px-4 pb-10 pt-4 md:px-6 md:pb-14 md:pt-6`}>
           <div className="mx-auto max-w-[720px]">
             <header className="text-center">
-              <h1 className="text-[30px] font-bold leading-[1.08] tracking-[-0.02em] text-white md:text-[40px]">
-                Free Landing Page Copy Optimizer
+              <p className="text-[13px] font-medium text-white/45 md:text-[14px]">
+                Free · headline, subheadline &amp; CTA
+              </p>
+              <h1 className="mt-2 text-[30px] font-bold leading-[1.08] tracking-[-0.02em] text-white md:text-[40px]">
+                Fix your hero copy in minutes
               </h1>
               <p className="mx-auto mt-3 max-w-[560px] text-[15px] leading-[24px] text-white/65 md:text-[16px] md:leading-[26px]">
-                Paste a URL. Klynt rewrites your hero headline, subheadline, and primary CTA for
-                clarity — using only what&apos;s visible above the fold.
+                Paste a URL. Get a clearer headline, subheadline, and primary CTA — from
+                what&apos;s visible above the fold.
               </p>
             </header>
 
-            <ul className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+            <ul className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:justify-center">
               {OUTCOMES.map(({ label, icon: Icon, iconWrap }) => (
                 <li
                   key={label}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 sm:min-w-[190px]"
+                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3.5 py-2.5 sm:min-w-[178px]"
                 >
                   <span
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${iconWrap}`}
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${iconWrap}`}
                     aria-hidden
                   >
-                    <Icon size={18} />
+                    <Icon size={17} />
                   </span>
                   <span className="text-[14px] font-medium text-white/85">{label}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="mt-8 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white p-5 text-[var(--ink-primary)] shadow-[0_24px_80px_rgba(0,0,0,0.28)] md:p-8">
+            <div className="mt-7 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white p-5 text-[var(--ink-primary)] shadow-[0_24px_80px_rgba(0,0,0,0.28)] md:p-7">
               {hasResult && !loading ? (
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#8E99A2]">
-                      Analyzed URL
-                    </p>
-                    <p className="mt-1 truncate text-[15px] font-medium text-[var(--ink-primary)]">
-                      {formatReportDomain(displayUrl) || displayUrl}
-                    </p>
-                  </div>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="min-w-0 truncate text-[15px] font-medium text-[var(--ink-primary)]">
+                    {formatReportDomain(displayUrl) || displayUrl}
+                  </p>
                   <button
                     type="button"
                     onClick={resetToInput}
-                    className="shrink-0 text-[14px] font-medium text-[#2563EB] transition hover:text-[#1D4ED8]"
+                    className="shrink-0 self-start text-[13px] font-medium text-[#8E99A2] underline-offset-2 transition hover:text-[var(--ink-primary)] hover:underline sm:self-center"
                   >
                     Analyze another URL
                   </button>
@@ -227,26 +224,30 @@ export function CopyOptimizerPageView() {
                   )}
                 </div>
               )}
-
-              {hasResult && !loading && (
-                <div className="mt-5 border-t border-[rgba(6,28,47,0.06)] pt-5">
-                  <h2 className="text-[18px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)] md:text-[20px]">
-                    Your optimized hero copy
-                  </h2>
-                  <p className="mt-1.5 text-[14px] leading-[22px] text-[rgba(6,28,47,0.5)] md:text-[15px]">
-                    Copy the improved lines below — paste them straight into your page.
-                  </p>
-                </div>
-              )}
             </div>
 
             {result && (
-              <div ref={resultsRef} className="mt-8 scroll-mt-28 space-y-4">
-                {RESULT_LAYERS.map((layer) => (
-                  <CopyOptimizerFieldCard key={layer} layer={layer} field={result.fields[layer]} />
-                ))}
+              <div ref={resultsRef} className="mt-7 scroll-mt-28">
+                <div className="mb-5 text-center md:text-left">
+                  <h2 className="text-[20px] font-semibold tracking-[-0.02em] text-white md:text-[22px]">
+                    Your optimized hero copy
+                  </h2>
+                  <p className="mt-1.5 text-[14px] leading-[22px] text-white/55 md:text-[15px]">
+                    Copy the improved lines below — paste them straight into your page.
+                  </p>
+                </div>
 
-                <div className="rounded-[24px] border border-white/10 bg-white/5 px-5 py-6 text-center backdrop-blur-sm md:px-8">
+                <div className="space-y-4">
+                  {RESULT_LAYERS.map((layer) => (
+                    <CopyOptimizerFieldCard
+                      key={layer}
+                      layer={layer}
+                      field={result.fields[layer]}
+                    />
+                  ))}
+                </div>
+
+                <div className="mt-6 rounded-[24px] border border-white/10 bg-white/5 px-5 py-6 text-center backdrop-blur-sm md:px-8">
                   <p className="text-[15px] leading-[23px] text-white/70">
                     Want UX score, prioritized fixes, and a shareable PDF?
                   </p>
@@ -262,30 +263,14 @@ export function CopyOptimizerPageView() {
                       Run full UX audit
                     </Button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={resetToInput}
-                    className="mt-4 text-[13px] font-medium text-white/45 transition hover:text-white/70"
-                  >
-                    Try another URL
-                  </button>
                 </div>
               </div>
             )}
 
-            <div className="mt-8 flex flex-col items-center gap-3 text-center">
-              <p className="flex items-center justify-center gap-2 text-[13px] leading-5 text-white/45">
-                <RiLock2Line size={15} className="shrink-0" aria-hidden />
-                <span>Processed securely — hero copy only, never shared</span>
-              </p>
-              <Link
-                href={fullAuditHref}
-                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2.5 text-[14px] font-medium text-white/85 transition hover:border-white/20 hover:bg-white/10"
-              >
-                Full UX audit
-                <RiArrowRightLine size={16} className="text-white/55" aria-hidden />
-              </Link>
-            </div>
+            <p className="mt-8 flex items-center justify-center gap-2 text-center text-[13px] leading-5 text-white/45">
+              <RiLock2Line size={15} className="shrink-0" aria-hidden />
+              <span>Processed securely — hero copy only, never shared</span>
+            </p>
           </div>
         </div>
       </div>

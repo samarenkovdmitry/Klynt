@@ -5,7 +5,7 @@ import { absoluteUrl, DEFAULT_DESCRIPTION, SITE_NAME } from "@/lib/site";
 
 const TITLE = "Free Landing Page Copy Optimizer";
 const DESCRIPTION =
-  "Paste a landing page URL and get clearer hero headline, subheadline, and CTA suggestions — free from Klynt.";
+  "Fix your landing page hero in minutes. Paste a URL for clearer headline, subheadline, and CTA suggestions — free from Klynt.";
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -33,33 +33,31 @@ export function useCopyOptimizer() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CopyOptimizerResult | null>(null);
-  const [showUrlError, setShowUrlError] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
-  const urlValidationError = validateWebsiteUrl(url);
-  const isButtonDisabled = loading || !url.trim() || Boolean(urlValidationError);
+  const urlValidationError = url.trim() ? validateWebsiteUrl(url) : null;
+  const showUrlError = formSubmitted && Boolean(urlValidationError);
+  const isButtonDisabled = loading || !url.trim();
   const loadingLabel = getLoadingLabel(progress);
 
   function clearUrl() {
     setUrl("");
-    setShowUrlError(false);
+    setFormSubmitted(false);
     setError(null);
   }
 
   function resetToInput() {
     setResult(null);
     setError(null);
-    setShowUrlError(false);
+    setFormSubmitted(false);
     setProgress(0);
   }
 
   async function optimize() {
-    const validationError = validateWebsiteUrl(url);
-    if (validationError) {
-      setShowUrlError(true);
-      return;
-    }
+    setFormSubmitted(true);
 
-    setShowUrlError(false);
+    if (!url.trim()) return;
+    if (validateWebsiteUrl(url)) return;
     setError(null);
     setResult(null);
     setLoading(true);
@@ -98,9 +96,10 @@ export function useCopyOptimizer() {
   }
 
   function handleUrlKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter" && !isButtonDisabled) {
-      void optimize();
-    }
+    if (event.key !== "Enter" || loading) return;
+
+    event.preventDefault();
+    void optimize();
   }
 
   return {

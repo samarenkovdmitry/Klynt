@@ -11,7 +11,12 @@ import { LANDING_CONTAINER } from "./landingPageStyles";
 const HEADER_HEIGHT_PX = 68;
 
 const navItems = [
-  { href: "/analyze", label: "Analyze", match: (p: string) => p.startsWith("/analyze") },
+  {
+    href: "/landing-copy",
+    label: "Hero copy",
+    match: (p: string) => p.startsWith("/landing-copy"),
+  },
+  { href: "/analyze", label: "UX audit", match: (p: string) => p.startsWith("/analyze") },
   { href: DEMO_REPORT_PATH, label: "Sample report", match: (p: string) => p.startsWith("/report") },
   { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") },
 ];
