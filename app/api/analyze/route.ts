@@ -12,6 +12,7 @@ import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
 import { buildReportPreviewImage } from "@/lib/report-preview";
 import { normalizeReportBreakdown } from "@/lib/normalize-report-breakdown";
+import { deriveRiskFromScore } from "@/lib/report-metrics";
 import { mapIssueImpact } from "@/lib/report-impact";
 import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
@@ -637,6 +638,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
 
     json.score = normalizedScores.score;
     json.breakdown = normalizedScores.breakdown;
+    json.risk = deriveRiskFromScore(normalizedScores.score);
 
     const reportId = generateReportId();
     const auditedUrl =
@@ -650,8 +652,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
     const reportPayload: AuditReport = {
       url: auditedUrl,
       score: Number(json.score) || 0,
-      risk:
-        json.risk === "medium" || json.risk === "high" ? json.risk : "low",
+      risk: deriveRiskFromScore(json.score),
       summary: json.summary,
       verdict: json.verdict,
       key_observation: json.key_observation,

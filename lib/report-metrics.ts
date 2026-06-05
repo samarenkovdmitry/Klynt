@@ -37,3 +37,9 @@ export function getTierColor(tier: HealthTier): string {
 export function getScoreColor(score: number): string {
   return getTierColor(getScoreTier(score));
 }
+
+export function deriveRiskFromScore(score: number): "low" | "medium" | "high" {
+  if (score >= 70) return "low";
+  if (score >= 40) return "medium";
+  return "high";
+}
