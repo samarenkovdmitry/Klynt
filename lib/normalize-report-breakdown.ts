@@ -52,19 +52,11 @@ function resolveBreakdownKey(metric: string): BreakdownKey | null {
     : null;
 }
 
-export function isBreakdownMismatched(score: number, breakdown: ReportBreakdown) {
+function isPenaltyBreakdown(score: number, breakdown: ReportBreakdown) {
   const average = breakdownAverage(breakdown);
   const max = breakdownMax(breakdown);
 
-  if (score >= 50 && max <= 35 && average <= 40) {
-    return true;
-  }
-
-  if (Math.abs(average - score) > 30) {
-    return true;
-  }
-
-  return false;
+  return score >= 50 && max <= 35 && average <= 40;
 }
 
 function deriveBreakdownFromScore(score: number, issues: ReportIssue[]): ReportBreakdown {
@@ -86,6 +78,13 @@ function deriveBreakdownFromScore(score: number, issues: ReportIssue[]): ReportB
   return clampBreakdown(values);
 }
 
+export function isBreakdownMismatched(score: number, breakdown: ReportBreakdown) {
+  return (
+    isPenaltyBreakdown(score, breakdown) ||
+    Math.abs(breakdownAverage(breakdown) - score) >= 12
+  );
+}
+
 export function normalizeReportBreakdown({
   score,
   breakdown,
@@ -95,31 +94,17 @@ export function normalizeReportBreakdown({
   breakdown?: ReportBreakdown;
   issues?: ReportIssue[];
 }) {
-  const normalizedScore = clampPercent(score);
-  const normalizedBreakdown = clampBreakdown(breakdown);
+  const modelScore = clampPercent(score);
+  let normalizedBreakdown = clampBreakdown(breakdown);
 
-  if (isBreakdownMismatched(normalizedScore, normalizedBreakdown)) {
-    return {
-      score: normalizedScore,
-      breakdown: deriveBreakdownFromScore(normalizedScore, issues),
-    };
+  if (isPenaltyBreakdown(modelScore, normalizedBreakdown)) {
+    normalizedBreakdown = deriveBreakdownFromScore(modelScore, issues);
   }
 
-  const average = breakdownAverage(normalizedBreakdown);
-
-  if (
-    average >= 45 &&
-    average <= 95 &&
-    Math.abs(average - normalizedScore) > 30
-  ) {
-    return {
-      score: clampPercent(average),
-      breakdown: normalizedBreakdown,
-    };
-  }
+  const alignedScore = clampPercent(breakdownAverage(normalizedBreakdown));
 
   return {
-    score: normalizedScore,
+    score: alignedScore,
     breakdown: normalizedBreakdown,
   };
 }
