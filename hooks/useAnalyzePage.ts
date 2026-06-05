@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { generateReportId } from "@/lib/report-id";
 import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
@@ -140,6 +140,7 @@ export type AnalyzeErrorKind =
 
 export function useAnalyzePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
@@ -153,6 +154,14 @@ export function useAnalyzePage() {
   const [progress, setProgress] = useState(0);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [inputMode, setInputMode] = useState<AnalyzeInputMode>("url");
+
+  useEffect(() => {
+    const prefill = searchParams.get("url")?.trim();
+    if (prefill) {
+      setUrl(prefill);
+      setInputMode("url");
+    }
+  }, [searchParams]);
 
   const urlValidationError = url.trim() ? validateWebsiteUrl(url) : null;
   const showUrlError =

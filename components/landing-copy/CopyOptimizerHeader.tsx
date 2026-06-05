@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
-import { LANDING_CONTAINER } from "./landingPageStyles";
+import { LANDING_CONTAINER } from "@/components/landing-test/landingPageStyles";
+import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 const HEADER_HEIGHT_PX = 68;
 
@@ -17,7 +17,11 @@ const navItems = [
     match: (p: string) => p.startsWith("/landing-copy"),
   },
   { href: "/analyze", label: "UX audit", match: (p: string) => p.startsWith("/analyze") },
-  { href: DEMO_REPORT_PATH, label: "Sample report", match: (p: string) => p.startsWith("/report") },
+  {
+    href: DEMO_REPORT_PATH,
+    label: "Sample report",
+    match: (p: string) => p.startsWith("/report"),
+  },
   { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") },
 ];
 
@@ -30,7 +34,7 @@ function mobileNavLinkClass(isActive: boolean) {
   ].join(" ");
 }
 
-export function LandingTestHeader() {
+export function CopyOptimizerHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -83,7 +87,7 @@ export function LandingTestHeader() {
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 md:hidden"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
-            aria-controls="landing-test-mobile-nav"
+            aria-controls="copy-optimizer-mobile-nav"
             onClick={() => setMenuOpen((open) => !open)}
           >
             {menuOpen ? (
@@ -105,7 +109,7 @@ export function LandingTestHeader() {
         />
 
         <nav
-          id="landing-test-mobile-nav"
+          id="copy-optimizer-mobile-nav"
           className={`
             fixed
             right-4

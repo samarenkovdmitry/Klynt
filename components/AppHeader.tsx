@@ -15,7 +15,16 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: "/analyze", label: "Analyze" },
+  {
+    href: "/landing-copy",
+    label: "Hero copy",
+    isActive: (p) => p.startsWith("/landing-copy"),
+  },
+  {
+    href: "/analyze",
+    label: "UX audit",
+    isActive: (p) => p.startsWith("/analyze"),
+  },
   {
     href: DEMO_REPORT_PATH,
     label: "Sample report",
