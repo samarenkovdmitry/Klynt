@@ -1,4 +1,4 @@
-export const LOADING_STALL_THRESHOLD = 88;
+export const LOADING_STALL_DISPLAY_PERCENT = 90;
 
 export const ANALYZE_STALL_LABEL =
   "Almost there — finalizing your report…";
