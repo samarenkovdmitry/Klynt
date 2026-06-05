@@ -1,14 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import {
-  RiAlignLeft,
-  RiArrowRightLine,
-  RiCloseLine,
-  RiCursorLine,
-  RiLock2Line,
-  RiTextSpacing,
-} from "@remixicon/react";
+import { RiArrowRightLine, RiCloseLine, RiLock2Line } from "@remixicon/react";
 
 import { CopyOptimizerAtmosphere } from "@/components/landing-copy/CopyOptimizerAtmosphere";
 import { CopyOptimizerFieldCard } from "@/components/landing-copy/CopyOptimizerFieldCard";
@@ -21,24 +14,6 @@ import type { CopyOptimizerLayer } from "@/lib/copy-optimize";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 
 const RESULT_LAYERS: CopyOptimizerLayer[] = ["headline", "subheadline", "cta"];
-
-const OUTCOMES = [
-  {
-    label: "Headline",
-    icon: RiTextSpacing,
-    iconWrap: "bg-teal-400/15 border-teal-300/25 text-teal-200",
-  },
-  {
-    label: "Subheadline",
-    icon: RiAlignLeft,
-    iconWrap: "bg-white/8 border-white/12 text-white/75",
-  },
-  {
-    label: "CTA",
-    icon: RiCursorLine,
-    iconWrap: "bg-amber-400/15 border-amber-300/25 text-amber-200",
-  },
-] as const;
 
 export function CopyOptimizerPageView() {
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -88,9 +63,7 @@ export function CopyOptimizerPageView() {
         <div className={`${LANDING_CONTAINER} px-4 pb-10 pt-4 md:px-6 md:pb-14 md:pt-6`}>
           <div className="mx-auto max-w-[720px]">
             <header className="text-center">
-              <p className="text-[13px] font-medium text-white/45 md:text-[14px]">
-                Free · headline, subheadline &amp; CTA
-              </p>
+              <p className="text-[13px] font-medium text-white/45 md:text-[14px]">Free</p>
               <h1 className="mt-2 text-[30px] font-bold leading-[1.08] tracking-[-0.02em] text-white md:text-[40px]">
                 Fix your hero copy in minutes
               </h1>
@@ -99,23 +72,6 @@ export function CopyOptimizerPageView() {
                 what&apos;s visible above the fold.
               </p>
             </header>
-
-            <ul className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:justify-center">
-              {OUTCOMES.map(({ label, icon: Icon, iconWrap }) => (
-                <li
-                  key={label}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3.5 py-2.5 sm:min-w-[178px]"
-                >
-                  <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${iconWrap}`}
-                    aria-hidden
-                  >
-                    <Icon size={17} />
-                  </span>
-                  <span className="text-[14px] font-medium text-white/85">{label}</span>
-                </li>
-              ))}
-            </ul>
 
             <div className="mt-7 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-white p-5 text-[var(--ink-primary)] shadow-[0_24px_80px_rgba(0,0,0,0.28)] md:p-7">
               {hasResult && !loading ? (
