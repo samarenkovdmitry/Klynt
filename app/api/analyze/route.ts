@@ -11,6 +11,7 @@ import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/l
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
 import { buildReportPreviewImage } from "@/lib/report-preview";
+import { normalizeReportBreakdown } from "@/lib/normalize-report-breakdown";
 import { mapIssueImpact } from "@/lib/report-impact";
 import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
@@ -510,7 +511,7 @@ priority: suggestions[] and copy[] ONLY — required enum, no impact field:
 - quick_win: low effort, visible UX payoff (copy tweak, one CTA, small layout fix)
 - high_impact: materially improves understanding or conversion; may need more design/dev work
 - medium_impact: helpful but secondary, partial gain, or needs validation
-confidence: integer 70-98. breakdown: integers 0-100. score: integer 0-100 aligned with breakdown.
+confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average — never put impact penalties (-5 to -25) into breakdown.
 metric_observations: expert UX consultant observations (NOT metric labels). Each field 12-16 words.
 - Do NOT repeat category names (Trust, Clarity, Friction, Overall) or the word "metric".
 - Describe likely user perception and behavioral impact, like a consultant briefing a team.
@@ -627,6 +628,15 @@ json.confidence = Number.isFinite(Number(json.confidence))
     json.copy = json.copy.map((item: any) => normalizePriorityItem(item));
 
     Object.assign(json, normalizeReportHeroCopy(json));
+
+    const normalizedScores = normalizeReportBreakdown({
+      score: Number(json.score) || 0,
+      breakdown: json.breakdown,
+      issues: json.issues,
+    });
+
+    json.score = normalizedScores.score;
+    json.breakdown = normalizedScores.breakdown;
 
     const reportId = generateReportId();
     const auditedUrl =
