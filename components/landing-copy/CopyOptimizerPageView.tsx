@@ -8,9 +8,16 @@ import { CopyOptimizerFieldCard } from "@/components/landing-copy/CopyOptimizerF
 import { CopyOptimizerHeader } from "@/components/landing-copy/CopyOptimizerHeader";
 import { LANDING_DARK, LANDING_CONTAINER } from "@/components/landing-test/landingPageStyles";
 import { Button } from "@/components/ui/Button";
+import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { useCopyOptimizer } from "@/hooks/useCopyOptimizer";
+import { useLoadingStall } from "@/hooks/useLoadingStall";
 import type { CopyOptimizerLayer } from "@/lib/copy-optimize";
+import {
+  COPY_OPTIMIZE_STALL_HELPER,
+  COPY_OPTIMIZE_STALL_LABEL,
+  getStallLoadingLabel,
+} from "@/lib/loading-progress";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 
 const RESULT_LAYERS: CopyOptimizerLayer[] = ["headline", "subheadline", "cta"];
@@ -34,6 +41,8 @@ export function CopyOptimizerPageView() {
     handleUrlKeyDown,
     resetToInput,
   } = useCopyOptimizer();
+
+  const loadingStalled = useLoadingStall(loading, progress);
 
   const hasResult = Boolean(result);
   const displayUrl = result?.url || url.trim();
@@ -145,27 +154,17 @@ export function CopyOptimizerPageView() {
               {!hasResult && (
                 <div className="mt-5 border-t border-[rgba(6,28,47,0.06)] pt-5">
                   {loading ? (
-                    <div className="pt-1">
-                      <div className="flex items-center justify-between gap-4">
-                        <div>
-                          <p className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)]">
-                            Optimizing hero copy
-                          </p>
-                          <p className="mt-0.5 text-[14px] text-[rgba(6,28,47,0.5)]">
-                            {loadingLabel}
-                          </p>
-                        </div>
-                        <span className="rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-semibold tabular-nums text-[#2563EB]">
-                          {Math.floor(progress)}%
-                        </span>
-                      </div>
-                      <div className="mt-4 h-[6px] overflow-hidden rounded-full bg-[#E5E7EB]">
-                        <div
-                          className="h-full rounded-full bg-[#2563EB] transition-all duration-500 ease-out"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                    </div>
+                    <LoadingProgressPanel
+                      title="Optimizing hero copy"
+                      loadingLabel={getStallLoadingLabel(
+                        loadingStalled,
+                        loadingLabel,
+                        COPY_OPTIMIZE_STALL_LABEL
+                      )}
+                      progress={progress}
+                      loadingStalled={loadingStalled}
+                      stallHelperText={COPY_OPTIMIZE_STALL_HELPER}
+                    />
                   ) : (
                     <Button
                       type="button"

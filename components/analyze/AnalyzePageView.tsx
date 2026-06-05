@@ -20,8 +20,15 @@ import {
 } from "@/hooks/useAnalyzePage";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
+import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
+import { useLoadingStall } from "@/hooks/useLoadingStall";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
+import {
+  ANALYZE_STALL_HELPER,
+  ANALYZE_STALL_LABEL,
+  getStallLoadingLabel,
+} from "@/lib/loading-progress";
 
 const OUTCOMES = [
   { icon: RiPieChartLine, label: "UX score breakdown" },
@@ -110,30 +117,22 @@ function AnalyzeFormActions({
   handleAnalyze: () => void;
   switchToScreenshotUpload: () => void;
 }) {
+  const loadingStalled = useLoadingStall(loading, progress);
+
   if (loading) {
     return (
-      <div className="pt-1">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)]">
-              Generating UX report
-            </p>
-            <p className="mt-0.5 text-[14px] text-[rgba(6,28,47,0.5)]">{loadingLabel}</p>
-          </div>
-          <span className="rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-semibold tabular-nums text-[#2563EB]">
-            {Math.floor(progress)}%
-          </span>
-        </div>
-        <div className="mt-4 h-[6px] overflow-hidden rounded-full bg-[#E5E7EB]">
-          <div
-            className="h-full rounded-full bg-[#2563EB] transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <p className="mt-3 text-[13px] text-[rgba(6,28,47,0.5)]">
-          Evaluating hierarchy, clarity, trust and conversion flow
-        </p>
-      </div>
+      <LoadingProgressPanel
+        title="Generating UX report"
+        loadingLabel={getStallLoadingLabel(
+          loadingStalled,
+          loadingLabel,
+          ANALYZE_STALL_LABEL
+        )}
+        progress={progress}
+        loadingStalled={loadingStalled}
+        helperText="Evaluating hierarchy, clarity, trust and conversion flow"
+        stallHelperText={ANALYZE_STALL_HELPER}
+      />
     );
   }
 
