@@ -79,6 +79,7 @@ export function buildBrandStagePromptBlock(stage: BrandStage) {
   const sharedRules = `
 headline_directions: REQUIRED object for the visible hero headline (H1 or largest promise line above the fold).
 - before: exact visible hero headline text ("" if missing).
+- gap: one sentence (max 24 words) on what is weak about the current headline for visitors — not brand-stage context.
 - context: 1-2 sentences (max 32 words) explaining why these strategies fit this brand stage.
 - options: exactly 3 items. Each MUST use a different sentence structure and strategic angle — never paraphrase the same idea.
 - options[].label: short strategy name (use the exact labels listed below).
@@ -87,6 +88,8 @@ headline_directions: REQUIRED object for the visible hero headline (H1 or larges
 - Prefer short declarative sentences. Ban filler phrases like "actually", "everything you need", "designed to", "platform your team".
 - Be bold and sharp while staying credible. Clarity and confidence over warmth.
 - Never invent stats, customer counts, or awards. Use only visible proof from the screenshot or write without numbers.
+- Every options[].text must work as a standalone H1 — never a trust badge, subhead, or social-proof line.
+- NEVER write "Trusted by", "Used by", "Loved by", or "Leading teams" unless specific logos/names are visible in the screenshot.
 - Subheadline and CTA copy still go in copy[] as single "after" rewrites (unchanged format).`;
 
   if (stage === "established") {
@@ -95,7 +98,7 @@ ${sharedRules}
 Established headline strategies (one per option):
 - Option A — Bold / brand-led: confident brand claim or point of view; skip "what we are" explanations. Not sentimental.
 - Option B — Outcome-led: concrete user or business outcome in sharp language.
-- Option C — Proof-led: credibility or social proof angle (no invented numbers).`;
+- Option C — Positioning-led: sharp competitive angle, contrarian claim, or "why us" — NOT social proof or "trusted by" language.`;
   }
 
   if (stage === "growing") {
@@ -118,6 +121,7 @@ Just-launched headline strategies (one per option):
 export function buildHeadlineDirectionsSchemaSnippet() {
   return `"headline_directions": {
     "before": "exact visible hero headline",
+    "gap": "string",
     "context": "string",
     "options": [
       { "label": "strategy name", "text": "proposed headline" },
@@ -164,7 +168,21 @@ export function normalizeHeadlineDirections(
 
   return {
     before: String(raw.before ?? "").trim(),
+    gap: String(raw.gap ?? "").trim(),
     context: String(raw.context ?? "").trim(),
     options: normalizedOptions,
   };
+}
+
+export function resolveHeadlineBeforeGap(
+  directions: HeadlineDirections | undefined,
+  copy: { section?: string; why?: string }[]
+) {
+  const gap = directions?.gap?.trim();
+  if (gap) {
+    return gap;
+  }
+
+  const headlineCopy = copy.find((item) => isHeroHeadlineCopySection(item.section));
+  return headlineCopy?.why?.trim();
 }

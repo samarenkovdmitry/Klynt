@@ -22,6 +22,7 @@ import {
   buildHeadlineDirectionsSchemaSnippet,
   normalizeHeadlineDirections,
   parseBrandStage,
+  resolveHeadlineBeforeGap,
 } from "@/lib/brand-stage";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
@@ -640,7 +641,16 @@ json.confidence = Number.isFinite(Number(json.confidence))
 
     json.copy = json.copy.map((item: any) => normalizePriorityItem(item));
 
-    const headlineDirections = normalizeHeadlineDirections(json.headline_directions);
+    let headlineDirections = normalizeHeadlineDirections(json.headline_directions);
+
+    if (headlineDirections && !headlineDirections.gap) {
+      const gap = resolveHeadlineBeforeGap(headlineDirections, json.copy);
+
+      if (gap) {
+        headlineDirections = { ...headlineDirections, gap };
+      }
+    }
+
     json.headline_directions = headlineDirections;
 
     Object.assign(json, normalizeReportHeroCopy(json));

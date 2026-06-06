@@ -24,6 +24,14 @@ export function getHeadlineStrategyIcon(label: string): RemixiconComponentType {
   }
 
   if (
+    normalized.includes("positioning") ||
+    normalized.includes("angle") ||
+    normalized.includes("contrarian")
+  ) {
+    return RiLineChartLine;
+  }
+
+  if (
     normalized.includes("authority") ||
     normalized.includes("proof") ||
     normalized.includes("credibility")

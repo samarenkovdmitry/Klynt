@@ -46,6 +46,8 @@ export type HeadlineDirectionOption = {
 
 export type HeadlineDirections = {
   before?: string;
+  /** Short note on what is weak about the current headline (max ~24 words). */
+  gap?: string;
   context?: string;
   options: HeadlineDirectionOption[];
 };

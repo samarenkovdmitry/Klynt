@@ -172,6 +172,9 @@ export function ReportCopySection({
   }
 
   const visibleCopy = waitlistActive ? supportingCopy.slice(0, 1) : supportingCopy;
+  const headlineCopyWhy = copy.find((item) =>
+    isHeroHeadlineCopySection(item.section)
+  )?.why;
   const sectionCount =
     (hasHeadlineDirections ? 1 : 0) + (waitlistActive ? Math.min(1, supportingCopy.length) : supportingCopy.length);
 
@@ -186,6 +189,7 @@ export function ReportCopySection({
         {hasHeadlineDirections && headlineDirections ? (
           <ReportHeadlineDirectionsCard
             directions={headlineDirections}
+            beforeGap={headlineDirections.gap ?? headlineCopyWhy}
             brandStage={brandStage}
             copiedIndex={copiedIndex}
             copyIndexOffset={HEADLINE_DIRECTIONS_COPY_INDEX_OFFSET}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   RiCheckLine,
   RiFileCopyLine,
@@ -10,7 +10,6 @@ import {
 
 import type { HeadlineDirections } from "@/lib/audit-report";
 import { getBrandStageLabel, type BrandStage } from "@/lib/brand-stage";
-import { getHeadlineStrategyIcon } from "@/lib/headline-strategy-icons";
 import { ReportVariantCard } from "@/components/report/ReportVariantCard";
 import {
   IMPROVED_COPY_BUTTON_CLASS,
@@ -21,6 +20,7 @@ import { REPORT_CARD_TITLE_CLASS } from "@/components/report/reportStyles";
 
 type ReportHeadlineDirectionsCardProps = {
   directions: HeadlineDirections;
+  beforeGap?: string;
   brandStage?: BrandStage;
   copiedIndex: number | null;
   copyIndexOffset: number;
@@ -30,6 +30,7 @@ type ReportHeadlineDirectionsCardProps = {
 
 export function ReportHeadlineDirectionsCard({
   directions,
+  beforeGap,
   brandStage,
   copiedIndex,
   copyIndexOffset,
@@ -38,12 +39,27 @@ export function ReportHeadlineDirectionsCard({
 }: ReportHeadlineDirectionsCardProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showContext, setShowContext] = useState(false);
+  const contextRef = useRef<HTMLDivElement>(null);
 
   const options = directions.options;
   const safeIndex = Math.min(activeIndex, Math.max(0, options.length - 1));
   const activeOption = options[safeIndex];
   const before = directions.before?.trim();
+  const gap = beforeGap?.trim() || directions.gap?.trim();
   const copyIndex = copyIndexOffset + safeIndex;
+
+  useEffect(() => {
+    if (!showContext) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      if (!contextRef.current?.contains(event.target as Node)) {
+        setShowContext(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [showContext]);
 
   if (!activeOption) {
     return null;
@@ -63,19 +79,19 @@ export function ReportHeadlineDirectionsCard({
           </div>
 
           {directions.context ? (
-            <div className="relative shrink-0">
+            <div ref={contextRef} className="relative shrink-0">
               <button
                 type="button"
                 onClick={() => setShowContext((open) => !open)}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(6,28,47,0.08)] text-[#8E99A2] transition hover:border-[#8E99A2] hover:text-[var(--ink-primary)]"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-[#8E99A2] transition hover:bg-[#F5F7FA] hover:text-[var(--ink-primary)]"
                 aria-label="Why these directions"
                 aria-expanded={showContext}
               >
-                <RiInformationLine size={16} aria-hidden />
+                <RiInformationLine size={15} aria-hidden />
               </button>
 
               {showContext ? (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-[min(280px,calc(100vw-48px))] rounded-[14px] border border-[rgba(6,28,47,0.08)] bg-white p-3 text-[13px] leading-5 text-[#6B7280] shadow-[0_12px_32px_rgba(6,28,47,0.10)]">
+                <div className="absolute right-0 top-[calc(100%+6px)] z-10 w-[min(260px,calc(100vw-48px))] rounded-[12px] border border-[rgba(6,28,47,0.08)] bg-white p-2.5 text-[12px] leading-5 text-[#6B7280] shadow-[0_8px_24px_rgba(6,28,47,0.08)]">
                   {directions.context}
                 </div>
               ) : null}
@@ -84,22 +100,26 @@ export function ReportHeadlineDirectionsCard({
         </div>
 
         {before ? (
-          <p className="mt-4 text-[14px] leading-6 text-[#8E99A2]">
-            <span className="font-medium uppercase tracking-[0.08em] text-[11px] text-neutral-400">
-              Before
-            </span>
-            <span className="mx-2 text-neutral-300">·</span>
-            <span className="text-neutral-600">{before}</span>
-          </p>
+          <div className="mt-4">
+            <p className="text-[14px] leading-6 text-neutral-600">
+              <span className="font-medium uppercase tracking-[0.08em] text-[11px] text-neutral-400">
+                Before
+              </span>
+              <span className="mx-2 text-neutral-300">·</span>
+              {before}
+            </p>
+            {gap ? (
+              <p className="mt-1.5 text-[13px] leading-5 text-[#8E99A2]">{gap}</p>
+            ) : null}
+          </div>
         ) : null}
 
         <div
-          className="mt-4 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-4 flex gap-4 overflow-x-auto border-b border-neutral-200 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="tablist"
           aria-label="Headline direction"
         >
           {options.map((option, index) => {
-            const Icon = getHeadlineStrategyIcon(option.label);
             const isActive = safeIndex === index;
 
             return (
@@ -110,13 +130,12 @@ export function ReportHeadlineDirectionsCard({
                 aria-selected={isActive}
                 onClick={() => setActiveIndex(index)}
                 className={[
-                  "inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-[13px] font-medium transition",
+                  "-mb-px shrink-0 border-b-2 pb-2 text-[12px] font-medium transition",
                   isActive
-                    ? "border-[#2563EB] bg-[#2563EB] text-white shadow-[0_4px_14px_rgba(37,99,235,0.22)]"
-                    : "border-[rgba(6,28,47,0.10)] bg-white text-[var(--ink-primary)] hover:border-[#8E99A2]",
+                    ? "border-[var(--ink-primary)] text-[var(--ink-primary)]"
+                    : "border-transparent text-[#8E99A2] hover:text-neutral-600",
                 ].join(" ")}
               >
-                <Icon size={15} aria-hidden />
                 {option.label}
               </button>
             );
