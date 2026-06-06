@@ -19,7 +19,7 @@ import {
 } from "@/lib/report-priority";
 import { REPORT_CARD_TITLE_CLASS } from "@/components/report/reportStyles";
 
-const META_LINE_CLASS = "text-[13px] leading-5 text-[#8E99A2]";
+const BEFORE_LINE_CLASS = "text-[15px] leading-[22px] text-[#8E99A2]";
 
 function formatOptionPillLabel(index: number, label: string) {
   return `Option ${String.fromCharCode(65 + index)} — ${label}`;
@@ -27,7 +27,6 @@ function formatOptionPillLabel(index: number, label: string) {
 
 type ReportHeadlineDirectionsCardProps = {
   directions: HeadlineDirections;
-  beforeGap?: string;
   brandStage?: BrandStage;
   cardIndex?: number;
   copiedIndex: number | null;
@@ -38,7 +37,6 @@ type ReportHeadlineDirectionsCardProps = {
 
 export function ReportHeadlineDirectionsCard({
   directions,
-  beforeGap,
   brandStage,
   cardIndex = 0,
   copiedIndex,
@@ -54,7 +52,6 @@ export function ReportHeadlineDirectionsCard({
   const safeIndex = Math.min(activeIndex, Math.max(0, options.length - 1));
   const activeOption = options[safeIndex];
   const before = directions.before?.trim();
-  const gap = beforeGap?.trim() || directions.gap?.trim();
   const copyIndex = copyIndexOffset + safeIndex;
 
   useEffect(() => {
@@ -118,14 +115,9 @@ export function ReportHeadlineDirectionsCard({
           </div>
 
           {before ? (
-            <p className={META_LINE_CLASS}>
-              <span>Before:</span> {before}
-            </p>
-          ) : null}
-
-          {gap ? (
-            <p className={`${META_LINE_CLASS} ${before ? "mt-1" : ""}`}>
-              <span>Issue:</span> {gap}
+            <p className={BEFORE_LINE_CLASS}>
+              <span>Before:</span>{" "}
+              <span className="text-neutral-600">{before}</span>
             </p>
           ) : null}
 
@@ -159,7 +151,7 @@ export function ReportHeadlineDirectionsCard({
 
           <div className={`relative mt-4 rounded-2xl border p-5 ${IMPROVED_COPY_PANEL_CLASS}`}>
             <div className="flex items-start justify-between gap-4">
-              <p className="min-w-0 flex-1 text-[16px] font-semibold leading-6 text-[var(--ink-primary)] md:text-[17px] md:leading-7">
+              <p className="min-w-0 flex-1 text-[18px] font-semibold leading-7 tracking-[-0.01em] text-[var(--ink-primary)] md:text-[20px] md:leading-8">
                 {activeOption.text}
               </p>
 
