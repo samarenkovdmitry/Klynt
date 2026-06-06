@@ -641,7 +641,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
 
     json.copy = json.copy.map((item: any) => normalizePriorityItem(item));
 
-    let headlineDirections = normalizeHeadlineDirections(json.headline_directions);
+    let headlineDirections = normalizeHeadlineDirections(json.headline_directions, brandStage);
 
     if (headlineDirections && !headlineDirections.gap) {
       const gap = resolveHeadlineBeforeGap(headlineDirections, json.copy);

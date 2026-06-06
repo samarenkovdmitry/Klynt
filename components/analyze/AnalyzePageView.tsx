@@ -315,6 +315,13 @@ export function AnalyzePageView() {
 
                   <p className="mt-3 text-[13px] leading-5 text-[#8E99A2]">
                     Klynt captures the page and analyzes layout, copy, and conversion flow.
+                    <span className="mx-1.5 text-neutral-300">·</span>
+                    Brand{" "}
+                    <AnalyzeBrandStagePanel
+                      value={brandStage}
+                      onChange={setBrandStage}
+                      disabled={loading}
+                    />
                   </p>
                 </div>
               ) : (
@@ -375,15 +382,20 @@ export function AnalyzePageView() {
                     onChange={handleImageUpload}
                     disabled={loading}
                   />
+
+                  <p className="mt-3 text-[13px] leading-5 text-[#8E99A2]">
+                    Same UX report as URL analysis.
+                    <span className="mx-1.5 text-neutral-300">·</span>
+                    Brand{" "}
+                    <AnalyzeBrandStagePanel
+                      value={brandStage}
+                      onChange={setBrandStage}
+                      disabled={loading}
+                    />
+                  </p>
                 </div>
               )}
             </div>
-
-            <AnalyzeBrandStagePanel
-              value={brandStage}
-              onChange={setBrandStage}
-              disabled={loading}
-            />
 
             {error && errorKind && (
               <div className="mt-4">

@@ -18,6 +18,8 @@ import {
 } from "@/lib/report-priority";
 import { REPORT_CARD_TITLE_CLASS } from "@/components/report/reportStyles";
 
+const META_LINE_CLASS = "text-[13px] leading-5 text-[#8E99A2]";
+
 type ReportHeadlineDirectionsCardProps = {
   directions: HeadlineDirections;
   beforeGap?: string;
@@ -72,7 +74,7 @@ export function ReportHeadlineDirectionsCard({
           <div className="min-w-0">
             <p className={REPORT_CARD_TITLE_CLASS}>Hero headline</p>
             {brandStage ? (
-              <p className="mt-1 text-[13px] text-[#8E99A2]">
+              <p className={`${META_LINE_CLASS} mt-1`}>
                 {getBrandStageLabel(brandStage)} brand · 3 directions
               </p>
             ) : null}
@@ -83,15 +85,15 @@ export function ReportHeadlineDirectionsCard({
               <button
                 type="button"
                 onClick={() => setShowContext((open) => !open)}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-[#8E99A2] transition hover:bg-[#F5F7FA] hover:text-[var(--ink-primary)]"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(6,28,47,0.08)] text-[#8E99A2] transition hover:border-[#8E99A2] hover:text-[var(--ink-primary)]"
                 aria-label="Why these directions"
                 aria-expanded={showContext}
               >
-                <RiInformationLine size={15} aria-hidden />
+                <RiInformationLine size={16} aria-hidden />
               </button>
 
               {showContext ? (
-                <div className="absolute right-0 top-[calc(100%+6px)] z-10 w-[min(260px,calc(100vw-48px))] rounded-[12px] border border-[rgba(6,28,47,0.08)] bg-white p-2.5 text-[12px] leading-5 text-[#6B7280] shadow-[0_8px_24px_rgba(6,28,47,0.08)]">
+                <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-[min(260px,calc(100vw-48px))] rounded-[12px] border border-[rgba(6,28,47,0.08)] bg-white p-2.5 text-[12px] leading-5 text-[#6B7280] shadow-[0_8px_24px_rgba(6,28,47,0.08)]">
                   {directions.context}
                 </div>
               ) : null}
@@ -99,23 +101,27 @@ export function ReportHeadlineDirectionsCard({
           ) : null}
         </div>
 
-        {before ? (
-          <div className="mt-4">
-            <p className="text-[14px] leading-6 text-neutral-600">
-              <span className="font-medium uppercase tracking-[0.08em] text-[11px] text-neutral-400">
-                Before
-              </span>
-              <span className="mx-2 text-neutral-300">·</span>
-              {before}
-            </p>
+        {before || gap ? (
+          <div className="mt-3 space-y-1">
+            {before ? (
+              <p className={META_LINE_CLASS}>
+                <span>Current</span>
+                <span className="mx-1.5 text-neutral-300">·</span>
+                <span className="text-neutral-600">{before}</span>
+              </p>
+            ) : null}
             {gap ? (
-              <p className="mt-1.5 text-[13px] leading-5 text-[#8E99A2]">{gap}</p>
+              <p className={META_LINE_CLASS}>
+                <span>Issue</span>
+                <span className="mx-1.5 text-neutral-300">·</span>
+                {gap}
+              </p>
             ) : null}
           </div>
         ) : null}
 
         <div
-          className="mt-4 flex gap-4 overflow-x-auto border-b border-neutral-200 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-4 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="tablist"
           aria-label="Headline direction"
         >
@@ -130,10 +136,10 @@ export function ReportHeadlineDirectionsCard({
                 aria-selected={isActive}
                 onClick={() => setActiveIndex(index)}
                 className={[
-                  "-mb-px shrink-0 border-b-2 pb-2 text-[12px] font-medium transition",
+                  "shrink-0 rounded-full px-2.5 py-1 text-[12px] font-medium transition",
                   isActive
-                    ? "border-[var(--ink-primary)] text-[var(--ink-primary)]"
-                    : "border-transparent text-[#8E99A2] hover:text-neutral-600",
+                    ? "border border-neutral-300 bg-neutral-100 text-[var(--ink-primary)]"
+                    : "border border-transparent text-[#8E99A2] hover:bg-neutral-50 hover:text-neutral-600",
                 ].join(" ")}
               >
                 {option.label}

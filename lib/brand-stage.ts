@@ -75,6 +75,39 @@ export function isHeroHeadlineCopySection(section?: string) {
   return value.includes("headline") || value.includes("hero h1");
 }
 
+export const HEADLINE_STRATEGY_LABELS: Record<BrandStage, [string, string, string]> = {
+  just_launched: ["Category + audience", "Problem + solution", "Outcome + audience"],
+  growing: ["Category + niche", "Differentiated outcome", "Problem-led"],
+  established: ["Bold / brand-led", "Outcome-led", "Positioning-led"],
+};
+
+function isGenericHeadlineOptionLabel(label: string) {
+  const trimmed = label.trim();
+
+  if (!trimmed || trimmed === "Option") {
+    return true;
+  }
+
+  return /^option\s*[a-c]$/i.test(trimmed);
+}
+
+export function normalizeHeadlineOptionLabel(
+  label: string,
+  index: number,
+  stage: BrandStage
+): string {
+  const defaults = HEADLINE_STRATEGY_LABELS[stage];
+  const trimmed = label.trim();
+  const strippedPrefix = trimmed.replace(/^option\s*[a-c]\s*[—–-]\s*/i, "").trim();
+  const candidate = strippedPrefix || trimmed;
+
+  if (!candidate || isGenericHeadlineOptionLabel(candidate)) {
+    return defaults[index] ?? `Direction ${index + 1}`;
+  }
+
+  return candidate;
+}
+
 export function buildBrandStagePromptBlock(stage: BrandStage) {
   const sharedRules = `
 headline_directions: REQUIRED object for the visible hero headline (H1 or largest promise line above the fold).
@@ -82,7 +115,7 @@ headline_directions: REQUIRED object for the visible hero headline (H1 or larges
 - gap: one sentence (max 24 words) on what is weak about the current headline for visitors — not brand-stage context.
 - context: 1-2 sentences (max 32 words) explaining why these strategies fit this brand stage.
 - options: exactly 3 items. Each MUST use a different sentence structure and strategic angle — never paraphrase the same idea.
-- options[].label: short strategy name (use the exact labels listed below).
+- options[].label: MUST be the exact strategy name from the list below — never "Option A", "Option B", or "Option C".
 - options[].text: proposed headline (max 16 words).
 - Tone for every options[].text: punchy, confident, specific, memorable. NOT fluffy, sentimental, soft, or corporate.
 - Prefer short declarative sentences. Ban filler phrases like "actually", "everything you need", "designed to", "platform your team".
@@ -132,7 +165,8 @@ export function buildHeadlineDirectionsSchemaSnippet() {
 }
 
 export function normalizeHeadlineDirections(
-  value: unknown
+  value: unknown,
+  stage: BrandStage = DEFAULT_BRAND_STAGE
 ): HeadlineDirections | undefined {
   if (!value || typeof value !== "object") {
     return undefined;
@@ -141,7 +175,7 @@ export function normalizeHeadlineDirections(
   const raw = value as Record<string, unknown>;
   const options = Array.isArray(raw.options) ? raw.options : [];
   const normalizedOptions = options
-    .map((option) => {
+    .map((option, index) => {
       if (!option || typeof option !== "object") {
         return null;
       }
@@ -155,7 +189,7 @@ export function normalizeHeadlineDirections(
       }
 
       return {
-        label: label || "Option",
+        label: normalizeHeadlineOptionLabel(label, index, stage),
         text,
       };
     })
