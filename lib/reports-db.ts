@@ -1,5 +1,6 @@
 import type { AuditReport } from "@/lib/audit-report";
 import { isAuditReport } from "@/lib/audit-report";
+import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { isValidReportId } from "@/lib/report-id";
 import { createServerSupabase, isSupabaseConfigured } from "@/lib/supabase-server";
 
@@ -54,4 +55,24 @@ export async function loadReportFromDb(
   }
 
   return data.payload;
+}
+
+export async function getAuditedPagesCount(): Promise<number | null> {
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
+
+  const supabase = createServerSupabase();
+
+  const { count, error } = await supabase
+    .from("reports")
+    .select("id", { count: "exact", head: true })
+    .neq("id", DEMO_REPORT_ID);
+
+  if (error) {
+    console.error("[reports] Failed to count audited pages:", error.message);
+    return null;
+  }
+
+  return count ?? 0;
 }

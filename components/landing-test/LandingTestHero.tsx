@@ -6,6 +6,7 @@ import {
 } from "@remixicon/react";
 
 import { Button } from "@/components/ui/Button";
+import { formatAuditedPagesLabel } from "@/lib/audit-stats";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 import { LandingTestHeader } from "./LandingTestHeader";
@@ -22,7 +23,15 @@ const OUTCOMES = [
 const HERO_BUTTON_CLASS =
   "!h-[52px] !min-h-[52px] !rounded-full !px-7 !text-[15px] !font-semibold";
 
-export function LandingTestHero() {
+type LandingTestHeroProps = {
+  auditedCount?: number | null;
+};
+
+export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
+  const showAuditedCount =
+    typeof auditedCount === "number" && auditedCount > 0
+      ? formatAuditedPagesLabel(auditedCount)
+      : null;
   return (
     <section className="relative overflow-hidden">
       <LandingTestHeader />
@@ -71,6 +80,12 @@ export function LandingTestHero() {
                 View sample report
               </Button>
             </div>
+
+            {showAuditedCount ? (
+              <p className="mt-3 text-center text-[13px] text-white/45 md:text-[14px] lg:text-left">
+                {showAuditedCount}
+              </p>
+            ) : null}
           </div>
 
           <div className="relative lg:pt-2">
