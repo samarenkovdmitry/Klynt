@@ -379,17 +379,17 @@ export function AnalyzePageView() {
               )}
             </div>
 
-            {error && errorKind && (
-              <div className="mt-4">
-                <AnalyzeErrorAlert errorKind={errorKind} error={error} />
-              </div>
-            )}
-
             <AnalyzeBrandStagePanel
               value={brandStage}
               onChange={setBrandStage}
               disabled={loading}
             />
+
+            {error && errorKind && (
+              <div className="mt-4">
+                <AnalyzeErrorAlert errorKind={errorKind} error={error} />
+              </div>
+            )}
 
             <div className="mt-5 border-t border-[rgba(6,28,47,0.06)] pt-5">
               <AnalyzeFormActions

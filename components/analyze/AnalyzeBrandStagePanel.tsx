@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { RiArrowDownSLine, RiArrowUpSLine } from "@remixicon/react";
+import { useEffect, useId, useRef, useState } from "react";
+import { RiArrowDownSLine } from "@remixicon/react";
 
 import {
   BRAND_STAGE_OPTIONS,
+  getBrandStageLabel,
   type BrandStage,
 } from "@/lib/brand-stage";
 
@@ -19,83 +20,109 @@ export function AnalyzeBrandStagePanel({
   onChange,
   disabled = false,
 }: AnalyzeBrandStagePanelProps) {
-  const [expanded, setExpanded] = useState(false);
-  const selected = BRAND_STAGE_OPTIONS.find((option) => option.id === value);
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const listboxId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
+
+  function selectStage(stage: BrandStage) {
+    onChange(stage);
+    setOpen(false);
+  }
 
   return (
-    <div className="mt-5 border-t border-[rgba(6,28,47,0.06)] pt-5">
-      <button
-        type="button"
-        onClick={() => setExpanded((open) => !open)}
-        disabled={disabled}
-        aria-expanded={expanded}
-        className={[
-          "flex w-full items-center justify-between gap-3 rounded-[16px] px-1 py-1 text-left transition",
-          disabled ? "cursor-not-allowed opacity-60" : "hover:opacity-80",
-        ].join(" ")}
-      >
-        <span>
-          <span className="block text-[14px] font-medium text-[var(--ink-primary)]">
-            Tailor your report
-            <span className="ml-1.5 font-normal text-[#8E99A2]">(optional)</span>
-          </span>
-          {!expanded && selected ? (
-            <span className="mt-1 block text-[13px] text-[#8E99A2]">
-              Brand stage: {selected.label}
-            </span>
-          ) : null}
-        </span>
-        {expanded ? (
-          <RiArrowUpSLine size={18} className="shrink-0 text-[#8E99A2]" aria-hidden />
-        ) : (
-          <RiArrowDownSLine size={18} className="shrink-0 text-[#8E99A2]" aria-hidden />
-        )}
-      </button>
+    <div ref={rootRef} className="mt-4">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] leading-5">
+        <span className="text-[#8E99A2]">How established is your brand?</span>
 
-      {expanded ? (
-        <div className="mt-4">
-          <p className="text-[13px] font-medium text-[var(--ink-primary)]">
-            How established is your brand?
-          </p>
-          <p className="mt-1 text-[13px] leading-5 text-[#8E99A2]">
-            Shapes headline directions in your report — three strategies, not one rewrite.
-          </p>
-
-          <div
-            className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap"
-            role="radiogroup"
-            aria-label="Brand stage"
+        <div className="relative">
+          <button
+            type="button"
+            disabled={disabled}
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            aria-controls={listboxId}
+            onClick={() => setOpen((current) => !current)}
+            className={[
+              "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[13px] font-medium transition",
+              open
+                ? "border-[#2563EB] bg-[rgba(37,99,235,0.08)] text-[#2563EB]"
+                : "border-[rgba(6,28,47,0.10)] bg-white text-[var(--ink-primary)] hover:border-[#8E99A2]",
+              disabled ? "cursor-not-allowed opacity-60" : "",
+            ].join(" ")}
           >
-            {BRAND_STAGE_OPTIONS.map((option) => {
-              const isActive = value === option.id;
+            {getBrandStageLabel(value)}
+            <RiArrowDownSLine size={16} aria-hidden />
+          </button>
 
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={isActive}
-                  disabled={disabled}
-                  onClick={() => onChange(option.id)}
-                  className={[
-                    "rounded-full border px-4 py-2 text-left text-[13px] font-medium transition sm:text-[14px]",
-                    isActive
-                      ? "border-[#2563EB] bg-[rgba(37,99,235,0.08)] text-[#2563EB]"
-                      : "border-[rgba(6,28,47,0.10)] bg-white text-[var(--ink-primary)] hover:border-[#8E99A2]",
-                    disabled ? "cursor-not-allowed opacity-60" : "",
-                  ].join(" ")}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
+          {open ? (
+            <ul
+              id={listboxId}
+              role="listbox"
+              aria-label="Brand stage"
+              className="absolute left-0 top-[calc(100%+6px)] z-20 min-w-[220px] overflow-hidden rounded-[16px] border border-[rgba(6,28,47,0.08)] bg-white p-1.5 shadow-[0_12px_32px_rgba(6,28,47,0.10)]"
+            >
+              {BRAND_STAGE_OPTIONS.map((option) => {
+                const isActive = value === option.id;
 
-          {selected ? (
-            <p className="mt-3 text-[13px] leading-5 text-[#8E99A2]">{selected.shortLabel}</p>
+                return (
+                  <li key={option.id} role="presentation">
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={isActive}
+                      onClick={() => selectStage(option.id)}
+                      className={[
+                        "flex w-full flex-col rounded-[12px] px-3 py-2 text-left transition",
+                        isActive
+                          ? "bg-[rgba(37,99,235,0.08)] text-[#2563EB]"
+                          : "text-[var(--ink-primary)] hover:bg-[#F5F7FA]",
+                      ].join(" ")}
+                    >
+                      <span className="text-[13px] font-medium">{option.label}</span>
+                      <span
+                        className={[
+                          "mt-0.5 text-[12px] leading-4",
+                          isActive ? "text-[#2563EB]/80" : "text-[#8E99A2]",
+                        ].join(" ")}
+                      >
+                        {option.shortLabel}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           ) : null}
         </div>
-      ) : null}
+      </div>
+
+      <p className="mt-1.5 text-[12px] leading-4 text-[#8E99A2]">
+        Optional · shapes headline directions in your report
+      </p>
     </div>
   );
 }

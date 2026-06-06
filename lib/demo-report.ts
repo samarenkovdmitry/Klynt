@@ -106,16 +106,16 @@ export const DEMO_REPORT = {
       "Zapier is widely known — visitors already understand the category. Headlines can lean into emotion and outcomes instead of re-explaining automation.",
     options: [
       {
-        label: "Emotional / brand-led",
-        text: "The AI workspace your team actually wants to use.",
+        label: "Bold / brand-led",
+        text: "Your rules. Every model. One AI workspace.",
       },
       {
         label: "Outcome-led",
-        text: "Less tool chaos. More confident AI workflows for every team.",
+        text: "Ship AI workflows faster — without the tool chaos.",
       },
       {
-        label: "Authority-led",
-        text: "The automation platform teams trust to connect every app and model.",
+        label: "Proof-led",
+        text: "The automation layer teams rely on to connect every app.",
       },
     ],
   },

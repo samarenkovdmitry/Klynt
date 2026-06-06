@@ -154,7 +154,7 @@ function PrintHeadlineDirectionsCard({
   return (
     <article className="report-print-card">
       <p className="report-print-label" style={{ margin: "0 0 10px", fontSize: 12 }}>
-        Hero headline directions
+        Hero headline
         {brandStage ? ` · ${getBrandStageLabel(brandStage)}` : ""}
       </p>
       {directions.context ? (
