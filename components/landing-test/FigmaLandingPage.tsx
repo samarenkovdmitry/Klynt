@@ -5,7 +5,11 @@ import { LandingTestHowItWorks } from "@/components/landing-test/LandingTestHowI
 import { LandingTestReportScope } from "@/components/landing-test/LandingTestReportScope";
 import { LANDING_DARK } from "@/components/landing-test/landingPageStyles";
 
-export function FigmaLandingPage() {
+type FigmaLandingPageProps = {
+  auditedCount?: number | null;
+};
+
+export function FigmaLandingPage({ auditedCount = null }: FigmaLandingPageProps) {
   return (
     <main
       className="relative overflow-hidden text-white"
@@ -13,7 +17,7 @@ export function FigmaLandingPage() {
     >
       <LandingPageAtmosphere />
       <div className="relative z-[1]">
-        <LandingTestHero />
+        <LandingTestHero auditedCount={auditedCount} />
         <LandingTestHowItWorks />
         <LandingTestReportScope />
         <LandingTestCtaSection />
