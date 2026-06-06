@@ -3,6 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import type { BrandStage, HeadlineDirections } from "@/lib/audit-report";
+import {
+  DEFAULT_BRAND_STAGE,
+  readStoredBrandStage,
+  writeStoredBrandStage,
+} from "@/lib/brand-stage";
 import { generateReportId } from "@/lib/report-id";
 import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
 import { ANALYZE_FALLBACK_ERROR } from "@/lib/api-errors";
@@ -47,6 +53,8 @@ type AuditResponseFlat = {
   confidence: number;
   previewImage?: string;
   ogPreviewImage?: string;
+  brand_stage?: BrandStage;
+  headline_directions?: HeadlineDirections;
   metric_observations?: {
     trust?: string;
     clarity?: string;
@@ -156,6 +164,11 @@ export function useAnalyzePage() {
   const [progress, setProgress] = useState(0);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [inputMode, setInputMode] = useState<AnalyzeInputMode>("url");
+  const [brandStage, setBrandStage] = useState<BrandStage>(DEFAULT_BRAND_STAGE);
+
+  useEffect(() => {
+    setBrandStage(readStoredBrandStage());
+  }, []);
 
   useEffect(() => {
     const prefill = searchParams.get("url")?.trim();
@@ -257,6 +270,8 @@ export function useAnalyzePage() {
         form.append("screenshot", uploadedImage);
       }
 
+      form.append("brandStage", brandStage);
+
       const res = await fetch("/api/analyze", {
         method: "POST",
         body: form,
@@ -317,6 +332,8 @@ export function useAnalyzePage() {
         ogPreviewImage:
           typeof json.ogPreviewImage === "string" ? json.ogPreviewImage : undefined,
         metric_observations: json.metric_observations,
+        brand_stage: json.brand_stage ?? brandStage,
+        headline_directions: json.headline_directions,
         issues: json.issues ?? [],
         suggestions: json.suggestions ?? [],
         copy: json.copy ?? [],
@@ -368,6 +385,11 @@ export function useAnalyzePage() {
     }
   }
 
+  function handleBrandStageChange(stage: BrandStage) {
+    setBrandStage(stage);
+    writeStoredBrandStage(stage);
+  }
+
   return {
     fileInputRef,
     url,
@@ -383,6 +405,8 @@ export function useAnalyzePage() {
     progress,
     inputMode,
     setInputMode,
+    brandStage,
+    setBrandStage: handleBrandStageChange,
     showUrlError,
     urlValidationError,
     isButtonDisabled,

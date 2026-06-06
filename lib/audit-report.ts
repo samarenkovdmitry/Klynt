@@ -39,6 +39,21 @@ export type ReportCopyItem = {
   priority?: ReportPriority;
 };
 
+export type HeadlineDirectionOption = {
+  label: string;
+  text: string;
+};
+
+export type HeadlineDirections = {
+  before?: string;
+  /** Short note on what is weak about the current headline (max ~24 words). */
+  gap?: string;
+  context?: string;
+  options: HeadlineDirectionOption[];
+};
+
+export type BrandStage = "just_launched" | "growing" | "established";
+
 export type ReportBreakdown = {
   clarity?: number;
   trust?: number;
@@ -76,6 +91,8 @@ export type AuditReport = {
   issues: ReportIssue[];
   suggestions?: ReportSuggestion[];
   copy?: ReportCopyItem[];
+  brand_stage?: BrandStage;
+  headline_directions?: HeadlineDirections;
   error?: string;
 };
 

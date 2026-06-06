@@ -1,5 +1,8 @@
 import { RiCheckLine, RiFileCopyLine, RiLock2Line } from "@remixicon/react";
-import type { ReportCopyItem } from "@/lib/audit-report";
+import type { HeadlineDirections, ReportCopyItem } from "@/lib/audit-report";
+import type { BrandStage } from "@/lib/brand-stage";
+import { isHeroHeadlineCopySection } from "@/lib/brand-stage";
+import { ReportHeadlineDirectionsCard } from "@/components/report/ReportHeadlineDirectionsCard";
 import { PriorityBadgeFromImpact } from "@/components/report/ImpactBadges";
 import {
   IMPROVED_COPY_BUTTON_CLASS,
@@ -19,8 +22,12 @@ import {
 import { REPORT_SECTION_ANCHORS } from "@/lib/report-sections";
 import { ReportIndexBadge } from "@/components/report/ReportIndexBadge";
 
+const HEADLINE_DIRECTIONS_COPY_INDEX_OFFSET = 100;
+
 type ReportCopySectionProps = {
   copy?: ReportCopyItem[];
+  headlineDirections?: HeadlineDirections;
+  brandStage?: BrandStage;
   copiedIndex: number | null;
   onCopy: (text: string, index: number) => void;
   waitlistActive?: boolean;
@@ -146,27 +153,52 @@ function CopyCard({
 
 export function ReportCopySection({
   copy = [],
+  headlineDirections,
+  brandStage,
   copiedIndex,
   onCopy,
   waitlistActive = false,
 }: ReportCopySectionProps) {
-  if (copy.length === 0) return null;
+  const hasHeadlineDirections =
+    Boolean(headlineDirections?.options?.length) &&
+    headlineDirections!.options.length > 0;
 
-  const visibleCopy = waitlistActive ? copy.slice(0, 1) : copy;
+  const supportingCopy = hasHeadlineDirections
+    ? copy.filter((item) => !isHeroHeadlineCopySection(item.section))
+    : copy;
+
+  if (!hasHeadlineDirections && supportingCopy.length === 0) {
+    return null;
+  }
+
+  const visibleCopy = waitlistActive ? supportingCopy.slice(0, 1) : supportingCopy;
+  const sectionCount =
+    (hasHeadlineDirections ? 1 : 0) + (waitlistActive ? Math.min(1, supportingCopy.length) : supportingCopy.length);
 
   return (
     <section
       id={REPORT_SECTION_ANCHORS.copy}
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
-      <ReportSectionHeader variant="copy" count={copy.length} />
+      <ReportSectionHeader variant="copy" count={sectionCount} />
 
       <div className="mt-6 space-y-4">
+        {hasHeadlineDirections && headlineDirections ? (
+          <ReportHeadlineDirectionsCard
+            directions={headlineDirections}
+            brandStage={brandStage}
+            copiedIndex={copiedIndex}
+            copyIndexOffset={HEADLINE_DIRECTIONS_COPY_INDEX_OFFSET}
+            onCopy={onCopy}
+            copyLocked={waitlistActive}
+          />
+        ) : null}
+
         {visibleCopy.map((item, index) => (
           <CopyCard
-            key={index}
+            key={`${item.section ?? "copy"}-${index}`}
             item={item}
-            index={index}
+            index={hasHeadlineDirections ? index + 1 : index}
             copiedIndex={copiedIndex}
             onCopy={onCopy}
             copyLocked={waitlistActive}

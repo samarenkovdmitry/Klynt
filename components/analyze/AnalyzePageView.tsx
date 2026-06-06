@@ -18,6 +18,7 @@ import {
   type AnalyzeErrorKind,
   type AnalyzeInputMode,
 } from "@/hooks/useAnalyzePage";
+import { AnalyzeBrandStagePanel } from "@/components/analyze/AnalyzeBrandStagePanel";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
@@ -211,6 +212,8 @@ export function AnalyzePageView() {
     handleUrlKeyDown,
     openFilePicker,
     switchToScreenshotUpload,
+    brandStage,
+    setBrandStage,
   } = useAnalyzePage();
 
   return (
@@ -297,7 +300,7 @@ export function AnalyzePageView() {
                         type="button"
                         onClick={clearUrl}
                         aria-label="Clear URL"
-                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
+                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
                       >
                         <RiCloseLine size={18} aria-hidden />
                       </button>
@@ -310,9 +313,11 @@ export function AnalyzePageView() {
                     </p>
                   )}
 
-                  <p className="mt-3 text-[13px] leading-5 text-[#8E99A2]">
-                    Klynt captures the page and analyzes layout, copy, and conversion flow.
-                  </p>
+                  <AnalyzeBrandStagePanel
+                    value={brandStage}
+                    onChange={setBrandStage}
+                    disabled={loading}
+                  />
                 </div>
               ) : (
                 <div role="tabpanel" aria-label="Screenshot upload">
@@ -370,6 +375,12 @@ export function AnalyzePageView() {
                     className="hidden"
                     accept="image/*"
                     onChange={handleImageUpload}
+                    disabled={loading}
+                  />
+
+                  <AnalyzeBrandStagePanel
+                    value={brandStage}
+                    onChange={setBrandStage}
                     disabled={loading}
                   />
                 </div>

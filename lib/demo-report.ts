@@ -99,6 +99,27 @@ export const DEMO_REPORT = {
       priority: "medium_impact",
     },
   ],
+  brand_stage: "established",
+  headline_directions: {
+    before: "Your tools. Your rules. Any AI.",
+    gap: "The line sounds catchy but never says who it's for or what changes for them.",
+    context:
+      "Zapier is widely known — visitors already understand the category. Headlines can lean into bold claims and outcomes instead of re-explaining automation.",
+    options: [
+      {
+        label: "Bold / brand-led",
+        text: "Your rules. Every model. One AI workspace.",
+      },
+      {
+        label: "Outcome-led",
+        text: "Ship AI workflows faster — without the tool chaos.",
+      },
+      {
+        label: "Positioning-led",
+        text: "Stop duct-taping models across a dozen disconnected tools.",
+      },
+    ],
+  },
   copy: [
     {
       section: "Hero headline",
