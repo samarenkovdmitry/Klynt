@@ -99,6 +99,26 @@ export const DEMO_REPORT = {
       priority: "medium_impact",
     },
   ],
+  brand_stage: "established",
+  headline_directions: {
+    before: "Your tools. Your rules. Any AI.",
+    context:
+      "Zapier is widely known — visitors already understand the category. Headlines can lean into emotion and outcomes instead of re-explaining automation.",
+    options: [
+      {
+        label: "Emotional / brand-led",
+        text: "The AI workspace your team actually wants to use.",
+      },
+      {
+        label: "Outcome-led",
+        text: "Less tool chaos. More confident AI workflows for every team.",
+      },
+      {
+        label: "Authority-led",
+        text: "The automation platform teams trust to connect every app and model.",
+      },
+    ],
+  },
   copy: [
     {
       section: "Hero headline",

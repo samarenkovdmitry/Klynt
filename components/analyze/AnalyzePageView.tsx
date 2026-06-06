@@ -18,6 +18,7 @@ import {
   type AnalyzeErrorKind,
   type AnalyzeInputMode,
 } from "@/hooks/useAnalyzePage";
+import { AnalyzeBrandStagePanel } from "@/components/analyze/AnalyzeBrandStagePanel";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
@@ -211,6 +212,8 @@ export function AnalyzePageView() {
     handleUrlKeyDown,
     openFilePicker,
     switchToScreenshotUpload,
+    brandStage,
+    setBrandStage,
   } = useAnalyzePage();
 
   return (
@@ -381,6 +384,12 @@ export function AnalyzePageView() {
                 <AnalyzeErrorAlert errorKind={errorKind} error={error} />
               </div>
             )}
+
+            <AnalyzeBrandStagePanel
+              value={brandStage}
+              onChange={setBrandStage}
+              disabled={loading}
+            />
 
             <div className="mt-5 border-t border-[rgba(6,28,47,0.06)] pt-5">
               <AnalyzeFormActions

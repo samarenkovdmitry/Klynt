@@ -17,6 +17,12 @@ import { mapIssueImpact } from "@/lib/report-impact";
 import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
 import { generateReportOgPreviewDataUrl } from "@/lib/report-opengraph-image";
+import {
+  buildBrandStagePromptBlock,
+  buildHeadlineDirectionsSchemaSnippet,
+  normalizeHeadlineDirections,
+  parseBrandStage,
+} from "@/lib/brand-stage";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
 export const runtime = "nodejs";
@@ -383,6 +389,7 @@ export async function POST(req: Request) {
 
     const rawUrl = (formData.get("url") as string) ?? "";
     const uploadedScreenshot = formData.get("screenshot") as Blob | null;
+    const brandStage = parseBrandStage(formData.get("brandStage"));
 
     if (rawUrl.trim()) {
       const urlError = validateAuditUrl(rawUrl);
@@ -444,9 +451,13 @@ export async function POST(req: Request) {
           return undefined;
         })
       : Promise.resolve(undefined);
+    const brandStagePrompt = buildBrandStagePromptBlock(brandStage);
+
     const basePrompt = `You are a senior SaaS UX auditor (clarity, conversion, positioning).
 
 Analyze ONLY what is visible in the screenshot(s). Never invent UI. No generic advice — name the actual element/section.
+
+${brandStagePrompt}
 
 Return ONLY valid JSON (no markdown):
 
@@ -458,6 +469,7 @@ Return ONLY valid JSON (no markdown):
   "verdict": "string",
   "key_observation": "string",
   "confidence": number,
+  ${buildHeadlineDirectionsSchemaSnippet()}
   "metric_observations": {
     "trust": "string",
     "clarity": "string",
@@ -555,7 +567,7 @@ if (screenshotsBase64[1]) {
     const response = await getOpenAIClient().responses.create({
       model: "gpt-4.1-nano",
       temperature: 0.2,
-      max_output_tokens: 2200,
+      max_output_tokens: 2800,
       input: [
         {
           role: "user",
@@ -628,6 +640,9 @@ json.confidence = Number.isFinite(Number(json.confidence))
 
     json.copy = json.copy.map((item: any) => normalizePriorityItem(item));
 
+    const headlineDirections = normalizeHeadlineDirections(json.headline_directions);
+    json.headline_directions = headlineDirections;
+
     Object.assign(json, normalizeReportHeroCopy(json));
 
     const normalizedScores = normalizeReportBreakdown({
@@ -662,6 +677,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
       issues: json.issues,
       suggestions: json.suggestions,
       copy: json.copy,
+      brand_stage: brandStage,
+      headline_directions: headlineDirections,
       breakdown: json.breakdown,
       generatedAt: new Date().toISOString(),
     };
@@ -695,6 +712,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
       ...json,
       reportId,
       url: auditedUrl,
+      brand_stage: brandStage,
+      headline_directions: headlineDirections,
       generatedAt: reportPayload.generatedAt,
       previewImage,
       ogPreviewImage: reportPayload.ogPreviewImage,

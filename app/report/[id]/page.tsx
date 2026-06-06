@@ -115,6 +115,8 @@ export default function ReportPage() {
                 <ReportSuggestionsSection suggestions={suggestions} />
                 <ReportCopySection
                   copy={copy}
+                  headlineDirections={data.headline_directions}
+                  brandStage={data.brand_stage}
                   copiedIndex={copiedIndex}
                   onCopy={handleCopy}
                 />

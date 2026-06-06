@@ -2,11 +2,13 @@ import Image from "next/image";
 
 import type {
   AuditReport,
+  HeadlineDirections,
   ReportCopyItem,
   ReportIssue,
   ReportPriority,
   ReportSuggestion,
 } from "@/lib/audit-report";
+import { getBrandStageLabel, isHeroHeadlineCopySection } from "@/lib/brand-stage";
 import { getImpactEntries, type ImpactEntry } from "@/lib/report-impact";
 import { getMetricObservationFallbacks } from "@/lib/metric-observations";
 import { normalizeRisk } from "@/lib/report-metrics";
@@ -142,6 +144,66 @@ function PrintSuggestionCard({ item, index }: { item: ReportSuggestion; index: n
   );
 }
 
+function PrintHeadlineDirectionsCard({
+  directions,
+  brandStage,
+}: {
+  directions: HeadlineDirections;
+  brandStage?: AuditReport["brand_stage"];
+}) {
+  return (
+    <article className="report-print-card">
+      <p className="report-print-label" style={{ margin: "0 0 10px", fontSize: 12 }}>
+        Hero headline directions
+        {brandStage ? ` · ${getBrandStageLabel(brandStage)}` : ""}
+      </p>
+      {directions.context ? (
+        <p style={{ margin: "0 0 12px", fontWeight: 500, lineHeight: 1.45 }}>
+          {directions.context}
+        </p>
+      ) : null}
+      {directions.before ? (
+        <div className="report-print-copy-block">
+          <p
+            style={{
+              margin: "0 0 6px",
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "#4a5560",
+            }}
+          >
+            Before
+          </p>
+          <p style={{ margin: 0 }}>{directions.before}</p>
+        </div>
+      ) : null}
+      {directions.options.map((option, index) => (
+        <div
+          key={`${option.label}-${index}`}
+          className="report-print-copy-block report-print-copy-block--after"
+          style={{ marginTop: 12 }}
+        >
+          <p
+            style={{
+              margin: "0 0 6px",
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "#059669",
+            }}
+          >
+            Option {String.fromCharCode(65 + index)} — {option.label}
+          </p>
+          <p style={{ margin: 0 }}>{option.text}</p>
+        </div>
+      ))}
+    </article>
+  );
+}
+
 function PrintCopyCard({ item, index }: { item: ReportCopyItem; index: number }) {
   const priority = item.priority ? PRIORITY_LABELS[item.priority] : "Medium Impact";
 
@@ -207,7 +269,13 @@ export function ReportPrintDocument({ data, reportId }: ReportPrintDocumentProps
 
   const issues = data.issues ?? [];
   const suggestions = sortByPriority(data.suggestions ?? []);
-  const copy = sortByPriority(data.copy ?? []);
+  const headlineDirections = data.headline_directions;
+  const hasHeadlineDirections = Boolean(headlineDirections?.options?.length);
+  const copy = sortByPriority(
+    hasHeadlineDirections
+      ? (data.copy ?? []).filter((item) => !isHeroHeadlineCopySection(item.section))
+      : (data.copy ?? [])
+  );
   const showPreview = shouldShowPreview(data.previewImage);
 
   const observationRows = [
@@ -446,9 +514,15 @@ export function ReportPrintDocument({ data, reportId }: ReportPrintDocumentProps
           </section>
         ) : null}
 
-        {copy.length > 0 ? (
+        {hasHeadlineDirections || copy.length > 0 ? (
           <section className="report-print-section">
             <h2 className="report-print-section-title">Copy improvements</h2>
+            {hasHeadlineDirections && headlineDirections ? (
+              <PrintHeadlineDirectionsCard
+                directions={headlineDirections}
+                brandStage={data.brand_stage}
+              />
+            ) : null}
             {copy.map((item, index) => (
               <PrintCopyCard key={index} item={item} index={index} />
             ))}
