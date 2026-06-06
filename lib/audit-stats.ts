@@ -4,12 +4,14 @@ import { getAuditedPagesCount } from "@/lib/reports-db";
 
 export const AUDITED_PAGES_COUNT_REVALIDATE_SECONDS = 600;
 
-export function formatAuditedPagesLabel(count: number) {
-  const formatted = count.toLocaleString("en-US");
-
-  return count === 1
-    ? "1 landing page audited"
-    : `${formatted} landing pages audited`;
+export function getAuditedPagesCaption(count: number) {
+  return {
+    value: count.toLocaleString("en-US"),
+    suffix:
+      count === 1
+        ? "landing page audited so far"
+        : "landing pages audited so far",
+  };
 }
 
 export const getCachedAuditedPagesCount = unstable_cache(

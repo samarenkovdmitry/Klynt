@@ -6,9 +6,9 @@ import {
 } from "@remixicon/react";
 
 import { Button } from "@/components/ui/Button";
-import { formatAuditedPagesLabel } from "@/lib/audit-stats";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
+import { AuditedPagesBadge } from "./AuditedPagesBadge";
 import { LandingTestHeader } from "./LandingTestHeader";
 import { LandingTestMockup } from "./LandingTestMockup";
 import { ProductHuntFeaturedBadge } from "./ProductHuntFeaturedBadge";
@@ -28,10 +28,8 @@ type LandingTestHeroProps = {
 };
 
 export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
-  const showAuditedCount =
-    typeof auditedCount === "number" && auditedCount > 0
-      ? formatAuditedPagesLabel(auditedCount)
-      : null;
+  const hasAuditedCount = typeof auditedCount === "number" && auditedCount > 0;
+
   return (
     <section className="relative overflow-hidden">
       <LandingTestHeader />
@@ -81,10 +79,10 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
               </Button>
             </div>
 
-            {showAuditedCount ? (
-              <p className="mt-3 text-center text-[13px] text-white/45 md:text-[14px] lg:text-left">
-                {showAuditedCount}
-              </p>
+            {hasAuditedCount ? (
+              <div className="mt-4 flex justify-center lg:justify-start">
+                <AuditedPagesBadge count={auditedCount} />
+              </div>
             ) : null}
           </div>
 
