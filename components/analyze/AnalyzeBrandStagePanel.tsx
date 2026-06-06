@@ -54,64 +54,81 @@ export function AnalyzeBrandStagePanel({
   }
 
   return (
-    <span ref={rootRef} className="relative inline-flex items-center">
-      <button
-        type="button"
-        disabled={disabled}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={listboxId}
-        aria-label={`Brand stage: ${getBrandStageLabel(value)}`}
-        onClick={() => setOpen((current) => !current)}
-        className={[
-          "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[13px] font-medium transition",
-          open
-            ? "border-[rgba(6,28,47,0.14)] bg-[#F5F7FA] text-[var(--ink-primary)]"
-            : "border-[rgba(6,28,47,0.10)] bg-white text-[var(--ink-primary)] hover:border-[rgba(6,28,47,0.14)]",
-          disabled ? "cursor-not-allowed opacity-60" : "",
-        ].join(" ")}
-      >
-        {getBrandStageLabel(value)}
-        <RiArrowDownSLine size={15} className="text-[#8E99A2]" aria-hidden />
-      </button>
+    <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[13px] leading-5">
+      <span className="text-[#8E99A2]">How established is your brand?</span>
 
-      {open ? (
-        <ul
-          id={listboxId}
-          role="listbox"
-          aria-label="How established is your brand?"
-          className="absolute right-0 top-[calc(100%+6px)] z-20 min-w-[200px] overflow-hidden rounded-[12px] border border-[rgba(6,28,47,0.08)] bg-white p-1 shadow-[0_8px_24px_rgba(6,28,47,0.08)]"
+      <span ref={rootRef} className="relative inline-flex items-center">
+        <button
+          type="button"
+          disabled={disabled}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={listboxId}
+          aria-label={`Brand stage: ${getBrandStageLabel(value)}`}
+          onClick={() => setOpen((current) => !current)}
+          className={[
+            "inline-flex items-center gap-0.5 font-semibold text-[var(--ink-primary)] transition",
+            disabled ? "cursor-not-allowed opacity-60" : "hover:opacity-80",
+          ].join(" ")}
         >
-          <li className="px-2.5 pb-1 pt-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-[#8E99A2]">
-            How established is your brand?
-          </li>
-          {BRAND_STAGE_OPTIONS.map((option) => {
-            const isActive = value === option.id;
+          {getBrandStageLabel(value)}
+          <RiArrowDownSLine size={16} className="text-[var(--ink-primary)]" aria-hidden />
+        </button>
 
-            return (
-              <li key={option.id} role="presentation">
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={isActive}
-                  onClick={() => selectStage(option.id)}
-                  className={[
-                    "flex w-full flex-col rounded-[8px] px-2.5 py-1.5 text-left transition",
-                    isActive
-                      ? "bg-[#F5F7FA] text-[var(--ink-primary)]"
-                      : "text-[var(--ink-primary)] hover:bg-[#F5F7FA]",
-                  ].join(" ")}
-                >
-                  <span className="text-[13px] font-medium">{option.label}</span>
-                  <span className="mt-0.5 text-[11px] leading-4 text-[#8E99A2]">
-                    {option.shortLabel}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-    </span>
+        {open ? (
+          <ul
+            id={listboxId}
+            role="listbox"
+            aria-label="How established is your brand?"
+            className="absolute left-0 top-[calc(100%+8px)] z-20 min-w-[240px] overflow-hidden rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-white p-1.5 shadow-[0_12px_32px_rgba(6,28,47,0.10)]"
+          >
+            {BRAND_STAGE_OPTIONS.map((option) => {
+              const isActive = value === option.id;
+
+              return (
+                <li key={option.id} role="presentation">
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={isActive}
+                    onClick={() => selectStage(option.id)}
+                    className={[
+                      "flex w-full flex-col rounded-[12px] px-3 py-2 text-left transition",
+                      isActive
+                        ? "bg-[rgba(37,99,235,0.08)]"
+                        : "hover:bg-[#F5F7FA]",
+                    ].join(" ")}
+                  >
+                    <span
+                      className={[
+                        "text-[14px] font-semibold",
+                        isActive ? "text-[#2563EB]" : "text-[var(--ink-primary)]",
+                      ].join(" ")}
+                    >
+                      {option.label}
+                    </span>
+                    <span
+                      className={[
+                        "mt-0.5 text-[12px] leading-4",
+                        isActive ? "text-[#2563EB]/80" : "text-[#8E99A2]",
+                      ].join(" ")}
+                    >
+                      {option.shortLabel}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+      </span>
+
+      <span
+        className="hidden h-3.5 w-px shrink-0 bg-[rgba(6,28,47,0.12)] sm:inline-block"
+        aria-hidden
+      />
+
+      <span className="text-[#8E99A2]">Shapes headline directions in your report</span>
+    </div>
   );
 }
