@@ -300,7 +300,7 @@ export function AnalyzePageView() {
                         type="button"
                         onClick={clearUrl}
                         aria-label="Clear URL"
-                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
+                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
                       >
                         <RiCloseLine size={18} aria-hidden />
                       </button>

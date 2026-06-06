@@ -174,12 +174,12 @@ function PrintHeadlineDirectionsCard({
               color: "#4a5560",
             }}
           >
-            Current
+            Before
           </p>
           <p style={{ margin: 0 }}>{directions.before}</p>
           {directions.gap ? (
             <p style={{ margin: "8px 0 0", fontSize: 12, color: "#6B7280" }}>
-              Issue · {directions.gap}
+              Issue: {directions.gap}
             </p>
           ) : null}
         </div>

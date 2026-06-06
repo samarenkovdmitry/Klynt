@@ -72,7 +72,26 @@ export function writeStoredBrandStage(stage: BrandStage) {
 
 export function isHeroHeadlineCopySection(section?: string) {
   const value = String(section ?? "").trim().toLowerCase();
-  return value.includes("headline") || value.includes("hero h1");
+
+  if (!value) {
+    return false;
+  }
+
+  if (
+    value.includes("subheadline") ||
+    value.includes("subhead") ||
+    value.includes("subtext") ||
+    value.includes("supporting")
+  ) {
+    return false;
+  }
+
+  return (
+    value.includes("hero headline") ||
+    value === "headline" ||
+    value.includes("hero h1") ||
+    (value.includes("headline") && !value.includes("sub"))
+  );
 }
 
 export const HEADLINE_STRATEGY_LABELS: Record<BrandStage, [string, string, string]> = {

@@ -202,7 +202,7 @@ export function ReportCopySection({
           <CopyCard
             key={`${item.section ?? "copy"}-${index}`}
             item={item}
-            index={index}
+            index={hasHeadlineDirections ? index + 1 : index}
             copiedIndex={copiedIndex}
             onCopy={onCopy}
             copyLocked={waitlistActive}
