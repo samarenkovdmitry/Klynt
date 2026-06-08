@@ -1,13 +1,12 @@
 import chromium from "@sparticuz/chromium";
 import type { Page } from "puppeteer-core";
 import puppeteer from "puppeteer-core";
-import sharp from "sharp";
 
 import {
   configureScreenshotPage,
   navigatePageForCapture,
 } from "@/lib/page-capture-navigate";
-import { preparePageForHeroScreenshot } from "@/lib/page-screenshot";
+import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/lib/page-screenshot";
 import { retryAsync } from "@/lib/retry-async";
 
 async function jumpTo(page: Page, y: number) {
@@ -18,16 +17,7 @@ async function jumpTo(page: Page, y: number) {
   await new Promise((resolve) => setTimeout(resolve, 80));
 }
 
-export async function optimizeScreenshotBase64(base64: string) {
-  const optimized = await sharp(Buffer.from(base64, "base64"))
-    .resize(768, null, { withoutEnlargement: true })
-    .jpeg({ quality: 48, mozjpeg: true })
-    .toBuffer();
-
-  return optimized.toString("base64");
-}
-
-async function captureHeroScreenshotOnce(url: string) {
+async function captureWebsiteScreenshotsOnce(url: string): Promise<string[]> {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
@@ -46,29 +36,45 @@ async function captureHeroScreenshotOnce(url: string) {
     await navigatePageForCapture(page, url);
     await preparePageForHeroScreenshot(page);
 
+    const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
+
+    const heroY = 0;
+    const lowerY =
+      bodyHeight <= 900
+        ? Math.max(0, bodyHeight - 650)
+        : Math.max(Math.floor(bodyHeight * 0.52), bodyHeight - 1300);
+
     const viewport = page.viewport();
     const clipWidth = viewport?.width ?? 1280;
     const clipHeight = viewport?.height ?? 900;
 
-    await jumpTo(page, 0);
-
-    const hero = await page.screenshot({
-      type: "jpeg",
+    const heroShotOptions = {
+      type: "jpeg" as const,
       quality: 94,
       clip: { x: 0, y: 0, width: clipWidth, height: clipHeight },
-    });
+    };
+    const lowerShotOptions = { type: "jpeg" as const, quality: 80 };
 
-    const rawBase64 = Buffer.from(hero as Buffer).toString("base64");
-    return optimizeScreenshotBase64(rawBase64);
+    await jumpTo(page, heroY);
+    const hero = await page.screenshot(heroShotOptions);
+
+    await jumpTo(page, lowerY);
+    await preparePageForLowerScreenshot(page);
+    const lower = await page.screenshot(lowerShotOptions);
+
+    return [
+      Buffer.from(hero as Buffer).toString("base64"),
+      Buffer.from(lower as Buffer).toString("base64"),
+    ];
   } finally {
     await browser.close();
   }
 }
 
-export async function captureHeroScreenshotBase64(url: string) {
-  return retryAsync(() => captureHeroScreenshotOnce(url), {
+export async function captureWebsiteScreenshots(url: string): Promise<string[]> {
+  return retryAsync(() => captureWebsiteScreenshotsOnce(url), {
     attempts: 2,
     delayMs: 900,
-    label: "hero-screenshot-capture",
+    label: "screenshot-capture",
   });
 }
