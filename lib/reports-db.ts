@@ -1,5 +1,5 @@
 import type { AuditReport } from "@/lib/audit-report";
-import { isAuditReport } from "@/lib/audit-report";
+import { isAuditReport, isHeroAuditReport, isReportDisplayable } from "@/lib/audit-report";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { isValidReportId } from "@/lib/report-id";
 import { slugifyReportDomain } from "@/lib/report-slug";
@@ -20,6 +20,10 @@ export async function saveReportToDb(payload: {
   }
 
   const supabase = createServerSupabase();
+
+  if (!isAuditReport(payload.report) && !isHeroAuditReport(payload.report)) {
+    throw new Error("Invalid report payload");
+  }
 
   const { error } = await supabase.from("reports").insert({
     id: payload.id,
@@ -82,11 +86,35 @@ export async function loadReportFromDb(
     throw new Error(error.message);
   }
 
-  if (!data?.payload || !isAuditReport(data.payload)) {
+  if (!data?.payload || !isReportDisplayable(data.payload)) {
     return null;
   }
 
   return data.payload;
+}
+
+export async function updateReportInDb(reportId: string, report: AuditReport) {
+  if (!isSupabaseConfigured() || !isValidReportId(reportId)) {
+    return;
+  }
+
+  if (!isAuditReport(report) && !isHeroAuditReport(report)) {
+    throw new Error("Invalid report payload");
+  }
+
+  const supabase = createServerSupabase();
+
+  const { error } = await supabase
+    .from("reports")
+    .update({
+      payload: report,
+      audited_url: typeof report.url === "string" ? report.url.trim() : undefined,
+    })
+    .eq("id", reportId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
 }
 
 export async function findReportIdBySlugInDb(

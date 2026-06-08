@@ -51,8 +51,8 @@ type ReportHeroSummaryProps = {
   previewImage?: string;
   metricObservations?: ReportMetricObservations;
   issues?: ReportIssue[];
-  onShare: () => void;
-  onExport: () => void;
+  onShare?: () => void;
+  onExport?: () => void;
 };
 
 type MetricCardProps = {
@@ -266,26 +266,32 @@ export function ReportHeroSummary({
                 </span>
               </div>
 
-              <div className="absolute right-0 top-0 flex shrink-0 items-center gap-1.5 sm:static sm:gap-2 sm:justify-end">
-                <button
-                  type="button"
-                  onClick={onShare}
-                  className={HERO_ACTION_BUTTON_CLASS}
-                  aria-label="Share report"
-                >
-                  <RiShare2Line size={16} aria-hidden />
-                  <span className="hidden sm:inline">Share</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={onExport}
-                  className={HERO_ACTION_BUTTON_CLASS}
-                  aria-label="Export PDF"
-                >
-                  <RiFilePdf2Line size={16} aria-hidden />
-                  <span className="hidden sm:inline">Export PDF</span>
-                </button>
-              </div>
+              {onShare || onExport ? (
+                <div className="absolute right-0 top-0 flex shrink-0 items-center gap-1.5 sm:static sm:gap-2 sm:justify-end">
+                  {onShare ? (
+                    <button
+                      type="button"
+                      onClick={onShare}
+                      className={HERO_ACTION_BUTTON_CLASS}
+                      aria-label="Share report"
+                    >
+                      <RiShare2Line size={16} aria-hidden />
+                      <span className="hidden sm:inline">Share</span>
+                    </button>
+                  ) : null}
+                  {onExport ? (
+                    <button
+                      type="button"
+                      onClick={onExport}
+                      className={HERO_ACTION_BUTTON_CLASS}
+                      aria-label="Export PDF"
+                    >
+                      <RiFilePdf2Line size={16} aria-hidden />
+                      <span className="hidden sm:inline">Export PDF</span>
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
 
             <div className="mt-5 flex flex-col gap-5 md:mt-6 md:flex-row md:items-start md:justify-between md:gap-8">
