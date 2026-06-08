@@ -19,12 +19,21 @@ import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
 import { generateReportOgPreviewDataUrl } from "@/lib/report-opengraph-image";
 import {
+  buildAuditContextPromptBlock,
+  parseAudienceType,
+  parseTrafficSource,
+} from "@/lib/audit-context";
+import {
   buildBrandStagePromptBlock,
   buildHeadlineDirectionsSchemaSnippet,
   normalizeHeadlineDirections,
   parseBrandStage,
   resolveHeadlineBeforeGap,
 } from "@/lib/brand-stage";
+import {
+  buildAnalysisQualityPromptBlock,
+  normalizeReportFindings,
+} from "@/lib/report-findings-quality";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
 export const runtime = "nodejs";
@@ -392,6 +401,8 @@ export async function POST(req: Request) {
     const rawUrl = (formData.get("url") as string) ?? "";
     const uploadedScreenshot = formData.get("screenshot") as Blob | null;
     const brandStage = parseBrandStage(formData.get("brandStage"));
+    const trafficSource = parseTrafficSource(formData.get("trafficSource"));
+    const audienceType = parseAudienceType(formData.get("audienceType"));
 
     if (rawUrl.trim()) {
       const urlError = validateAuditUrl(rawUrl);
@@ -454,12 +465,21 @@ export async function POST(req: Request) {
         })
       : Promise.resolve(undefined);
     const brandStagePrompt = buildBrandStagePromptBlock(brandStage);
+    const auditContextPrompt = buildAuditContextPromptBlock(
+      trafficSource,
+      audienceType
+    );
+    const analysisQualityPrompt = buildAnalysisQualityPromptBlock();
 
     const basePrompt = `You are a senior SaaS UX auditor (clarity, conversion, positioning).
 
 Analyze ONLY what is visible in the screenshot(s). Never invent UI. No generic advice — name the actual element/section.
 
+${auditContextPrompt}
+
 ${brandStagePrompt}
+
+${analysisQualityPrompt}
 
 Return ONLY valid JSON (no markdown):
 
@@ -642,6 +662,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
 
     json.copy = json.copy.map((item: any) => normalizePriorityItem(item));
 
+    Object.assign(json, normalizeReportFindings(json));
+
     let headlineDirections = normalizeHeadlineDirections(json.headline_directions, brandStage);
 
     if (headlineDirections && !headlineDirections.gap) {
@@ -689,6 +711,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
       suggestions: json.suggestions,
       copy: json.copy,
       brand_stage: brandStage,
+      traffic_source: trafficSource,
+      audience_type: audienceType,
       headline_directions: headlineDirections,
       breakdown: json.breakdown,
       generatedAt: new Date().toISOString(),
@@ -725,6 +749,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
       reportSlug: buildReportSlug(reportId, auditedUrl),
       url: auditedUrl,
       brand_stage: brandStage,
+      traffic_source: trafficSource,
+      audience_type: audienceType,
       headline_directions: headlineDirections,
       generatedAt: reportPayload.generatedAt,
       previewImage,

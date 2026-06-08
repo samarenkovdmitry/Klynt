@@ -54,6 +54,10 @@ export type HeadlineDirections = {
 
 export type BrandStage = "just_launched" | "growing" | "established";
 
+export type TrafficSource = "cold" | "warm" | "mixed";
+
+export type AudienceType = "b2b" | "b2c" | "both";
+
 export type ReportBreakdown = {
   clarity?: number;
   trust?: number;
@@ -92,6 +96,8 @@ export type AuditReport = {
   suggestions?: ReportSuggestion[];
   copy?: ReportCopyItem[];
   brand_stage?: BrandStage;
+  traffic_source?: TrafficSource;
+  audience_type?: AudienceType;
   headline_directions?: HeadlineDirections;
   error?: string;
 };
