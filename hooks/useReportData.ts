@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { AuditReport } from "@/lib/audit-report";
 import { isAuditReport } from "@/lib/audit-report";
+import { toReportClientCachePayload } from "@/lib/report-api-payload";
 import { loadReport, saveReport } from "@/lib/report-storage";
 
 export type ReportLoadState = "loading" | "ready" | "missing";
@@ -17,13 +18,23 @@ function parseStoredReport(stored: string): AuditReport | null {
       return null;
     }
 
-    return parsed;
+    return toReportClientCachePayload(parsed);
   } catch {
     return null;
   }
 }
 
-async function fetchReportFromApi(reportId: string): Promise<AuditReport | null> {
+function readCachedReport(routeParam: string): AuditReport | null {
+  const stored = loadReport(routeParam);
+
+  if (!stored) {
+    return null;
+  }
+
+  return parseStoredReport(stored);
+}
+
+async function fetchReportFromApi(routeParam: string): Promise<AuditReport | null> {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(
     () => controller.abort(),
@@ -31,7 +42,7 @@ async function fetchReportFromApi(reportId: string): Promise<AuditReport | null>
   );
 
   try {
-    const res = await fetch(`/api/reports/${reportId}`, {
+    const res = await fetch(`/api/reports/${encodeURIComponent(routeParam)}`, {
       signal: controller.signal,
     });
 
@@ -45,7 +56,7 @@ async function fetchReportFromApi(reportId: string): Promise<AuditReport | null>
       return null;
     }
 
-    return parsed;
+    return toReportClientCachePayload(parsed);
   } catch {
     return null;
   } finally {
@@ -53,13 +64,26 @@ async function fetchReportFromApi(reportId: string): Promise<AuditReport | null>
   }
 }
 
+function getInitialLoadState(routeParam: string | undefined): ReportLoadState {
+  if (!routeParam) {
+    return "missing";
+  }
+
+  return readCachedReport(routeParam) ? "ready" : "loading";
+}
+
 export function useReportData(reportId: string | undefined) {
-  const [data, setData] = useState<AuditReport | null>(null);
-  const [loadState, setLoadState] = useState<ReportLoadState>("loading");
+  const [data, setData] = useState<AuditReport | null>(() =>
+    reportId ? readCachedReport(reportId) : null
+  );
+  const [loadState, setLoadState] = useState<ReportLoadState>(() =>
+    getInitialLoadState(reportId)
+  );
 
   useEffect(() => {
     if (!reportId) {
       setLoadState("missing");
+      setData(null);
       return;
     }
 
@@ -67,25 +91,22 @@ export function useReportData(reportId: string | undefined) {
     let cancelled = false;
 
     async function load() {
-      setLoadState("loading");
-      setData(null);
+      const cached = readCachedReport(id);
+
+      if (cached) {
+        if (!cancelled) {
+          setData(cached);
+          setLoadState("ready");
+        }
+        return;
+      }
+
+      if (!cancelled) {
+        setLoadState("loading");
+        setData(null);
+      }
 
       try {
-        const stored = loadReport(id);
-
-        if (stored) {
-          const parsed = parseStoredReport(stored);
-
-          if (parsed) {
-            if (!cancelled) {
-              setData(parsed);
-              setLoadState("ready");
-            }
-
-            return;
-          }
-        }
-
         const parsed = await fetchReportFromApi(id);
 
         if (!parsed) {
