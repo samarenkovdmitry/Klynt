@@ -1,6 +1,9 @@
-import { DEMO_REPORT_ID } from "@/lib/demo-report";
+import { DEMO_REPORT_SLUG } from "@/lib/demo-report";
+import { isDemoReportRouteParam } from "@/lib/report-route";
 
-/** Report ids that may appear in search results and expose crawler-readable content. */
-export function isIndexableReportId(reportId: string): boolean {
-  return reportId.trim() === DEMO_REPORT_ID;
+/** Route params that may appear in search results and expose crawler-readable content. */
+export function isIndexableReportRouteParam(routeParam: string): boolean {
+  const param = routeParam.trim();
+
+  return isDemoReportRouteParam(param) || param === DEMO_REPORT_SLUG;
 }

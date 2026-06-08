@@ -10,6 +10,7 @@ import { normalizeReportHeroCopy } from "@/lib/report-hero-copy";
 import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/lib/page-screenshot";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
+import { buildReportSlug } from "@/lib/report-slug";
 import { buildReportPreviewImage } from "@/lib/report-preview";
 import { normalizeReportBreakdown } from "@/lib/normalize-report-breakdown";
 import { deriveRiskFromScore } from "@/lib/report-metrics";
@@ -721,6 +722,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
     return NextResponse.json({
       ...json,
       reportId,
+      reportSlug: buildReportSlug(reportId, auditedUrl),
       url: auditedUrl,
       brand_stage: brandStage,
       headline_directions: headlineDirections,

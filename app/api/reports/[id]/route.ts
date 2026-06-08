@@ -1,32 +1,29 @@
 import { NextResponse } from "next/server";
 
-import { isIndexableReportId } from "@/lib/report-indexing";
+import { isIndexableReportRouteParam } from "@/lib/report-indexing";
+import { canGenerateReportMetadata, loadReportForPublicMetadata } from "@/lib/report-seo-loader";
+import { isDemoReportRouteParam, resolveReportRouteParam } from "@/lib/report-route";
 import { buildReportPlainText } from "@/lib/report-text-content";
-import {
-  isDemoReportId,
-  loadReportForPublicMetadata,
-} from "@/lib/report-seo-loader";
-import { isValidReportId } from "@/lib/report-id";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
 
 type RouteContext = {
   params: Promise<{ id: string }> | { id: string };
 };
 
-async function resolveReportId(context: RouteContext) {
+async function resolveRouteParam(context: RouteContext) {
   const params = await Promise.resolve(context.params);
   return params.id;
 }
 
 export async function GET(req: Request, context: RouteContext) {
-  const reportId = await resolveReportId(context);
+  const routeParam = await resolveRouteParam(context);
   const wantsText = new URL(req.url).searchParams.get("format") === "text";
 
-  if (!isValidReportId(reportId)) {
+  if (!canGenerateReportMetadata(routeParam)) {
     return NextResponse.json({ error: "Report not found." }, { status: 404 });
   }
 
-  if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
+  if (!isDemoReportRouteParam(routeParam) && !isSupabaseConfigured()) {
     return NextResponse.json(
       { error: "Report storage is not configured." },
       { status: 503 }
@@ -34,14 +31,15 @@ export async function GET(req: Request, context: RouteContext) {
   }
 
   try {
-    const report = await loadReportForPublicMetadata(reportId);
+    const resolved = await resolveReportRouteParam(routeParam);
+    const report = await loadReportForPublicMetadata(routeParam);
 
-    if (!report) {
+    if (!resolved || !report) {
       return NextResponse.json({ error: "Report not found." }, { status: 404 });
     }
 
     if (wantsText) {
-      if (!isIndexableReportId(reportId)) {
+      if (!isIndexableReportRouteParam(resolved.slug)) {
         return NextResponse.json(
           { error: "Plain-text export is not available for this report." },
           { status: 403 }

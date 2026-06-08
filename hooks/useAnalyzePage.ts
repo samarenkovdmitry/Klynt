@@ -10,6 +10,8 @@ import {
   writeStoredBrandStage,
 } from "@/lib/brand-stage";
 import { generateReportId } from "@/lib/report-id";
+import { buildReportPath } from "@/lib/report-route";
+import { buildReportSlug } from "@/lib/report-slug";
 import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
 import { ANALYZE_FALLBACK_ERROR } from "@/lib/api-errors";
 import { parseApiJsonResponse } from "@/lib/parse-api-response";
@@ -350,6 +352,7 @@ export function useAnalyzePage() {
 
       try {
         saveReport(reportId, flat);
+        saveReport(buildReportSlug(reportId, flat.url), flat);
       } catch {
         stopProgressTimer();
         setProgress(0);
@@ -370,7 +373,7 @@ export function useAnalyzePage() {
         setProgress(100);
       }
 
-      router.push(`/report/${reportId}`);
+      router.push(buildReportPath(reportId, flat.url));
     } catch (caught: unknown) {
       stopProgressTimer();
       setProgress(0);

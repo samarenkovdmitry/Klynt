@@ -1,4 +1,5 @@
-import { DEMO_REPORT_ID, getDemoReportJson, DEMO_REPORT_PATH } from "./demo-report";
+import { getDemoReportJson, DEMO_REPORT_PATH } from "./demo-report";
+import { isDemoReportRouteParam } from "./report-route";
 import { isAuditReport } from "./audit-report";
 
 export { DEMO_REPORT_ID, DEMO_REPORT_PATH } from "./demo-report";
@@ -21,12 +22,12 @@ export function saveReport(reportId: string, data: object) {
   }
 }
 
-export function loadReport(reportId: string): string | null {
-  if (reportId === DEMO_REPORT_ID) {
+export function loadReport(routeParam: string): string | null {
+  if (isDemoReportRouteParam(routeParam)) {
     return getDemoReportJson();
   }
 
-  const key = `report-${reportId}`;
+  const key = `report-${routeParam}`;
 
   try {
     return sessionStorage.getItem(key) ?? localStorage.getItem(key);

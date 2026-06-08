@@ -8,9 +8,9 @@ import { composeReportOpenGraphImage } from "@/lib/report-og-image";
 import { previewImageToBuffer } from "@/lib/report-seo";
 import {
   canGenerateReportMetadata,
-  isDemoReportId,
   loadReportForPublicMetadata,
 } from "@/lib/report-seo-loader";
+import { isDemoReportRouteParam } from "@/lib/report-route";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
 import { absoluteUrl, getSiteUrl } from "@/lib/site";
 
@@ -214,22 +214,22 @@ export async function generateReportOgPreviewDataUrl(
 }
 
 export async function buildReportOpenGraphResponse(
-  reportId: string,
+  routeParam: string,
   siteUrl = getSiteUrl()
 ) {
   try {
-    if (!canGenerateReportMetadata(reportId)) {
+    if (!canGenerateReportMetadata(routeParam)) {
       return defaultOgResponse(siteUrl);
     }
 
-    if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
+    if (!isDemoReportRouteParam(routeParam) && !isSupabaseConfigured()) {
       return defaultOgResponse(siteUrl);
     }
 
     let report: AuditReport | null;
 
     try {
-      report = await loadReportForPublicMetadata(reportId);
+      report = await loadReportForPublicMetadata(routeParam);
     } catch (error) {
       console.error("[report opengraph-image] report load failed", error);
       return defaultOgResponse(siteUrl);
@@ -257,10 +257,10 @@ export async function buildReportOpenGraphResponse(
       return composed;
     }
 
-    console.error("[report opengraph-image] all compose attempts failed", reportId);
+    console.error("[report opengraph-image] all compose attempts failed", routeParam);
     return defaultOgResponse(siteUrl);
   } catch (error) {
-    console.error("[report opengraph-image] unexpected failure", reportId, error);
+    console.error("[report opengraph-image] unexpected failure", routeParam, error);
     return defaultOgResponse(siteUrl);
   }
 }

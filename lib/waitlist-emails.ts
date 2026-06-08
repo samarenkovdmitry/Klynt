@@ -1,10 +1,9 @@
 import { createServerSupabase } from "@/lib/supabase-server";
-import {
-  getReportIdFromReportUrl,
-  isValidReportId,
-} from "@/lib/report-id";
+import { isValidReportId } from "@/lib/report-id";
+import { getReportIdFromReportUrl } from "@/lib/report-route";
 
-export { getReportIdFromReportUrl, isValidReportId } from "@/lib/report-id";
+export { getReportIdFromReportUrl } from "@/lib/report-route";
+export { isValidReportId } from "@/lib/report-id";
 
 export async function saveWaitlistEmail(payload: {
   email: string;

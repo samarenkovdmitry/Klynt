@@ -1,10 +1,13 @@
 import type { AuditReport } from "@/lib/audit-report";
+import { buildReportSlug } from "@/lib/report-slug";
 
 export const DEMO_REPORT_ID = "x4pxi2jb2o";
 
 export const DEMO_REPORT_URL = "https://zapier.com";
 
-export const DEMO_REPORT_PATH = `/report/${DEMO_REPORT_ID}`;
+export const DEMO_REPORT_SLUG = buildReportSlug(DEMO_REPORT_ID, DEMO_REPORT_URL);
+
+export const DEMO_REPORT_PATH = `/report/${DEMO_REPORT_SLUG}`;
 
 export const DEMO_REPORT_PREVIEW_IMAGE = "/demo/zapier-preview.jpg";
 

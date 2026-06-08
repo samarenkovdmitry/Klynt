@@ -9,13 +9,13 @@ import { formatOverallScore, formatReportDomain } from "@/lib/report-hero-theme"
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 
 type ReportJsonLdProps = {
-  reportId: string;
+  routeSlug: string;
   report: AuditReport;
   siteUrl: string;
 };
 
-export function ReportJsonLd({ reportId, report, siteUrl }: ReportJsonLdProps) {
-  const pageUrl = absoluteUrl(`/report/${reportId}`, siteUrl);
+export function ReportJsonLd({ routeSlug, report, siteUrl }: ReportJsonLdProps) {
+  const pageUrl = absoluteUrl(`/report/${routeSlug}`, siteUrl);
   const domain = formatReportDomain(report.url);
   const score = formatOverallScore(report.score);
 
@@ -28,7 +28,7 @@ export function ReportJsonLd({ reportId, report, siteUrl }: ReportJsonLdProps) {
         description: buildReportOgDescription(report),
         url: pageUrl,
         mainEntityOfPage: pageUrl,
-        image: getReportOpenGraphImageUrl(reportId, siteUrl),
+        image: getReportOpenGraphImageUrl(routeSlug, siteUrl),
         datePublished: report.generatedAt,
         dateModified: report.generatedAt,
         author: {

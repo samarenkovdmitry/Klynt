@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const reportIdFromUrl = getReportIdFromReportUrl(reportUrl);
+    const reportIdFromUrl = await getReportIdFromReportUrl(reportUrl);
     const reportId = reportIdFromBody || reportIdFromUrl || "";
 
     if (!isValidReportId(reportId)) {

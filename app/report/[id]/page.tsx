@@ -14,7 +14,7 @@ import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
-import { DEMO_REPORT_ID } from "@/lib/demo-report";
+import { isDemoReportRouteParam } from "@/lib/report-route";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
 import { useReportData } from "@/hooks/useReportData";
@@ -27,7 +27,7 @@ export default function ReportPage() {
 
   const { data, loadState } = useReportData(reportId);
   const { waitlistActive, unlock } = usePreLaunchWaitlist(
-    reportId === DEMO_REPORT_ID
+    reportId ? isDemoReportRouteParam(reportId) : false
   );
   const gateInView = useWaitlistGateInView(waitlistActive);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
