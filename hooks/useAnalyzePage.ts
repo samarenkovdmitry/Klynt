@@ -3,7 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import type { BrandStage, HeadlineDirections } from "@/lib/audit-report";
+import type {
+  AudienceType,
+  BrandStage,
+  HeadlineDirections,
+  TrafficSource,
+} from "@/lib/audit-report";
+import {
+  DEFAULT_AUDIENCE_TYPE,
+  DEFAULT_TRAFFIC_SOURCE,
+  readStoredAudienceType,
+  readStoredTrafficSource,
+  writeStoredAudienceType,
+  writeStoredTrafficSource,
+} from "@/lib/audit-context";
 import {
   DEFAULT_BRAND_STAGE,
   readStoredBrandStage,
@@ -56,6 +69,8 @@ type AuditResponseFlat = {
   previewImage?: string;
   ogPreviewImage?: string;
   brand_stage?: BrandStage;
+  traffic_source?: TrafficSource;
+  audience_type?: AudienceType;
   headline_directions?: HeadlineDirections;
   metric_observations?: {
     trust?: string;
@@ -167,9 +182,17 @@ export function useAnalyzePage() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [inputMode, setInputMode] = useState<AnalyzeInputMode>("url");
   const [brandStage, setBrandStage] = useState<BrandStage>(DEFAULT_BRAND_STAGE);
+  const [trafficSource, setTrafficSource] = useState<TrafficSource>(
+    DEFAULT_TRAFFIC_SOURCE
+  );
+  const [audienceType, setAudienceType] = useState<AudienceType>(
+    DEFAULT_AUDIENCE_TYPE
+  );
 
   useEffect(() => {
     setBrandStage(readStoredBrandStage());
+    setTrafficSource(readStoredTrafficSource());
+    setAudienceType(readStoredAudienceType());
   }, []);
 
   useEffect(() => {
@@ -273,6 +296,8 @@ export function useAnalyzePage() {
       }
 
       form.append("brandStage", brandStage);
+      form.append("trafficSource", trafficSource);
+      form.append("audienceType", audienceType);
 
       const res = await fetch("/api/analyze", {
         method: "POST",
@@ -335,6 +360,8 @@ export function useAnalyzePage() {
           typeof json.ogPreviewImage === "string" ? json.ogPreviewImage : undefined,
         metric_observations: json.metric_observations,
         brand_stage: json.brand_stage ?? brandStage,
+        traffic_source: json.traffic_source ?? trafficSource,
+        audience_type: json.audience_type ?? audienceType,
         headline_directions: json.headline_directions,
         issues: json.issues ?? [],
         suggestions: json.suggestions ?? [],
@@ -393,6 +420,16 @@ export function useAnalyzePage() {
     writeStoredBrandStage(stage);
   }
 
+  function handleTrafficSourceChange(source: TrafficSource) {
+    setTrafficSource(source);
+    writeStoredTrafficSource(source);
+  }
+
+  function handleAudienceTypeChange(audience: AudienceType) {
+    setAudienceType(audience);
+    writeStoredAudienceType(audience);
+  }
+
   return {
     fileInputRef,
     url,
@@ -410,6 +447,10 @@ export function useAnalyzePage() {
     setInputMode,
     brandStage,
     setBrandStage: handleBrandStageChange,
+    trafficSource,
+    setTrafficSource: handleTrafficSourceChange,
+    audienceType,
+    setAudienceType: handleAudienceTypeChange,
     showUrlError,
     urlValidationError,
     isButtonDisabled,

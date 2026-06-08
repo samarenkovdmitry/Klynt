@@ -18,6 +18,7 @@ import {
   type AnalyzeErrorKind,
   type AnalyzeInputMode,
 } from "@/hooks/useAnalyzePage";
+import { AnalyzeAuditContextPanel } from "@/components/analyze/AnalyzeAuditContextPanel";
 import { AnalyzeBrandStagePanel } from "@/components/analyze/AnalyzeBrandStagePanel";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
@@ -214,6 +215,10 @@ export function AnalyzePageView() {
     switchToScreenshotUpload,
     brandStage,
     setBrandStage,
+    trafficSource,
+    setTrafficSource,
+    audienceType,
+    setAudienceType,
   } = useAnalyzePage();
 
   return (
@@ -318,6 +323,14 @@ export function AnalyzePageView() {
                     onChange={setBrandStage}
                     disabled={loading}
                   />
+
+                  <AnalyzeAuditContextPanel
+                    trafficSource={trafficSource}
+                    audienceType={audienceType}
+                    onTrafficSourceChange={setTrafficSource}
+                    onAudienceTypeChange={setAudienceType}
+                    disabled={loading}
+                  />
                 </div>
               ) : (
                 <div role="tabpanel" aria-label="Screenshot upload">
@@ -381,6 +394,14 @@ export function AnalyzePageView() {
                   <AnalyzeBrandStagePanel
                     value={brandStage}
                     onChange={setBrandStage}
+                    disabled={loading}
+                  />
+
+                  <AnalyzeAuditContextPanel
+                    trafficSource={trafficSource}
+                    audienceType={audienceType}
+                    onTrafficSourceChange={setTrafficSource}
+                    onAudienceTypeChange={setAudienceType}
                     disabled={loading}
                   />
                 </div>
