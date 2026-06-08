@@ -2,18 +2,13 @@
 
 import { useEffect, useState } from "react";
 import type { AuditReport } from "@/lib/audit-report";
-import {
-  isReportComplete,
-  isReportDisplayable,
-} from "@/lib/audit-report";
+import { isAuditReport } from "@/lib/audit-report";
 import { toReportClientCachePayload } from "@/lib/report-api-payload";
 import { loadReport, saveReport } from "@/lib/report-storage";
 
 export type ReportLoadState = "loading" | "ready" | "missing";
 
 const REPORT_FETCH_TIMEOUT_MS = 15000;
-const REPORT_PARTIAL_POLL_MS = 2000;
-const REPORT_PARTIAL_POLL_MAX_MS = 90_000;
 
 function parseStoredReport(
   stored: string,
@@ -22,7 +17,7 @@ function parseStoredReport(
   try {
     const parsed: unknown = JSON.parse(stored);
 
-    if (!isReportDisplayable(parsed)) {
+    if (!isAuditReport(parsed)) {
       return null;
     }
 
@@ -60,7 +55,7 @@ async function fetchReportFromApi(routeParam: string): Promise<AuditReport | nul
 
     const parsed: unknown = await res.json();
 
-    if (!isReportDisplayable(parsed)) {
+    if (!isAuditReport(parsed)) {
       return null;
     }
 
@@ -176,48 +171,6 @@ export function useReportData(
       cancelled = true;
     };
   }, [reportId]);
-
-  useEffect(() => {
-    if (!reportId || !data || isReportComplete(data)) {
-      return;
-    }
-
-    const id = reportId;
-    let cancelled = false;
-    const startedAt = Date.now();
-
-    async function pollForCompleteReport() {
-      const parsed = await fetchReportFromApi(id);
-
-      if (cancelled || !parsed || !isReportComplete(parsed)) {
-        return;
-      }
-
-      try {
-        saveReport(id, parsed);
-      } catch {
-        // Render from memory even if cache write fails
-      }
-
-      setData(parsed);
-    }
-
-    void pollForCompleteReport();
-
-    const timer = window.setInterval(() => {
-      if (Date.now() - startedAt > REPORT_PARTIAL_POLL_MAX_MS) {
-        window.clearInterval(timer);
-        return;
-      }
-
-      void pollForCompleteReport();
-    }, REPORT_PARTIAL_POLL_MS);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(timer);
-    };
-  }, [reportId, data?.analysis_status]);
 
   return { data, loadState };
 }

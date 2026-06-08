@@ -9,7 +9,6 @@ import { ReportCtaSection } from "@/components/report/ReportCtaSection";
 import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
-import { ReportSectionsSkeleton } from "@/components/report/ReportSectionsSkeleton";
 import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
 import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
 import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
@@ -17,7 +16,6 @@ import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStick
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import type { AuditReport } from "@/lib/audit-report";
-import { isReportComplete } from "@/lib/audit-report";
 import { isDemoReportRouteParam } from "@/lib/report-route";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
@@ -74,7 +72,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     remainingCopy: Math.max(0, copy.length - 1),
   };
   const previewSrc = resolveReportPreviewSrc(routeParam, data.previewImage);
-  const reportComplete = isReportComplete(data);
 
   return (
     <>
@@ -100,33 +97,25 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
             previewImage={previewSrc}
             metricObservations={data.metric_observations}
             issues={data.issues}
-            onShare={reportComplete ? handleShare : undefined}
-            onExport={reportComplete ? handleExport : undefined}
+            onShare={handleShare}
+            onExport={handleExport}
           />
 
           <div className="space-y-0">
-            {!reportComplete ? (
-              <ReportSectionsSkeleton />
-            ) : waitlistActive ? (
-              <>
-                <ReportUxIssuesSection
-                  issues={issues}
-                  breakdown={data.breakdown}
-                  waitlistActive={waitlistActive}
-                />
-                <ReportWaitlistGate
-                  reportId={routeParam}
-                  locked={lockedSummary}
-                  onUnlock={unlock}
-                />
-              </>
+            <ReportUxIssuesSection
+              issues={issues}
+              breakdown={data.breakdown}
+              waitlistActive={waitlistActive}
+            />
+
+            {waitlistActive ? (
+              <ReportWaitlistGate
+                reportId={routeParam}
+                locked={lockedSummary}
+                onUnlock={unlock}
+              />
             ) : (
               <>
-                <ReportUxIssuesSection
-                  issues={issues}
-                  breakdown={data.breakdown}
-                  waitlistActive={waitlistActive}
-                />
                 <ReportSuggestionsSection suggestions={suggestions} />
                 <ReportCopySection
                   copy={copy}
@@ -139,7 +128,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
             )}
           </div>
 
-          {!waitlistActive && reportComplete && (
+          {!waitlistActive && (
             <div className="mt-12">
               <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
             </div>

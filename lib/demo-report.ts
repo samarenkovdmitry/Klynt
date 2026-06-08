@@ -13,7 +13,6 @@ export const DEMO_REPORT_PREVIEW_IMAGE = "/demo/zapier-preview.jpg";
 
 export const DEMO_REPORT = {
   url: DEMO_REPORT_URL,
-  analysis_status: "complete" as const,
   previewImage: DEMO_REPORT_PREVIEW_IMAGE,
   score: 65,
   risk: "medium",
