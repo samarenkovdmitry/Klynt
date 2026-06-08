@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
+import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
+import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
 import { LANDING_CONTAINER } from "./landingPageStyles";
 
@@ -61,17 +62,28 @@ export function LandingTestHeader() {
             {navItems.map((item) => {
               const isActive = item.match(pathname);
 
+              const className = [
+                "rounded-full px-4 py-2 text-[14px] font-medium transition-colors",
+                isActive
+                  ? "bg-white/5 font-semibold text-white"
+                  : "text-white/75 hover:bg-white/5 hover:text-white",
+              ].join(" ");
+
+              if (item.href === DEMO_REPORT_PATH) {
+                return (
+                  <ReportPrefetchLink
+                    key={item.href}
+                    href={item.href}
+                    routeParam={DEMO_REPORT_SLUG}
+                    className={className}
+                  >
+                    {item.label}
+                  </ReportPrefetchLink>
+                );
+              }
+
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={[
-                    "rounded-full px-4 py-2 text-[14px] font-medium transition-colors",
-                    isActive
-                      ? "bg-white/5 font-semibold text-white"
-                      : "text-white/75 hover:bg-white/5 hover:text-white",
-                  ].join(" ")}
-                >
+                <Link key={item.href} href={item.href} className={className}>
                   {item.label}
                 </Link>
               );

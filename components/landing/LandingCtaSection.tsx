@@ -2,7 +2,7 @@ import { RiArrowRightLine } from "@remixicon/react";
 import { Button } from "@/components/ui/Button";
 import { TrustBadgeRow } from "@/components/TrustBadgeRow";
 import { LANDING_BUTTON_CLASS } from "@/components/landing/landingStyles";
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
+import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
 export function LandingCtaSection() {
   return (
@@ -29,6 +29,7 @@ export function LandingCtaSection() {
 
           <Button
             href={DEMO_REPORT_PATH}
+            prefetchRouteParam={DEMO_REPORT_SLUG}
             variant="secondary"
             tone="dark"
             fullWidth={false}

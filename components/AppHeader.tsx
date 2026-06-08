@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
+import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
+import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
 const HEADER_HEIGHT_PX = 68;
 
@@ -134,15 +135,26 @@ export function AppHeader() {
             className="hidden shrink-0 items-center gap-0.5 md:flex md:gap-1"
             aria-label="Main"
           >
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={navLinkClass(isNavActive(item, pathname), isLanding)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) =>
+              item.href === DEMO_REPORT_PATH ? (
+                <ReportPrefetchLink
+                  key={item.href}
+                  href={item.href}
+                  routeParam={DEMO_REPORT_SLUG}
+                  className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                >
+                  {item.label}
+                </ReportPrefetchLink>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
           </nav>
 
           <button
@@ -197,17 +209,30 @@ export function AppHeader() {
           aria-label="Main mobile"
           aria-hidden={!menuOpen}
         >
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              tabIndex={menuOpen ? 0 : -1}
-              className={mobileNavLinkClass(isNavActive(item, pathname))}
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) =>
+            item.href === DEMO_REPORT_PATH ? (
+              <ReportPrefetchLink
+                key={item.href}
+                href={item.href}
+                routeParam={DEMO_REPORT_SLUG}
+                tabIndex={menuOpen ? 0 : -1}
+                className={mobileNavLinkClass(isNavActive(item, pathname))}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </ReportPrefetchLink>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                tabIndex={menuOpen ? 0 : -1}
+                className={mobileNavLinkClass(isNavActive(item, pathname))}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
       </div>
     </>

@@ -17,7 +17,9 @@ import { deriveRiskFromScore } from "@/lib/report-metrics";
 import { mapIssueImpact } from "@/lib/report-impact";
 import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
-import { generateReportOgPreviewDataUrl } from "@/lib/report-opengraph-image";
+import { scheduleReportOgBackfill } from "@/lib/report-og-backfill";
+import { buildReportPreviewPath } from "@/lib/report-preview-url";
+import { shouldBlockScreenshotRequest } from "@/lib/screenshot-request-filter";
 import {
   buildAuditContextPromptBlock,
   parseAudienceType,
@@ -75,9 +77,6 @@ async function jumpTo(page: any, y: number) {
 
   await new Promise((r) => setTimeout(r, 80));
 }
-
-const TRACKER_PATTERN =
-  /google-analytics|googletagmanager|facebook\.net|hotjar|segment\.(com|io)|intercom|clarity\.ms|doubleclick|sentry\.io|mixpanel|amplitude/i;
 
 async function optimizeScreenshotBase64(base64: string) {
   const optimized = await sharp(Buffer.from(base64, "base64"))
@@ -290,7 +289,7 @@ async function captureWebsiteScreenshots(url: string) {
     defaultViewport: {
       width: 1280,
       height: 900,
-      deviceScaleFactor: 2,
+      deviceScaleFactor: 1,
     },
     executablePath: await chromium.executablePath(),
     headless: true,
@@ -301,21 +300,14 @@ async function captureWebsiteScreenshots(url: string) {
 
     await page.setRequestInterception(true);
 
-page.on("request", (req) => {
-  const type = req.resourceType();
-  const requestUrl = req.url();
+    page.on("request", (req) => {
+      if (shouldBlockScreenshotRequest(req.resourceType(), req.url())) {
+        req.abort();
+        return;
+      }
 
-  if (
-    type === "media" ||
-    type === "websocket" ||
-    TRACKER_PATTERN.test(requestUrl)
-  ) {
-    req.abort();
-    return;
-  }
-
-  req.continue();
-});
+      req.continue();
+    });
 
     await page.setUserAgent(
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -323,13 +315,13 @@ page.on("request", (req) => {
 
     try {
       await page.goto(url, {
-        waitUntil: "load",
-        timeout: 12000,
+        waitUntil: "domcontentloaded",
+        timeout: 10000,
       });
     } catch {
       await page.goto(url, {
-        waitUntil: "domcontentloaded",
-        timeout: 10000,
+        waitUntil: "load",
+        timeout: 12000,
       });
     }
 
@@ -718,18 +710,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
       generatedAt: new Date().toISOString(),
     };
 
-    try {
-      const ogPreviewImage = await generateReportOgPreviewDataUrl(
-        reportPayload,
-        previewImage
-      );
-
-      if (ogPreviewImage) {
-        reportPayload.ogPreviewImage = ogPreviewImage;
-      }
-    } catch (ogError) {
-      console.error("[analyze] Failed to pre-render OG image:", ogError);
-    }
+    const reportSlug = buildReportSlug(reportId, auditedUrl);
+    const previewImagePath = buildReportPreviewPath(reportSlug);
 
     if (isAuditReport(reportPayload)) {
       try {
@@ -741,20 +723,21 @@ json.confidence = Number.isFinite(Number(json.confidence))
       } catch (persistError) {
         console.error("[analyze] Failed to persist report:", persistError);
       }
+
+      scheduleReportOgBackfill(reportId, reportPayload, previewImage);
     }
 
     return NextResponse.json({
       ...json,
       reportId,
-      reportSlug: buildReportSlug(reportId, auditedUrl),
+      reportSlug,
       url: auditedUrl,
       brand_stage: brandStage,
       traffic_source: trafficSource,
       audience_type: audienceType,
       headline_directions: headlineDirections,
       generatedAt: reportPayload.generatedAt,
-      previewImage,
-      ogPreviewImage: reportPayload.ogPreviewImage,
+      previewImage: previewImagePath,
       metric_observations: metricObservations,
     });
   } catch (error: any) {

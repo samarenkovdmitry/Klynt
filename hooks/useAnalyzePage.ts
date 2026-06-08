@@ -95,7 +95,6 @@ type AuditResponseFlat = {
 const ESTIMATED_ANALYSIS_MS = 18_000;
 const MAX_PROGRESS_WHILE_WAITING = 92;
 const PROGRESS_TICK_MS = 50;
-const FINISH_ANIMATION_MS = 180;
 const ANALYZE_HOURLY_LIMIT = 8;
 
 const LOADING_STEPS = [
@@ -111,29 +110,6 @@ function getTimeBasedProgress(elapsedMs: number): number {
   const tau = ESTIMATED_ANALYSIS_MS / 2.8;
   const value = MAX_PROGRESS_WHILE_WAITING * (1 - Math.exp(-elapsedMs / tau));
   return Math.min(MAX_PROGRESS_WHILE_WAITING, value);
-}
-
-function animateProgressTo100(
-  from: number,
-  onUpdate: (value: number) => void
-): Promise<void> {
-  return new Promise((resolve) => {
-    const start = performance.now();
-
-    function tick(now: number) {
-      const t = Math.min(1, (now - start) / FINISH_ANIMATION_MS);
-      const eased = 1 - Math.pow(1 - t, 3);
-      onUpdate(from + (100 - from) * eased);
-
-      if (t < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        resolve();
-      }
-    }
-
-    requestAnimationFrame(tick);
-  });
 }
 
 function getRateLimitMessage(retryAfterSec: number | null): string {
@@ -378,7 +354,7 @@ export function useAnalyzePage() {
 
       const reportPath = buildReportPath(reportId, flat.url);
       const reportSlug = buildReportSlug(reportId, flat.url);
-      const cachePayload = toReportClientCachePayload(flat);
+      const cachePayload = toReportClientCachePayload(flat, reportSlug);
 
       try {
         saveReport(reportId, cachePayload);
@@ -395,16 +371,10 @@ export function useAnalyzePage() {
       }
 
       stopProgressTimer();
-      latestProgress = getTimeBasedProgress(performance.now() - startedAt);
-
-      if (latestProgress < 90) {
-        await animateProgressTo100(latestProgress, setProgress);
-      } else {
-        setProgress(100);
-      }
+      setProgress(100);
 
       router.prefetch(reportPath);
-      await warmReportRouteCache(reportSlug, cachePayload);
+      void warmReportRouteCache(reportSlug, cachePayload);
       router.push(reportPath);
     } catch (caught: unknown) {
       stopProgressTimer();

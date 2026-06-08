@@ -1,7 +1,24 @@
 import type { AuditReport } from "@/lib/audit-report";
+import { buildReportPreviewPath } from "@/lib/report-preview-url";
 
 /** Fields kept server-side for OG generation but omitted from client API payloads. */
-const API_OMITTED_FIELDS = ["ogPreviewImage"] as const;
+const API_OMITTED_FIELDS = ["ogPreviewImage", "previewImage"] as const;
+
+export function withReportPreviewPath(
+  report: AuditReport,
+  routeParam: string
+): AuditReport {
+  const previewPath = buildReportPreviewPath(routeParam);
+
+  if (!previewPath) {
+    return report;
+  }
+
+  return {
+    ...report,
+    previewImage: previewPath,
+  };
+}
 
 export function toReportApiPayload(report: AuditReport): AuditReport {
   const payload = { ...report };
@@ -13,6 +30,15 @@ export function toReportApiPayload(report: AuditReport): AuditReport {
   return payload;
 }
 
-export function toReportClientCachePayload(report: AuditReport): AuditReport {
-  return toReportApiPayload(report);
+export function toReportClientCachePayload(
+  report: AuditReport,
+  routeParam?: string
+): AuditReport {
+  const lean = toReportApiPayload(report);
+
+  if (!routeParam) {
+    return lean;
+  }
+
+  return withReportPreviewPath(lean, routeParam);
 }

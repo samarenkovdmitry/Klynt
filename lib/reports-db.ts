@@ -32,6 +32,37 @@ export async function saveReportToDb(payload: {
   }
 }
 
+export async function updateReportOgPreviewInDb(
+  reportId: string,
+  ogPreviewImage: string
+) {
+  if (!isSupabaseConfigured() || !isValidReportId(reportId)) {
+    return;
+  }
+
+  const existing = await loadReportFromDb(reportId);
+
+  if (!existing) {
+    return;
+  }
+
+  const supabase = createServerSupabase();
+
+  const { error } = await supabase
+    .from("reports")
+    .update({
+      payload: {
+        ...existing,
+        ogPreviewImage,
+      },
+    })
+    .eq("id", reportId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
 export async function loadReportFromDb(
   reportId: string
 ): Promise<AuditReport | null> {
