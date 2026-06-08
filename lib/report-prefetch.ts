@@ -5,12 +5,15 @@ import { loadReport, saveReport } from "@/lib/report-storage";
 
 const REPORT_FETCH_TIMEOUT_MS = 15000;
 
-function parseReportPayload(value: unknown): AuditReport | null {
+function parseReportPayload(
+  value: unknown,
+  routeParam: string
+): AuditReport | null {
   if (!isAuditReport(value)) {
     return null;
   }
 
-  return toReportClientCachePayload(value);
+  return toReportClientCachePayload(value, routeParam);
 }
 
 async function fetchReportPayload(routeParam: string): Promise<AuditReport | null> {
@@ -30,7 +33,7 @@ async function fetchReportPayload(routeParam: string): Promise<AuditReport | nul
       return null;
     }
 
-    return parseReportPayload(await res.json());
+    return parseReportPayload(await res.json(), routeParam);
   } catch {
     return null;
   } finally {
@@ -70,7 +73,7 @@ export async function warmReportRouteCache(
 
   if (report) {
     try {
-      saveReport(param, toReportClientCachePayload(report));
+      saveReport(param, toReportClientCachePayload(report, param));
     } catch {
       // Navigation still works via in-memory state on the next page
     }

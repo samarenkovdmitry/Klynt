@@ -1,85 +1,13 @@
-"use client";
+import { ReportPrintPageView } from "@/components/report/ReportPrintPageView";
+import { getCachedReportRouteBundle } from "@/lib/report-server-cache";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+type ReportPrintPageProps = {
+  params: Promise<{ id: string }>;
+};
 
-import { ReportPageStates } from "@/components/report/ReportPageStates";
-import { ReportPrintDocument } from "@/components/report/print/ReportPrintDocument";
-import {
-  buildPrintDocumentTitle,
-  consumePrintAutoprint,
-} from "@/lib/report-export";
-import { formatReportDomain } from "@/lib/report-hero-theme";
-import { useReportData } from "@/hooks/useReportData";
+export default async function ReportPrintPage({ params }: ReportPrintPageProps) {
+  const { id } = await params;
+  const { report } = await getCachedReportRouteBundle(id);
 
-export default function ReportPrintPage() {
-  const params = useParams();
-  const reportId = Array.isArray(params.id) ? params.id[0] : params.id;
-  const [shouldAutoprint, setShouldAutoprint] = useState(false);
-
-  const { data, loadState } = useReportData(reportId);
-
-  useEffect(() => {
-    setShouldAutoprint(consumePrintAutoprint(reportId));
-  }, [reportId]);
-
-  useEffect(() => {
-    if (loadState !== "ready" || !data) {
-      return;
-    }
-
-    document.title = buildPrintDocumentTitle(formatReportDomain(data.url));
-  }, [loadState, data]);
-
-  useEffect(() => {
-    if (!shouldAutoprint || loadState !== "ready" || !data) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      window.print();
-    }, 500);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [shouldAutoprint, loadState, data]);
-
-  if (!reportId) {
-    return <ReportPageStates loadState="missing" />;
-  }
-
-  if (loadState !== "ready" || !data) {
-    return <ReportPageStates loadState={loadState} />;
-  }
-
-  return (
-    <>
-      <div className="report-print-toolbar no-print">
-        <div className="report-print-toolbar-actions">
-          <Link
-            href={`/report/${reportId}`}
-            className="inline-flex h-10 items-center justify-center rounded-full border border-[rgba(6,28,47,0.1)] px-5 text-[14px] font-semibold text-[var(--ink-primary)] no-underline"
-          >
-            Back to report
-          </Link>
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="inline-flex h-10 cursor-pointer items-center justify-center rounded-full border-none bg-[#2563EB] px-5 text-[14px] font-semibold text-white"
-          >
-            Save as PDF
-          </button>
-        </div>
-        <p className="report-print-toolbar-hint">
-          In the print dialog, disable <strong>Headers and footers</strong> to hide the
-          browser URL and page numbers. Your report already includes Klynt branding at the
-          end.
-        </p>
-      </div>
-
-      <ReportPrintDocument data={data} reportId={reportId} />
-    </>
-  );
+  return <ReportPrintPageView routeParam={id} initialData={report} />;
 }

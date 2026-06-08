@@ -5,10 +5,8 @@ import { ReportCrawlerContent } from "@/components/report/ReportCrawlerContent";
 import { ReportJsonLd } from "@/components/report/ReportJsonLd";
 import { isIndexableReportRouteParam } from "@/lib/report-indexing";
 import { buildReportMetadata } from "@/lib/report-seo";
-import {
-  canGenerateReportMetadata,
-  loadReportForPublicMetadata,
-} from "@/lib/report-seo-loader";
+import { getCachedReportRouteBundle } from "@/lib/report-server-cache";
+import { canGenerateReportMetadata } from "@/lib/report-seo-loader";
 import {
   isDemoReportRouteParam,
   resolveReportRouteParam,
@@ -52,8 +50,7 @@ export async function generateMetadata({
   }
 
   try {
-    const resolved = await resolveReportRouteParam(id);
-    const report = await loadReportForPublicMetadata(id);
+    const { resolved, report } = await getCachedReportRouteBundle(id);
 
     if (!resolved || !report) {
       return buildPageMetadata({
@@ -96,15 +93,15 @@ export default async function ReportLayout({
   }
 
   try {
-    const report = await loadReportForPublicMetadata(id);
+    const { resolved: cachedResolved, report } = await getCachedReportRouteBundle(id);
 
-    if (!report || !resolved) {
+    if (!report || !cachedResolved) {
       return children;
     }
 
     return (
       <>
-        <ReportJsonLd routeSlug={resolved.slug} report={report} siteUrl={siteUrl} />
+        <ReportJsonLd routeSlug={cachedResolved.slug} report={report} siteUrl={siteUrl} />
         <ReportCrawlerContent report={report} />
         {children}
       </>

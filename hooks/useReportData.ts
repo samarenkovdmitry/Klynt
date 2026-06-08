@@ -10,7 +10,10 @@ export type ReportLoadState = "loading" | "ready" | "missing";
 
 const REPORT_FETCH_TIMEOUT_MS = 15000;
 
-function parseStoredReport(stored: string): AuditReport | null {
+function parseStoredReport(
+  stored: string,
+  routeParam: string
+): AuditReport | null {
   try {
     const parsed: unknown = JSON.parse(stored);
 
@@ -18,7 +21,7 @@ function parseStoredReport(stored: string): AuditReport | null {
       return null;
     }
 
-    return toReportClientCachePayload(parsed);
+    return toReportClientCachePayload(parsed, routeParam);
   } catch {
     return null;
   }
@@ -31,7 +34,7 @@ function readCachedReport(routeParam: string): AuditReport | null {
     return null;
   }
 
-  return parseStoredReport(stored);
+  return parseStoredReport(stored, routeParam);
 }
 
 async function fetchReportFromApi(routeParam: string): Promise<AuditReport | null> {
@@ -56,7 +59,7 @@ async function fetchReportFromApi(routeParam: string): Promise<AuditReport | nul
       return null;
     }
 
-    return toReportClientCachePayload(parsed);
+    return toReportClientCachePayload(parsed, routeParam);
   } catch {
     return null;
   } finally {
@@ -64,20 +67,34 @@ async function fetchReportFromApi(routeParam: string): Promise<AuditReport | nul
   }
 }
 
-function getInitialLoadState(routeParam: string | undefined): ReportLoadState {
+function getInitialLoadState(
+  routeParam: string | undefined,
+  initialData?: AuditReport | null
+): ReportLoadState {
   if (!routeParam) {
     return "missing";
   }
 
-  return readCachedReport(routeParam) ? "ready" : "loading";
+  if (readCachedReport(routeParam) || initialData) {
+    return "ready";
+  }
+
+  return "loading";
 }
 
-export function useReportData(reportId: string | undefined) {
-  const [data, setData] = useState<AuditReport | null>(() =>
-    reportId ? readCachedReport(reportId) : null
-  );
+export function useReportData(
+  reportId: string | undefined,
+  initialData?: AuditReport | null
+) {
+  const [data, setData] = useState<AuditReport | null>(() => {
+    if (!reportId) {
+      return null;
+    }
+
+    return readCachedReport(reportId) ?? initialData ?? null;
+  });
   const [loadState, setLoadState] = useState<ReportLoadState>(() =>
-    getInitialLoadState(reportId)
+    getInitialLoadState(reportId, initialData)
   );
 
   useEffect(() => {
@@ -96,6 +113,20 @@ export function useReportData(reportId: string | undefined) {
       if (cached) {
         if (!cancelled) {
           setData(cached);
+          setLoadState("ready");
+        }
+        return;
+      }
+
+      if (initialData) {
+        try {
+          saveReport(id, toReportClientCachePayload(initialData, id));
+        } catch {
+          // Cache optional — SSR data still renders
+        }
+
+        if (!cancelled) {
+          setData(initialData);
           setLoadState("ready");
         }
         return;

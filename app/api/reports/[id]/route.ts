@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { toReportApiPayload } from "@/lib/report-api-payload";
+import { toReportApiPayload, withReportPreviewPath } from "@/lib/report-api-payload";
 import { isIndexableReportRouteParam } from "@/lib/report-indexing";
 import { canGenerateReportMetadata, loadReportForPublicMetadata } from "@/lib/report-seo-loader";
 import { isDemoReportRouteParam, resolveReportRouteParam } from "@/lib/report-route";
@@ -55,7 +55,7 @@ export async function GET(req: Request, context: RouteContext) {
       });
     }
 
-    return NextResponse.json(toReportApiPayload(report), {
+    return NextResponse.json(withReportPreviewPath(toReportApiPayload(report), resolved.slug), {
       headers: {
         "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
       },

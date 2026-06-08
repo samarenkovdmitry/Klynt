@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
+import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
+
 type ButtonVariant = "primary" | "secondary" | "accent";
 type ButtonTone = "light" | "dark";
 
@@ -10,6 +12,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   tone?: ButtonTone;
   icon?: ReactNode;
   href?: string;
+  /** When set with href, warms report cache on hover/focus before navigation. */
+  prefetchRouteParam?: string;
   fullWidth?: boolean;
 };
 
@@ -37,6 +41,7 @@ export function Button({
   tone = "light",
   icon,
   href,
+  prefetchRouteParam,
   fullWidth = true,
   type = "button",
   ...props
@@ -66,6 +71,18 @@ export function Button({
   );
 
   if (href && !disabled) {
+    if (prefetchRouteParam) {
+      return (
+        <ReportPrefetchLink
+          href={href}
+          routeParam={prefetchRouteParam}
+          className={classes}
+        >
+          {content}
+        </ReportPrefetchLink>
+      );
+    }
+
     return (
       <Link href={href} className={classes}>
         {content}

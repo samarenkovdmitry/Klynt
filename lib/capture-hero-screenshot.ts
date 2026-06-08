@@ -4,9 +4,7 @@ import puppeteer from "puppeteer-core";
 import sharp from "sharp";
 
 import { preparePageForHeroScreenshot } from "@/lib/page-screenshot";
-
-const TRACKER_PATTERN =
-  /google-analytics|googletagmanager|facebook\.net|hotjar|segment\.(com|io)|intercom|clarity\.ms|doubleclick|sentry\.io|mixpanel|amplitude/i;
+import { shouldBlockScreenshotRequest } from "@/lib/screenshot-request-filter";
 
 async function jumpTo(page: Page, y: number) {
   await page.evaluate((scrollY: number) => {
@@ -31,7 +29,7 @@ export async function captureHeroScreenshotBase64(url: string) {
     defaultViewport: {
       width: 1280,
       height: 900,
-      deviceScaleFactor: 2,
+      deviceScaleFactor: 1,
     },
     executablePath: await chromium.executablePath(),
     headless: true,
@@ -43,14 +41,7 @@ export async function captureHeroScreenshotBase64(url: string) {
     await page.setRequestInterception(true);
 
     page.on("request", (req) => {
-      const type = req.resourceType();
-      const requestUrl = req.url();
-
-      if (
-        type === "media" ||
-        type === "websocket" ||
-        TRACKER_PATTERN.test(requestUrl)
-      ) {
+      if (shouldBlockScreenshotRequest(req.resourceType(), req.url())) {
         req.abort();
         return;
       }
@@ -64,13 +55,13 @@ export async function captureHeroScreenshotBase64(url: string) {
 
     try {
       await page.goto(url, {
-        waitUntil: "load",
-        timeout: 12000,
+        waitUntil: "domcontentloaded",
+        timeout: 10000,
       });
     } catch {
       await page.goto(url, {
-        waitUntil: "domcontentloaded",
-        timeout: 10000,
+        waitUntil: "load",
+        timeout: 12000,
       });
     }
 

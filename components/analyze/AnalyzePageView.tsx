@@ -25,7 +25,8 @@ import { Button } from "@/components/ui/Button";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { useLoadingStall } from "@/hooks/useLoadingStall";
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
+import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
+import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 import {
   ANALYZE_STALL_HELPER,
   ANALYZE_STALL_LABEL,
@@ -429,12 +430,13 @@ export function AnalyzePageView() {
 
           <p className="mt-6 text-center text-[13px] leading-5 text-[#8E99A2]">
             Your URLs and screenshots are processed securely and never shared.{" "}
-            <Link
+            <ReportPrefetchLink
               href={DEMO_REPORT_PATH}
+              routeParam={DEMO_REPORT_SLUG}
               className="font-medium text-[var(--ink-primary)] underline-offset-2 hover:underline"
             >
               View a sample report
-            </Link>
+            </ReportPrefetchLink>
           </p>
         </div>
       </main>

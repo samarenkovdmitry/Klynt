@@ -63,7 +63,8 @@ function sortByPriority<T extends { priority?: ReportPriority }>(items: T[]) {
 
 function shouldShowPreview(src?: string) {
   if (!src?.trim()) return false;
-  if (src.startsWith("https://")) return true;
+  if (src.startsWith("/api/reports/") || src.startsWith("/demo/")) return true;
+  if (src.startsWith("http://") || src.startsWith("https://")) return true;
   if (src.startsWith("data:image/") && src.length < 500_000) return true;
 
   return false;
