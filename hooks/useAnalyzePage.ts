@@ -72,6 +72,7 @@ type AuditResponseFlat = {
   verdict: string;
   key_observation: string;
   confidence: number;
+  analysis_status?: "partial" | "complete";
   previewImage?: string;
   brand_stage?: BrandStage;
   traffic_source?: TrafficSource;
@@ -345,6 +346,10 @@ export function useAnalyzePage() {
         },
         generatedAt:
           typeof json.generatedAt === "string" ? json.generatedAt : new Date().toISOString(),
+        analysis_status:
+          json.analysis_status === "partial" || json.analysis_status === "complete"
+            ? json.analysis_status
+            : "partial",
       };
 
       const reportPath = buildReportPath(reportId, flat.url);

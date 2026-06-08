@@ -77,6 +77,8 @@ export type ReportMetricObservations = {
 
 export type AuditRisk = "low" | "medium" | "high";
 
+export type AnalysisStatus = "partial" | "complete";
+
 export type AuditReport = {
   url?: string;
   score: number;
@@ -99,8 +101,26 @@ export type AuditReport = {
   traffic_source?: TrafficSource;
   audience_type?: AudienceType;
   headline_directions?: HeadlineDirections;
+  /** partial = hero ready, findings still generating; complete = full report */
+  analysis_status?: AnalysisStatus;
   error?: string;
 };
+
+export function isHeroAuditReport(json: unknown): json is AuditReport {
+  if (!json || typeof json !== "object") return false;
+
+  const data = json as AuditReport;
+
+  if (typeof data.error === "string" && data.error.length > 0) return false;
+
+  const hasScore = Number.isFinite(Number(data.score));
+  const hasVerdict =
+    typeof data.verdict === "string" && data.verdict.trim().length > 0;
+  const hasSummary =
+    typeof data.summary === "string" && data.summary.trim().length > 0;
+
+  return hasScore && (hasVerdict || hasSummary);
+}
 
 export function isAuditReport(json: unknown): json is AuditReport {
   if (!json || typeof json !== "object") return false;
@@ -113,4 +133,16 @@ export function isAuditReport(json: unknown): json is AuditReport {
   const hasIssues = Array.isArray(data.issues) && data.issues.length > 0;
 
   return hasScore && hasIssues;
+}
+
+export function isReportDisplayable(json: unknown): json is AuditReport {
+  return isAuditReport(json) || isHeroAuditReport(json);
+}
+
+export function isReportComplete(report: AuditReport): boolean {
+  if (report.analysis_status === "partial") {
+    return false;
+  }
+
+  return isAuditReport(report);
 }

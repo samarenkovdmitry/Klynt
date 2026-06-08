@@ -1,5 +1,5 @@
 import type { AuditReport } from "@/lib/audit-report";
-import { isAuditReport } from "@/lib/audit-report";
+import { isReportDisplayable } from "@/lib/audit-report";
 import { toReportClientCachePayload } from "@/lib/report-api-payload";
 import { loadReport, saveReport } from "@/lib/report-storage";
 
@@ -9,7 +9,7 @@ function parseReportPayload(
   value: unknown,
   routeParam: string
 ): AuditReport | null {
-  if (!isAuditReport(value)) {
+  if (!isReportDisplayable(value)) {
     return null;
   }
 

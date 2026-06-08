@@ -1,5 +1,5 @@
 import { ANALYZE_FALLBACK_ERROR } from "@/lib/api-errors";
-import { isValidAuditResponse } from "@/lib/report-storage";
+import { isValidAnalyzeResponse } from "@/lib/report-storage";
 import { parseApiJsonResponse } from "@/lib/parse-api-response";
 
 export const ANALYZE_CLIENT_RETRY_DELAY_MS = 1200;
@@ -60,7 +60,7 @@ export async function postAnalyzeRequest(
       };
     }
 
-    if (!isValidAuditResponse(data)) {
+    if (!isValidAnalyzeResponse(data)) {
       const message =
         typeof data.error === "string" && data.error.trim()
           ? data.error.trim()
