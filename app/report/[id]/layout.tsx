@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 
+import { ReportCrawlerContent } from "@/components/report/ReportCrawlerContent";
+import { ReportJsonLd } from "@/components/report/ReportJsonLd";
+import { isIndexableReportId } from "@/lib/report-indexing";
 import { buildReportMetadata } from "@/lib/report-seo";
 import {
   canGenerateReportMetadata,
@@ -65,6 +68,36 @@ export async function generateMetadata({
   }
 }
 
-export default function ReportLayout({ children }: ReportLayoutProps) {
-  return children;
+export default async function ReportLayout({
+  children,
+  params,
+}: ReportLayoutProps) {
+  const { id } = await params;
+  const siteUrl = getRequestSiteUrl();
+
+  if (!isIndexableReportId(id) || !canGenerateReportMetadata(id)) {
+    return children;
+  }
+
+  if (!isDemoReportId(id) && !isSupabaseConfigured()) {
+    return children;
+  }
+
+  try {
+    const report = await loadReportForPublicMetadata(id);
+
+    if (!report) {
+      return children;
+    }
+
+    return (
+      <>
+        <ReportJsonLd reportId={id} report={report} siteUrl={siteUrl} />
+        <ReportCrawlerContent report={report} />
+        {children}
+      </>
+    );
+  } catch {
+    return children;
+  }
 }

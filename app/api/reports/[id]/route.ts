@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { loadReportFromDb } from "@/lib/reports-db";
+import { isIndexableReportId } from "@/lib/report-indexing";
+import { buildReportPlainText } from "@/lib/report-text-content";
+import {
+  isDemoReportId,
+  loadReportForPublicMetadata,
+} from "@/lib/report-seo-loader";
 import { isValidReportId } from "@/lib/report-id";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
 
@@ -13,14 +18,15 @@ async function resolveReportId(context: RouteContext) {
   return params.id;
 }
 
-export async function GET(_req: Request, context: RouteContext) {
+export async function GET(req: Request, context: RouteContext) {
   const reportId = await resolveReportId(context);
+  const wantsText = new URL(req.url).searchParams.get("format") === "text";
 
   if (!isValidReportId(reportId)) {
     return NextResponse.json({ error: "Report not found." }, { status: 404 });
   }
 
-  if (!isSupabaseConfigured()) {
+  if (!isDemoReportId(reportId) && !isSupabaseConfigured()) {
     return NextResponse.json(
       { error: "Report storage is not configured." },
       { status: 503 }
@@ -28,10 +34,26 @@ export async function GET(_req: Request, context: RouteContext) {
   }
 
   try {
-    const report = await loadReportFromDb(reportId);
+    const report = await loadReportForPublicMetadata(reportId);
 
     if (!report) {
       return NextResponse.json({ error: "Report not found." }, { status: 404 });
+    }
+
+    if (wantsText) {
+      if (!isIndexableReportId(reportId)) {
+        return NextResponse.json(
+          { error: "Plain-text export is not available for this report." },
+          { status: 403 }
+        );
+      }
+
+      return new Response(buildReportPlainText(report), {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
+        },
+      });
     }
 
     return NextResponse.json(report, {
