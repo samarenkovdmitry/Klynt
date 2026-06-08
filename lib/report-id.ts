@@ -30,13 +30,5 @@ export function isValidReportId(value: string) {
   return SHORT_REPORT_ID_RE.test(id) || UUID_REPORT_ID_RE.test(id);
 }
 
-export function getReportIdFromReportUrl(reportUrl: string): string | null {
-  try {
-    const match = new URL(reportUrl).pathname.match(/^\/report\/([^/]+)\/?$/);
-    const id = match?.[1];
-
-    return id && isValidReportId(id) ? id : null;
-  } catch {
-    return null;
-  }
-}
+/** @deprecated Use `getReportIdFromReportUrl` from `lib/report-route` instead. */
+export { getReportIdFromReportUrl } from "@/lib/report-route";

@@ -2,6 +2,7 @@ import type { AuditReport } from "@/lib/audit-report";
 import { isAuditReport } from "@/lib/audit-report";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { isValidReportId } from "@/lib/report-id";
+import { slugifyReportDomain } from "@/lib/report-slug";
 import { createServerSupabase, isSupabaseConfigured } from "@/lib/supabase-server";
 
 export async function saveReportToDb(payload: {
@@ -55,6 +56,36 @@ export async function loadReportFromDb(
   }
 
   return data.payload;
+}
+
+export async function findReportIdBySlugInDb(
+  idSuffix: string,
+  domainSlug: string
+): Promise<string | null> {
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
+
+  const supabase = createServerSupabase();
+
+  const { data, error } = await supabase
+    .from("reports")
+    .select("id, audited_url")
+    .like("id", `${idSuffix}%`);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const matches = (data ?? []).filter(
+    (row) => slugifyReportDomain(row.audited_url) === domainSlug
+  );
+
+  if (matches.length === 0) {
+    return null;
+  }
+
+  return matches[0].id;
 }
 
 export async function getAuditedPagesCount(): Promise<number | null> {

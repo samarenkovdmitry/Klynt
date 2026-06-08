@@ -1,4 +1,4 @@
-import { DEMO_REPORT_ID, DEMO_REPORT_PATH } from "@/lib/demo-report";
+import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 import { SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/site";
 
 export function GET() {
@@ -12,7 +12,7 @@ export function GET() {
     absoluteUrl(DEMO_REPORT_PATH, siteUrl),
     "",
     "## Plain-text report export",
-    absoluteUrl(`/api/reports/${DEMO_REPORT_ID}?format=text`, siteUrl),
+    absoluteUrl(`/api/reports/${DEMO_REPORT_SLUG}?format=text`, siteUrl),
     "",
     "## Main pages",
     absoluteUrl("/", siteUrl),

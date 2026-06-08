@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import type { AuditReport } from "@/lib/audit-report";
-import { isIndexableReportId } from "@/lib/report-indexing";
+import { isIndexableReportRouteParam } from "@/lib/report-indexing";
 import { formatOverallScore, formatReportDomain } from "@/lib/report-hero-theme";
 import { SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/site";
 
@@ -69,28 +69,28 @@ export function buildReportOgDescription(
   return "AI UX clarity report — actionable findings for landing pages.";
 }
 
-export function getReportOpenGraphImagePath(reportId: string) {
-  return `/report/${reportId}/opengraph-image`;
+export function getReportOpenGraphImagePath(routeSlug: string) {
+  return `/report/${routeSlug}/opengraph-image`;
 }
 
 export function getReportOpenGraphImageUrl(
-  reportId: string,
+  routeSlug: string,
   baseUrl = getSiteUrl()
 ) {
-  return absoluteUrl(getReportOpenGraphImagePath(reportId), baseUrl);
+  return absoluteUrl(getReportOpenGraphImagePath(routeSlug), baseUrl);
 }
 
 export function buildReportMetadata(
-  reportId: string,
+  routeSlug: string,
   report: AuditReport,
   siteUrl = getSiteUrl(),
   options?: { index?: boolean }
 ): Metadata {
   const title = buildReportOgTitle(report);
   const description = buildReportOgDescription(report);
-  const pageUrl = absoluteUrl(`/report/${reportId}`, siteUrl);
-  const imageUrl = getReportOpenGraphImageUrl(reportId, siteUrl);
-  const index = options?.index ?? isIndexableReportId(reportId);
+  const pageUrl = absoluteUrl(`/report/${routeSlug}`, siteUrl);
+  const imageUrl = getReportOpenGraphImageUrl(routeSlug, siteUrl);
+  const index = options?.index ?? isIndexableReportRouteParam(routeSlug);
 
   return {
     metadataBase: new URL(siteUrl),
