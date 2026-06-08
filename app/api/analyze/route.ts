@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
 import sharp from "sharp";
+
+import { requestAuditAnalysis } from "@/lib/analyze-openai";
+import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
 
 import { isAuditReport, type AuditReport } from "@/lib/audit-report";
 import { normalizeMetricObservations } from "@/lib/metric-observations";
 import { normalizeReportHeroCopy } from "@/lib/report-hero-copy";
-import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/lib/page-screenshot";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
 import { buildReportSlug } from "@/lib/report-slug";
@@ -19,7 +18,6 @@ import { normalizeReportPriority } from "@/lib/report-priority";
 import { saveReportToDb } from "@/lib/reports-db";
 import { scheduleReportOgBackfill } from "@/lib/report-og-backfill";
 import { buildReportPreviewPath } from "@/lib/report-preview-url";
-import { shouldBlockScreenshotRequest } from "@/lib/screenshot-request-filter";
 import {
   buildAuditContextPromptBlock,
   parseAudienceType,
@@ -46,36 +44,12 @@ const ANALYZE_RATE_WINDOW_MS =
   Number(process.env.ANALYZE_RATE_WINDOW_MS) || 60 * 60 * 1000;
 const MAX_SCREENSHOT_BYTES = 20 * 1024 * 1024;
 
-let openaiClient: OpenAI | null = null;
-
-function getOpenAIClient() {
-  const apiKey = process.env.OPENAI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
-  }
-
-  if (!openaiClient) {
-    openaiClient = new OpenAI({ apiKey });
-  }
-
-  return openaiClient;
-}
-
 // -----------------------------
 // HELPERS
 // -----------------------------
 async function blobToBase64(blob: Blob) {
   const arrayBuffer = await blob.arrayBuffer();
   return Buffer.from(arrayBuffer).toString("base64");
-}
-
-async function jumpTo(page: any, y: number) {
-  await page.evaluate((scrollY: number) => {
-    window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
-  }, y);
-
-  await new Promise((r) => setTimeout(r, 80));
 }
 
 async function optimizeScreenshotBase64(base64: string) {
@@ -89,30 +63,6 @@ async function optimizeScreenshotBase64(base64: string) {
 
 async function optimizeScreenshots(base64List: string[]) {
   return Promise.all(base64List.map((shot) => optimizeScreenshotBase64(shot)));
-}
-
-function extractJSON(text: string) {
-  let start = text.indexOf("{");
-
-  while (start !== -1) {
-    let end = text.lastIndexOf("}");
-
-    while (end !== -1 && end > start) {
-      const candidate = text.slice(start, end + 1);
-
-      try {
-        return JSON.parse(candidate);
-      } catch {
-        end = text.lastIndexOf("}", end - 1);
-      }
-    }
-
-    start = text.indexOf("{", start + 1);
-  }
-
-  throw new Error(
-  "AI analysis failed. Please try again."
-);
 }
 
 function clampPercent(n: any) {
@@ -276,90 +226,6 @@ function normalizeIssueTitle(item: {
 
   const firstSentence = why.match(/^[^.!?]+[.!?]/)?.[0]?.trim();
   return firstSentence || why;
-}
-
-
-
-// -----------------------------
-// FULL PAGE SCREENSHOT
-// -----------------------------
-async function captureWebsiteScreenshots(url: string) {
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: {
-      width: 1280,
-      height: 900,
-      deviceScaleFactor: 1,
-    },
-    executablePath: await chromium.executablePath(),
-    headless: true,
-  });
-
-  try {
-    const page = await browser.newPage();
-
-    await page.setRequestInterception(true);
-
-    page.on("request", (req) => {
-      if (shouldBlockScreenshotRequest(req.resourceType(), req.url())) {
-        req.abort();
-        return;
-      }
-
-      req.continue();
-    });
-
-    await page.setUserAgent(
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-    );
-
-    try {
-      await page.goto(url, {
-        waitUntil: "domcontentloaded",
-        timeout: 10000,
-      });
-    } catch {
-      await page.goto(url, {
-        waitUntil: "load",
-        timeout: 12000,
-      });
-    }
-
-    await preparePageForHeroScreenshot(page);
-
-    const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
-
-    const heroY = 0;
-    const lowerY =
-      bodyHeight <= 900
-        ? Math.max(0, bodyHeight - 650)
-        : Math.max(Math.floor(bodyHeight * 0.52), bodyHeight - 1300);
-
-    const viewport = page.viewport();
-    const clipWidth = viewport?.width ?? 1280;
-    const clipHeight = viewport?.height ?? 900;
-
-    const heroShotOptions = {
-      type: "jpeg" as const,
-      quality: 94,
-      clip: { x: 0, y: 0, width: clipWidth, height: clipHeight },
-    };
-    const lowerShotOptions = { type: "jpeg" as const, quality: 80 };
-
-    await jumpTo(page, heroY);
-    const hero = await page.screenshot(heroShotOptions);
-
-    await jumpTo(page, lowerY);
-    await preparePageForLowerScreenshot(page);
-    const lower = await page.screenshot(lowerShotOptions);
-
-    return [
-      Buffer.from(hero as Buffer).toString("base64"),
-      Buffer.from(lower as Buffer).toString("base64"),
-    ];
-  } finally {
-    await browser.close();
-  }
 }
 
 
@@ -548,65 +414,11 @@ metric_observations: expert UX consultant observations (NOT metric labels). Each
 - overall: holistic read of the page experience; do not repeat verdict verbatim.
 Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
 
-const screenshotContent: any[] = [];
-
-// HERO
-if (screenshotsBase64[0]) {
-  screenshotContent.push(
-    {
-      type: "input_text",
-      text: "Screenshot 1 — Hero section and above-the-fold experience",
-    },
-    {
-      type: "input_image",
-      image_url: `data:image/jpeg;base64,${screenshotsBase64[0]}`,
-    }
-  );
-}
-
-// LOWER PAGE
-if (screenshotsBase64[1]) {
-  screenshotContent.push(
-    {
-      type: "input_text",
-      text: "Screenshot 2 — Lower page: features, trust signals, CTAs and footer",
-    },
-    {
-      type: "input_image",
-      image_url: `data:image/jpeg;base64,${screenshotsBase64[1]}`,
-    }
-  );
-}
-
-    const response = await getOpenAIClient().responses.create({
-      model: "gpt-4.1-nano",
-      temperature: 0.2,
-      max_output_tokens: 2800,
-      input: [
-        {
-          role: "user",
-
-          content: [
-        {
-          type: "input_text",
-          text: basePrompt,
-        },
-
-        {
-          type: "input_text",
-          text: `Website URL: ${url}`,
-        },
-
-        ...screenshotContent,
-      ],
-    },
-  ],
-} as any);
-
-
-    const raw = response.output_text;
-
-    const json = extractJSON(raw);
+    const json: Record<string, any> = await requestAuditAnalysis({
+      basePrompt,
+      url,
+      screenshotsBase64,
+    });
 
 json.confidence = Number.isFinite(Number(json.confidence))
   ? Math.max(70, Math.min(98, Number(json.confidence)))

@@ -27,9 +27,13 @@ import { toReportClientCachePayload } from "@/lib/report-api-payload";
 import { warmReportRouteCache } from "@/lib/report-prefetch";
 import { buildReportPath } from "@/lib/report-route";
 import { buildReportSlug } from "@/lib/report-slug";
-import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
+import {
+  ANALYZE_CLIENT_RETRY_DELAY_MS,
+  postAnalyzeRequest,
+  warmAnalyzeRuntime,
+} from "@/lib/analyze-client-request";
 import { ANALYZE_FALLBACK_ERROR } from "@/lib/api-errors";
-import { parseApiJsonResponse } from "@/lib/parse-api-response";
+import { saveReport } from "@/lib/report-storage";
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
 
 type FlatIssue = {
@@ -170,6 +174,7 @@ export function useAnalyzePage() {
     setBrandStage(readStoredBrandStage());
     setTrafficSource(readStoredTrafficSource());
     setAudienceType(readStoredAudienceType());
+    warmAnalyzeRuntime();
   }, []);
 
   useEffect(() => {
@@ -276,48 +281,38 @@ export function useAnalyzePage() {
       form.append("trafficSource", trafficSource);
       form.append("audienceType", audienceType);
 
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        body: form,
-      });
-
-      if (res.status === 429) {
-        stopProgressTimer();
-        setProgress(0);
-        setLoading(false);
-        const retryAfter = Number(res.headers.get("Retry-After"));
-        failAnalysis(
-          "rate_limit",
-          getRateLimitMessage(Number.isFinite(retryAfter) ? retryAfter : null)
-        );
-        return;
-      }
-
-      const { data: json, error: responseError } = await parseApiJsonResponse<
-        AuditResponseFlat & { reportId?: string; error?: string }
-      >(res, ANALYZE_FALLBACK_ERROR);
-
       const analysisFailureKind: Exclude<AnalyzeErrorKind, null | "rate_limit" | "storage"> =
         inputMode === "url" ? "url_analysis" : "screenshot_analysis";
 
-      if (responseError || !json) {
+      let outcome = await postAnalyzeRequest(form);
+
+      if (outcome.kind === "error" && outcome.retryable) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, ANALYZE_CLIENT_RETRY_DELAY_MS)
+        );
+        outcome = await postAnalyzeRequest(form);
+      }
+
+      if (outcome.kind === "rate_limit") {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
-        failAnalysis(analysisFailureKind, responseError || ANALYZE_FALLBACK_ERROR);
+        failAnalysis("rate_limit", getRateLimitMessage(outcome.retryAfter));
         return;
       }
 
-      if (!isValidAuditResponse(json)) {
+      if (outcome.kind === "error") {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
-        failAnalysis(
-          analysisFailureKind,
-          json?.error || "Analysis returned an incomplete report. Please try again."
-        );
+        failAnalysis(analysisFailureKind, outcome.message);
         return;
       }
+
+      const json = outcome.data as AuditResponseFlat & {
+        reportId?: string;
+        error?: string;
+      };
 
       const reportId =
         typeof json.reportId === "string" && json.reportId.trim()
