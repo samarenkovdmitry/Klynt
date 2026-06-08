@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import type { AuditReport } from "@/lib/audit-report";
+import { isIndexableReportId } from "@/lib/report-indexing";
 import { formatOverallScore, formatReportDomain } from "@/lib/report-hero-theme";
 import { SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/site";
 
@@ -82,12 +83,14 @@ export function getReportOpenGraphImageUrl(
 export function buildReportMetadata(
   reportId: string,
   report: AuditReport,
-  siteUrl = getSiteUrl()
+  siteUrl = getSiteUrl(),
+  options?: { index?: boolean }
 ): Metadata {
   const title = buildReportOgTitle(report);
   const description = buildReportOgDescription(report);
   const pageUrl = absoluteUrl(`/report/${reportId}`, siteUrl);
   const imageUrl = getReportOpenGraphImageUrl(reportId, siteUrl);
+  const index = options?.index ?? isIndexableReportId(reportId);
 
   return {
     metadataBase: new URL(siteUrl),
@@ -97,7 +100,7 @@ export function buildReportMetadata(
       canonical: pageUrl,
     },
     robots: {
-      index: false,
+      index,
       follow: true,
     },
     openGraph: {
