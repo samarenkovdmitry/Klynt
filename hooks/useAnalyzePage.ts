@@ -23,6 +23,8 @@ import {
   writeStoredBrandStage,
 } from "@/lib/brand-stage";
 import { generateReportId } from "@/lib/report-id";
+import { toReportClientCachePayload } from "@/lib/report-api-payload";
+import { warmReportRouteCache } from "@/lib/report-prefetch";
 import { buildReportPath } from "@/lib/report-route";
 import { buildReportSlug } from "@/lib/report-slug";
 import { isValidAuditResponse, saveReport } from "@/lib/report-storage";
@@ -67,7 +69,6 @@ type AuditResponseFlat = {
   key_observation: string;
   confidence: number;
   previewImage?: string;
-  ogPreviewImage?: string;
   brand_stage?: BrandStage;
   traffic_source?: TrafficSource;
   audience_type?: AudienceType;
@@ -356,8 +357,6 @@ export function useAnalyzePage() {
         key_observation: json.key_observation ?? "",
         confidence: json.confidence ?? 0,
         previewImage: typeof json.previewImage === "string" ? json.previewImage : undefined,
-        ogPreviewImage:
-          typeof json.ogPreviewImage === "string" ? json.ogPreviewImage : undefined,
         metric_observations: json.metric_observations,
         brand_stage: json.brand_stage ?? brandStage,
         traffic_source: json.traffic_source ?? trafficSource,
@@ -377,9 +376,13 @@ export function useAnalyzePage() {
           typeof json.generatedAt === "string" ? json.generatedAt : new Date().toISOString(),
       };
 
+      const reportPath = buildReportPath(reportId, flat.url);
+      const reportSlug = buildReportSlug(reportId, flat.url);
+      const cachePayload = toReportClientCachePayload(flat);
+
       try {
-        saveReport(reportId, flat);
-        saveReport(buildReportSlug(reportId, flat.url), flat);
+        saveReport(reportId, cachePayload);
+        saveReport(reportSlug, cachePayload);
       } catch {
         stopProgressTimer();
         setProgress(0);
@@ -400,7 +403,9 @@ export function useAnalyzePage() {
         setProgress(100);
       }
 
-      router.push(buildReportPath(reportId, flat.url));
+      router.prefetch(reportPath);
+      await warmReportRouteCache(reportSlug, cachePayload);
+      router.push(reportPath);
     } catch (caught: unknown) {
       stopProgressTimer();
       setProgress(0);
