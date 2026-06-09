@@ -99,25 +99,19 @@ Return ONLY valid JSON (no markdown):
     "overall": "string"
   },
   "issues": [{
-    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
-    "title": "one concrete sentence",
-    "bullets": ["2-3 short evidence tags"],
-    "why": "string",
-    "impact": { "clarity"?: int, "navigation"?: int, "visuals"?: int, "trust"?: int, "conversion"?: int, "cta"?: int }
+    "severity": "critical"|"warning"|"minor",
+    "category": "hero"|"copy"|"trust"|"cta"|"visual"|"friction",
+    "title": "string — max 12 words, must quote or name a specific element",
+    "fix": "string — one concrete action, max 15 words, starts with verb"
   }],
   "suggestions": [{
-    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
     "section": "string",
-    "recommendation": "string",
-    "why": "string",
-    "priority": "quick_win"|"high_impact"|"medium_impact"
+    "action": "string — starts with verb, max 10 words"
   }],
   "copy": [{
     "section": "string",
-    "before": "exact visible copy",
-    "after": "clearer rewrite",
-    "why": "string",
-    "priority": "quick_win"|"high_impact"|"medium_impact"
+    "before": "exact visible text",
+    "after": "rewrite, max 20 words"
   }],
   "breakdown": { "clarity": int, "navigation": int, "visuals": int, "trust": int, "conversion": int }
 }
