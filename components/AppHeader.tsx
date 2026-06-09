@@ -7,7 +7,7 @@ import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
-const HEADER_HEIGHT_PX = 68;
+const HEADER_HEIGHT_PX = 52;
 
 type NavItem = {
   href: string;
@@ -36,13 +36,13 @@ const navItems: NavItem[] = [
 
 function navLinkClass(isActive: boolean, isLanding: boolean) {
   const base =
-    "rounded-full px-3 py-2 text-[13px] font-medium transition-colors md:px-4 md:text-[14px]";
+    "rounded-lg px-[11px] py-[5px] text-[13px] transition-all duration-150";
 
   if (isLanding) {
     return [
       base,
       isActive
-        ? "bg-white/15 font-semibold text-white"
+        ? "bg-white/15 font-medium text-white"
         : "text-white/75 hover:bg-white/10 hover:text-white",
     ].join(" ");
   }
@@ -50,8 +50,8 @@ function navLinkClass(isActive: boolean, isLanding: boolean) {
   return [
     base,
     isActive
-      ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
-      : "text-[#061C2F]/65 hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
+      ? "bg-black/[0.07] font-medium text-[#111]"
+      : "text-[#999] hover:bg-black/[0.05] hover:text-[#111]",
   ].join(" ");
 }
 
@@ -59,8 +59,8 @@ function mobileNavLinkClass(isActive: boolean) {
   return [
     "block w-full rounded-xl px-4 py-3 text-left text-[15px] font-medium transition-colors",
     isActive
-      ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
-      : "text-[#061C2F]/80 hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
+      ? "bg-black/[0.06] font-semibold text-[#111]"
+      : "text-[#111]/80 hover:bg-black/[0.04] hover:text-[#111]",
   ].join(" ");
 }
 
@@ -74,8 +74,6 @@ function isNavActive(item: NavItem, pathname: string) {
 export function AppHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
-  const isReport = pathname.startsWith("/report");
-  const showSubtitle = !isLanding && !isReport;
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -100,39 +98,39 @@ export function AppHeader() {
           "app-site-header sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
           isLanding
             ? "border-b border-transparent bg-transparent"
-            : "border-b border-[rgba(6,28,47,0.10)] bg-white",
+            : "border-b border-transparent bg-[#EFEFED]",
         ].join(" ")}
       >
-        <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between gap-4 px-4 md:px-6">
+        <div className="mx-auto flex h-[52px] max-w-[1180px] items-center justify-between gap-4 px-4 md:px-8">
           <Link
             href="/"
-            className="flex min-w-0 items-center gap-3.5 sm:gap-4 md:gap-5"
+            className="flex min-w-0 items-center gap-[7px]"
             aria-label="Klynt — home"
             onClick={() => setMenuOpen(false)}
           >
-            <img
-              src={isLanding ? "/klynt-logo-light.svg" : "/klynt-logo-dark.svg"}
-              alt="Klynt"
-              className="h-[30px] w-[100px] shrink-0"
-            />
-            {!showSubtitle ? null : (
+            {isLanding ? (
+              <img
+                src="/klynt-logo-light.svg"
+                alt="Klynt"
+                className="h-[30px] w-[100px] shrink-0"
+              />
+            ) : (
               <>
-                <span
-                  className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
+                <img
+                  src="/icon.png"
+                  alt=""
+                  className="h-5 w-5 shrink-0 rounded-[6px]"
                   aria-hidden
                 />
-                <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
-                  UX Clarity Analyzer
-                </span>
-                <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:hidden">
-                  UX Analyzer
+                <span className="text-[15px] font-semibold tracking-[-0.03em] text-[#111]">
+                  Klynt
                 </span>
               </>
             )}
           </Link>
 
           <nav
-            className="hidden shrink-0 items-center gap-0.5 md:flex md:gap-1"
+            className="hidden shrink-0 items-center gap-0.5 md:flex"
             aria-label="Main"
           >
             {navItems.map((item) =>
@@ -163,7 +161,7 @@ export function AppHeader() {
               "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors md:hidden",
               isLanding
                 ? "text-white hover:bg-white/10"
-                : "text-[#061C2F] hover:bg-[#061C2F]/8",
+                : "text-[#111] hover:bg-black/[0.05]",
             ].join(" ")}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
@@ -197,10 +195,10 @@ export function AppHeader() {
             min-w-[200px]
             rounded-2xl
             border
-            border-[rgba(6,28,47,0.08)]
+            border-black/[0.08]
             bg-white
             p-2
-            shadow-[0_16px_48px_rgba(6,28,47,0.14)]
+            shadow-[0_16px_48px_rgba(0,0,0,0.14)]
             ${menuOpen ? "" : "pointer-events-none invisible"}
           `}
           style={{

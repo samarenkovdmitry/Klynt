@@ -55,6 +55,16 @@ export function formatAnalyzedDate(value?: string) {
   })}`;
 }
 
+export function formatReportDateShort(value?: string) {
+  const date = value ? new Date(value) : new Date();
+
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export function formatReportDomain(url?: string) {
   if (!url) return "";
 

@@ -1,4 +1,4 @@
-export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
+export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1000px]";
 
 export const REPORT_SECTION_SPACING_CLASS = "mt-12";
 

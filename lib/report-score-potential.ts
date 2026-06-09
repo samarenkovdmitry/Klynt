@@ -4,12 +4,19 @@ import { getImpactEntries } from "@/lib/report-impact";
 /** Rough uplift from top issue impacts (UI-only estimate, not a promise). */
 const IMPACT_TO_SCORE_FACTOR = 0.35;
 
+export type ScoreFixItem = {
+  label: string;
+  text: string;
+  points: string;
+};
+
 export type ScorePotentialSummary = {
   currentScore: number;
   potentialScore: number;
   fixCount: number;
   leverageTitle: string;
   leverageDetail: string;
+  fixItems: ScoreFixItem[];
 };
 
 export function estimateScorePotential(
@@ -30,17 +37,85 @@ export function estimateScorePotential(
     ? getImpactEntries(topIssue, { breakdown, index: 0 })[0]
     : undefined;
 
+  const fixItems = buildScoreFixItems(issues, breakdown, currentScore, potentialScore);
+
   return {
     currentScore,
     potentialScore,
     fixCount: topIssues.length,
-    leverageTitle: topIssue?.title
-      ? "Fix the top issue first"
-      : "Address the highest-impact findings",
+    leverageTitle: topIssues.length >= 2
+      ? "Fix issues 1 and 2 first"
+      : topIssue?.title
+        ? "Fix the top issue first"
+        : "Address the highest-impact findings",
     leverageDetail: topImpact
-      ? `${formatImpactMetric(topImpact.key)} impact accounts for much of the gap — it's the highest-leverage change on this page.`
+      ? `Addressing the top findings accounts for +${formatPointDelta(currentScore, potentialScore, 0.7)} points. Both are copy or layout changes — no full redesign needed.`
       : "Tackling the top findings should move the score meaningfully on the next run.",
+    fixItems,
   };
+}
+
+function buildScoreFixItems(
+  issues: ReportIssue[],
+  breakdown: ReportBreakdown | undefined,
+  currentScore: number,
+  potentialScore: number
+): ScoreFixItem[] {
+  if (issues.length === 0) return [];
+
+  const totalGain = potentialScore - currentScore;
+  const topImpacts = issues.slice(0, 3).map((issue, index) => {
+    const entry = getImpactEntries(issue, { breakdown, index })[0];
+    return {
+      issue,
+      index,
+      magnitude: entry ? Math.abs(entry.value) : 0,
+      severity: entry && Math.abs(entry.value) >= 16 ? "Critical" : "Warning",
+    };
+  });
+
+  const impactSum = topImpacts.reduce((sum, item) => sum + item.magnitude, 0) || 1;
+  const items: ScoreFixItem[] = [];
+
+  if (topImpacts[0]) {
+    items.push({
+      label: `Fix 1 · ${topImpacts[0].severity}`,
+      text: shortenFixText(topImpacts[0].issue.title),
+      points: `+${((totalGain * topImpacts[0].magnitude) / impactSum).toFixed(1)} pts`,
+    });
+  }
+
+  if (topImpacts[1]) {
+    items.push({
+      label: `Fix 2 · ${topImpacts[1].severity}`,
+      text: shortenFixText(topImpacts[1].issue.title),
+      points: `+${((totalGain * topImpacts[1].magnitude) / impactSum).toFixed(1)} pts`,
+    });
+  }
+
+  if (topImpacts.length > 2) {
+    items.push({
+      label: `Fix 3–${topImpacts.length} · Warning`,
+      text: "Visual hierarchy + trust signals",
+      points: `+${(
+        totalGain -
+        items.reduce((sum, item) => sum + Number.parseFloat(item.points.replace(/[^\d.]/g, "")), 0)
+      ).toFixed(1)} pts`,
+    });
+  }
+
+  return items.slice(0, 3);
+}
+
+function shortenFixText(text?: string) {
+  const value = text?.trim() ?? "";
+  if (!value) return "Address the highest-impact finding";
+  if (value.length <= 52) return value;
+  return `${value.slice(0, 49).trim()}…`;
+}
+
+function formatPointDelta(currentScore: number, potentialScore: number, fraction = 1) {
+  return ((potentialScore - currentScore) * fraction).toFixed(1);
 }
 
 function formatImpactMetric(key: string) {

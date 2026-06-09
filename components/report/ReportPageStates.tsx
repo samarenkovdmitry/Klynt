@@ -29,7 +29,7 @@ function ReportStateLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <AppHeader />
-      <main className="flex min-h-[calc(100dvh-68px)] items-center justify-center bg-white px-4 md:px-6">
+      <main className="flex min-h-[calc(100dvh-52px)] items-center justify-center bg-[#EBEBEB] px-4 md:px-8">
         {children}
       </main>
     </>
