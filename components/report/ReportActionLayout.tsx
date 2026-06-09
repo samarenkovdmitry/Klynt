@@ -9,7 +9,6 @@ import {
 } from "@remixicon/react";
 
 import { ImpactPercentageBadges } from "@/components/report/ImpactBadges";
-import { ReportSectionsSkeleton } from "@/components/report/ReportSectionsSkeleton";
 import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
 import {
   REPORT_CARD_CLASS,
@@ -42,7 +41,6 @@ import {
 type ReportActionLayoutProps = {
   data: AuditReport;
   routeParam: string;
-  reportComplete: boolean;
   waitlistActive: boolean;
   copiedIndex: number | null;
   lockedSummary: {
@@ -448,7 +446,6 @@ function WhatsNextRow({
 export function ReportActionLayout({
   data,
   routeParam,
-  reportComplete,
   waitlistActive,
   copiedIndex,
   lockedSummary,
@@ -470,9 +467,7 @@ export function ReportActionLayout({
         <ReportScoreStrip data={data} onShare={onShare} onExport={onExport} />
       </div>
 
-      {!reportComplete ? (
-        <ReportSectionsSkeleton />
-      ) : topIssue ? (
+      {topIssue ? (
         <>
           <div>
             <p className={SECTION_LABEL_CLASS}>Top issue — fix this first</p>

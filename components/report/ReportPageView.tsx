@@ -11,7 +11,6 @@ import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStick
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import type { AuditReport } from "@/lib/audit-report";
-import { isReportComplete } from "@/lib/audit-report";
 import { isDemoReportRouteParam } from "@/lib/report-route";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
@@ -66,8 +65,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     remainingSuggestions: Math.max(0, suggestions.length - 1),
     remainingCopy: Math.max(0, copy.length - 1),
   };
-  const reportComplete = isReportComplete(data);
-
   return (
     <>
       <AppHeader />
@@ -82,13 +79,12 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
           <ReportActionLayout
             data={data}
             routeParam={routeParam}
-            reportComplete={reportComplete}
             waitlistActive={waitlistActive}
             copiedIndex={copiedIndex}
             lockedSummary={lockedSummary}
             onCopy={handleCopy}
-            onShare={reportComplete ? handleShare : undefined}
-            onExport={reportComplete ? handleExport : undefined}
+            onShare={handleShare}
+            onExport={handleExport}
             onRerun={handleRerun}
             onUnlock={unlock}
           />

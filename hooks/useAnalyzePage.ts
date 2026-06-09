@@ -349,7 +349,7 @@ export function useAnalyzePage() {
         analysis_status:
           json.analysis_status === "partial" || json.analysis_status === "complete"
             ? json.analysis_status
-            : "partial",
+            : "complete",
       };
 
       const reportPath = buildReportPath(reportId, flat.url);
