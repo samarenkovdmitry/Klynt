@@ -22,6 +22,12 @@ export function buildHeroAuditPrompt(
 
 Analyze ONLY the hero / above-the-fold screenshot. Never invent UI.
 
+HERO AUDIT QUALITY RULES:
+- verdict, summary, and key_observation must each address a different aspect of the hero. Never paraphrase one as another.
+- key_observation must reveal something non-obvious — not restate the headline problem.
+- breakdown scores must reflect actual visible strengths and weaknesses — avoid clustering all values in the 45-70 range. Use the full 0-100 range where justified.
+- metric_observations: each field must name a specific visible element, not describe the metric category in general terms.
+
 ${auditContextPrompt}
 
 ${brandStagePrompt}
