@@ -4,15 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AppHeader } from "@/components/AppHeader";
-import { ReportCopySection } from "@/components/report/ReportCopySection";
-import { ReportCtaSection } from "@/components/report/ReportCtaSection";
-import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
+import { ReportActionLayout } from "@/components/report/ReportActionLayout";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
-import { ReportSectionsSkeleton } from "@/components/report/ReportSectionsSkeleton";
-import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
-import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
-import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
@@ -21,7 +15,6 @@ import { isReportComplete } from "@/lib/audit-report";
 import { isDemoReportRouteParam } from "@/lib/report-route";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
-import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
 import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
 
@@ -73,7 +66,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     remainingSuggestions: Math.max(0, suggestions.length - 1),
     remainingCopy: Math.max(0, copy.length - 1),
   };
-  const previewSrc = resolveReportPreviewSrc(routeParam, data.previewImage);
   const reportComplete = isReportComplete(data);
 
   return (
@@ -87,63 +79,19 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
         ].join(" ")}
       >
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
-          <ReportHeroSummary
-            url={data.url}
-            generatedAt={data.generatedAt}
-            score={data.score}
-            verdict={data.verdict}
-            summary={data.summary}
-            risk={data.risk}
-            breakdown={data.breakdown}
-            confidence={data.confidence}
-            keyObservation={data.key_observation}
-            previewImage={previewSrc}
-            metricObservations={data.metric_observations}
-            issues={data.issues}
+          <ReportActionLayout
+            data={data}
+            routeParam={routeParam}
+            reportComplete={reportComplete}
+            waitlistActive={waitlistActive}
+            copiedIndex={copiedIndex}
+            lockedSummary={lockedSummary}
+            onCopy={handleCopy}
             onShare={reportComplete ? handleShare : undefined}
             onExport={reportComplete ? handleExport : undefined}
+            onRerun={handleRerun}
+            onUnlock={unlock}
           />
-
-          <div className="space-y-0">
-            {!reportComplete ? (
-              <ReportSectionsSkeleton />
-            ) : waitlistActive ? (
-              <>
-                <ReportUxIssuesSection
-                  issues={issues}
-                  breakdown={data.breakdown}
-                  waitlistActive={waitlistActive}
-                />
-                <ReportWaitlistGate
-                  reportId={routeParam}
-                  locked={lockedSummary}
-                  onUnlock={unlock}
-                />
-              </>
-            ) : (
-              <>
-                <ReportUxIssuesSection
-                  issues={issues}
-                  breakdown={data.breakdown}
-                  waitlistActive={waitlistActive}
-                />
-                <ReportSuggestionsSection suggestions={suggestions} />
-                <ReportCopySection
-                  copy={copy}
-                  headlineDirections={data.headline_directions}
-                  brandStage={data.brand_stage}
-                  copiedIndex={copiedIndex}
-                  onCopy={handleCopy}
-                />
-              </>
-            )}
-          </div>
-
-          {!waitlistActive && reportComplete && (
-            <div className="mt-12">
-              <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
-            </div>
-          )}
         </div>
       </main>
 
