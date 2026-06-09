@@ -130,17 +130,14 @@ Hero copy — three distinct layers. Never paraphrase one layer as another:
   Good: "Trust badges appear before the value prop, which can feel like marketing noise."
   Bad: another headline-clarity sentence
 
-issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
-Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
+issues[].title: max 12 words. Must quote visible text or name a specific element. NEVER use abstract labels ("Weak visual hierarchy", "Low clarity", "CTA gap").
+Good title: "Hero headline 'Work smarter' never says who the product is for."
 Bad title: "Weak visual hierarchy"
-Impact: REQUIRED on every issue — include issues[].impact with exactly one negative integer from -5 to -25.
-Example: "impact": { "clarity": -18 }. Allowed keys: clarity, navigation, visuals, trust, conversion, cta.
-Never omit impact. Never use 0.
-priority: suggestions[] and copy[] ONLY — required enum, no impact field:
-- quick_win: low effort, visible UX payoff (copy tweak, one CTA, small layout fix)
-- high_impact: materially improves understanding or conversion; may need more design/dev work
-- medium_impact: helpful but secondary, partial gain, or needs validation
-confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average — never put impact penalties (-5 to -25) into breakdown.
+issues[].fix: one concrete action, max 15 words, starts with a verb (Replace, Add, Move, Remove, Rewrite).
+issues[].severity: "critical" = visitor likely leaves; "warning" = friction or confusion; "minor" = polish.
+suggestions[].action: starts with a verb, max 10 words. Never restate the issue title.
+copy[].before: exact visible text from the page. copy[].after: clearer rewrite, max 20 words.
+confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average.
 metric_observations: expert UX consultant observations (NOT metric labels). Each field 12-16 words.
 - Do NOT repeat category names (Trust, Clarity, Friction, Overall) or the word "metric".
 - Describe likely user perception and behavioral impact, like a consultant briefing a team.
