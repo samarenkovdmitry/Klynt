@@ -98,40 +98,32 @@ Return ONLY valid JSON (no markdown):
     "friction": "string",
     "overall": "string"
   },
-  "issues": [
-    {
-      "severity": "critical"|"warning"|"minor",
-      "category": "hero"|"copy"|"trust"|"cta"|"visual"|"friction",
-      "title": "string — max 12 words, must quote or name a specific element",
-      "fix": "string — one concrete action, max 15 words, starts with verb"
-    },
-    {
-      "severity": "critical",
-      "category": "hero",
-      "title": "The headline 'Get started' never says what the product does",
-      "fix": "Replace with outcome-led headline naming the product category"
-    },
-    {
-      "severity": "warning",
-      "category": "trust",
-      "title": "No logos or testimonials visible above the fold",
-      "fix": "Move one client logo row directly below the headline"
-    }
-  ],
+  "issues": [{
+    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
+    "title": "one concrete sentence",
+    "bullets": ["2-3 short evidence tags"],
+    "why": "string",
+    "impact": { "clarity"?: int, "navigation"?: int, "visuals"?: int, "trust"?: int, "conversion"?: int, "cta"?: int }
+  }],
   "suggestions": [{
+    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
     "section": "string",
-    "action": "string — starts with verb, max 10 words"
+    "recommendation": "string",
+    "why": "string",
+    "priority": "quick_win"|"high_impact"|"medium_impact"
   }],
   "copy": [{
     "section": "string",
-    "before": "exact visible text",
-    "after": "rewrite, max 20 words"
+    "before": "exact visible copy",
+    "after": "clearer rewrite",
+    "why": "string",
+    "priority": "quick_win"|"high_impact"|"medium_impact"
   }],
   "breakdown": { "clarity": int, "navigation": int, "visuals": int, "trust": int, "conversion": int }
 }
 
 Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
-Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words.
+Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; why fields max 28 words each.
 
 Hero copy — three distinct layers. Never paraphrase one layer as another:
 - verdict: auditor diagnosis in 6-10 words. Name the main UX or conversion problem on THIS page.
@@ -144,14 +136,17 @@ Hero copy — three distinct layers. Never paraphrase one layer as another:
   Good: "Trust badges appear before the value prop, which can feel like marketing noise."
   Bad: another headline-clarity sentence
 
-issues[].title: max 12 words. Must quote visible text or name a specific element. NEVER use abstract labels ("Weak visual hierarchy", "Low clarity", "CTA gap").
-Good title: "Hero headline 'Work smarter' never says who the product is for."
+issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
+Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
 Bad title: "Weak visual hierarchy"
-issues[].fix: one concrete action, max 15 words, starts with a verb (Replace, Add, Move, Remove, Rewrite).
-issues[].severity: "critical" = visitor likely leaves; "warning" = friction or confusion; "minor" = polish.
-suggestions[].action: starts with a verb, max 10 words. Never restate the issue title.
-copy[].before: exact visible text from the page. copy[].after: clearer rewrite, max 20 words.
-confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average.
+Impact: REQUIRED on every issue — include issues[].impact with exactly one negative integer from -5 to -25.
+Example: "impact": { "clarity": -18 }. Allowed keys: clarity, navigation, visuals, trust, conversion, cta.
+Never omit impact. Never use 0.
+priority: suggestions[] and copy[] ONLY — required enum, no impact field:
+- quick_win: low effort, visible UX payoff (copy tweak, one CTA, small layout fix)
+- high_impact: materially improves understanding or conversion; may need more design/dev work
+- medium_impact: helpful but secondary, partial gain, or needs validation
+confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average — never put impact penalties (-5 to -25) into breakdown.
 metric_observations: expert UX consultant observations (NOT metric labels). Each field 12-16 words.
 - Do NOT repeat category names (Trust, Clarity, Friction, Overall) or the word "metric".
 - Describe likely user perception and behavioral impact, like a consultant briefing a team.

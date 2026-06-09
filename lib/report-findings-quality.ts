@@ -164,38 +164,59 @@ function normalizeCopySections(copy: ReportCopyItem[]) {
 }
 
 export function buildAnalysisQualityPromptBlock() {
-  return `ANALYSIS RULES:
-- Find 4 issues that are SPECIFIC to this exact page.
-  Each issue must quote a visible text fragment or name an exact UI element.
-- Issue #1: must be the single most damaging problem for a first-time visitor.
-- Issues must cover at least 3 different areas:
-  headline/copy, trust/social proof, CTA/conversion, visual layout, navigation.
-- Never write an issue that could apply to any landing page unchanged.
+  return `UNIQUENESS AND EVIDENCE RULES:
+- Each of the 4 issues MUST target a different visible section or user moment. Max 2 issues may focus on hero/above-the-fold.
+- At least 1 issue MUST come from Screenshot 2 (lower page: features, trust, pricing, footer, secondary CTAs).
+- issues[].bullets: 2-3 tags; when visible text exists, include one short quoted phrase from the page (3-8 words) in a bullet.
+- suggestions[]: each must reference a different section string; do NOT restate an issue title as the recommendation.
+- copy[]: use 3 different sections (hero headline, supporting line/subtext, primary CTA or closest equivalent).
+- Never repeat the same root cause across verdict, summary, key_observation, and multiple issue titles.
+- Prefer page-specific findings over generic landing-page advice. Name the element, block, or copy you see.
 
-EVIDENCE REQUIRED:
-- Every issue title must contain either: a quoted text from the page,
-  or a specific element name (e.g. "the 'Contact sales' button",
-  "the hero background video", "the pricing table").
-- If you cannot name a specific element — skip that issue and find another.
+INSIGHT DEPTH RULES:
+- Before writing each issue, ask: would this observation apply to 80% of SaaS
+  landing pages? If yes — go deeper or find a different issue.
+- Good issue: specific to this page, references visible element, explains
+  the UX consequence for this particular product/audience.
+- Bad issue: could be copied to any landing page report unchanged.
+- Each issue must answer: what specifically did you see, why does it matter
+  for THIS product, what does a visitor think or feel because of it.
+- Forbidden generic findings (do not use these as issue #1 or #2):
+  "headline doesn't say who it's for"
+  "trust signals are missing"
+  "CTA lacks context"
+  "visual hierarchy could be improved"
+  These may appear only as issue #3 or #4, and only if truly the most
+  notable remaining problem on the page.
 
-SUGGESTIONS:
-- Each suggestion: one concrete action starting with a verb
-  (Move, Replace, Add, Remove, Rewrite).
-- Max 8 words in suggestion title.
-- Never restate the issue as a suggestion.
+EVIDENCE REQUIREMENT:
+- Every issue title must contain at least one of:
+  a quoted text fragment from the page, a specific section name,
+  or a specific UI element name.
+- Example good: "The subheadline 'built for teams' contradicts the solo
+  pricing shown below the fold"
+- Example bad: "The messaging lacks clarity about the target audience"
+- If you cannot name a specific element — the issue is too generic, find another.
 
-SCORE:
-- 8.5-10: exceptional, almost no issues.
-- 7.0-8.4: good, 1-2 minor gaps.
-- 5.5-6.9: at risk, multiple issues. Most pages land here.
-- 4.0-5.4: weak, visitor confused within 5 seconds.
-- Below 4.0: only for completely broken pages without headline or CTA.
-- Default assumption: most real pages score 5.5-7.5.
-
-KEY OBSERVATION:
-- One insight a junior designer would miss.
-- Must not repeat the top issue.
-- Must reference something specific and visible on the page.`;
+SCORE CALIBRATION:
+- Most real-world landing pages score between 5.0 and 8.0.
+  Scores below 4.0 are rare and reserved for genuinely broken pages.
+- Score is a float with one decimal (e.g. 6.4, 7.1, 5.8). Never an integer.
+- Anchor points:
+  8.5-10.0: Exceptional — clear targeted headline, trust signals above fold,
+             single prominent CTA, strong visual hierarchy. Rare.
+  7.0-8.4:  Good — one or two fixable gaps, strong overall first impression.
+  5.5-6.9:  At risk — multiple clarity or trust issues, visitor may leave
+             before understanding the product. Most pages land here.
+  4.0-5.4:  Weak — visitor likely confused within 5 seconds,
+             core message unclear or buried.
+  2.0-3.9:  Critical — no clear value prop, broken hierarchy,
+             or completely missing trust signals. Very rare.
+  0.0-1.9:  Do not use — reserved for empty or placeholder pages only.
+- When in doubt, score higher rather than lower.
+  A page with good visuals but weak copy is 6.x, not 4.x.
+- Never score a page below 4.0 unless it has no visible headline,
+  no CTA, and no recognizable product description.`;
 }
 
 export function normalizeReportFindings<
