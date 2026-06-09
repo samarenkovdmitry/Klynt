@@ -20,7 +20,8 @@ export type ReportIssue = ImpactFields & {
   title?: string;
   bullets?: string[];
   why?: string;
-  severity?: "low" | "medium" | "high";
+  fix?: string;
+  severity?: "critical" | "warning" | "minor" | "low" | "medium" | "high";
 };
 
 export type ReportSuggestion = {

@@ -104,7 +104,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
           <div className="space-y-0">
             <ReportUxIssuesSection
               issues={issues}
-              breakdown={data.breakdown}
               waitlistActive={waitlistActive}
             />
 

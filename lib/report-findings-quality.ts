@@ -121,7 +121,7 @@ function normalizeSuggestion(
   if (duplicateIssue && next.why) {
     next = {
       ...next,
-      recommendation: `${next.recommendation} Focus on implementation in ${next.section || "this section"}, not repeating the diagnosis.`,
+      recommendation: next.recommendation,
     };
   }
 
