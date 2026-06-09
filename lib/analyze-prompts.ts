@@ -98,12 +98,26 @@ Return ONLY valid JSON (no markdown):
     "friction": "string",
     "overall": "string"
   },
-  "issues": [{
-    "severity": "critical"|"warning"|"minor",
-    "category": "hero"|"copy"|"trust"|"cta"|"visual"|"friction",
-    "title": "string — max 12 words, must quote or name a specific element",
-    "fix": "string — one concrete action, max 15 words, starts with verb"
-  }],
+  "issues": [
+    {
+      "severity": "critical"|"warning"|"minor",
+      "category": "hero"|"copy"|"trust"|"cta"|"visual"|"friction",
+      "title": "string — max 12 words, must quote or name a specific element",
+      "fix": "string — one concrete action, max 15 words, starts with verb"
+    },
+    {
+      "severity": "critical",
+      "category": "hero",
+      "title": "The headline 'Get started' never says what the product does",
+      "fix": "Replace with outcome-led headline naming the product category"
+    },
+    {
+      "severity": "warning",
+      "category": "trust",
+      "title": "No logos or testimonials visible above the fold",
+      "fix": "Move one client logo row directly below the headline"
+    }
+  ],
   "suggestions": [{
     "section": "string",
     "action": "string — starts with verb, max 10 words"
