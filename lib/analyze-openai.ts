@@ -81,7 +81,7 @@ async function requestAuditAnalysisOnce(params: {
   const screenshotContent = buildScreenshotContent(params.screenshotsBase64);
 
   const response = await getOpenAIClient().responses.create({
-    model: "gpt-4.1-nano",
+    model: "gpt-4o-mini",
     temperature: 0.2,
     max_output_tokens: 2800,
     input: [
