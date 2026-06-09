@@ -117,7 +117,7 @@ Return ONLY valid JSON (no markdown):
 }
 
 Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
-Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; why fields max 28 words each.
+Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words.
 
 Hero copy — three distinct layers. Never paraphrase one layer as another:
 - verdict: auditor diagnosis in 6-10 words. Name the main UX or conversion problem on THIS page.
