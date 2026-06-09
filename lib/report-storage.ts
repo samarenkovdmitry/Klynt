@@ -1,18 +1,9 @@
 import { getDemoReportJson, DEMO_REPORT_PATH } from "./demo-report";
 import { isDemoReportRouteParam } from "./report-route";
-import {
-  isAuditReport,
-  isHeroAuditReport,
-  isReportDisplayable,
-} from "./audit-report";
+import { isAuditReport } from "./audit-report";
 
 export { DEMO_REPORT_ID, DEMO_REPORT_PATH } from "./demo-report";
-export {
-  isAuditReport,
-  isHeroAuditReport,
-  isReportDisplayable,
-  type AuditReport,
-} from "./audit-report";
+export { isAuditReport, type AuditReport } from "./audit-report";
 
 export function saveReport(reportId: string, data: object) {
   const payload = JSON.stringify(data);
@@ -45,15 +36,6 @@ export function loadReport(routeParam: string): string | null {
   }
 }
 
-/** Phase-1 analyze response — hero summary ready, findings still loading. */
-export function isValidHeroAuditResponse(json: unknown): boolean {
-  return isHeroAuditReport(json);
-}
-
 export function isValidAuditResponse(json: unknown): boolean {
   return isAuditReport(json);
-}
-
-export function isValidAnalyzeResponse(json: unknown): boolean {
-  return isValidHeroAuditResponse(json) || isValidAuditResponse(json);
 }

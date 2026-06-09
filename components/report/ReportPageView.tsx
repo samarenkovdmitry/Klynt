@@ -4,9 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AppHeader } from "@/components/AppHeader";
-import { ReportActionLayout } from "@/components/report/ReportActionLayout";
+import { ReportCopySection } from "@/components/report/ReportCopySection";
+import { ReportCtaSection } from "@/components/report/ReportCtaSection";
+import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
+import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
+import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
+import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
@@ -14,6 +19,7 @@ import type { AuditReport } from "@/lib/audit-report";
 import { isDemoReportRouteParam } from "@/lib/report-route";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
+import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
 import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
 
@@ -65,6 +71,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     remainingSuggestions: Math.max(0, suggestions.length - 1),
     remainingCopy: Math.max(0, copy.length - 1),
   };
+  const previewSrc = resolveReportPreviewSrc(routeParam, data.previewImage);
+
   return (
     <>
       <AppHeader />
@@ -76,18 +84,55 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
         ].join(" ")}
       >
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
-          <ReportActionLayout
-            data={data}
-            routeParam={routeParam}
-            waitlistActive={waitlistActive}
-            copiedIndex={copiedIndex}
-            lockedSummary={lockedSummary}
-            onCopy={handleCopy}
+          <ReportHeroSummary
+            url={data.url}
+            generatedAt={data.generatedAt}
+            score={data.score}
+            verdict={data.verdict}
+            summary={data.summary}
+            risk={data.risk}
+            breakdown={data.breakdown}
+            confidence={data.confidence}
+            keyObservation={data.key_observation}
+            previewImage={previewSrc}
+            metricObservations={data.metric_observations}
+            issues={data.issues}
             onShare={handleShare}
             onExport={handleExport}
-            onRerun={handleRerun}
-            onUnlock={unlock}
           />
+
+          <div className="space-y-0">
+            <ReportUxIssuesSection
+              issues={issues}
+              breakdown={data.breakdown}
+              waitlistActive={waitlistActive}
+            />
+
+            {waitlistActive ? (
+              <ReportWaitlistGate
+                reportId={routeParam}
+                locked={lockedSummary}
+                onUnlock={unlock}
+              />
+            ) : (
+              <>
+                <ReportSuggestionsSection suggestions={suggestions} />
+                <ReportCopySection
+                  copy={copy}
+                  headlineDirections={data.headline_directions}
+                  brandStage={data.brand_stage}
+                  copiedIndex={copiedIndex}
+                  onCopy={handleCopy}
+                />
+              </>
+            )}
+          </div>
+
+          {!waitlistActive && (
+            <div className="mt-12">
+              <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
+            </div>
+          )}
         </div>
       </main>
 

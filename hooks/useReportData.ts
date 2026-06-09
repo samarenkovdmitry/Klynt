@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { AuditReport } from "@/lib/audit-report";
-import { isReportDisplayable } from "@/lib/audit-report";
+import { isAuditReport } from "@/lib/audit-report";
 import { toReportClientCachePayload } from "@/lib/report-api-payload";
 import { loadReport, saveReport } from "@/lib/report-storage";
 
@@ -17,7 +17,7 @@ function parseStoredReport(
   try {
     const parsed: unknown = JSON.parse(stored);
 
-    if (!isReportDisplayable(parsed)) {
+    if (!isAuditReport(parsed)) {
       return null;
     }
 
@@ -55,7 +55,7 @@ async function fetchReportFromApi(routeParam: string): Promise<AuditReport | nul
 
     const parsed: unknown = await res.json();
 
-    if (!isReportDisplayable(parsed)) {
+    if (!isAuditReport(parsed)) {
       return null;
     }
 
