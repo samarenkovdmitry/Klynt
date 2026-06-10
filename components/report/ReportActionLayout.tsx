@@ -126,7 +126,7 @@ function ImpactPill({ entry }: { entry: ImpactEntry }) {
 
   return (
     <span
-      className={`mt-0.5 shrink-0 rounded-full px-3 py-1 text-[12px] font-medium whitespace-nowrap ${tone}`}
+      className={`shrink-0 rounded-full px-3 py-1 text-[12px] font-medium whitespace-nowrap ${tone}`}
     >
       −{magnitude}% {metric}
     </span>
@@ -319,30 +319,32 @@ function IssuesCard({
         return (
           <div
             key={`${issue.title}-${index}`}
-            className="grid gap-5 border-b-[0.5px] border-black/[0.08] px-[22px] py-5 last:border-b-0 md:grid-cols-[1fr_auto]"
+            className="border-b-[0.5px] border-black/[0.08] px-[22px] py-5 last:border-b-0"
           >
-            <div>
+            <div className="mb-1.5 flex items-start justify-between gap-3">
               <p
                 className={[
-                  "mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em]",
+                  "text-[11px] font-medium uppercase tracking-[0.06em]",
                   severity === "critical" ? "text-[#8B2020]" : "text-[#7A4A0A]",
                 ].join(" ")}
               >
                 {severity === "critical" ? "Critical" : "Warning"}
               </p>
-              <h2 className="mb-2.5 text-[15px] font-medium leading-[1.45] tracking-[-0.01em] text-[#111]">
-                {issue.title}
-              </h2>
-              {fixText ? (
-                <div className="flex items-start gap-2.5 rounded-[9px] bg-[#EFEFEF] px-3.5 py-2.5">
-                  <span className="mt-px shrink-0 text-[11px] font-medium uppercase tracking-[0.06em] text-[#0F6E56]">
-                    Fix
-                  </span>
-                  <p className="text-[13px] leading-[1.65] text-[#555]">{fixText}</p>
-                </div>
-              ) : null}
+              {impactEntry ? <ImpactPill entry={impactEntry} /> : null}
             </div>
-            {impactEntry ? <ImpactPill entry={impactEntry} /> : null}
+
+            <h2 className="mb-2.5 text-[15px] font-medium leading-[1.45] tracking-[-0.01em] text-[#111]">
+              {issue.title}
+            </h2>
+
+            {fixText ? (
+              <div className="flex w-full items-start gap-2.5 rounded-[9px] bg-[#EFEFEF] px-3.5 py-2.5">
+                <span className="mt-px shrink-0 text-[11px] font-medium uppercase tracking-[0.06em] text-[#0F6E56]">
+                  Fix
+                </span>
+                <p className="min-w-0 flex-1 text-[13px] leading-[1.65] text-[#555]">{fixText}</p>
+              </div>
+            ) : null}
           </div>
         );
       })}
@@ -541,17 +543,17 @@ function WhatsNextRow({
   onExport?: () => void;
 }) {
   return (
-    <div className="grid gap-2.5 md:grid-cols-2">
+    <div className="grid gap-2 md:grid-cols-2">
       <button
         type="button"
         onClick={onRerun}
-        className="rounded-[20px] bg-white px-[22px] py-5 text-left transition-colors hover:bg-[#F5FDFB] shadow-[0_1px_2px_rgba(29,158,117,0.1),0_4px_16px_rgba(29,158,117,0.15),0_0_0_1.5px_#1D9E75]"
+        className="rounded-2xl border border-[#1D9E75]/35 bg-transparent px-5 py-4 text-left transition-colors hover:bg-black/[0.03] shadow-[0_0_0_1px_rgba(29,158,117,0.35)]"
       >
-        <RiRefreshLine size={20} className="mb-3 text-[#1D9E75]" aria-hidden />
-        <p className="text-[15px] font-medium tracking-[-0.02em] text-[#111]">
+        <RiRefreshLine size={18} className="mb-2 text-[#1D9E75]" aria-hidden />
+        <p className="text-[14px] font-medium tracking-[-0.02em] text-[#111]">
           Re-run after fixing
         </p>
-        <p className="mt-1 text-[13px] leading-[1.55] text-[#888]">
+        <p className="mt-1 text-[12px] leading-[1.5] text-[#888]">
           Apply the changes above, then re-run to track your score improvement.
         </p>
       </button>
@@ -560,11 +562,11 @@ function WhatsNextRow({
         <button
           type="button"
           onClick={onExport}
-          className="rounded-[20px] bg-white px-[22px] py-5 text-left transition-colors hover:bg-[#EFEFEF] shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.07)]"
+          className="rounded-2xl border border-black/[0.08] bg-transparent px-5 py-4 text-left transition-colors hover:bg-black/[0.03]"
         >
-          <RiDownloadLine size={20} className="mb-3 text-[#888]" aria-hidden />
-          <p className="text-[15px] font-medium tracking-[-0.02em] text-[#111]">Export PDF</p>
-          <p className="mt-1 text-[13px] leading-[1.55] text-[#888]">
+          <RiDownloadLine size={18} className="mb-2 text-[#888]" aria-hidden />
+          <p className="text-[14px] font-medium tracking-[-0.02em] text-[#111]">Export PDF</p>
+          <p className="mt-1 text-[12px] leading-[1.5] text-[#888]">
             Share the full report with your team or client in one click.
           </p>
         </button>

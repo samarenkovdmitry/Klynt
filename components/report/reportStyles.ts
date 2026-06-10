@@ -1,4 +1,5 @@
 export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1000px]";
+export const APP_HEADER_CONTAINER_CLASS = "mx-auto flex h-[52px] w-full max-w-[1000px] items-center justify-between gap-4 px-4 md:px-8";
 
 export const REPORT_SECTION_SPACING_CLASS = "mt-12";
 

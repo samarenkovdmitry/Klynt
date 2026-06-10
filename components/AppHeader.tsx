@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
+import { APP_HEADER_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
 const HEADER_HEIGHT_PX = 52;
@@ -74,6 +75,8 @@ function isNavActive(item: NavItem, pathname: string) {
 export function AppHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
+  const isReportOrAnalyze =
+    pathname.startsWith("/report") || pathname.startsWith("/analyze");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -96,12 +99,12 @@ export function AppHeader() {
       <header
         className={[
           "app-site-header sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
-          isLanding
+          isLanding || isReportOrAnalyze
             ? "border-b border-transparent bg-transparent"
             : "border-b border-transparent bg-[#EFEFED]",
         ].join(" ")}
       >
-        <div className="mx-auto flex h-[52px] max-w-[1180px] items-center justify-between gap-4 px-4 md:px-8">
+        <div className={APP_HEADER_CONTAINER_CLASS}>
           <Link
             href="/"
             className="flex min-w-0 items-center gap-[7px]"
