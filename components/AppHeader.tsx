@@ -5,10 +5,14 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
-import { APP_HEADER_CONTAINER_CLASS } from "@/components/report/reportStyles";
+import {
+  APP_HEADER_CONTAINER_CLASS,
+  APP_REPORT_HEADER_CONTAINER_CLASS,
+} from "@/components/report/reportStyles";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
 const HEADER_HEIGHT_PX = 52;
+const REPORT_HEADER_HEIGHT_PX = 70;
 
 type NavItem = {
   href: string;
@@ -76,8 +80,10 @@ export function AppHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
   const isReportOrAnalyze =
-    pathname.startsWith("/report") || pathname.startsWith("/analyze");
+    (pathname.startsWith("/report") && !pathname.includes("/print")) ||
+    pathname.startsWith("/analyze");
   const [menuOpen, setMenuOpen] = useState(false);
+  const headerHeightPx = isReportOrAnalyze ? REPORT_HEADER_HEIGHT_PX : HEADER_HEIGHT_PX;
 
   useEffect(() => {
     setMenuOpen(false);
@@ -98,13 +104,22 @@ export function AppHeader() {
     <>
       <header
         className={[
-          "app-site-header sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
-          isLanding || isReportOrAnalyze
-            ? "border-b border-transparent bg-transparent"
-            : "border-b border-transparent bg-[#EFEFED]",
+          "app-site-header w-full pt-[env(safe-area-inset-top,0px)]",
+          isReportOrAnalyze
+            ? "relative z-10 border-b border-transparent bg-[#EBEBEB]"
+            : "sticky top-0 z-50 border-b border-transparent",
+          isLanding
+            ? "bg-transparent"
+            : isReportOrAnalyze
+              ? ""
+              : "bg-[#EFEFED]",
         ].join(" ")}
       >
-        <div className={APP_HEADER_CONTAINER_CLASS}>
+        <div
+          className={
+            isReportOrAnalyze ? APP_REPORT_HEADER_CONTAINER_CLASS : APP_HEADER_CONTAINER_CLASS
+          }
+        >
           <Link
             href="/"
             className="flex min-w-0 items-center gap-[7px]"
@@ -114,6 +129,12 @@ export function AppHeader() {
             {isLanding ? (
               <img
                 src="/klynt-logo-light.svg"
+                alt="Klynt"
+                className="h-[30px] w-[100px] shrink-0"
+              />
+            ) : isReportOrAnalyze ? (
+              <img
+                src="/klynt-logo-dark.svg"
                 alt="Klynt"
                 className="h-[30px] w-[100px] shrink-0"
               />
@@ -205,7 +226,7 @@ export function AppHeader() {
             ${menuOpen ? "" : "pointer-events-none invisible"}
           `}
           style={{
-            top: `calc(${HEADER_HEIGHT_PX}px + env(safe-area-inset-top, 0px) + 8px)`,
+            top: `calc(${headerHeightPx}px + env(safe-area-inset-top, 0px) + 8px)`,
           }}
           aria-label="Main mobile"
           aria-hidden={!menuOpen}

@@ -1,5 +1,8 @@
 export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1000px]";
-export const APP_HEADER_CONTAINER_CLASS = "mx-auto flex h-[52px] w-full max-w-[1000px] items-center justify-between gap-4 px-4 md:px-8";
+export const APP_HEADER_CONTAINER_CLASS =
+  "mx-auto flex h-[52px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-8";
+export const APP_REPORT_HEADER_CONTAINER_CLASS =
+  "mx-auto flex w-full max-w-[1300px] items-center justify-between gap-4 px-4 py-5 md:px-8";
 
 export const REPORT_SECTION_SPACING_CLASS = "mt-12";
 
