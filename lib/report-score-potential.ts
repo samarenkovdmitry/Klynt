@@ -1,4 +1,13 @@
-import type { AuditReport, ReportBreakdown, ReportIssue } from "@/lib/audit-report";
+import type {
+  AuditReport,
+  ReportBreakdown,
+  ReportIssue,
+  ReportSuggestion,
+} from "@/lib/audit-report";
+import {
+  deriveScoreFixLabel,
+  formatLeverageDetailDisplay,
+} from "@/lib/report-copy-limits";
 import { getImpactEntries } from "@/lib/report-impact";
 
 /** Rough uplift from top issue impacts (UI-only estimate, not a promise). */
@@ -19,10 +28,26 @@ export type ScorePotentialSummary = {
   fixItems: ScoreFixItem[];
 };
 
+function matchSuggestion(
+  issue: ReportIssue,
+  index: number,
+  suggestions: ReportSuggestion[]
+) {
+  return (
+    suggestions.find(
+      (item) =>
+        item.category &&
+        issue.category &&
+        String(item.category).toLowerCase() === String(issue.category).toLowerCase()
+    ) ?? suggestions[index]
+  );
+}
+
 export function estimateScorePotential(
   score: number,
   issues: ReportIssue[],
-  breakdown?: ReportBreakdown
+  breakdown?: ReportBreakdown,
+  suggestions: ReportSuggestion[] = []
 ): ScorePotentialSummary {
   const topIssues = issues.slice(0, 3);
   const gain = topIssues.reduce((total, issue, index) => {
@@ -37,7 +62,21 @@ export function estimateScorePotential(
     ? getImpactEntries(topIssue, { breakdown, index: 0 })[0]
     : undefined;
 
-  const fixItems = buildScoreFixItems(issues, breakdown, currentScore, potentialScore);
+  const fixItems = buildScoreFixItems(
+    issues,
+    breakdown,
+    currentScore,
+    potentialScore,
+    suggestions
+  );
+
+  const leverageDetail = topImpact
+    ? formatLeverageDetailDisplay(
+        `Fixing the top findings adds about +${formatPointDelta(currentScore, potentialScore, 0.7)} points. Both are copy or layout changes — no full redesign needed.`
+      )
+    : formatLeverageDetailDisplay(
+        "Tackling the top findings should move the score meaningfully on the next run."
+      );
 
   return {
     currentScore,
@@ -48,9 +87,7 @@ export function estimateScorePotential(
       : topIssue?.title
         ? "Fix the top issue first"
         : "Address the highest-impact findings",
-    leverageDetail: topImpact
-      ? `Addressing the top findings accounts for +${formatPointDelta(currentScore, potentialScore, 0.7)} points. Both are copy or layout changes — no full redesign needed.`
-      : "Tackling the top findings should move the score meaningfully on the next run.",
+    leverageDetail,
     fixItems,
   };
 }
@@ -59,7 +96,8 @@ function buildScoreFixItems(
   issues: ReportIssue[],
   breakdown: ReportBreakdown | undefined,
   currentScore: number,
-  potentialScore: number
+  potentialScore: number,
+  suggestions: ReportSuggestion[]
 ): ScoreFixItem[] {
   if (issues.length === 0) return [];
 
@@ -71,6 +109,7 @@ function buildScoreFixItems(
       index,
       magnitude: entry ? Math.abs(entry.value) : 0,
       severity: entry && Math.abs(entry.value) >= 16 ? "Critical" : "Warning",
+      suggestion: matchSuggestion(issue, index, suggestions),
     };
   });
 
@@ -80,7 +119,7 @@ function buildScoreFixItems(
   if (topImpacts[0]) {
     items.push({
       label: `Fix 1 · ${topImpacts[0].severity}`,
-      text: shortenFixText(topImpacts[0].issue.title),
+      text: deriveScoreFixLabel(topImpacts[0].issue, topImpacts[0].suggestion),
       points: `+${((totalGain * topImpacts[0].magnitude) / impactSum).toFixed(1)} pts`,
     });
   }
@@ -88,7 +127,7 @@ function buildScoreFixItems(
   if (topImpacts[1]) {
     items.push({
       label: `Fix 2 · ${topImpacts[1].severity}`,
-      text: shortenFixText(topImpacts[1].issue.title),
+      text: deriveScoreFixLabel(topImpacts[1].issue, topImpacts[1].suggestion),
       points: `+${((totalGain * topImpacts[1].magnitude) / impactSum).toFixed(1)} pts`,
     });
   }
@@ -107,20 +146,8 @@ function buildScoreFixItems(
   return items.slice(0, 3);
 }
 
-function shortenFixText(text?: string) {
-  const value = text?.trim() ?? "";
-  if (!value) return "Address the highest-impact finding";
-  if (value.length <= 52) return value;
-  return `${value.slice(0, 49).trim()}…`;
-}
-
 function formatPointDelta(currentScore: number, potentialScore: number, fraction = 1) {
   return ((potentialScore - currentScore) * fraction).toFixed(1);
-}
-
-function formatImpactMetric(key: string) {
-  if (key.toLowerCase() === "cta") return "CTA";
-  return key.charAt(0).toUpperCase() + key.slice(1);
 }
 
 export function pickTopIssueCopy(report: AuditReport) {

@@ -27,6 +27,15 @@ import { getImpactEntries, type ImpactEntry } from "@/lib/report-impact";
 import { getPriorityLabel } from "@/lib/report-priority";
 import { estimateScorePotential } from "@/lib/report-score-potential";
 import {
+  formatCopyAfterDisplay,
+  formatIssueTitleDisplay,
+  formatKeyObservationDisplay,
+  formatMetricObservationDisplay,
+  formatSummaryDisplay,
+  formatVerdictDisplay,
+  pickIssueFixDisplay,
+} from "@/lib/report-copy-limits";
+import {
   formatOverallScore,
   formatReportDateShort,
   formatReportDomain,
@@ -84,20 +93,7 @@ function pickIssueFix(
   index: number,
   suggestions: ReportSuggestion[]
 ) {
-  const match =
-    suggestions.find(
-      (item) =>
-        item.category &&
-        issue.category &&
-        String(item.category).toLowerCase() === String(issue.category).toLowerCase()
-    ) ?? suggestions[index];
-
-  return (
-    match?.recommendation?.trim() ||
-    issue.bullets?.[0]?.trim() ||
-    issue.why?.trim() ||
-    ""
-  );
+  return pickIssueFixDisplay(issue, index, suggestions);
 }
 
 function getIssueSeverity(
@@ -240,10 +236,12 @@ function HeroCard({
           </div>
 
           <h1 className="mb-4 text-[18px] font-medium leading-[1.35] tracking-[-0.02em] text-[#111] md:text-[22px]">
-            {data.verdict || "UX assessment complete"}
+            {formatVerdictDisplay(data.verdict) || "UX assessment complete"}
           </h1>
           {data.summary ? (
-            <p className="text-[14px] leading-[1.8] text-[#555]">{data.summary}</p>
+            <p className="text-[14px] leading-[1.8] text-[#555]">
+              {formatSummaryDisplay(data.summary)}
+            </p>
           ) : null}
         </div>
 
@@ -255,7 +253,7 @@ function HeroCard({
                 Key insight
               </p>
               <p className="text-[13px] leading-[1.65] text-[#185FA5]">
-                {data.key_observation}
+                {formatKeyObservationDisplay(data.key_observation)}
               </p>
             </div>
           </div>
@@ -289,7 +287,9 @@ function HeroCard({
               {formatDimScore(dim.value)}
             </p>
             {dim.observation ? (
-              <p className="mt-1 text-[13px] leading-snug text-[#888]">{dim.observation}</p>
+              <p className="mt-1 text-[13px] leading-snug text-[#888]">
+                {formatMetricObservationDisplay(dim.observation)}
+              </p>
             ) : null}
           </div>
         ))}
@@ -334,7 +334,7 @@ function IssuesCard({
             </div>
 
             <h2 className="mb-2.5 text-[15px] font-medium leading-[1.45] tracking-[-0.01em] text-[#111]">
-              {issue.title}
+              {formatIssueTitleDisplay(issue.title)}
             </h2>
 
             {fixText ? (
@@ -384,7 +384,7 @@ function CopyCard({
           <p className="mb-2 text-[12px] text-[#bbb]">Improved</p>
           <div className="group relative">
             <p className="pr-8 text-[14px] font-medium leading-[1.5] tracking-[-0.01em] text-[#111]">
-              {item.after || "—"}
+              {formatCopyAfterDisplay(item.after) || "—"}
             </p>
             {item.after ? (
               <button
@@ -447,7 +447,7 @@ function HeadlineDirectionsCard({
               </p>
               <div className="group relative">
                 <p className="pr-8 text-[14px] font-medium leading-[1.5] tracking-[-0.01em] text-[#111]">
-                  {option.text}
+                  {formatCopyAfterDisplay(option.text)}
                 </p>
                 <button
                   type="button"
@@ -475,7 +475,12 @@ function ScorePotentialCard({
 }) {
   if (issues.length === 0) return null;
 
-  const potential = estimateScorePotential(data.score, issues, data.breakdown);
+  const potential = estimateScorePotential(
+    data.score,
+    issues,
+    data.breakdown,
+    data.suggestions ?? []
+  );
   const theme = getReportHeroTheme(data.score);
 
   return (

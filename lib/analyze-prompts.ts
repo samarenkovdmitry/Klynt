@@ -132,6 +132,8 @@ Return ONLY valid JSON (no markdown):
 
 Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
 Lengths: summary 14-22 words; verdict max 8 words; key_observation max 12 words; why fields max 28 words each.
+suggestions[].recommendation: max 25 words. One actionable fix only — what to change, optionally with a short example in quotes. No rationale or "why" restatement.
+copy[].after: max 18 words. Paste-ready rewrite only — no explanation.
 
 Hero copy — three distinct layers. Never paraphrase one layer as another:
 - verdict: max 8 words, auditor diagnosis, noun phrase preferred. Name the main UX or conversion problem on THIS page.
