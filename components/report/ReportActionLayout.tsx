@@ -57,7 +57,7 @@ type ReportActionLayoutProps = {
 };
 
 const CARD_CLASS =
-  "overflow-hidden rounded-2xl border-[0.5px] border-black/[0.08] bg-white";
+  "overflow-hidden rounded-[20px] border-[0.5px] border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.07)]";
 const BTN_CLASS =
   "rounded-[7px] border-[0.5px] border-black/[0.13] bg-white px-[13px] py-1.5 text-[13px] text-[#555] transition-colors hover:bg-[#EFEFEF]";
 const BTN_PRIMARY_CLASS =
@@ -510,16 +510,11 @@ function ScorePotentialCard({
       </div>
 
       {potential.fixItems.length > 0 ? (
-        <div className="grid md:grid-cols-3">
+        <div className="grid gap-2.5 px-6 py-5 md:grid-cols-3">
           {potential.fixItems.map((item, index) => (
             <div
               key={`${item.label}-${index}`}
-              className={[
-                "px-[22px] py-[18px]",
-                index < potential.fixItems.length - 1
-                  ? "border-black/[0.08] border-b-[0.5px] md:border-r-[0.5px] md:border-b-0"
-                  : "",
-              ].join(" ")}
+              className="rounded-xl bg-[#EFEFEF] px-4 py-3.5"
             >
               <p className="mb-1 text-[11px] uppercase tracking-[0.05em] text-[#bbb]">
                 {item.label}
@@ -546,7 +541,7 @@ function WhatsNextRow({
       <button
         type="button"
         onClick={onRerun}
-        className="rounded-2xl border-[0.5px] border-[#1D9E75] bg-white px-[22px] py-5 text-left transition-colors hover:bg-[#EFEFEF]"
+        className="rounded-[20px] bg-white px-[22px] py-5 text-left transition-colors hover:bg-[#F5FDFB] shadow-[0_1px_2px_rgba(29,158,117,0.1),0_4px_16px_rgba(29,158,117,0.15),0_0_0_1.5px_#1D9E75]"
       >
         <RiRefreshLine size={20} className="mb-3 text-[#1D9E75]" aria-hidden />
         <p className="text-[15px] font-medium tracking-[-0.02em] text-[#111]">
@@ -561,7 +556,7 @@ function WhatsNextRow({
         <button
           type="button"
           onClick={onExport}
-          className="rounded-2xl border-[0.5px] border-black/[0.08] bg-white px-[22px] py-5 text-left transition-colors hover:bg-[#EFEFEF]"
+          className="rounded-[20px] border-[0.5px] border-black/[0.08] bg-white px-[22px] py-5 text-left transition-colors hover:bg-[#EFEFEF] shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.07)]"
         >
           <RiDownloadLine size={20} className="mb-3 text-[#888]" aria-hidden />
           <p className="text-[15px] font-medium tracking-[-0.02em] text-[#111]">Export PDF</p>
