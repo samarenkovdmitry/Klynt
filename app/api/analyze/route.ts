@@ -7,7 +7,12 @@ import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
 import { isAuditReport, type AuditReport } from "@/lib/audit-report";
 import { normalizeMetricObservations } from "@/lib/metric-observations";
 import { normalizeReportHeroCopy } from "@/lib/report-hero-copy";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { createAnalyzeTiming } from "@/lib/analyze-timing";
+import {
+  buildRateLimitHeaders,
+  checkRateLimit,
+  getClientIp,
+} from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
 import { buildReportSlug } from "@/lib/report-slug";
 import { buildReportPreviewImage } from "@/lib/report-preview";
@@ -234,6 +239,9 @@ function normalizeIssueTitle(item: {
 // ROUTE
 // -----------------------------
 export async function POST(req: Request) {
+  const timing = createAnalyzeTiming();
+  let captureMode: "upload" | "url" | "none" = "none";
+
   try {
     const clientIp = getClientIp(req);
     const rateLimit = checkRateLimit(
@@ -243,16 +251,18 @@ export async function POST(req: Request) {
     );
 
     if (!rateLimit.ok) {
+      timing.log({ outcome: "rate_limited", clientIp });
+
       return NextResponse.json(
         { error: "Too many requests. Please try again later." },
         {
           status: 429,
-          headers: {
-            "Retry-After": String(rateLimit.retryAfterSec),
-          },
+          headers: buildRateLimitHeaders(rateLimit),
         }
       );
     }
+
+    const rateLimitHeaders = buildRateLimitHeaders(rateLimit);
 
     const formData = await req.formData();
 
@@ -291,14 +301,20 @@ export async function POST(req: Request) {
 
     // PRIORITY #1 — uploaded screenshot
     if (uploadedScreenshot) {
-     const uploadedBase64 = await blobToBase64(uploadedScreenshot);
+      captureMode = "upload";
+      const uploadedBase64 = await timing.measure("upload_ms", () =>
+        blobToBase64(uploadedScreenshot)
+      );
 
-     screenshotsBase64 = [uploadedBase64];
+      screenshotsBase64 = [uploadedBase64];
     }
 
     // PRIORITY #2 — auto capture from URL
     else if (url) {
-      screenshotsBase64 = await captureWebsiteScreenshots(url);
+      captureMode = "url";
+      screenshotsBase64 = await timing.measure("capture_ms", () =>
+        captureWebsiteScreenshots(url)
+      );
     }
 
     if (screenshotsBase64.length === 0) {
@@ -313,7 +329,9 @@ export async function POST(req: Request) {
     }
 
     const rawScreenshotsBase64 = [...screenshotsBase64];
-    screenshotsBase64 = await optimizeScreenshots(screenshotsBase64);
+    screenshotsBase64 = await timing.measure("optimize_ms", () =>
+      optimizeScreenshots(screenshotsBase64)
+    );
 
     const rawHeroBase64 = rawScreenshotsBase64[0];
     const previewImagePromise = rawHeroBase64
@@ -414,16 +432,18 @@ metric_observations: expert UX consultant observations (NOT metric labels). Each
 - overall: holistic read of the page experience; do not repeat verdict verbatim.
 Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
 
-    const json: Record<string, any> = await requestAuditAnalysis({
-      basePrompt,
-      url,
-      screenshotsBase64,
-    });
+    const json: Record<string, any> = await timing.measure("openai_ms", () =>
+      requestAuditAnalysis({
+        basePrompt,
+        url,
+        screenshotsBase64,
+      })
+    );
 
-json.confidence = Number.isFinite(Number(json.confidence))
-  ? Math.max(70, Math.min(98, Number(json.confidence)))
-  : 82;
-
+    timing.measureSync("normalize_ms", () => {
+      json.confidence = Number.isFinite(Number(json.confidence))
+        ? Math.max(70, Math.min(98, Number(json.confidence)))
+        : 82;
 
     if (!json.breakdown || typeof json.breakdown !== "object") {
       json.breakdown = {
@@ -491,6 +511,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
     json.score = normalizedScores.score;
     json.breakdown = normalizedScores.breakdown;
     json.risk = deriveRiskFromScore(normalizedScores.score);
+    });
 
     const reportId = generateReportId();
     const auditedUrl =
@@ -499,7 +520,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
         : url;
 
     const metricObservations = normalizeMetricObservations(json.metric_observations);
-    const previewImage = await previewImagePromise;
+    const previewImage = await timing.measure("preview_ms", () => previewImagePromise);
 
     const reportPayload: AuditReport = {
       url: auditedUrl,
@@ -517,7 +538,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
       brand_stage: brandStage,
       traffic_source: trafficSource,
       audience_type: audienceType,
-      headline_directions: headlineDirections,
+      headline_directions: json.headline_directions,
       breakdown: json.breakdown,
       generatedAt: new Date().toISOString(),
     };
@@ -527,17 +548,25 @@ json.confidence = Number.isFinite(Number(json.confidence))
 
     if (isAuditReport(reportPayload)) {
       try {
-        await saveReportToDb({
-          id: reportId,
-          auditedUrl,
-          report: reportPayload,
-        });
+        await timing.measure("db_ms", () =>
+          saveReportToDb({
+            id: reportId,
+            auditedUrl,
+            report: reportPayload,
+          })
+        );
       } catch (persistError) {
         console.error("[analyze] Failed to persist report:", persistError);
       }
 
       scheduleReportOgBackfill(reportId, reportPayload, previewImage);
     }
+
+    timing.log({
+      outcome: "success",
+      captureMode,
+      reportId,
+    });
 
     return NextResponse.json({
       ...json,
@@ -547,13 +576,18 @@ json.confidence = Number.isFinite(Number(json.confidence))
       brand_stage: brandStage,
       traffic_source: trafficSource,
       audience_type: audienceType,
-      headline_directions: headlineDirections,
+      headline_directions: json.headline_directions,
       generatedAt: reportPayload.generatedAt,
       previewImage: previewImagePath,
       metric_observations: metricObservations,
-    });
+    }, { headers: rateLimitHeaders });
   } catch (error: any) {
-    
+    timing.log({
+      outcome: "error",
+      captureMode,
+      message: error?.message || "Unknown server error",
+    });
+
     console.error("ANALYZE ERROR:");
     console.error(error);
     console.error(error?.stack);

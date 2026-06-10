@@ -7,7 +7,7 @@ import {
   normalizeCopyOptimizerResponse,
 } from "@/lib/copy-optimize";
 import { extractJSON } from "@/lib/extract-json";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { buildRateLimitHeaders, checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
 export const runtime = "nodejs";
@@ -101,12 +101,12 @@ export async function POST(req: Request) {
         { error: "Too many requests. Please try again later." },
         {
           status: 429,
-          headers: {
-            "Retry-After": String(rateLimit.retryAfterSec),
-          },
+          headers: buildRateLimitHeaders(rateLimit),
         }
       );
     }
+
+    const rateLimitHeaders = buildRateLimitHeaders(rateLimit);
 
     const body = (await req.json()) as { url?: string };
     const rawUrl = String(body.url ?? "").trim();
@@ -173,7 +173,7 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json(result);
+    return NextResponse.json(result, { headers: rateLimitHeaders });
   } catch (error) {
     console.error("[copy-optimize] Failed:", error);
     return NextResponse.json(
