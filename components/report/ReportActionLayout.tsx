@@ -2,16 +2,15 @@
 
 import type { ReactNode } from "react";
 import {
-  RiAlertLine,
-  RiAlignLeft,
   RiArrowRightLine,
+  RiBarChartLine,
   RiCheckLine,
   RiDownloadLine,
+  RiEditLine,
+  RiErrorWarningLine,
   RiFileCopyLine,
-  RiInformationLine,
-  RiLineChartLine,
+  RiLightbulbLine,
   RiRefreshLine,
-  RiShare2Line,
 } from "@remixicon/react";
 
 import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
@@ -57,14 +56,20 @@ type ReportActionLayoutProps = {
 };
 
 const CARD_CLASS =
-  "overflow-hidden rounded-[20px] border-[0.5px] border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.07)]";
+  "overflow-hidden rounded-[20px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.07)]";
 const BTN_CLASS =
-  "rounded-[7px] border-[0.5px] border-black/[0.13] bg-white px-[13px] py-1.5 text-[13px] text-[#555] transition-colors hover:bg-[#EFEFEF]";
+  "rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] text-[#555] transition-colors hover:bg-black/[0.08]";
 const BTN_PRIMARY_CLASS =
-  "inline-flex items-center gap-1 rounded-[7px] bg-[#111] px-[15px] py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[#333]";
+  "inline-flex items-center gap-1 rounded-[8px] bg-[#111] px-[15px] py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2a2a2a]";
 
 function formatDimScore(value: number) {
   return (value / 10).toFixed(1);
+}
+
+function getReportScoreColor(tier: ReturnType<typeof getReportHeroTheme>["tier"]) {
+  if (tier === "healthy") return "#1D9E75";
+  if (tier === "critical") return "#8B2020";
+  return "#BA7517";
 }
 
 function formatPriorityTag(priority?: ReportCopyItem["priority"]) {
@@ -184,7 +189,7 @@ function HeroCard({
     <div className={CARD_CLASS}>
       <div className="flex flex-wrap items-center justify-between gap-3 border-b-[0.5px] border-black/[0.08] bg-[#F9F9F9] px-[22px] py-3.5">
         <div className="flex min-w-0 flex-wrap items-center gap-3">
-          <div className="inline-flex items-center gap-1.5 rounded-[7px] border-[0.5px] border-black/[0.13] bg-white px-[11px] py-1 text-[13px] font-medium text-[#555]">
+          <div className="inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[11px] py-1 text-[13px] font-medium text-[#555]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#1D9E75]" aria-hidden />
             {reportHref ? (
               <a href={reportHref} target="_blank" rel="noopener noreferrer" className="truncate hover:opacity-70">
@@ -222,7 +227,7 @@ function HeroCard({
           <div className="mb-5 flex items-end gap-3.5">
             <div
               className="text-[64px] font-semibold leading-none tracking-[-0.08em] md:text-[88px]"
-              style={{ color: theme.badgeBg }}
+              style={{ color: getReportScoreColor(theme.tier) }}
             >
               {formatOverallScore(data.score)}
             </div>
@@ -246,7 +251,7 @@ function HeroCard({
           <div className="flex flex-col justify-end">
             <div className="rounded-xl bg-[#EBF3FC] px-4 py-3.5">
               <p className="mb-1.5 flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.06em] text-[#0C447C]">
-                <RiInformationLine size={12} aria-hidden />
+                <RiLightbulbLine size={12} aria-hidden />
                 Key insight
               </p>
               <p className="text-[13px] leading-[1.65] text-[#185FA5]">
@@ -319,11 +324,10 @@ function IssuesCard({
             <div>
               <p
                 className={[
-                  "mb-1.5 flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.06em]",
+                  "mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em]",
                   severity === "critical" ? "text-[#8B2020]" : "text-[#7A4A0A]",
                 ].join(" ")}
               >
-                <RiAlertLine size={12} aria-hidden />
                 {severity === "critical" ? "Critical" : "Warning"}
               </p>
               <h2 className="mb-2.5 text-[15px] font-medium leading-[1.45] tracking-[-0.01em] text-[#111]">
@@ -478,7 +482,7 @@ function ScorePotentialCard({
         <div className="text-center">
           <p
             className="text-[40px] font-semibold leading-none tracking-[-0.06em] md:text-[52px]"
-            style={{ color: theme.badgeBg }}
+            style={{ color: getReportScoreColor(theme.tier) }}
           >
             {formatOverallScore(potential.currentScore)}
           </p>
@@ -556,7 +560,7 @@ function WhatsNextRow({
         <button
           type="button"
           onClick={onExport}
-          className="rounded-[20px] border-[0.5px] border-black/[0.08] bg-white px-[22px] py-5 text-left transition-colors hover:bg-[#EFEFEF] shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.07)]"
+          className="rounded-[20px] bg-white px-[22px] py-5 text-left transition-colors hover:bg-[#EFEFEF] shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.07)]"
         >
           <RiDownloadLine size={20} className="mb-3 text-[#888]" aria-hidden />
           <p className="text-[15px] font-medium tracking-[-0.02em] text-[#111]">Export PDF</p>
@@ -600,7 +604,7 @@ export function ReportActionLayout({
 
       <SectionHead
         title="UX issues"
-        icon={<RiAlertLine size={14} className="text-[#888]" aria-hidden />}
+        icon={<RiErrorWarningLine size={15} className="text-[#888]" aria-hidden />}
         count={`${issues.length} friction point${issues.length === 1 ? "" : "s"} · ranked by impact`}
       />
       <IssuesCard issues={issues} suggestions={suggestions} breakdown={data.breakdown} />
@@ -619,7 +623,7 @@ export function ReportActionLayout({
             <>
               <SectionHead
                 title="Copy refinement"
-                icon={<RiAlignLeft size={14} className="text-[#888]" aria-hidden />}
+                icon={<RiEditLine size={15} className="text-[#888]" aria-hidden />}
                 count="paste-ready rewrites"
               />
               {gridCopy.length > 0 ? (
@@ -649,7 +653,7 @@ export function ReportActionLayout({
 
           <SectionHead
             title="Score potential"
-            icon={<RiLineChartLine size={14} className="text-[#888]" aria-hidden />}
+            icon={<RiBarChartLine size={15} className="text-[#888]" aria-hidden />}
           />
           <ScorePotentialCard data={data} issues={issues} />
 
