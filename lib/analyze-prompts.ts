@@ -26,7 +26,6 @@ HERO AUDIT QUALITY RULES:
 - verdict, summary, and key_observation must each address a different aspect of the hero. Never paraphrase one as another.
 - key_observation must reveal something non-obvious — not restate the headline problem.
 - breakdown scores must reflect actual visible strengths and weaknesses — avoid clustering all values in the 45-70 range. Use the full 0-100 range where justified.
-- metric_observations: each field must name a specific visible element, not describe the metric category in general terms.
 
 ${auditContextPrompt}
 
@@ -42,32 +41,28 @@ Return ONLY valid JSON (no markdown):
   "verdict": "string",
   "key_observation": "string",
   "confidence": number,
-  "metric_observations": {
-    "trust": "string",
-    "clarity": "string",
-    "friction": "string",
-    "overall": "string"
-  },
   "breakdown": { "clarity": int, "navigation": int, "visuals": int, "trust": int, "conversion": int }
 }
 
-Lengths: summary 14-22 words; verdict max 8 words; key_observation max 12 words.
-
-Hero copy — three distinct layers. Never paraphrase one layer as another:
-- verdict: max 8 words, auditor diagnosis, noun phrase preferred.
-  Good: "Strong hook, missing solution clarity"
-  Bad: "The hero headline lacks clarity on who the product serves"
-- summary: visitor first-impression in 14-22 words.
-- key_observation: max 12 words, non-obvious insight, not a restatement of top issue. Noun phrase or short sentence, no filler words.
-
 confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger.
-metric_observations: max 8 words per field. One short observation only. Name a specific visible element or pattern. NO full sentences — use noun phrases.
-- trust: what proof signals are present or missing above fold.
-- clarity: what the headline or copy communicates or fails to.
-- friction: what UI element or copy slows first comprehension.
-- overall: one-phrase holistic read of the page.
-Good: "Fortune logos present, placed below fold" / "Headline names feature, not audience or outcome" / "Two competing CTAs split attention in hero" / "Strong visuals, weak copy hierarchy"
-Bad: "The headline and subtext do not clearly communicate..." / "Visitors may struggle to understand..."`;
+
+verdict: max 8 words. Noun phrase, no subject+verb structure. Auditor diagnosis of the single biggest positioning problem.
+  Good: "Fear hook without product category or audience"
+  Bad: "The hero headline lacks clarity on who the product serves"
+
+summary: max 30 words. 1-2 sentences from the first-time visitor's perspective. What they feel and what they fail to understand in first 3 seconds. Write in third person: "A visitor..." or "First-time visitors..."
+  Example: "A visitor who doesn't know SOC 2 reads the headline and feels anxiety — but can't tell if this fixes their problem."
+
+key_observation: max 12 words. One phrase only. Must pick ONE angle from this list and write from that angle:
+  1. hidden differentiator buried in wrong place
+  2. audience split — works for warm or cold traffic only
+  3. structural conflict between two page elements
+  4. trust signals exist but misplaced
+  5. visual and copy hierarchy contradict each other
+  6. subheadline stronger than headline (inverted hierarchy)
+  NEVER restate verdict, summary, or top issue. NEVER write generic observations about headline clarity.
+  Good: "Ad-free differentiator buried in subheadline not headline"
+  Bad: "The hero headline lacks a clear audience focus"`;
 }
 
 export function buildFullAuditPrompt(
@@ -100,12 +95,6 @@ Return ONLY valid JSON (no markdown):
   "key_observation": "string",
   "confidence": number,
   ${buildHeadlineDirectionsSchemaSnippet()}
-  "metric_observations": {
-    "trust": "string",
-    "clarity": "string",
-    "friction": "string",
-    "overall": "string"
-  },
   "issues": [{
     "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
     "title": "one concrete sentence",
@@ -131,20 +120,29 @@ Return ONLY valid JSON (no markdown):
 }
 
 Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
-Lengths: summary 14-22 words; verdict max 8 words; key_observation max 12 words; why fields max 28 words each.
+Lengths: why fields max 28 words each.
 suggestions[].recommendation: max 25 words. One actionable fix only — what to change, optionally with a short example in quotes. No rationale or "why" restatement.
 copy[].after: max 18 words. Paste-ready rewrite only — no explanation.
 
-Hero copy — three distinct layers. Never paraphrase one layer as another:
-- verdict: max 8 words, auditor diagnosis, noun phrase preferred. Name the main UX or conversion problem on THIS page.
-  Good: "Strong hook, missing solution clarity"
+verdict, summary, key_observation — three distinct layers. Never paraphrase one as another:
+
+verdict: max 8 words. Noun phrase, no subject+verb structure. Auditor diagnosis of the single biggest positioning problem.
+  Good: "Fear hook without product category or audience"
   Bad: "The hero headline lacks clarity on who the product serves"
-- summary: visitor first-impression in 14-22 words. Describe what a new visitor likely feels, misunderstands, or fails to decide. Empathy and behavior, not a restated diagnosis.
-  Good: "New visitors likely pause because the hero never names the audience or immediate payoff."
-  Bad: repeating the verdict with different wording
-- key_observation: max 12 words, non-obvious insight. A second-angle finding (trust gap, expectation mismatch, hierarchy surprise) that is NOT the same point as verdict or summary. Noun phrase or short sentence, no filler words.
-  Good: "Trust badges appear before the value prop, which can feel like marketing noise."
-  Bad: another headline-clarity sentence
+
+summary: max 30 words. 1-2 sentences from the first-time visitor's perspective. What they feel and what they fail to understand in first 3 seconds. Write in third person: "A visitor..." or "First-time visitors..."
+  Example: "A visitor who doesn't know SOC 2 reads the headline and feels anxiety — but can't tell if this fixes their problem."
+
+key_observation: max 12 words. One phrase only. Must pick ONE angle from this list and write from that angle:
+  1. hidden differentiator buried in wrong place
+  2. audience split — works for warm or cold traffic only
+  3. structural conflict between two page elements
+  4. trust signals exist but misplaced
+  5. visual and copy hierarchy contradict each other
+  6. subheadline stronger than headline (inverted hierarchy)
+  NEVER restate verdict, summary, or top issue. NEVER write generic observations about headline clarity.
+  Good: "Ad-free differentiator buried in subheadline not headline"
+  Bad: "The hero headline lacks a clear audience focus"
 
 issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
 Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
@@ -157,12 +155,5 @@ priority: suggestions[] and copy[] ONLY — required enum, no impact field:
 - high_impact: materially improves understanding or conversion; may need more design/dev work
 - medium_impact: helpful but secondary, partial gain, or needs validation
 confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average — never put impact penalties (-5 to -25) into breakdown.
-metric_observations: max 8 words per field. One short observation only. Name a specific visible element or pattern on the page. NO full sentences — use noun phrases.
-- trust: what proof signals are present or missing above fold.
-- clarity: what the headline or copy communicates or fails to.
-- friction: what UI element or copy slows first comprehension.
-- overall: one-phrase holistic read of the page; do not repeat verdict verbatim.
-Good examples: "Fortune logos present, placed below fold" / "Headline names feature, not audience or outcome" / "Two competing CTAs split attention in hero" / "Strong visuals, weak copy hierarchy"
-Bad examples: "The headline and subtext do not clearly communicate..." / "Visitors may struggle to understand..."
 Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
 }
