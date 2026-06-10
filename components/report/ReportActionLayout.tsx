@@ -19,7 +19,6 @@ import type {
   ReportBreakdown,
   ReportCopyItem,
   ReportIssue,
-  ReportMetricObservations,
   ReportSuggestion,
 } from "@/lib/audit-report";
 import { getBrandStageLabel, type BrandStage } from "@/lib/brand-stage";
@@ -73,6 +72,30 @@ const BTN_PRIMARY_CLASS =
 
 function formatDimScore(value: number) {
   return (value / 10).toFixed(1);
+}
+
+function getMetricObservation(metric: string, value: number): string {
+  if (metric === "clarity") {
+    if (value >= 70) return "Headline specific, audience clearly stated";
+    if (value >= 40) return "Headline vague, audience not stated";
+    return "No clear value prop or audience above fold";
+  }
+  if (metric === "trust") {
+    if (value >= 70) return "Proof signals visible above fold";
+    if (value >= 40) return "Trust signals present but below fold";
+    return "No credibility signals visible";
+  }
+  if (metric === "friction") {
+    if (value >= 70) return "Clean layout, single clear CTA";
+    if (value >= 40) return "Competing elements slow comprehension";
+    return "Heavy visual noise, multiple CTAs compete";
+  }
+  if (metric === "visuals") {
+    if (value >= 70) return "Strong hierarchy, clear focal point";
+    if (value >= 40) return "Competing elements dilute headline focus";
+    return "No clear visual hierarchy or focal point";
+  }
+  return "";
 }
 
 function getReportScoreColor(tier: ReturnType<typeof getReportHeroTheme>["tier"]) {
@@ -164,21 +187,16 @@ function HeroCard({
   const domain = formatReportDomain(data.url);
   const reportHref = formatReportHref(data.url);
   const breakdown = data.breakdown;
-  const observations = data.metric_observations;
   const clarity = Number(breakdown?.clarity ?? 0);
   const trust = Number(breakdown?.trust ?? 0);
   const friction = getFrictionScore(breakdown);
   const hierarchy = Number(breakdown?.navigation ?? breakdown?.visuals ?? 0);
 
   const dimensions = [
-    { label: "Clarity", value: clarity, observation: observations?.clarity },
-    { label: "Trust", value: trust, observation: observations?.trust },
-    { label: "Friction", value: friction, observation: observations?.friction },
-    {
-      label: "Hierarchy",
-      value: hierarchy,
-      observation: observations?.visuals ?? observations?.overall,
-    },
+    { label: "Clarity", value: clarity, observation: getMetricObservation("clarity", clarity) },
+    { label: "Trust", value: trust, observation: getMetricObservation("trust", trust) },
+    { label: "Friction", value: friction, observation: getMetricObservation("friction", friction) },
+    { label: "Hierarchy", value: hierarchy, observation: getMetricObservation("visuals", hierarchy) },
   ];
 
   return (
