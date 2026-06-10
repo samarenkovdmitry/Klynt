@@ -51,15 +51,23 @@ Return ONLY valid JSON (no markdown):
   "breakdown": { "clarity": int, "navigation": int, "visuals": int, "trust": int, "conversion": int }
 }
 
-Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words.
+Lengths: summary 14-22 words; verdict max 8 words; key_observation max 12 words.
 
 Hero copy — three distinct layers. Never paraphrase one layer as another:
-- verdict: auditor diagnosis in 6-10 words.
+- verdict: max 8 words, auditor diagnosis, noun phrase preferred.
+  Good: "Strong hook, missing solution clarity"
+  Bad: "The hero headline lacks clarity on who the product serves"
 - summary: visitor first-impression in 14-22 words.
-- key_observation: one non-obvious insight in max 14 words.
+- key_observation: max 12 words, non-obvious insight, not a restatement of top issue. Noun phrase or short sentence, no filler words.
 
 confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger.
-metric_observations: expert UX consultant observations (NOT metric labels). Each field 12-16 words.`;
+metric_observations: max 8 words per field. One short observation only. Name a specific visible element or pattern. NO full sentences — use noun phrases.
+- trust: what proof signals are present or missing above fold.
+- clarity: what the headline or copy communicates or fails to.
+- friction: what UI element or copy slows first comprehension.
+- overall: one-phrase holistic read of the page.
+Good: "Fortune logos present, placed below fold" / "Headline names feature, not audience or outcome" / "Two competing CTAs split attention in hero" / "Strong visuals, weak copy hierarchy"
+Bad: "The headline and subtext do not clearly communicate..." / "Visitors may struggle to understand..."`;
 }
 
 export function buildFullAuditPrompt(
@@ -123,16 +131,16 @@ Return ONLY valid JSON (no markdown):
 }
 
 Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
-Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; why fields max 28 words each.
+Lengths: summary 14-22 words; verdict max 8 words; key_observation max 12 words; why fields max 28 words each.
 
 Hero copy — three distinct layers. Never paraphrase one layer as another:
-- verdict: auditor diagnosis in 6-10 words. Name the main UX or conversion problem on THIS page.
-  Good: "Hero headline hides who the product is for."
-  Bad: "Messaging clarity issues"
+- verdict: max 8 words, auditor diagnosis, noun phrase preferred. Name the main UX or conversion problem on THIS page.
+  Good: "Strong hook, missing solution clarity"
+  Bad: "The hero headline lacks clarity on who the product serves"
 - summary: visitor first-impression in 14-22 words. Describe what a new visitor likely feels, misunderstands, or fails to decide. Empathy and behavior, not a restated diagnosis.
   Good: "New visitors likely pause because the hero never names the audience or immediate payoff."
   Bad: repeating the verdict with different wording
-- key_observation: one non-obvious insight in max 14 words. A second-angle finding (trust gap, expectation mismatch, hierarchy surprise) that is NOT the same point as verdict or summary.
+- key_observation: max 12 words, non-obvious insight. A second-angle finding (trust gap, expectation mismatch, hierarchy surprise) that is NOT the same point as verdict or summary. Noun phrase or short sentence, no filler words.
   Good: "Trust badges appear before the value prop, which can feel like marketing noise."
   Bad: another headline-clarity sentence
 
@@ -147,12 +155,12 @@ priority: suggestions[] and copy[] ONLY — required enum, no impact field:
 - high_impact: materially improves understanding or conversion; may need more design/dev work
 - medium_impact: helpful but secondary, partial gain, or needs validation
 confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average — never put impact penalties (-5 to -25) into breakdown.
-metric_observations: expert UX consultant observations (NOT metric labels). Each field 12-16 words.
-- Do NOT repeat category names (Trust, Clarity, Friction, Overall) or the word "metric".
-- Describe likely user perception and behavioral impact, like a consultant briefing a team.
-- trust: what users likely feel about credibility and professionalism.
-- clarity: what users likely understand about value and the next step.
-- friction: how much competing UI or copy may slow first-pass understanding.
-- overall: holistic read of the page experience; do not repeat verdict verbatim.
+metric_observations: max 8 words per field. One short observation only. Name a specific visible element or pattern on the page. NO full sentences — use noun phrases.
+- trust: what proof signals are present or missing above fold.
+- clarity: what the headline or copy communicates or fails to.
+- friction: what UI element or copy slows first comprehension.
+- overall: one-phrase holistic read of the page; do not repeat verdict verbatim.
+Good examples: "Fortune logos present, placed below fold" / "Headline names feature, not audience or outcome" / "Two competing CTAs split attention in hero" / "Strong visuals, weak copy hierarchy"
+Bad examples: "The headline and subtext do not clearly communicate..." / "Visitors may struggle to understand..."
 Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
 }
