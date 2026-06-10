@@ -547,7 +547,7 @@ function WhatsNextRow({
       <button
         type="button"
         onClick={onRerun}
-        className="rounded-2xl border border-[#1D9E75]/35 bg-transparent px-5 py-4 text-left transition-colors hover:bg-black/[0.03] shadow-[0_0_0_1px_rgba(29,158,117,0.35)]"
+        className="rounded-2xl border border-[#1D9E75]/35 bg-white px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
       >
         <RiRefreshLine size={18} className="mb-2 text-[#1D9E75]" aria-hidden />
         <p className="text-[14px] font-medium tracking-[-0.02em] text-[#111]">
@@ -562,7 +562,7 @@ function WhatsNextRow({
         <button
           type="button"
           onClick={onExport}
-          className="rounded-2xl border border-black/[0.08] bg-transparent px-5 py-4 text-left transition-colors hover:bg-black/[0.03]"
+          className="rounded-2xl bg-white px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
         >
           <RiDownloadLine size={18} className="mb-2 text-[#888]" aria-hidden />
           <p className="text-[14px] font-medium tracking-[-0.02em] text-[#111]">Export PDF</p>
