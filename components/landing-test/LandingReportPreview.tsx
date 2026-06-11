@@ -147,10 +147,10 @@ export function LandingReportPreviewDesktop() {
             <RiBarChartLine size={12} aria-hidden />
             Score potential
           </div>
-          <div className="mb-1.5 flex items-center gap-2">
-            <span className="font-sans text-[20px] font-bold tracking-[-0.04em] text-[#BA7517]">6.8</span>
+          <div className="mb-1.5 flex items-center gap-2.5">
+            <span className="font-sans text-[32px] font-bold leading-none tracking-[-0.04em] text-[#BA7517]">6.8</span>
             <span className="text-[13px] text-[#7A7A74]">→</span>
-            <span className="font-sans text-[20px] font-bold tracking-[-0.04em] text-[#1D9E75]">8.5</span>
+            <span className="font-sans text-[32px] font-bold leading-none tracking-[-0.04em] text-[#1D9E75]">8.5</span>
             <span className="text-[11px] text-[#7A7A74]">after 3 fixes · estimate</span>
           </div>
           <div className="flex flex-wrap gap-1">
