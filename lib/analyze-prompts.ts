@@ -160,6 +160,7 @@ checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 mi
 
 copy_variants:
 - current: exact visible text from the page (empty string if not visible).
+- NEVER write "No content available to assess", "Not visible", "N/A", or similar meta phrases in ANY field. If text is not readable, use empty string for current only — all other fields must contain real audit content from what IS visible.
 - Each variant.text: paste-ready, max 16 words for headline, max 10 words for cta, max 18 words for subheadline.
 - 3 variants per element, each a different strategic angle. Never repeat formulations between variants.
 - copy_variants.headline.variants[].label MUST use the exact strategy names from the BRAND STAGE block above.

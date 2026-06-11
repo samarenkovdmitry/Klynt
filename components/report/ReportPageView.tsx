@@ -31,6 +31,8 @@ import {
   normalizeReportChecklist,
   normalizeScorePotential,
 } from "@/lib/normalize-report-checklist";
+import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
+import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 
 type ReportPageViewProps = {
   routeParam: string;
@@ -117,6 +119,20 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     return {
       ...data,
       checklist,
+      copy_variants: normalizeReportCopyVariants(data.copy_variants),
+      meta: data.meta
+        ? {
+            ...data.meta,
+            title_suggestion: sanitizeLlmVisibleText(data.meta.title_suggestion),
+            description_suggestion: sanitizeLlmVisibleText(data.meta.description_suggestion),
+            proof_suggestion: data.meta.proof_suggestion
+              ? sanitizeLlmVisibleText(data.meta.proof_suggestion)
+              : data.meta.proof_suggestion,
+            trust_notes: data.meta.trust_notes
+              ?.map((note) => sanitizeLlmVisibleText(note))
+              .filter(Boolean),
+          }
+        : data.meta,
       score_potential: normalizeScorePotential(
         data.score_potential,
         checklist,

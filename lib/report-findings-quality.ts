@@ -184,6 +184,7 @@ INSIGHT DEPTH RULES:
   These may appear only as pass items, or as context-specific gaps with the exact visible element named.
 - Never output two missing gaps for the same element (headline category + hero title clarity = one gap).
 - gap_label must be 2-4 words and different from text — short badge only, never a sentence.
+- NEVER use placeholder phrases like "No content available to assess" in checklist text, copy_variants, or meta fields.
 
 SCORE CALIBRATION:
 - Most real-world landing pages score between 5.0 and 8.0.

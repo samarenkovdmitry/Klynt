@@ -4,6 +4,7 @@ import type {
   ChecklistLinkTarget,
   ReportChecklistItem,
 } from "@/lib/audit-report";
+import { isLlmPlaceholderText } from "@/lib/llm-placeholder-text";
 
 const GAP_LABEL_DEFAULTS: Record<string, string> = {
   "copy-headline:missing": "Category missing",
@@ -12,6 +13,18 @@ const GAP_LABEL_DEFAULTS: Record<string, string> = {
   "copy-subheadline:weak": "Content weak",
   "trust:missing": "Trust missing",
   "visual-fixes:weak": "Weak typography",
+};
+
+const GAP_TEXT_FALLBACKS: Record<string, string> = {
+  "copy-headline:missing": "Headline does not state product category",
+  "copy-headline:weak": "Headline positioning is weak for cold traffic",
+  "copy-cta:missing": "CTA does not clarify trial or next step",
+  "copy-cta:weak": "CTA copy does not reduce signup friction",
+  "copy-subheadline:missing": "Subheadline missing or too vague",
+  "copy-subheadline:weak": "Subheadline reads as caption, not value prop",
+  "trust:missing": "Trust signals missing above the fold",
+  "trust:weak": "Trust proof above the fold is weak",
+  "visual-fixes:weak": "Subheadline typography too light to scan quickly",
 };
 
 const VALID_LINK_TARGETS = new Set<ChecklistLinkTarget>([
@@ -47,6 +60,10 @@ function isGarbledChecklistText(text: string): boolean {
   }
 
   if (/unreachable or target/i.test(trimmed)) {
+    return true;
+  }
+
+  if (isLlmPlaceholderText(trimmed)) {
     return true;
   }
 
@@ -159,6 +176,22 @@ function parseChecklistItem(raw: unknown): ReportChecklistItem | null {
     category,
     ...(gap_label ? { gap_label } : {}),
   };
+
+  if (isLlmPlaceholderText(parsed.text)) {
+    if (parsed.status === "pass") {
+      return null;
+    }
+
+    const fallbackKey = parsed.link_to ? `${parsed.link_to}:${parsed.status}` : null;
+    parsed.text =
+      (fallbackKey ? GAP_TEXT_FALLBACKS[fallbackKey] : undefined) ??
+      deriveChecklistGapLabel(parsed) ??
+      "Needs improvement";
+  }
+
+  if (parsed.gap_label && isLlmPlaceholderText(parsed.gap_label)) {
+    delete (parsed as { gap_label?: string }).gap_label;
+  }
 
   if (status !== "pass" && isGarbledChecklistText(parsed.text)) {
     return null;

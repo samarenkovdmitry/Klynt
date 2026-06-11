@@ -38,6 +38,8 @@ import {
   normalizeReportChecklist,
   normalizeScorePotential,
 } from "@/lib/normalize-report-checklist";
+import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
+import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 import {
   formatIssueTitleDisplay,
   normalizeReportCopyLengths,
@@ -437,27 +439,29 @@ export async function POST(req: Request) {
     }
 
     if (json.copy_variants && typeof json.copy_variants === "object") {
-      for (const block of Object.values(json.copy_variants) as any[]) {
-        if (Array.isArray(block?.variants)) {
-          block.variants = block.variants.map((v: any) => ({
-            ...v,
-            label: typeof v.label === "string"
-              ? v.label.replace(/^Option [A-Z] — /i, "")
-              : v.label,
-          }));
-        }
-      }
+      json.copy_variants = normalizeReportCopyVariants(
+        json.copy_variants as import("@/lib/audit-report").ReportCopyVariants
+      );
     }
 
     if (json.meta && typeof json.meta === "object") {
       const meta = json.meta as Record<string, unknown>;
+      if (typeof meta.title_suggestion === "string") {
+        meta.title_suggestion = sanitizeLlmVisibleText(meta.title_suggestion).slice(0, 120);
+      }
+      if (typeof meta.description_suggestion === "string") {
+        meta.description_suggestion = sanitizeLlmVisibleText(meta.description_suggestion).slice(
+          0,
+          200
+        );
+      }
       if (typeof meta.proof_suggestion === "string") {
-        meta.proof_suggestion = meta.proof_suggestion.trim().slice(0, 80);
+        meta.proof_suggestion = sanitizeLlmVisibleText(meta.proof_suggestion).slice(0, 80);
       }
       if (Array.isArray(meta.trust_notes)) {
         meta.trust_notes = meta.trust_notes
           .filter((note): note is string => typeof note === "string")
-          .map((note) => note.trim().slice(0, 120))
+          .map((note) => sanitizeLlmVisibleText(note).slice(0, 120))
           .filter(Boolean)
           .slice(0, 2);
       }

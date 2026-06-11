@@ -161,9 +161,15 @@ function CopyBlock({
         </div>
 
         {/* Current text — strikethrough */}
-        <div className="text-[13px] text-[#C0C0BC] line-through mb-[11px] leading-[1.5]">
-          {block.current}
-        </div>
+        {block.current ? (
+          <div className="mb-[11px] text-[13px] leading-[1.5] text-[#C0C0BC] line-through">
+            {block.current}
+          </div>
+        ) : (
+          <div className="mb-[11px] text-[13px] leading-[1.5] text-[#C0C0BC] italic">
+            Not visible on page
+          </div>
+        )}
 
         {/* Variants */}
         <div className="flex flex-col gap-[7px]">
