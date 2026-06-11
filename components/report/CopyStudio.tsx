@@ -18,6 +18,8 @@ import type {
 } from "@/lib/audit-report";
 import { deriveChecklistGapLabel } from "@/lib/normalize-report-checklist";
 import { REPORT_SECTION_SCROLL_MARGIN_CLASS } from "@/components/report/reportStyles";
+import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
+import { freemium, scrollToProUpgradeGate } from "@/lib/freemium";
 
 // ---------------------------------------------------------------------------
 // Design tokens (docs/report-mvp-v4.html)
@@ -30,6 +32,7 @@ interface CopyStudioProps {
   copyVariants: ReportCopyVariants;
   context?: { tone?: string; audience?: string };
   checklist?: ReportChecklistItem[];
+  previewLocked?: boolean;
 }
 
 const BLOCKS: {
@@ -72,15 +75,21 @@ function VariantItem({
   variant,
   isSelected,
   onSelect,
+  locked = false,
 }: {
   variant: CopyVariant;
   isSelected: boolean;
   onSelect: () => void;
+  locked?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
 
   function handleCopy(e: React.MouseEvent) {
     e.stopPropagation();
+    if (locked) {
+      scrollToProUpgradeGate();
+      return;
+    }
     navigator.clipboard.writeText(variant.text).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
@@ -89,19 +98,20 @@ function VariantItem({
   return (
     <div
       onClick={onSelect}
-      className={`group flex items-start justify-between gap-2.5 rounded-[10px] px-3 py-[11px] cursor-pointer border transition-all duration-[120ms] ${
+      className={`group relative flex items-start justify-between gap-2.5 rounded-[10px] px-3 py-[11px] cursor-pointer border transition-all duration-[120ms] ${
         isSelected
           ? "bg-[#E8F7F2] border-[rgba(29,158,117,0.25)]"
           : "bg-[#F5F5F3] border-transparent hover:border-[rgba(0,0,0,0.1)]"
-      }`}
+      } ${locked ? "opacity-80" : ""}`}
     >
       <div className="flex-1 min-w-0">
         <div
-          className={`text-[11px] mb-[3px] transition-colors duration-[120ms] ${
+          className={`text-[11px] mb-[3px] transition-colors duration-[120ms] flex items-center gap-1.5 ${
             isSelected ? "text-[#0F6E56]" : "text-[#999]"
           }`}
         >
           {variant.label}
+          {locked ? <FreemiumProBadge /> : null}
         </div>
         <div
           className={`text-[13px] font-medium leading-[1.5] transition-colors duration-[120ms] ${
@@ -114,11 +124,13 @@ function VariantItem({
 
       <button
         onClick={handleCopy}
-        title="Copy text"
+        title={locked ? "Upgrade to Pro to copy" : "Copy text"}
         className={`flex-shrink-0 pt-0.5 transition-all duration-[120ms] ${
-          isSelected
-            ? "text-[#1D9E75] opacity-100"
-            : "text-[#C0C0BC] opacity-0 group-hover:opacity-100 group-hover:text-[#1D9E75]"
+          locked
+            ? "text-[#999] opacity-100"
+            : isSelected
+              ? "text-[#1D9E75] opacity-100"
+              : "text-[#C0C0BC] opacity-0 group-hover:opacity-100 group-hover:text-[#1D9E75]"
         }`}
       >
         {copied ? (
@@ -137,12 +149,14 @@ function CopyBlock({
   block,
   gapItem,
   context,
+  previewLocked = false,
 }: {
   id: string;
   label: string;
   block: CopyVariantBlock;
   gapItem?: ReportChecklistItem;
   context?: { tone?: string; audience?: string };
+  previewLocked?: boolean;
 }) {
   const [selected, setSelected] = useState(0);
 
@@ -179,6 +193,7 @@ function CopyBlock({
               variant={variant}
               isSelected={selected === i}
               onSelect={() => setSelected(i)}
+              locked={previewLocked && i >= freemium.maxFreeCopyVariants}
             />
           ))}
         </div>
@@ -209,7 +224,12 @@ function CopyBlock({
 // Main export
 // ---------------------------------------------------------------------------
 
-export default function CopyStudio({ copyVariants, context, checklist }: CopyStudioProps) {
+export default function CopyStudio({
+  copyVariants,
+  context,
+  checklist,
+  previewLocked = false,
+}: CopyStudioProps) {
   return (
     <div className="bg-white rounded-2xl shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)] overflow-hidden mb-2.5">
       {/* Section header */}
@@ -217,9 +237,12 @@ export default function CopyStudio({ copyVariants, context, checklist }: CopyStu
         <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#999] uppercase tracking-[0.07em]">
           <RiPencilLine className="w-4 h-4" />
           Copy studio
+          {previewLocked ? <FreemiumProBadge className="normal-case tracking-normal" /> : null}
         </span>
         <span className="text-[12px] text-[#C0C0BC]">
-          3 sections · select and copy · more variants soon
+          {previewLocked
+            ? "1 variant free per section · Pro unlocks all"
+            : "3 sections · select and copy · more variants soon"}
         </span>
       </div>
 
@@ -234,6 +257,7 @@ export default function CopyStudio({ copyVariants, context, checklist }: CopyStu
             block={copyVariants[key]}
             gapItem={gapItem}
             context={context}
+            previewLocked={previewLocked}
           />
         );
       })}

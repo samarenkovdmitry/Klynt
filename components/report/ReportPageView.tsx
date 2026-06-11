@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RiArrowRightLine, RiDownloadLine, RiFilePdfLine, RiRefreshLine } from "@remixicon/react";
+import { RiArrowRightLine, RiDownloadLine, RiFilePdfLine, RiLock2Line, RiRefreshLine } from "@remixicon/react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { ReportActionLayout } from "@/components/report/ReportActionLayout";
@@ -15,7 +15,12 @@ import { ExportGrid } from "@/components/report/ExportGrid";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
+import { FreemiumUpgradeGate } from "@/components/report/FreemiumUpgradeGate";
+import { FreemiumProStickyBar } from "@/components/report/FreemiumProStickyBar";
+import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
+import { useFreemiumAccess } from "@/hooks/useFreemiumAccess";
+import { isFreemiumEnabled } from "@/lib/freemium";
 import {
   REPORT_PAGE_CONTAINER_CLASS,
   WORKSPACE_BG_CLASS,
@@ -26,6 +31,7 @@ import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
 import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
+import { useScrollAnchorInView } from "@/hooks/useScrollAnchorInView";
 import { buildCopyStudioContext } from "@/lib/copy-studio-context";
 import {
   normalizeReportChecklist,
@@ -42,9 +48,11 @@ type ReportPageViewProps = {
 function StickyBottomBar({
   onExport,
   onRerun,
+  exportLocked = false,
 }: {
   onExport?: () => void;
   onRerun: () => void;
+  exportLocked?: boolean;
 }) {
   const btnClass =
     "inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] font-medium text-[#555] transition-colors hover:bg-black/[0.08]";
@@ -60,7 +68,11 @@ function StickyBottomBar({
         <div className="flex items-center gap-2 sm:ml-auto">
           {onExport && (
             <button type="button" onClick={onExport} className={btnClass}>
-              <RiFilePdfLine size={14} aria-hidden />
+              {exportLocked ? (
+                <RiLock2Line size={14} aria-hidden />
+              ) : (
+                <RiFilePdfLine size={14} aria-hidden />
+              )}
               Export PDF
             </button>
           )}
@@ -82,10 +94,11 @@ function StickyBottomBar({
 export function ReportPageView({ routeParam, initialData = null }: ReportPageViewProps) {
   const router = useRouter();
   const { data, loadState } = useReportData(routeParam, initialData);
-  const { waitlistActive, unlock } = usePreLaunchWaitlist(
-    isDemoReportRouteParam(routeParam)
-  );
-  const gateInView = useWaitlistGateInView(waitlistActive);
+  const isDemo = isDemoReportRouteParam(routeParam);
+  const { waitlistActive, unlock } = usePreLaunchWaitlist(isDemo);
+  const freemiumAccess = useFreemiumAccess(isDemo);
+  const gateInView = useWaitlistGateInView(waitlistActive && !freemiumAccess.active);
+  const proGateInView = useScrollAnchorInView("pro-upgrade-gate", freemiumAccess.active);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
@@ -102,6 +115,14 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
   }
 
   function handleExport() {
+    if (freemiumAccess.exportLocked) {
+      document.getElementById("pro-upgrade-gate")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      return;
+    }
+
     openReportPrintExport(routeParam);
   }
 
@@ -156,6 +177,29 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
   };
 
   const hasNewLayout = Array.isArray(report.checklist) && report.checklist.length > 0;
+  const useFreemium = hasNewLayout && isFreemiumEnabled() && freemiumAccess.active;
+  const showLegacyWaitlist = waitlistActive && !useFreemium;
+
+  const freemiumLockedSummary = {
+    domain: formatReportDomain(data.url),
+    lockedCopyVariants: report.copy_variants
+      ? (["headline", "cta", "subheadline"] as const).reduce((count, key) => {
+          const variants = report.copy_variants?.[key]?.variants ?? [];
+          return count + Math.max(0, variants.length - 1);
+        }, 0)
+      : 0,
+    lockedExportFormats: 4,
+    lockedScoreChips: report.score_potential?.chips.length ?? 0,
+  };
+
+  const mainPaddingBottom =
+    useFreemium && !proGateInView
+      ? "pb-24 md:pb-20"
+      : showLegacyWaitlist && !gateInView
+        ? "pb-24 md:pb-20"
+        : hasNewLayout
+          ? "pb-8"
+          : "pb-20";
 
   return (
     <>
@@ -164,11 +208,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       <main
         className={[
           `min-h-[calc(100dvh-50px)] ${WORKSPACE_BG_CLASS} px-4 pt-6 text-[#111] md:px-8 md:pt-6`,
-          hasNewLayout && !waitlistActive
-            ? "pb-8"
-            : waitlistActive && !gateInView
-              ? "pb-24 md:pb-20"
-              : "pb-20",
+          mainPaddingBottom,
         ].join(" ")}
       >
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
@@ -199,6 +239,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     copyVariants={report.copy_variants}
                     checklist={report.checklist}
                     context={buildCopyStudioContext(report)}
+                    previewLocked={freemiumAccess.previewLocked}
                   />
                 )}
                 {report.score_potential && (
@@ -206,6 +247,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     score={report.score}
                     scorePotential={report.score_potential}
                     checklist={report.checklist}
+                    chipsLocked={freemiumAccess.previewLocked}
                   />
                 )}
               </div>
@@ -218,8 +260,19 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                 <TrustMeta
                   meta={report.meta}
                   checklist={report.checklist!}
+                  metaCopyLocked={freemiumAccess.previewLocked}
                 />
               )}
+
+              {useFreemium ? (
+                <div className="mt-6">
+                  <FreemiumUpgradeGate
+                    reportId={routeParam}
+                    locked={freemiumLockedSummary}
+                    onJoined={freemiumAccess.markWaitlistJoined}
+                  />
+                </div>
+              ) : null}
 
               {/* ExportGrid */}
               {report.copy_variants && report.meta && (
@@ -228,6 +281,9 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.07em] text-[#999]">
                       <RiDownloadLine size={14} aria-hidden />
                       Export
+                      {freemiumAccess.exportLocked ? (
+                        <FreemiumProBadge className="normal-case tracking-normal" />
+                      ) : null}
                     </span>
                     <span className="text-[12px] text-[#C0C0BC]">take this to your team</span>
                   </div>
@@ -235,12 +291,17 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     copyVariants={report.copy_variants}
                     meta={report.meta}
                     checklist={report.checklist}
+                    locked={freemiumAccess.exportLocked}
                   />
                 </div>
               )}
 
-              {hasNewLayout && !waitlistActive && (
-                <StickyBottomBar onExport={handleExport} onRerun={handleRerun} />
+              {hasNewLayout && (
+                <StickyBottomBar
+                  onExport={handleExport}
+                  onRerun={handleRerun}
+                  exportLocked={freemiumAccess.exportLocked}
+                />
               )}
             </>
           ) : (
@@ -261,7 +322,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
         </div>
       </main>
 
-      {waitlistActive && <ReportWaitlistStickyBar visible={!gateInView} />}
+      {showLegacyWaitlist && <ReportWaitlistStickyBar visible={!gateInView} />}
+      {useFreemium && <FreemiumProStickyBar visible={!proGateInView} />}
 
       <ShareReportDialog
         open={shareOpen}

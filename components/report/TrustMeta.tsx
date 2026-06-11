@@ -15,16 +15,23 @@ import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
 } from "@/components/report/reportStyles";
+import { scrollToProUpgradeGate } from "@/lib/freemium";
 
 type Props = {
   meta: ReportMeta;
   checklist: ReportChecklistItem[];
+  metaCopyLocked?: boolean;
 };
 
-function CopyButton({ value }: { value: string }) {
+function CopyButton({ value, locked = false }: { value: string; locked?: boolean }) {
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
+    if (locked) {
+      scrollToProUpgradeGate();
+      return;
+    }
+
     navigator.clipboard.writeText(value).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
@@ -35,14 +42,14 @@ function CopyButton({ value }: { value: string }) {
     <button
       onClick={handleCopy}
       className="ml-1.5 shrink-0 rounded-md p-1 text-[#999] transition-colors hover:bg-[#F0F0EE] hover:text-[#555]"
-      aria-label="Copy"
+      aria-label={locked ? "Upgrade to Pro to copy" : "Copy"}
     >
       {copied ? <RiCheckLine size={14} /> : <RiFileCopyLine size={14} />}
     </button>
   );
 }
 
-export function TrustMeta({ meta, checklist }: Props) {
+export function TrustMeta({ meta, checklist, metaCopyLocked = false }: Props) {
   const trustGaps = checklist.filter(
     (item) => item.category === "trust" && item.status !== "pass"
   );
@@ -130,7 +137,7 @@ export function TrustMeta({ meta, checklist }: Props) {
                 <span className="text-[13px] leading-[1.5] text-[#111]">
                   {meta.title_suggestion}
                 </span>
-                <CopyButton value={meta.title_suggestion} />
+                <CopyButton value={meta.title_suggestion} locked={metaCopyLocked} />
               </div>
             </div>
 
@@ -142,7 +149,7 @@ export function TrustMeta({ meta, checklist }: Props) {
                 <span className="text-[13px] leading-[1.5] text-[#111]">
                   {meta.description_suggestion}
                 </span>
-                <CopyButton value={meta.description_suggestion} />
+                <CopyButton value={meta.description_suggestion} locked={metaCopyLocked} />
               </div>
             </div>
           </div>

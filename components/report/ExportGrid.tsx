@@ -7,8 +7,11 @@ import {
   RiCodeSSlashLine,
   RiNotification4Line,
   RiCheckLine,
+  RiLock2Line,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ReportCopyVariants, ReportMeta } from "@/lib/audit-report";
+import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
+import { scrollToProUpgradeGate } from "@/lib/freemium";
 
 // ---------------------------------------------------------------------------
 // Design tokens (docs/report-mvp-v4.html §7 EXPORT)
@@ -20,6 +23,7 @@ interface ExportGridProps {
   copyVariants: ReportCopyVariants;
   meta: ReportMeta;
   checklist?: ReportChecklistItem[];
+  locked?: boolean;
 }
 
 type CardId = "copy-deck" | "designer-brief" | "dev-tasks" | "notion-slack";
@@ -178,11 +182,15 @@ function ExportCard({ icon, title, sub, cardId, activeToast, onClick }: ExportCa
 // Main component
 // ---------------------------------------------------------------------------
 
-export function ExportGrid({ copyVariants, meta, checklist }: ExportGridProps) {
+export function ExportGrid({ copyVariants, meta, checklist, locked = false }: ExportGridProps) {
   const [activeToast, setActiveToast] = useState<CardId | null>(null);
 
   const copyToClipboard = useCallback(
     async (id: CardId) => {
+      if (locked) {
+        scrollToProUpgradeGate();
+        return;
+      }
       let text = "";
 
       switch (id) {
@@ -217,7 +225,7 @@ export function ExportGrid({ copyVariants, meta, checklist }: ExportGridProps) {
       setActiveToast(id);
       setTimeout(() => setActiveToast(null), 2000);
     },
-    [copyVariants, meta, checklist]
+    [copyVariants, meta, checklist, locked]
   );
 
   const CARDS: {
@@ -253,18 +261,36 @@ export function ExportGrid({ copyVariants, meta, checklist }: ExportGridProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-2 px-5 pb-4 sm:grid-cols-4">
-      {CARDS.map((card) => (
-        <ExportCard
-          key={card.id}
-          icon={card.icon}
-          title={card.title}
-          sub={card.sub}
-          cardId={card.id}
-          activeToast={activeToast}
-          onClick={copyToClipboard}
-        />
-      ))}
+    <div className="relative px-5 pb-4">
+      <div className={locked ? "pointer-events-none select-none blur-[2px]" : ""}>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {CARDS.map((card) => (
+            <ExportCard
+              key={card.id}
+              icon={card.icon}
+              title={card.title}
+              sub={card.sub}
+              cardId={card.id}
+              activeToast={activeToast}
+              onClick={copyToClipboard}
+            />
+          ))}
+        </div>
+      </div>
+
+      {locked ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-5 pb-4">
+          <FreemiumProBadge />
+          <button
+            type="button"
+            onClick={scrollToProUpgradeGate}
+            className="pointer-events-auto inline-flex items-center gap-1.5 rounded-[10px] border border-black/[0.08] bg-white px-3.5 py-2 text-[12px] font-medium text-[#111] shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-colors hover:bg-[#FAFAFA]"
+          >
+            <RiLock2Line size={14} aria-hidden />
+            Upgrade to export
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

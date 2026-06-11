@@ -1,6 +1,9 @@
 "use client";
 
-import { RiBarChartLine } from "@remixicon/react";
+import {
+  RiBarChartLine,
+  RiLock2Line,
+} from "@remixicon/react";
 import type {
   ReportScorePotential,
   ReportChecklistItem,
@@ -9,11 +12,14 @@ import {
   getScoreChipShortLabel,
   resolveChipChecklistItem,
 } from "@/lib/normalize-report-checklist";
+import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
+import { scrollToProUpgradeGate } from "@/lib/freemium";
 
 interface ScorePotentialCompactProps {
   score: number;
   scorePotential: ReportScorePotential;
   checklist?: ReportChecklistItem[];
+  chipsLocked?: boolean;
 }
 
 function scrollTo(id: string) {
@@ -30,6 +36,7 @@ export default function ScorePotentialCompact({
   score,
   scorePotential,
   checklist,
+  chipsLocked = false,
 }: ScorePotentialCompactProps) {
   const { target, chips } = scorePotential;
 
@@ -44,6 +51,7 @@ export default function ScorePotentialCompact({
         <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.07em] text-[#999]">
           <RiBarChartLine className="h-4 w-4" />
           Score potential
+          {chipsLocked ? <FreemiumProBadge className="normal-case tracking-normal" /> : null}
         </span>
         <span className="text-[12px] text-[#C0C0BC]">estimate · not a promise</span>
       </div>
@@ -69,24 +77,39 @@ export default function ScorePotentialCompact({
 
         <div className="mt-3 min-w-0 flex-1 sm:mt-0">
           {chips.length > 0 ? (
-            <>
-              <div className="mb-2 font-['Familjen_Grotesk',sans-serif] text-[14px] font-medium tracking-[-0.2px] text-[#111]">
-                {buildTitle(chips.length)}
+            <div className="relative">
+              <div className={chipsLocked ? "pointer-events-none select-none blur-[2px]" : ""}>
+                <div className="mb-2 font-['Familjen_Grotesk',sans-serif] text-[14px] font-medium tracking-[-0.2px] text-[#111]">
+                  {buildTitle(chips.length)}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {chips.map((chip, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handleChipClick(chip.label, i)}
+                      className="cursor-pointer rounded-[10px] border border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-2.5 py-[5px] text-left text-[12px] text-[#555] transition-all duration-[120ms] hover:border-[#1D9E75] hover:text-[#0F6E56]"
+                    >
+                      {i + 1} · {getScoreChipShortLabel(chip.label, checklist)}{" "}
+                      <strong className="font-medium text-[#1D9E75]">{chip.delta}</strong>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {chips.map((chip, i) => (
+
+              {chipsLocked ? (
+                <div className="absolute inset-0 flex items-center justify-center">
                   <button
-                    key={i}
                     type="button"
-                    onClick={() => handleChipClick(chip.label, i)}
-                    className="cursor-pointer rounded-[10px] border border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-2.5 py-[5px] text-left text-[12px] text-[#555] transition-all duration-[120ms] hover:border-[#1D9E75] hover:text-[#0F6E56]"
+                    onClick={scrollToProUpgradeGate}
+                    className="pointer-events-auto inline-flex items-center gap-1.5 rounded-[10px] border border-black/[0.08] bg-white/95 px-3 py-2 text-[12px] font-medium text-[#111] shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-colors hover:bg-white"
                   >
-                    {i + 1} · {getScoreChipShortLabel(chip.label, checklist)}{" "}
-                    <strong className="font-medium text-[#1D9E75]">{chip.delta}</strong>
+                    <RiLock2Line size={14} aria-hidden />
+                    Upgrade to see breakdown
                   </button>
-                ))}
-              </div>
-            </>
+                </div>
+              ) : null}
+            </div>
           ) : (
             <p className="text-[13px] leading-[1.5] text-[#888]">
               Fix copy and trust gaps above to see how much your score could improve.
