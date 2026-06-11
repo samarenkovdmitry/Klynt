@@ -24,7 +24,10 @@ import { openReportPrintExport } from "@/lib/report-export";
 import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
 import { buildCopyStudioContext } from "@/lib/copy-studio-context";
-import { normalizeReportChecklist } from "@/lib/normalize-report-checklist";
+import {
+  normalizeReportChecklist,
+  normalizeScorePotential,
+} from "@/lib/normalize-report-checklist";
 
 type ReportPageViewProps = {
   routeParam: string;
@@ -103,9 +106,14 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       return data;
     }
 
+    const checklist = normalizeReportChecklist(data.checklist);
+
     return {
       ...data,
-      checklist: normalizeReportChecklist(data.checklist),
+      checklist,
+      score_potential: data.score_potential
+        ? normalizeScorePotential(data.score_potential, checklist)
+        : data.score_potential,
     };
   }, [data]);
 

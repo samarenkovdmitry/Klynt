@@ -5,23 +5,15 @@ import type {
   ReportScorePotential,
   ReportChecklistItem,
 } from "@/lib/audit-report";
-
-// ---------------------------------------------------------------------------
-// Design tokens (docs/report-mvp-v4.html §4 SCORE POTENTIAL)
-// --amber:#BA7517  --green:#1D9E75  --gd:#0F6E56
-// --bs:#F5F5F3  --b1:rgba(0,0,0,.07)  --t1:#111  --t2:#555  --tm:#C0C0BC
-// --fd:'Familjen Grotesk'  --rsm:10px  --rp:20px
-// ---------------------------------------------------------------------------
+import {
+  getScoreChipShortLabel,
+  resolveChipChecklistItem,
+} from "@/lib/normalize-report-checklist";
 
 interface ScorePotentialCompactProps {
   score: number;
   scorePotential: ReportScorePotential;
-  /** Used to resolve chip.label → link_to for scroll navigation */
   checklist?: ReportChecklistItem[];
-}
-
-function truncateLabel(label: string, max = 32) {
-  return label.length > max ? label.slice(0, max).trimEnd() + "…" : label;
 }
 
 function scrollTo(id: string) {
@@ -41,61 +33,77 @@ export default function ScorePotentialCompact({
 }: ScorePotentialCompactProps) {
   const { target, chips } = scorePotential;
 
-  function handleChipClick(label: string) {
-    const item = checklist?.find((c) => c.text === label);
+  function handleChipClick(chipLabel: string, index: number) {
+    const item = resolveChipChecklistItem(chipLabel, index, checklist);
     if (item?.link_to) scrollTo(item.link_to);
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)] overflow-hidden mb-2.5">
-      {/* Section header */}
-      <div className="flex items-center justify-between px-5 pt-[14px] pb-[10px]">
-        <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#999] uppercase tracking-[0.07em]">
-          <RiBarChartLine className="w-4 h-4" />
+    <div className="mb-2.5 overflow-hidden rounded-2xl bg-white shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)]">
+      <div className="flex items-center justify-between px-5 pb-[10px] pt-[14px]">
+        <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.07em] text-[#999]">
+          <RiBarChartLine className="h-4 w-4" />
           Score potential
         </span>
         <span className="text-[12px] text-[#C0C0BC]">estimate · not a promise</span>
       </div>
 
-      {/* Content row */}
       <div className="flex flex-wrap items-center px-5 py-4">
-        {/* Left: numbers */}
-        <div className="flex items-center gap-2.5 flex-shrink-0">
+        <div className="flex shrink-0 items-center gap-2.5">
           <div>
             <div className="font-['Familjen_Grotesk',sans-serif] text-[32px] font-semibold leading-none tracking-[-1.5px] text-[#BA7517]">
               {score % 1 === 0 ? score.toFixed(1) : String(score)}
             </div>
-            <div className="text-[11px] text-[#C0C0BC] mt-0.5 text-center">Now</div>
+            <div className="mt-0.5 text-center text-[11px] text-[#C0C0BC]">Now</div>
           </div>
-          <span className="text-[18px] text-[#C0C0BC] mx-2.5">→</span>
+          <span className="mx-2.5 text-[18px] text-[#C0C0BC]">→</span>
           <div>
             <div className="font-['Familjen_Grotesk',sans-serif] text-[32px] font-semibold leading-none tracking-[-1.5px] text-[#1D9E75]">
               {target % 1 === 0 ? target.toFixed(1) : String(target)}
             </div>
-            <div className="text-[11px] text-[#C0C0BC] mt-0.5 text-center">Potential</div>
+            <div className="mt-0.5 text-center text-[11px] text-[#C0C0BC]">Potential</div>
           </div>
         </div>
 
-        {/* Divider — hidden on small screens */}
-        <div className="hidden sm:block w-px bg-[rgba(0,0,0,0.07)] h-10 mx-4 flex-shrink-0" />
+        <div className="mx-4 hidden h-10 w-px shrink-0 bg-[rgba(0,0,0,0.07)] sm:block" />
 
-        {/* Right: title + chips */}
         {chips.length > 0 && (
-          <div className="flex-1 min-w-0 mt-3 sm:mt-0">
-            <div className="font-['Familjen_Grotesk',sans-serif] text-[14px] font-medium text-[#111] mb-2 tracking-[-0.2px]">
+          <div className="mt-3 min-w-0 flex-1 sm:mt-0">
+            <div className="mb-2 font-['Familjen_Grotesk',sans-serif] text-[14px] font-medium tracking-[-0.2px] text-[#111]">
               {buildTitle(chips.length)}
             </div>
-            <div className="flex gap-1.5 flex-wrap">
-              {chips.map((chip, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleChipClick(chip.label)}
-                  className="text-[12px] bg-[#F5F5F3] rounded-[10px] px-2.5 py-[5px] text-[#555] border border-[rgba(0,0,0,0.07)] cursor-pointer transition-all duration-[120ms] hover:border-[#1D9E75] hover:text-[#0F6E56] text-left"
-                >
-                  {i + 1} · {truncateLabel(chip.label)}{" "}
-                  <strong className="text-[#1D9E75] font-medium">{chip.delta}</strong>
-                </button>
-              ))}
+            <div className="flex flex-col gap-1.5">
+              {chips.map((chip, i) => {
+                const shortLabel = getScoreChipShortLabel(chip.label, checklist);
+                const detail = resolveChipChecklistItem(chip.label, i, checklist)?.text;
+                const showDetail = detail && detail !== shortLabel;
+
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleChipClick(chip.label, i)}
+                    className="flex w-full items-center gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-3 py-2 text-left transition-all duration-[120ms] hover:border-[#1D9E75] hover:bg-white"
+                  >
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-[11px] font-medium text-[#999] shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                      {i + 1}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[13px] font-medium text-[#111]">
+                        {shortLabel}
+                      </span>
+                      {showDetail ? (
+                        <span className="mt-0.5 block text-[11px] leading-[1.4] text-[#999]">
+                          {detail}
+                        </span>
+                      ) : null}
+                    </span>
+                    <strong className="shrink-0 text-[12px] font-medium text-[#1D9E75]">
+                      {chip.delta}
+                    </strong>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

@@ -217,6 +217,86 @@ function ensureVisualWeakItem(gaps: ReportChecklistItem[]): ReportChecklistItem[
   return gaps;
 }
 
+export function findChecklistItemForChip(
+  checklist: ReportChecklistItem[] | undefined,
+  chipLabel: string
+): ReportChecklistItem | undefined {
+  if (!checklist?.length || !chipLabel.trim()) {
+    return undefined;
+  }
+
+  const trimmed = chipLabel.trim();
+
+  return checklist.find(
+    (item) =>
+      item.status !== "pass" &&
+      (item.text === trimmed ||
+        item.gap_label === trimmed ||
+        deriveChecklistGapLabel(item) === trimmed)
+  );
+}
+
+export function getScoreChipShortLabel(
+  chipLabel: string,
+  checklist?: ReportChecklistItem[]
+): string {
+  const item = findChecklistItemForChip(checklist, chipLabel);
+
+  if (item) {
+    return deriveChecklistGapLabel(item) ?? chipLabel;
+  }
+
+  return chipLabel;
+}
+
+export function resolveChipChecklistItem(
+  chipLabel: string,
+  chipIndex: number,
+  checklist?: ReportChecklistItem[]
+): ReportChecklistItem | undefined {
+  const matched = findChecklistItemForChip(checklist, chipLabel);
+
+  if (matched?.link_to) {
+    return matched;
+  }
+
+  const chipGaps =
+    checklist?.filter(
+      (item) => item.status !== "pass" && item.link_to && item.link_to !== "visual-fixes"
+    ) ?? [];
+
+  return chipGaps[chipIndex];
+}
+
+type ScorePotentialInput = {
+  target: number;
+  chips: { label: string; delta: string }[];
+};
+
+export function normalizeScorePotential(
+  scorePotential: ScorePotentialInput | undefined,
+  checklist: ReportChecklistItem[]
+): ScorePotentialInput | undefined {
+  if (!scorePotential?.chips?.length) {
+    return scorePotential;
+  }
+
+  return {
+    ...scorePotential,
+    chips: scorePotential.chips.map((chip, index) => {
+      const item =
+        findChecklistItemForChip(checklist, chip.label) ??
+        resolveChipChecklistItem(chip.label, index, checklist);
+      const shortLabel = item ? deriveChecklistGapLabel(item) : undefined;
+
+      return {
+        ...chip,
+        label: shortLabel ?? chip.label,
+      };
+    }),
+  };
+}
+
 export function normalizeReportChecklist(raw: unknown): ReportChecklistItem[] {
   if (!Array.isArray(raw)) {
     return [];

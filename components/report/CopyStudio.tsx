@@ -6,7 +6,6 @@ import {
   RiErrorWarningLine,
   RiAlertLine,
   RiFileCopyLine,
-  RiRefreshLine,
   RiCheckLine,
 } from "@remixicon/react";
 import type {
@@ -132,15 +131,6 @@ function VariantItem({
   );
 }
 
-function RegenButton() {
-  return (
-    <span className="inline-flex items-center gap-[5px] rounded-full border border-[rgba(0,0,0,0.07)] px-3 py-[5px] text-[12px] text-[#C0C0BC]">
-      <RiRefreshLine className="h-3.5 w-3.5 opacity-60" aria-hidden />
-      Coming soon
-    </span>
-  );
-}
-
 function CopyBlock({
   id,
   label,
@@ -187,27 +177,23 @@ function CopyBlock({
           ))}
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center gap-2 mt-[11px]">
-          <RegenButton />
-          {context && (context.tone || context.audience) && (
-            <span className="text-[12px] text-[#C0C0BC]">
-              {context.tone && (
-                <>
-                  Tone:{" "}
-                  <strong className="text-[#999] font-medium">{context.tone}</strong>
-                </>
-              )}
-              {context.tone && context.audience && " · "}
-              {context.audience && (
-                <>
-                  Audience:{" "}
-                  <strong className="text-[#999] font-medium">{context.audience}</strong>
-                </>
-              )}
-            </span>
-          )}
-        </div>
+        {context && (context.tone || context.audience) && id === "copy-headline" ? (
+          <div className="mt-[11px] text-[12px] text-[#C0C0BC]">
+            {context.tone && (
+              <>
+                Tone:{" "}
+                <strong className="font-medium text-[#999]">{context.tone}</strong>
+              </>
+            )}
+            {context.tone && context.audience && " · "}
+            {context.audience && (
+              <>
+                Audience:{" "}
+                <strong className="font-medium text-[#999]">{context.audience}</strong>
+              </>
+            )}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -226,7 +212,9 @@ export default function CopyStudio({ copyVariants, context, checklist }: CopyStu
           <RiPencilLine className="w-4 h-4" />
           Copy studio
         </span>
-        <span className="text-[12px] text-[#C0C0BC]">3 sections · select and copy</span>
+        <span className="text-[12px] text-[#C0C0BC]">
+          3 sections · select and copy · more variants soon
+        </span>
       </div>
 
       {/* Blocks */}

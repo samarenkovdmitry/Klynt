@@ -234,30 +234,32 @@ function HeroCard({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2.5 px-5 py-4">
-          <div className="flex shrink-0 items-baseline">
-            <span
-              className="text-[40px] font-semibold leading-none tracking-[-0.05em]"
-              style={{ color: scoreColor }}
-            >
-              {formatOverallScore(data.score)}
-            </span>
-            <span className="ml-0.5 text-[14px] text-[#bbb]">/10</span>
-          </div>
+        <div className="px-5 py-4">
+          <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
+            <div className="flex shrink-0 items-baseline">
+              <span
+                className="text-[40px] font-semibold leading-none tracking-[-0.05em]"
+                style={{ color: scoreColor }}
+              >
+                {formatOverallScore(data.score)}
+              </span>
+              <span className="ml-0.5 text-[14px] text-[#bbb]">/10</span>
+            </div>
 
-          <div className="h-[3px] min-w-[48px] flex-1 rounded-full bg-black/[0.07]">
-            <div
-              className="h-[3px] rounded-full transition-all duration-700"
-              style={{ width: `${scorePercent}%`, backgroundColor: scoreColor }}
-            />
-          </div>
+            <div className="h-[3px] min-w-[48px] flex-1 rounded-full bg-black/[0.07]">
+              <div
+                className="h-[3px] rounded-full transition-all duration-700"
+                style={{ width: `${scorePercent}%`, backgroundColor: scoreColor }}
+              />
+            </div>
 
-          <p className="min-w-[120px] flex-[2] text-[15px] font-medium leading-snug tracking-[-0.01em] text-[#111]">
-            {formatVerdictDisplay(data.verdict) || "UX assessment complete"}
-          </p>
+            <p className="min-w-[160px] flex-[2] text-[15px] font-medium leading-snug tracking-[-0.01em] text-[#111]">
+              {formatVerdictDisplay(data.verdict) || "UX assessment complete"}
+            </p>
+          </div>
 
           {(gapsCount > 0 || visualCount > 0) && (
-            <div className="flex shrink-0 gap-1.5">
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
               {gapsCount > 0 && (
                 <span className="rounded-full bg-[#FDF3E3] px-[9px] py-1 text-[11px] font-medium text-[#7A4A0A]">
                   {gapsCount} gap{gapsCount !== 1 ? "s" : ""}

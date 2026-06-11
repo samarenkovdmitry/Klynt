@@ -169,7 +169,7 @@ copy_variants:
 score_potential:
 - target = score + sum of all chip deltas (rounded to 1 decimal, max 9.5).
 - chips only for copy and trust gaps (not visual/typography checklist items).
-- label in chips = exact text from the corresponding checklist item.
+- label in chips = exact gap_label from the corresponding checklist item (same short badge as Copy studio).
 
 confidence: integer 70-98.
 breakdown: integers 0-100 where higher = better. friction: higher = less friction = better.
