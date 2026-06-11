@@ -11,7 +11,6 @@ function isWorkspacePath(pathname: string | null) {
   return (
     pathname.startsWith("/analyze") ||
     (pathname.startsWith("/report") && !pathname.includes("/print")) ||
-    pathname === "/contact" ||
     pathname.startsWith("/privacy") ||
     pathname.startsWith("/terms")
   );
@@ -24,7 +23,7 @@ export function AppFooterWrapper() {
   const isWorkspaceFooter = isWorkspacePath(pathname);
   const isPrintRoute = pathname?.includes("/print");
 
-  if (isPrintRoute || pathname === "/") {
+  if (isPrintRoute || pathname === "/" || pathname === "/contact") {
     return null;
   }
 

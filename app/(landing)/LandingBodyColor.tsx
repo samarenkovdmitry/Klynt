@@ -8,7 +8,7 @@ const LANDING_CHROME = "#0E0E0C";
 
 export function LandingBodyColor() {
   const pathname = usePathname();
-  const isLanding = pathname === "/";
+  const isLanding = pathname === "/" || pathname === "/contact";
 
   useEffect(() => {
     const html = document.documentElement;
