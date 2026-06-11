@@ -6,7 +6,7 @@ import {
   LandingReportPreviewMobile,
 } from "./LandingReportPreview";
 import { LandingTestHeader } from "./LandingTestHeader";
-import { LANDING_CONTAINER } from "./landingPageStyles";
+import { LANDING_CONTAINER, LANDING_DISPLAY_H1 } from "./landingPageStyles";
 
 type LandingTestHeroProps = {
   auditedCount?: number | null;
@@ -31,7 +31,7 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
               Free · No signup
             </div>
 
-            <h1 className="max-w-[560px] font-sans text-[clamp(34px,4.5vw,58px)] font-bold leading-[1.1] tracking-[-0.05em] text-[#F2F2EF]">
+            <h1 className={`max-w-[560px] ${LANDING_DISPLAY_H1}`}>
               Your landing page,
               <br />
               <em className="not-italic text-[#1D9E75]">improved</em> — not just rated
@@ -50,18 +50,13 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
                 URLs never stored or shared
               </span>
               {hasAuditedCount ? (
-                <>
-                  <span className="hidden text-white/20 sm:inline" aria-hidden>
-                    ·
-                  </span>
-                  <span className="inline-flex items-center gap-1 border-l border-white/[0.08] pl-3 sm:border-l sm:pl-3">
+                <span className="inline-flex items-center gap-1 border-l border-white/[0.08] pl-3">
                     <RiPagesLine size={13} aria-hidden />
                     <strong className="font-medium text-[#9A9A93]">
                       {formatAuditedCount(auditedCount)}
                     </strong>{" "}
                     pages analyzed
-                  </span>
-                </>
+                </span>
               ) : null}
             </div>
 

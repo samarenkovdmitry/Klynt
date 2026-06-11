@@ -17,13 +17,13 @@ export function LandingTestCtaSection() {
 
         <LandingHeroUrlForm
           inputId="landing-cta-url"
-          className="mx-auto mt-7 justify-center"
+          className="mx-auto mt-7"
           maxWidthClass="w-full max-w-[480px]"
         />
 
         <p className="mt-3.5 inline-flex items-center justify-center gap-1 text-[12px] text-[#7A7A74]">
           <RiShieldCheckLine size={13} aria-hidden />
-          Free · No signup · ~60 seconds
+          Free · No signup
         </p>
       </div>
     </section>

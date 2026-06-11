@@ -11,6 +11,21 @@ export const LANDING_SURFACE_2 = "#1C1C19";
 
 export const LANDING_CONTAINER = "mx-auto w-full max-w-[1180px]";
 
+/** Narrower section columns — match v3 concept */
+export const LANDING_STEPS_MAX = "mx-auto w-full max-w-[860px]";
+
+export const LANDING_FEATURES_MAX = "mx-auto w-full max-w-[1100px]";
+
+/** Familjen Grotesk display (font-sans in this project) */
+export const LANDING_DISPLAY =
+  "font-sans font-bold tracking-[-0.04em] text-[#F2F2EF]";
+
+export const LANDING_DISPLAY_H1 =
+  "font-sans text-[clamp(34px,4.5vw,58px)] font-bold leading-[1.1] tracking-[-0.05em] text-[#F2F2EF]";
+
+export const LANDING_DISPLAY_SECTION =
+  "font-sans text-[clamp(22px,3vw,32px)] font-semibold tracking-[-0.03em] text-[#F2F2EF]";
+
 export const LANDING_GREEN = "#1D9E75";
 
 export const LANDING_AMBER = "#BA7517";
@@ -35,6 +50,9 @@ export const LANDING_EYEBROW =
 
 export const LANDING_TITLE =
   "font-sans text-[clamp(26px,3.5vw,40px)] font-bold leading-[1.15] tracking-[-0.04em] text-[#F2F2EF]";
+
+export const LANDING_CARD_TITLE =
+  "font-sans text-[17px] font-semibold tracking-[-0.02em] text-[#F2F2EF]";
 
 export const LANDING_LEAD =
   "text-[15px] leading-[1.7] text-[#9A9A93]";

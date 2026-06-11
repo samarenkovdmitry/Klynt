@@ -10,7 +10,7 @@ import {
   LandingTestHowItWorks,
 } from "@/components/landing-test/LandingTestHowItWorks";
 import { LandingTestSeo } from "@/components/landing-test/LandingTestSeo";
-import { LANDING_DARK, LANDING_DIVIDER } from "@/components/landing-test/landingPageStyles";
+import { LANDING_DARK, LANDING_CONTAINER, LANDING_DIVIDER } from "@/components/landing-test/landingPageStyles";
 
 type FigmaLandingPageProps = {
   auditedCount?: number | null;
@@ -22,12 +22,16 @@ export function FigmaLandingPage({ auditedCount = null }: FigmaLandingPageProps)
       <LandingTestHero auditedCount={auditedCount} />
       <LandingHowItWorksDivider />
       <LandingTestHowItWorks />
-      <div className={LANDING_DIVIDER} aria-hidden />
+      <div className={LANDING_CONTAINER}>
+        <div className={LANDING_DIVIDER} aria-hidden />
+      </div>
       <LandingTestFeatures />
       <LandingFeaturesDivider />
       <LandingTestCtaSection />
       <LandingTestSeo />
-      <div className={LANDING_DIVIDER} aria-hidden />
+      <div className={LANDING_CONTAINER}>
+        <div className={LANDING_DIVIDER} aria-hidden />
+      </div>
       <LandingTestFooter />
     </main>
   );

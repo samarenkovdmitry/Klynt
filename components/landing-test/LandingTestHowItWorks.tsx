@@ -2,8 +2,10 @@ import { RiFileList3Line, RiLink, RiShareForwardLine } from "@remixicon/react";
 
 import {
   LANDING_CONTAINER,
+  LANDING_DISPLAY_SECTION,
   LANDING_DIVIDER,
   LANDING_SECTION,
+  LANDING_STEPS_MAX,
 } from "./landingPageStyles";
 
 const STEPS = [
@@ -28,17 +30,18 @@ const STEPS = [
 ] as const;
 
 export function LandingHowItWorksDivider() {
-  return <div className={LANDING_DIVIDER} aria-hidden />;
+  return (
+    <div className={LANDING_CONTAINER}>
+      <div className={LANDING_DIVIDER} aria-hidden />
+    </div>
+  );
 }
 
 export function LandingTestHowItWorks() {
   return (
     <section className={`${LANDING_SECTION} !py-20 md:!py-24`} aria-labelledby="how-heading">
-      <div className={`${LANDING_CONTAINER} max-w-[860px]`}>
-        <h2
-          id="how-heading"
-          className="text-center font-sans text-[clamp(22px,3vw,32px)] font-semibold tracking-[-0.03em] text-[#F2F2EF]"
-        >
+      <div className={LANDING_STEPS_MAX}>
+        <h2 id="how-heading" className={`text-center ${LANDING_DISPLAY_SECTION}`}>
           How it works
         </h2>
 

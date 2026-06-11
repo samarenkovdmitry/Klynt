@@ -95,7 +95,7 @@ export function LandingTestHeader() {
               href="#hero"
               className="ml-1 rounded-lg bg-[#F2F2EF] px-4 py-[7px] text-[13px] font-medium text-[#0E0E0C] transition-opacity hover:opacity-85"
             >
-              Analyze →
+              Analyze
             </Link>
           </div>
 
@@ -167,7 +167,7 @@ export function LandingTestHeader() {
             className="mt-1 flex w-full items-center justify-center rounded-xl bg-[#F2F2EF] px-4 py-3 text-[15px] font-medium text-[#0E0E0C]"
             onClick={() => setMenuOpen(false)}
           >
-            Analyze →
+            Analyze
           </Link>
         </nav>
       </div>

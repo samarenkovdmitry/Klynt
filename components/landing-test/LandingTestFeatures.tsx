@@ -1,10 +1,10 @@
 import {
-  RiAlertFill,
+  RiAlertLine,
   RiBarChartLine,
-  RiCheckboxCircleFill,
+  RiCheckboxCircleLine,
   RiCodeSSlashLine,
   RiDownloadLine,
-  RiErrorWarningFill,
+  RiErrorWarningLine,
   RiFileTextLine,
   RiFontSize,
   RiLayoutGridLine,
@@ -12,13 +12,16 @@ import {
   RiNotification4Line,
   RiPencilLine,
   RiSettings3Line,
+  RiShieldCheckLine,
   RiTextSnippet,
 } from "@remixicon/react";
 
 import {
+  LANDING_CARD_TITLE,
   LANDING_CONTAINER,
   LANDING_DIVIDER,
   LANDING_EYEBROW,
+  LANDING_FEATURES_MAX,
   LANDING_LEAD,
   LANDING_SECTION,
   LANDING_TITLE,
@@ -28,10 +31,10 @@ function FeatureIcon({ green, children }: { green?: boolean; children: React.Rea
   return (
     <div
       className={[
-        "mb-[18px] flex h-[34px] w-[34px] items-center justify-center rounded-[9px] border text-[16px]",
+        "mb-[18px] flex h-[30px] w-[30px] items-center justify-center rounded-[8px] border",
         green
-          ? "border-[rgba(29,158,117,0.2)] bg-[rgba(29,158,117,0.1)] text-[#1D9E75]"
-          : "border-white/[0.08] bg-white/[0.05] text-[#9A9A93]",
+          ? "border-[rgba(29,158,117,0.15)] bg-[rgba(29,158,117,0.08)] text-[#1D9E75]"
+          : "border-white/[0.06] bg-white/[0.03] text-[#7A7A74]",
       ].join(" ")}
     >
       {children}
@@ -75,15 +78,13 @@ export function LandingTestFeatures() {
           No abstract scores. Just copy, checklists, and tasks your team can act on today.
         </p>
 
-        <div className="mt-14 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08]">
+        <div className={`${LANDING_FEATURES_MAX} mt-14 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08]`}>
           <div className="grid grid-cols-1 gap-px md:grid-cols-3">
             <Cell className="md:col-span-2">
               <FeatureIcon green>
-                <RiPencilLine aria-hidden />
+                <RiPencilLine size={15} aria-hidden />
               </FeatureIcon>
-              <h3 className="font-sans text-[17px] font-semibold tracking-[-0.02em] text-[#F2F2EF]">
-                Copy studio
-              </h3>
+              <h3 className={LANDING_CARD_TITLE}>Copy studio</h3>
               <p className="mt-2 text-[13px] leading-[1.65] text-[#9A9A93]">
                 Three ready-to-paste variants for headline, CTA, and subheadline — tailored to your
                 brand stage and audience.
@@ -108,20 +109,18 @@ export function LandingTestFeatures() {
 
             <Cell>
               <FeatureIcon>
-                <RiListCheck3 aria-hidden />
+                <RiListCheck3 size={15} aria-hidden />
               </FeatureIcon>
-              <h3 className="font-sans text-[17px] font-semibold tracking-[-0.02em] text-[#F2F2EF]">
-                Fix checklist
-              </h3>
+              <h3 className={LANDING_CARD_TITLE}>Fix checklist</h3>
               <p className="mt-2 text-[13px] leading-[1.65] text-[#9A9A93]">
                 Above-the-fold gaps and passes — not a vague score. Each gap links directly to the
                 fix.
               </p>
               <div className="mt-[18px] space-y-[5px]">
                 {[
-                  { icon: RiErrorWarningFill, color: "#E8A83A", text: "Product category missing", badge: "miss" as const },
-                  { icon: RiAlertFill, color: "#B09FD4", text: "Subheadline content weak", badge: "weak" as const },
-                  { icon: RiCheckboxCircleFill, color: "#2EC99A", text: "Single CTA above fold", badge: "pass" as const },
+                  { icon: RiErrorWarningLine, color: "#E8A83A", text: "Product category missing", badge: "miss" as const },
+                  { icon: RiAlertLine, color: "#B09FD4", text: "Subheadline content weak", badge: "weak" as const },
+                  { icon: RiCheckboxCircleLine, color: "#2EC99A", text: "Single CTA above fold", badge: "pass" as const },
                 ].map(({ icon: Icon, color, text, badge }) => (
                   <div
                     key={text}
@@ -137,11 +136,9 @@ export function LandingTestFeatures() {
 
             <Cell>
               <FeatureIcon>
-                <RiBarChartLine aria-hidden />
+                <RiBarChartLine size={15} aria-hidden />
               </FeatureIcon>
-              <h3 className="font-sans text-[17px] font-semibold tracking-[-0.02em] text-[#F2F2EF]">
-                Score potential
-              </h3>
+              <h3 className={LANDING_CARD_TITLE}>Score potential</h3>
               <p className="mt-2 text-[13px] leading-[1.65] text-[#9A9A93]">
                 See where you can get after fixes — specific estimates per gap, not vague promises.
               </p>
@@ -169,11 +166,9 @@ export function LandingTestFeatures() {
 
             <Cell>
               <FeatureIcon>
-                <RiDownloadLine aria-hidden />
+                <RiDownloadLine size={15} aria-hidden />
               </FeatureIcon>
-              <h3 className="font-sans text-[17px] font-semibold tracking-[-0.02em] text-[#F2F2EF]">
-                Export for your team
-              </h3>
+              <h3 className={LANDING_CARD_TITLE}>Export for your team</h3>
               <p className="mt-2 text-[13px] leading-[1.65] text-[#9A9A93]">
                 One click to share a copy deck, designer brief, dev tasks, or Notion summary.
               </p>
@@ -188,7 +183,7 @@ export function LandingTestFeatures() {
                     key={title}
                     className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-[11px] py-2.5"
                   >
-                    <Icon size={15} className="mb-1.5 block text-[#7A7A74]" aria-hidden />
+                    <Icon size={14} className="mb-1.5 block text-[#7A7A74]" aria-hidden />
                     <div className="text-[12px] font-medium text-[#F2F2EF]">{title}</div>
                     <div className="text-[11px] text-[#7A7A74]">{sub}</div>
                   </div>
@@ -198,11 +193,9 @@ export function LandingTestFeatures() {
 
             <Cell>
               <FeatureIcon>
-                <RiSettings3Line aria-hidden />
+                <RiSettings3Line size={15} aria-hidden />
               </FeatureIcon>
-              <h3 className="font-sans text-[17px] font-semibold tracking-[-0.02em] text-[#F2F2EF]">
-                Context-aware
-              </h3>
+              <h3 className={LANDING_CARD_TITLE}>Context-aware</h3>
               <p className="mt-2 text-[13px] leading-[1.65] text-[#9A9A93]">
                 Tell Klynt your brand stage, traffic source, and audience — copy adapts to your
                 situation.
@@ -226,13 +219,11 @@ export function LandingTestFeatures() {
               </div>
             </Cell>
 
-            <Cell className="md:col-span-3">
+            <Cell className="md:col-span-2">
               <FeatureIcon>
-                <RiTextSnippet aria-hidden />
+                <RiTextSnippet size={15} aria-hidden />
               </FeatureIcon>
-              <h3 className="font-sans text-[17px] font-semibold tracking-[-0.02em] text-[#F2F2EF]">
-                Typography &amp; meta
-              </h3>
+              <h3 className={LANDING_CARD_TITLE}>Typography &amp; meta</h3>
               <p className="mt-2 max-w-[560px] text-[13px] leading-[1.65] text-[#9A9A93]">
                 Suggested type scale improvements and generated meta title + description for SEO.
               </p>
@@ -273,6 +264,33 @@ export function LandingTestFeatures() {
                 </div>
               </div>
             </Cell>
+
+            <Cell>
+              <FeatureIcon>
+                <RiShieldCheckLine size={15} aria-hidden />
+              </FeatureIcon>
+              <h3 className={LANDING_CARD_TITLE}>Trust &amp; proof</h3>
+              <p className="mt-2 text-[13px] leading-[1.65] text-[#9A9A93]">
+                Trust gaps above the fold — with concrete proof suggestions, not vague advice.
+              </p>
+              <div className="mt-[18px] space-y-[5px]">
+                {[
+                  "No logos or testimonials visible above the fold",
+                  "«Try Liance» suggests risk without reassurance",
+                ].map((text) => (
+                  <div
+                    key={text}
+                    className="flex items-start gap-1.5 rounded-[7px] border border-white/[0.08] bg-white/[0.03] px-2 py-[7px] text-[12px] text-[#9A9A93]"
+                  >
+                    <RiErrorWarningLine size={13} className="mt-0.5 shrink-0 text-[#E8A83A]" aria-hidden />
+                    <span>{text}</span>
+                  </div>
+                ))}
+                <div className="rounded-[7px] border border-[rgba(29,158,117,0.15)] bg-[rgba(29,158,117,0.07)] px-2 py-[7px] text-[12px] text-[#1D9E75]">
+                  Add CISO quote below CTA
+                </div>
+              </div>
+            </Cell>
           </div>
         </div>
       </div>
@@ -281,5 +299,9 @@ export function LandingTestFeatures() {
 }
 
 export function LandingFeaturesDivider() {
-  return <div className={LANDING_DIVIDER} aria-hidden />;
+  return (
+    <div className={LANDING_CONTAINER}>
+      <div className={LANDING_DIVIDER} aria-hidden />
+    </div>
+  );
 }
