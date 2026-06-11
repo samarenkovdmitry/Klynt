@@ -125,9 +125,10 @@ type ReportChecklistProps = {
 export function ReportChecklist({ checklist }: ReportChecklistProps) {
   const [passVisible, setPassVisible] = useState(false);
 
-  const gaps = checklist.filter(
-    (item) => item.status === "missing" || item.status === "weak"
-  );
+  const gaps = [
+    ...checklist.filter((item) => item.status === "missing"),
+    ...checklist.filter((item) => item.status === "weak"),
+  ];
   const passes = checklist.filter((item) => item.status === "pass");
 
   if (checklist.length === 0) return null;

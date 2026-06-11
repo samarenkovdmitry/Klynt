@@ -28,7 +28,7 @@ const navItems: NavItem[] = [
   },
   {
     href: "/analyze",
-    label: "UX audit",
+    label: "Landing report",
     isActive: (p) => p.startsWith("/analyze"),
   },
   {

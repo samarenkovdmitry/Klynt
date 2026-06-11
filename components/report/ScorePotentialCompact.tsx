@@ -20,6 +20,10 @@ interface ScorePotentialCompactProps {
   checklist?: ReportChecklistItem[];
 }
 
+function truncateLabel(label: string, max = 32) {
+  return label.length > max ? label.slice(0, max).trimEnd() + "…" : label;
+}
+
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -88,7 +92,7 @@ export default function ScorePotentialCompact({
                   onClick={() => handleChipClick(chip.label)}
                   className="text-[12px] bg-[#F5F5F3] rounded-[10px] px-2.5 py-[5px] text-[#555] border border-[rgba(0,0,0,0.07)] cursor-pointer transition-all duration-[120ms] hover:border-[#1D9E75] hover:text-[#0F6E56] text-left"
                 >
-                  {i + 1} · {chip.label}{" "}
+                  {i + 1} · {truncateLabel(chip.label)}{" "}
                   <strong className="text-[#1D9E75] font-medium">{chip.delta}</strong>
                 </button>
               ))}
