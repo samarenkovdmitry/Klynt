@@ -39,7 +39,7 @@ import {
   normalizeScorePotential,
 } from "@/lib/normalize-report-checklist";
 import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
-import { normalizeReportVisualFixes } from "@/lib/report-visual-fixes";
+import { normalizeVisualSection } from "@/lib/report-visual-fixes";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 import {
   formatIssueTitleDisplay,
@@ -429,10 +429,13 @@ export async function POST(req: Request) {
 
     json.checklist = normalizeReportChecklist(json.checklist);
 
-    json.visual_fixes = normalizeReportVisualFixes(
+    const visualSection = normalizeVisualSection(
       json.visual_fixes,
+      json.visual_passes,
       json.checklist as import("@/lib/audit-report").ReportChecklistItem[]
     );
+    json.visual_fixes = visualSection.fixes;
+    json.visual_passes = visualSection.passes;
 
     if (Array.isArray(json.checklist)) {
       json.score_potential = normalizeScorePotential(

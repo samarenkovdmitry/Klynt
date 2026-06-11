@@ -194,6 +194,16 @@ export const DEMO_REPORT = {
       "recommendation": "Add subtle #F8F8F6 section tint or light gradient behind hero"
     }
   ],
+  "visual_passes": [
+    {
+      "dimension": "cta_hierarchy",
+      "note": "Single primary CTA dominates — clear next step above fold"
+    },
+    {
+      "dimension": "spacing",
+      "note": "Hero breathing room supports scan for mixed traffic"
+    }
+  ],
   "previewImage": "/demo/folk-preview.jpg"
 } satisfies AuditReport;
 

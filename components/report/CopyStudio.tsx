@@ -8,6 +8,9 @@ import {
   RiFileCopyLine,
   RiCheckLine,
   RiLock2Line,
+  RiArrowDownSLine,
+  RiArrowUpSLine,
+  RiCheckboxCircleFill,
 } from "@remixicon/react";
 import type {
   ReportCopyVariants,
@@ -154,19 +157,72 @@ function CopyBlock({
   previewLocked?: boolean;
   onRequestProUpgrade?: RequestProUpgrade;
 }) {
+  const hasGap = Boolean(gapItem && gapItem.status !== "pass");
   const [selected, setSelected] = useState(0);
+  const [expanded, setExpanded] = useState(hasGap);
+
+  const previewText = block.current || "Not visible on page";
+
+  if (!expanded) {
+    return (
+      <div id={id} className={`border-t border-[rgba(0,0,0,0.07)] ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-[#FAFAF8]"
+        >
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-[#999]">
+                {label}
+              </span>
+              {gapItem?.status === "pass" ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#E8F7F2] px-2 py-0.5 text-[11px] font-medium text-[#0F6E56]">
+                  <RiCheckboxCircleFill className="h-3 w-3 shrink-0" aria-hidden />
+                  Pass
+                </span>
+              ) : null}
+            </div>
+            <p className="truncate text-[13px] text-[#777]">{previewText}</p>
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-0.5 text-[12px] text-[#999]">
+            Show variants
+            <RiArrowDownSLine size={16} aria-hidden />
+          </span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div id={id} className={`border-t border-[rgba(0,0,0,0.07)] ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
       <div className="px-5 py-4">
-        <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#999] uppercase tracking-[0.05em] mb-[7px]">
-          {label}
-          {gapItem && gapItem.status !== "pass" && (
-            <GapBadge
-              status={gapItem.status}
-              text={deriveChecklistGapLabel(gapItem) ?? "Needs fix"}
-            />
-          )}
+        <div className="mb-[7px] flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.05em] text-[#999]">
+            {label}
+            {gapItem && gapItem.status !== "pass" && (
+              <GapBadge
+                status={gapItem.status}
+                text={deriveChecklistGapLabel(gapItem) ?? "Needs fix"}
+              />
+            )}
+            {gapItem?.status === "pass" ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#E8F7F2] px-2 py-0.5 text-[11px] font-medium normal-case tracking-normal text-[#0F6E56]">
+                <RiCheckboxCircleFill className="h-3 w-3 shrink-0" aria-hidden />
+                Pass
+              </span>
+            ) : null}
+          </div>
+          {!hasGap ? (
+            <button
+              type="button"
+              onClick={() => setExpanded(false)}
+              className="inline-flex shrink-0 items-center gap-0.5 text-[12px] text-[#999] transition-colors hover:text-[#111]"
+            >
+              Hide
+              <RiArrowUpSLine size={16} aria-hidden />
+            </button>
+          ) : null}
         </div>
 
         {block.current ? (

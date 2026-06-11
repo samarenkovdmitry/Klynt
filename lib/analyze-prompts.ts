@@ -148,6 +148,12 @@ Return ONLY valid JSON (no markdown):
       "observation": "string",
       "recommendation": "string"
     }
+  ],
+  "visual_passes": [
+    {
+      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth",
+      "note": "string"
+    }
   ]
 }
 
@@ -227,5 +233,11 @@ Examples of good recommendations:
 - typography: subhead reads as caption → bump weight/size; legal/fintech with only sans → consider serif headlines
 - depth: flat white hero → subtle #F8F8F6 tint or light gradient for polish
 
-The checklist weak typography item (link_to visual-fixes) must still exist; visual_fixes.typography may expand on it with different wording.`;
+The checklist weak typography item (link_to visual-fixes) must still exist; visual_fixes.typography may expand on it with different wording.
+
+visual_passes: 1-3 items. Dimensions you evaluated and found aligned with BRAND STAGE + AUDIENCE context.
+- Use only dimensions NOT already in visual_fixes (no overlap).
+- note: max 12 words. One line — why this looks correct for THIS product (e.g. "8px radius fits enterprise B2B tone").
+- Do NOT repeat checklist pass items (CTA visibility, footer links, etc.) — design language only.
+- Skip visual_passes entirely if fewer than 1 dimension is clearly aligned; never invent praise.`;
 }

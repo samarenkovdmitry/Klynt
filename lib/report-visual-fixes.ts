@@ -1,4 +1,9 @@
-import type { ReportChecklistItem, ReportVisualFix, VisualFixDimension } from "@/lib/audit-report";
+import type {
+  ReportChecklistItem,
+  ReportVisualFix,
+  ReportVisualPass,
+  VisualFixDimension,
+} from "@/lib/audit-report";
 import { clampWords } from "@/lib/report-copy-limits";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 
@@ -20,6 +25,11 @@ const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
   cta_hierarchy: "CTA hierarchy",
   typography: "Typography",
   depth: "Background & depth",
+};
+
+export type NormalizedVisualSection = {
+  fixes: ReportVisualFix[];
+  passes: ReportVisualPass[];
 };
 
 export function getVisualFixDimensionLabel(dimension: VisualFixDimension): string {
@@ -52,7 +62,31 @@ function parseVisualFixItem(raw: unknown): ReportVisualFix | null {
   };
 }
 
-function fallbackFromChecklist(checklist?: ReportChecklistItem[]): ReportVisualFix[] {
+function parseVisualPassItem(raw: unknown): ReportVisualPass | null {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+
+  const item = raw as Record<string, unknown>;
+  const dimension = String(item.dimension ?? "").trim() as VisualFixDimension;
+
+  if (!VISUAL_FIX_DIMENSIONS.includes(dimension)) {
+    return null;
+  }
+
+  const note = sanitizeLlmVisibleText(String(item.note ?? "")).trim();
+
+  if (!note) {
+    return null;
+  }
+
+  return {
+    dimension,
+    note: clampWords(note, 12, true),
+  };
+}
+
+function fallbackFixesFromChecklist(checklist?: ReportChecklistItem[]): ReportVisualFix[] {
   const visualGap = checklist?.find(
     (item) => item.link_to === "visual-fixes" && item.status === "weak"
   );
@@ -75,43 +109,86 @@ export function normalizeReportVisualFixes(
   raw: unknown,
   checklist?: ReportChecklistItem[]
 ): ReportVisualFix[] {
-  const parsed = Array.isArray(raw)
-    ? raw
+  return normalizeVisualSection(raw, undefined, checklist).fixes;
+}
+
+export function normalizeReportVisualPasses(
+  raw: unknown,
+  fixes: ReportVisualFix[]
+): ReportVisualPass[] {
+  return normalizeVisualSection(undefined, raw, undefined, fixes).passes;
+}
+
+export function normalizeVisualSection(
+  fixesRaw?: unknown,
+  passesRaw?: unknown,
+  checklist?: ReportChecklistItem[],
+  existingFixes?: ReportVisualFix[]
+): NormalizedVisualSection {
+  const parsedFixes = Array.isArray(fixesRaw)
+    ? fixesRaw
         .map(parseVisualFixItem)
         .filter((item): item is ReportVisualFix => item !== null)
-    : [];
+    : (existingFixes ?? []);
 
-  const deduped: ReportVisualFix[] = [];
-  const seen = new Set<VisualFixDimension>();
+  const dedupedFixes: ReportVisualFix[] = [];
+  const fixDimensions = new Set<VisualFixDimension>();
 
-  for (const item of parsed) {
-    if (seen.has(item.dimension)) {
+  for (const item of parsedFixes) {
+    if (fixDimensions.has(item.dimension)) {
       continue;
     }
 
-    seen.add(item.dimension);
-    deduped.push(item);
+    fixDimensions.add(item.dimension);
+    dedupedFixes.push(item);
 
-    if (deduped.length >= 4) {
+    if (dedupedFixes.length >= 4) {
       break;
     }
   }
 
-  if (deduped.length >= 2) {
-    return deduped;
+  let fixes = dedupedFixes;
+
+  if (fixes.length >= 2) {
+    fixes = dedupedFixes;
+  } else {
+    const fallback = fallbackFixesFromChecklist(checklist);
+
+    if (fixes.length === 0) {
+      fixes = fallback;
+    } else if (fixes.length === 1 && fallback.length > 0 && fixes[0].dimension !== "typography") {
+      fixes = [...fixes, ...fallback].slice(0, 4);
+    }
   }
 
-  const fallback = fallbackFromChecklist(checklist);
-
-  if (deduped.length === 0) {
-    return fallback;
+  fixDimensions.clear();
+  for (const fix of fixes) {
+    fixDimensions.add(fix.dimension);
   }
 
-  if (deduped.length === 1 && fallback.length > 0 && deduped[0].dimension !== "typography") {
-    return [...deduped, ...fallback].slice(0, 4);
+  const parsedPasses = Array.isArray(passesRaw)
+    ? passesRaw
+        .map(parseVisualPassItem)
+        .filter((item): item is ReportVisualPass => item !== null)
+    : [];
+
+  const passes: ReportVisualPass[] = [];
+  const seenPass = new Set<VisualFixDimension>();
+
+  for (const item of parsedPasses) {
+    if (fixDimensions.has(item.dimension) || seenPass.has(item.dimension)) {
+      continue;
+    }
+
+    seenPass.add(item.dimension);
+    passes.push(item);
+
+    if (passes.length >= 3) {
+      break;
+    }
   }
 
-  return deduped;
+  return { fixes, passes };
 }
 
 export function buildVisualFixesMarkdown(fixes: ReportVisualFix[]): string {
@@ -119,6 +196,15 @@ export function buildVisualFixesMarkdown(fixes: ReportVisualFix[]): string {
     .map((fix) => {
       const label = getVisualFixDimensionLabel(fix.dimension);
       return `- **${label}:** ${fix.recommendation}`;
+    })
+    .join("\n");
+}
+
+export function buildVisualPassesMarkdown(passes: ReportVisualPass[]): string {
+  return passes
+    .map((pass) => {
+      const label = getVisualFixDimensionLabel(pass.dimension);
+      return `- **${label}:** ${pass.note}`;
     })
     .join("\n");
 }

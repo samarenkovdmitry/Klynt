@@ -147,6 +147,11 @@ export type ReportVisualFix = {
   recommendation: string;
 };
 
+export type ReportVisualPass = {
+  dimension: VisualFixDimension;
+  note: string;
+};
+
 export type AuditRisk = "low" | "medium" | "high";
 
 export type AuditReport = {
@@ -170,6 +175,8 @@ export type AuditReport = {
   meta?: ReportMeta;
   /** Context-aware visual/design recommendations from screenshot analysis. */
   visual_fixes?: ReportVisualFix[];
+  /** Dimensions reviewed and aligned with product context. */
+  visual_passes?: ReportVisualPass[];
   /** @deprecated use checklist + copy_variants instead */
   issues?: ReportIssue[];
   /** @deprecated use copy_variants instead */

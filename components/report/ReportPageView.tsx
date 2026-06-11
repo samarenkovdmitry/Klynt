@@ -37,7 +37,7 @@ import {
   normalizeScorePotential,
 } from "@/lib/normalize-report-checklist";
 import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
-import { normalizeReportVisualFixes } from "@/lib/report-visual-fixes";
+import { normalizeVisualSection } from "@/lib/report-visual-fixes";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 
 type ReportPageViewProps = {
@@ -143,6 +143,11 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     }
 
     const checklist = normalizeReportChecklist(data.checklist);
+    const visualSection = normalizeVisualSection(
+      data.visual_fixes,
+      data.visual_passes,
+      checklist
+    );
 
     return {
       ...data,
@@ -166,7 +171,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
         checklist,
         data.score
       ),
-      visual_fixes: normalizeReportVisualFixes(data.visual_fixes, checklist),
+      visual_fixes: visualSection.fixes,
+      visual_passes: visualSection.passes,
     };
   }, [data]);
 
@@ -245,7 +251,11 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                 )}
               </div>
 
-              <VisualFixes checklist={report.checklist} visualFixes={report.visual_fixes} />
+              <VisualFixes
+                checklist={report.checklist}
+                visualFixes={report.visual_fixes}
+                visualPasses={report.visual_passes}
+              />
 
               {report.meta && (
                 <TrustMeta
