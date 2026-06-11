@@ -179,15 +179,118 @@ function HeroCard({
   onShare,
   onExport,
   onRerun,
+  compact,
 }: {
   data: AuditReport;
   onShare?: () => void;
   onExport?: () => void;
   onRerun: () => void;
+  compact?: boolean;
 }) {
   const theme = getReportHeroTheme(data.score);
   const domain = formatReportDomain(data.url);
   const reportHref = formatReportHref(data.url);
+  const scoreColor = getReportScoreColor(theme.tier);
+
+  const siteBadge = (
+    <div className="inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[11px] py-1 text-[13px] font-medium text-[#555]">
+      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#1D9E75]" aria-hidden />
+      {reportHref ? (
+        <a href={reportHref} target="_blank" rel="noopener noreferrer" className="truncate hover:opacity-70">
+          {domain}
+        </a>
+      ) : (
+        <span className="truncate">{domain}</span>
+      )}
+    </div>
+  );
+
+  if (compact) {
+    const checklist = data.checklist ?? [];
+    const gapsCount = checklist.filter(
+      (item) => item.status !== "pass" && item.link_to !== "visual-fixes"
+    ).length;
+    const visualCount = checklist.filter(
+      (item) => item.status !== "pass" && item.link_to === "visual-fixes"
+    ).length;
+    const scorePercent = data.score > 10 ? data.score : data.score * 10;
+
+    const riskBg =
+      theme.tier === "healthy" ? "#E8F7F2" : theme.tier === "critical" ? "#FDF0F0" : "#FDF3E3";
+    const riskColor =
+      theme.tier === "healthy" ? "#0F6E56" : theme.tier === "critical" ? "#8B2020" : "#7A4A0A";
+
+    return (
+      <div className={CARD_CLASS}>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b-[0.5px] border-black/[0.08] bg-[#F9F9F9] px-[22px] py-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
+            {siteBadge}
+            <span className="hidden text-[12px] text-[#bbb] sm:inline">
+              {formatReportDateShort(data.generatedAt)}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {onShare ? (
+              <button type="button" onClick={onShare} className={BTN_CLASS}>Share</button>
+            ) : null}
+            {onExport ? (
+              <button type="button" onClick={onExport} className={BTN_CLASS}>PDF</button>
+            ) : null}
+            <button type="button" onClick={onRerun} className={BTN_PRIMARY_CLASS}>
+              Re-run
+              <RiArrowRightLine size={14} aria-hidden />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2.5 px-5 py-4">
+          <div className="flex shrink-0 items-baseline">
+            <span
+              className="text-[40px] font-semibold leading-none tracking-[-0.05em]"
+              style={{ color: scoreColor }}
+            >
+              {formatOverallScore(data.score)}
+            </span>
+            <span className="ml-0.5 text-[14px] text-[#bbb]">/10</span>
+          </div>
+
+          <span
+            className="shrink-0 rounded-full px-[11px] py-1 text-[12px] font-medium"
+            style={{ backgroundColor: riskBg, color: riskColor }}
+          >
+            {getTierLabel(theme.tier)}
+          </span>
+
+          <div className="h-[3px] min-w-[48px] flex-1 rounded-full bg-black/[0.07]">
+            <div
+              className="h-[3px] rounded-full transition-all duration-700"
+              style={{ width: `${scorePercent}%`, backgroundColor: scoreColor }}
+            />
+          </div>
+
+          <p className="min-w-[120px] flex-[2] text-[15px] font-medium leading-snug tracking-[-0.01em] text-[#111]">
+            {formatVerdictDisplay(data.verdict) || "UX assessment complete"}
+          </p>
+
+          {(gapsCount > 0 || visualCount > 0) && (
+            <div className="flex shrink-0 gap-1.5">
+              {gapsCount > 0 && (
+                <span className="rounded-full bg-[#FDF3E3] px-[9px] py-1 text-[11px] font-medium text-[#7A4A0A]">
+                  {gapsCount} gap{gapsCount !== 1 ? "s" : ""}
+                </span>
+              )}
+              {visualCount > 0 && (
+                <span className="rounded-full bg-[#FDF0F0] px-[9px] py-1 text-[11px] font-medium text-[#8B2020]">
+                  {visualCount} visual fix{visualCount !== 1 ? "es" : ""}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   const breakdown = data.breakdown;
   const clarity = Number(breakdown?.clarity ?? 0);
   const trust = Number(breakdown?.trust ?? 0);
@@ -205,16 +308,7 @@ function HeroCard({
     <div className={CARD_CLASS}>
       <div className="flex flex-wrap items-center justify-between gap-3 border-b-[0.5px] border-black/[0.08] bg-[#F9F9F9] px-[22px] py-3.5">
         <div className="flex min-w-0 flex-wrap items-center gap-3">
-          <div className="inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[11px] py-1 text-[13px] font-medium text-[#555]">
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#1D9E75]" aria-hidden />
-            {reportHref ? (
-              <a href={reportHref} target="_blank" rel="noopener noreferrer" className="truncate hover:opacity-70">
-                {domain}
-              </a>
-            ) : (
-              <span className="truncate">{domain}</span>
-            )}
-          </div>
+          {siteBadge}
           <span className="hidden text-[12px] text-[#bbb] sm:inline">
             {formatReportDateShort(data.generatedAt)}
           </span>
@@ -243,7 +337,7 @@ function HeroCard({
           <div className="mb-5 flex items-end gap-3.5">
             <div
               className="text-[64px] font-semibold leading-none tracking-[-0.08em] md:text-[88px]"
-              style={{ color: getReportScoreColor(theme.tier) }}
+              style={{ color: scoreColor }}
             >
               {formatOverallScore(data.score)}
             </div>
@@ -614,7 +708,7 @@ export function ReportActionLayout({
   heroOnly,
 }: ReportActionLayoutProps) {
   if (heroOnly) {
-    return <HeroCard data={data} onShare={onShare} onExport={onExport} onRerun={onRerun} />;
+    return <HeroCard data={data} onShare={onShare} onExport={onExport} onRerun={onRerun} compact />;
   }
 
   const issues = data.issues ?? [];
