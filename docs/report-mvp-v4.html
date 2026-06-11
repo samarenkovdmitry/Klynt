@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klynt — Report v3</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --fd:'Familjen Grotesk',sans-serif;
+  --fb:'Geist',-apple-system,sans-serif;
+  --green:#1D9E75;--gl:#E8F7F2;--gd:#0F6E56;
+  --amber:#BA7517;--al:#FDF3E3;--ad:#7A4A0A;
+  --red:#E24B4A;--rl:#FDF0F0;--rd:#8B2020;
+  --blue:#185FA5;--bl:#EBF3FC;--bd:#0C447C;
+  --bg:#EFEFED;--bc:#fff;--bs:#F5F5F3;--bi:#F0F0EE;
+  --b1:rgba(0,0,0,.07);--b2:rgba(0,0,0,.11);
+  --t1:#111;--t2:#555;--t3:#999;--tm:#C0C0BC;
+  --sh:0 1px 1px rgba(0,0,0,.04),0 4px 20px rgba(0,0,0,.07);
+  --r:16px;--rsm:10px;--rp:20px;
+}
+body{font-family:var(--fb);background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased;min-height:100vh}
+.nav{height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(239,239,237,.88);backdrop-filter:blur(12px);border-bottom:.5px solid var(--b1);position:sticky;top:0;z-index:20}
+.logo{font-family:var(--fd);font-size:15px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:7px;text-decoration:none;letter-spacing:-.3px}
+.lm{width:20px;height:20px;border-radius:6px;background:var(--t1);display:flex;align-items:center;justify-content:center}
+.nl{display:flex;gap:2px}
+.na{font-size:13px;color:var(--t3);padding:5px 11px;border-radius:8px;text-decoration:none;transition:all .12s}
+.na:hover{background:rgba(0,0,0,.05);color:var(--t1)}
+.na.on{background:rgba(0,0,0,.07);color:var(--t1);font-weight:500}
+.page{max-width:800px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.card{background:var(--bc);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:10px}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:.5px solid var(--b1);background:var(--bs)}
+.chl{display:flex;align-items:center;gap:10px}
+.sbadge{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--t2);background:rgba(0,0,0,.05);padding:4px 11px;border-radius:8px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.sdate{font-size:12px;color:var(--tm)}
+.chr{display:flex;gap:6px}
+.btn{font-family:var(--fb);font-size:13px;color:var(--t2);background:rgba(0,0,0,.05);border:none;padding:6px 13px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .12s}
+.btn:hover{background:rgba(0,0,0,.09)}
+.btnd{font-family:var(--fb);font-size:13px;font-weight:500;color:#fff;background:var(--t1);border:none;padding:6px 15px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.btnd:hover{background:#2a2a2a}
+.health{display:flex;align-items:center;gap:14px;padding:16px 20px}
+.hscore{font-family:var(--fd);font-size:40px;font-weight:600;color:var(--amber);line-height:1;letter-spacing:-2px;flex-shrink:0}
+.hof{font-size:14px;color:var(--tm);margin-left:2px}
+.htrack{flex:1;height:3px;background:rgba(0,0,0,.07);border-radius:2px;overflow:hidden}
+.hfill{height:3px;border-radius:2px;background:var(--amber);width:68%}
+.hverdict{font-family:var(--fd);font-size:15px;font-weight:500;color:var(--t1);letter-spacing:-.2px;flex:2}
+.hpills{display:flex;gap:6px;flex-shrink:0}
+.hp{font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--rp)}
+.hpgap{background:var(--al);color:var(--ad)}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px}
+.shl{font-size:11px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:6px}
+.shm{font-size:12px;color:var(--tm)}
+.shm-g{color:var(--green);font-weight:500}
+.shm-r{color:var(--red);font-weight:500}
+
+/* CHECKLIST */
+.clwrap{padding:0 20px}
+.clrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid var(--b1);font-size:13px}
+.clrow:last-child{border-bottom:none}
+.clicon{font-size:16px;flex-shrink:0}
+.cl-text{flex:1;color:var(--t1)}
+.cl-link{font-size:12px;color:var(--green);display:flex;align-items:center;gap:3px;white-space:nowrap;cursor:pointer;text-decoration:none}
+.cl-link:hover{text-decoration:underline}
+.clbadge{font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--rp);white-space:nowrap}
+.bok{background:var(--gl);color:var(--gd)}
+.bmiss{background:var(--al);color:var(--ad)}
+.badd{background:var(--bl);color:var(--bd)}
+.bweak{background:#F5F0FB;color:#5B3F9A}
+.cl-pass-toggle{padding:10px 20px 14px;display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--t3);border-top:.5px solid var(--b1)}
+.cl-pass-toggle:hover{color:var(--t1)}
+.cl-pass-wrap{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.cl-pass-wrap.open{max-height:300px}
+
+/* COPY STUDIO */
+.cblock{border-top:.5px solid var(--b1)}
+.cbinner{padding:16px 20px}
+.cbloc{font-size:11px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.gap-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--ad);background:var(--al);padding:2px 8px;border-radius:var(--rp)}
+.gap-badge-w{background:#F5F0FB;color:#5B3F9A}
+.cbcur{font-size:13px;color:var(--tm);text-decoration:line-through;margin-bottom:11px;line-height:1.5}
+.variants{display:flex;flex-direction:column;gap:7px}
+.variant{background:var(--bs);border-radius:var(--rsm);padding:11px 13px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;cursor:pointer;border:1px solid transparent;transition:all .12s}
+.variant:hover{border-color:rgba(0,0,0,.1)}
+.variant.sel{background:var(--gl);border-color:rgba(29,158,117,.25)}
+.vlabel{font-size:11px;color:var(--t3);margin-bottom:3px;transition:color .12s}
+.vtext{font-size:13px;font-weight:500;color:var(--t1);line-height:1.5;transition:color .12s}
+.variant.sel .vlabel{color:var(--gd)}
+.variant.sel .vtext{color:var(--gd)}
+.vcopy{font-size:15px;color:var(--tm);flex-shrink:0;padding-top:2px;transition:color .12s}
+.variant:hover .vcopy,.variant.sel .vcopy{color:var(--green)}
+.cbfooter{display:flex;align-items:center;gap:8px;margin-top:11px}
+.regen{font-family:var(--fb);font-size:12px;color:var(--t2);background:transparent;border:.5px solid var(--b2);padding:5px 12px;border-radius:var(--rp);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .12s}
+.regen:hover{background:var(--bs)}
+.cbctx{font-size:12px;color:var(--tm)}
+.cbctx strong{color:var(--t3);font-weight:500}
+
+/* SCORE POTENTIAL */
+.sp-compact{display:flex;align-items:center;gap:0;padding:16px 20px;border-bottom:.5px solid var(--b1)}
+.sp-nums{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sp-n{font-family:var(--fd);font-size:32px;font-weight:600;line-height:1;letter-spacing:-1.5px}
+.sp-cur{color:var(--amber)}
+.sp-tar{color:var(--green)}
+.sp-lbl{font-size:11px;color:var(--tm);margin-top:2px;text-align:center}
+.sp-arr{font-size:18px;color:var(--tm);margin:0 10px}
+.sp-div{width:.5px;background:var(--b1);height:40px;margin:0 16px;flex-shrink:0}
+.sp-right{flex:1}
+.sp-title{font-family:var(--fd);font-size:14px;font-weight:500;color:var(--t1);margin-bottom:8px;letter-spacing:-.2px}
+.sp-chips{display:flex;gap:6px;flex-wrap:wrap}
+.sp-chip{font-size:12px;background:var(--bs);border-radius:var(--rsm);padding:5px 10px;color:var(--t2);border:.5px solid var(--b1);cursor:pointer;transition:all .12s}
+.sp-chip:hover{border-color:var(--green);color:var(--gd)}
+.sp-chip strong{color:var(--green);font-weight:500}
+
+/* CRITICAL ISSUE — 1 only (non-copy) */
+.isswrap{padding:0 20px 14px}
+.issrow{padding:14px 0}
+.iss-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.sev{font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--rp);white-space:nowrap;flex-shrink:0}
+.sevc{background:var(--rl);color:var(--rd)}
+.issttl{font-family:var(--fd);font-size:14px;font-weight:500;color:var(--t1);line-height:1.45;letter-spacing:-.1px;flex:1}
+.fixrow{display:flex;align-items:flex-start;gap:8px;background:var(--bs);border-radius:var(--rsm);padding:9px 11px}
+.fixarr{color:var(--green);font-size:13px;flex-shrink:0;margin-top:1px}
+.fixtxt{font-size:12px;color:var(--t2);line-height:1.65}
+
+/* VISUAL FIXES */
+.vfwrap{padding:0 20px 16px}
+.vfsec{margin-bottom:14px}
+.vfsec:last-child{margin-bottom:0}
+.vftitle{font-size:12px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.vftbl{width:100%;border-collapse:collapse}
+.vftbl th{font-size:11px;color:var(--tm);font-weight:500;text-align:left;padding:6px 10px;background:var(--bs);border-bottom:.5px solid var(--b1)}
+.vftbl td{font-size:13px;color:var(--t1);padding:9px 10px;border-bottom:.5px solid var(--b1)}
+.vftbl tr:last-child td{border-bottom:none}
+.vstatus{font-size:11px;font-weight:500;padding:2px 8px;border-radius:var(--rp)}
+.vfail{background:var(--rl);color:var(--rd)}
+.vpass{background:var(--gl);color:var(--gd)}
+.vsug{font-size:12px;color:var(--t3)}
+.phase-tag{font-size:11px;color:var(--blue);background:var(--bl);padding:2px 8px;border-radius:var(--rp);font-weight:500}
+
+/* TRUST META */
+.tmwrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 16px}
+.tmcard{background:var(--bs);border-radius:var(--rsm);padding:14px}
+.tmtitle{font-size:12px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.tmitem{font-size:13px;color:var(--t2);margin-bottom:5px;display:flex;align-items:flex-start;gap:6px;line-height:1.5}
+.tmitem i{color:var(--amber);flex-shrink:0;margin-top:2px}
+.tmsug{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--gd);background:var(--gl);padding:4px 10px;border-radius:var(--rp);margin-top:5px;cursor:pointer}
+.tmrow{margin-bottom:10px}
+.tmrow:last-child{margin-bottom:0}
+.tmrowlbl{font-size:11px;color:var(--tm);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.tmrowval{font-size:13px;color:var(--t1);line-height:1.5}
+
+/* EXPORT */
+.expgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px 16px}
+.expcard{background:var(--bs);border-radius:var(--rsm);padding:14px;cursor:pointer;border:.5px solid transparent;transition:all .12s}
+.expcard:hover{background:var(--bc);border-color:var(--b2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.expicon{font-size:20px;color:var(--t3);margin-bottom:8px}
+.exptitle{font-size:13px;font-weight:500;color:var(--t1);margin-bottom:3px}
+.expsub{font-size:12px;color:var(--t3);line-height:1.4}
+
+/* BOTTOM BAR */
+.bottom-bar{position:sticky;bottom:0;background:rgba(239,239,237,.92);backdrop-filter:blur(12px);border-top:.5px solid var(--b1);padding:12px 1.5rem;display:flex;align-items:center;justify-content:space-between;max-width:800px;margin:0 auto}
+.bb-left{font-size:13px;color:var(--t3);display:flex;align-items:center;gap:6px}
+.bb-right{display:flex;gap:8px}
+
+@media(max-width:600px){
+  .page{padding:1rem 1rem 5rem}
+  .nav,.bottom-bar{padding:0 1rem}
+  .nl{display:none}
+  .expgrid{grid-template-columns:1fr 1fr}
+  .tmwrap{grid-template-columns:1fr}
+  .sp-compact{flex-wrap:wrap}
+  .sp-div{display:none}
+  .health{flex-wrap:wrap;gap:10px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="#">
+    <div class="lm"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 10L6 2L10 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    Klynt
+  </a>
+  <div class="nl">
+    <a class="na" href="#">Hero copy</a>
+    <a class="na on" href="#">Landing report</a>
+    <a class="na" href="#">Sample report</a>
+    <a class="na" href="#">Contact</a>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- §1 HEALTH -->
+<div class="card">
+  <div class="ch">
+    <div class="chl">
+      <div class="sbadge"><span class="sdot"></span> liance.dev</div>
+      <span class="sdate">June 10, 2026</span>
+    </div>
+    <div class="chr">
+      <button class="btn"><i class="ri-share-line"></i> Share</button>
+      <button class="btn"><i class="ri-file-pdf-line"></i> PDF</button>
+
+    </div>
+  </div>
+  <div class="health">
+    <div><span class="hscore">6.8</span><span class="hof">/10</span></div>
+    <div class="htrack"><div class="hfill"></div></div>
+    <div class="hverdict">Fear hook without product category or audience</div>
+    <div class="hpills">
+      <span class="hp hpgap">3 gaps</span>
+      <span class="hp" style="background:var(--rl);color:var(--rd)">1 visual fix</span>
+    </div>
+  </div>
+</div>
+
+<!-- §2 CHECKLIST -->
+<div class="card">
+  <div class="sh">
+    <span class="shl"><i class="ri-list-check-3"></i> What needs fixing</span>
+    <span class="shm"><span class="shm-g">5 pass</span> · <span class="shm-r">3 gaps</span></span>
+  </div>
+  <div class="clwrap">
+    <div class="clrow">
+      <i class="ri-error-warning-fill clicon" style="color:var(--amber)"></i>
+      <span class="cl-text">Product category not named in headline</span>
+      <a class="cl-link" onclick="goTo('copy-headline')"><i class="ri-arrow-right-s-line"></i> Fix copy</a>
+      <span class="clbadge bmiss">Missing</span>
+    </div>
+    <div class="clrow">
+      <i class="ri-error-warning-fill clicon" style="color:var(--amber)"></i>
+      <span class="cl-text">Trial terms unclear — free, paid, or demo?</span>
+      <a class="cl-link" onclick="goTo('copy-cta')"><i class="ri-arrow-right-s-line"></i> Fix copy</a>
+      <span class="clbadge bmiss">Missing</span>
+    </div>
+    <div class="clrow">
+      <i class="ri-error-warning-fill clicon" style="color:var(--amber)"></i>
+      <span class="cl-text">Trust signal visible before scroll</span>
+      <a class="cl-link" onclick="goTo('trust')"><i class="ri-arrow-right-s-line"></i> See trust</a>
+      <span class="clbadge bmiss">Missing</span>
+    </div>
+    <div class="clrow">
+      <i class="ri-alert-fill clicon" style="color:#7B5EA7"></i>
+      <span class="cl-text">Subheadline weight — lighter than body copy</span>
+      <a class="cl-link" onclick="goTo('visual-fixes')"><i class="ri-arrow-right-s-line"></i> Fix visual</a>
+      <span class="clbadge bweak">Weak typography</span>
+    </div>
+  </div>
+  <div class="cl-pass-toggle" onclick="togglePass()">
+    <i class="ri-eye-line" id="passIcon"></i>
+    <span id="passLabel">Show 5 passing checks</span>
+  </div>
+  <div class="cl-pass-wrap" id="passWrap">
+    <div class="clwrap" style="padding-top:0;border-top:.5px solid var(--b1)">
+      <div class="clrow"><i class="ri-checkbox-circle-fill clicon" style="color:var(--green)"></i><span class="cl-text">Hero headline present</span><span class="clbadge bok">Pass</span></div>
+      <div class="clrow"><i class="ri-checkbox-circle-fill clicon" style="color:var(--green)"></i><span class="cl-text">Single primary CTA above fold</span><span class="clbadge bok">Pass</span></div>
+      <div class="clrow"><i class="ri-checkbox-circle-fill clicon" style="color:var(--green)"></i><span class="cl-text">CTA label is action-oriented</span><span class="clbadge bok">Pass</span></div>
+      <div class="clrow"><i class="ri-checkbox-circle-fill clicon" style="color:var(--green)"></i><span class="cl-text">No competing navigation in hero</span><span class="clbadge bok">Pass</span></div>
+      <div class="clrow"><i class="ri-checkbox-circle-fill clicon" style="color:var(--green)"></i><span class="cl-text">Meta title and description present</span><span class="clbadge bok">Pass</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- §3 COPY STUDIO -->
+<div class="card">
+  <div class="sh">
+    <span class="shl"><i class="ri-pencil-line"></i> Copy studio</span>
+    <span class="shm">3 sections · select and copy</span>
+  </div>
+
+  <div id="copy-headline" class="cblock">
+    <div class="cbinner">
+      <div class="cbloc">Hero headline <span class="gap-badge"><i class="ri-error-warning-line"></i> Category missing</span></div>
+      <div class="cbcur">Your SOC 2 is quietly drifting out of compliance every week.</div>
+      <div class="variants">
+        <div class="variant sel" onclick="pickV(this)">
+          <div><div class="vlabel">Category + audience</div><div class="vtext">SOC 2 compliance monitoring for engineering teams.</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+        <div class="variant" onclick="pickV(this)">
+          <div><div class="vlabel">Problem + solution</div><div class="vtext">Your SOC 2 is drifting. Liance catches it before auditors do.</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+        <div class="variant" onclick="pickV(this)">
+          <div><div class="vlabel">Outcome + audience</div><div class="vtext">Pass your next SOC 2 audit — without last-minute scrambles.</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+      </div>
+      <div class="cbfooter">
+        <button class="regen" onclick="regenClick(this)"><i class="ri-refresh-line"></i> 3 more variants</button>
+        <span class="cbctx">Tone: <strong>confident</strong> · Audience: <strong>B2B cold</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="copy-cta" class="cblock">
+    <div class="cbinner">
+      <div class="cbloc">Primary CTA <span class="gap-badge"><i class="ri-error-warning-line"></i> Trial unclear</span></div>
+      <div class="cbcur">Try Liance</div>
+      <div class="variants">
+        <div class="variant sel" onclick="pickV(this)">
+          <div><div class="vlabel">Removes cost ambiguity</div><div class="vtext">Start free — no credit card needed</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+        <div class="variant" onclick="pickV(this)">
+          <div><div class="vlabel">Low commitment</div><div class="vtext">Book a 20-min demo</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+        <div class="variant" onclick="pickV(this)">
+          <div><div class="vlabel">Both options</div><div class="vtext">Try free or book a demo</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+      </div>
+      <div class="cbfooter">
+        <button class="regen" onclick="regenClick(this)"><i class="ri-refresh-line"></i> 3 more variants</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cblock">
+    <div class="cbinner">
+      <div class="cbloc">Subheadline <span class="gap-badge gap-badge-w"><i class="ri-alert-line"></i> Content weak</span></div>
+      <div class="cbcur">Don't know what evidence you need for SOC 2?</div>
+      <div class="variants">
+        <div class="variant sel" onclick="pickV(this)">
+          <div><div class="vlabel">Names product + outcome</div><div class="vtext">Liance monitors SOC 2 controls and alerts you before auditors do.</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+        <div class="variant" onclick="pickV(this)">
+          <div><div class="vlabel">Category + process</div><div class="vtext">Continuous SOC 2 monitoring — no more scrambling before audits.</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+        <div class="variant" onclick="pickV(this)">
+          <div><div class="vlabel">Outcome-first</div><div class="vtext">Always audit-ready. Liance watches your controls 24/7.</div></div>
+          <i class="ri-file-copy-line vcopy"></i>
+        </div>
+      </div>
+      <div class="cbfooter">
+        <button class="regen" onclick="regenClick(this)"><i class="ri-refresh-line"></i> 3 more variants</button>
+        <span class="cbctx">Tone: <strong>confident</strong> · Audience: <strong>B2B cold</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- §4 SCORE POTENTIAL -->
+<div class="card">
+  <div class="sh">
+    <span class="shl"><i class="ri-bar-chart-line"></i> Score potential</span>
+    <span class="shm">estimate · not a promise</span>
+  </div>
+  <div class="sp-compact">
+    <div class="sp-nums">
+      <div><div class="sp-n sp-cur">6.8</div><div class="sp-lbl">Now</div></div>
+      <span class="sp-arr">→</span>
+      <div><div class="sp-n sp-tar">8.5</div><div class="sp-lbl">Potential</div></div>
+    </div>
+    <div class="sp-div"></div>
+    <div class="sp-right">
+      <div class="sp-title">Fix 3 copy & trust gaps to close most of the distance</div>
+      <div class="sp-chips">
+        <div class="sp-chip" onclick="goTo('copy-headline')">1 · Product category missing <strong>+0.8</strong></div>
+        <div class="sp-chip" onclick="goTo('copy-cta')">2 · Trial terms unclear <strong>+0.6</strong></div>
+        <div class="sp-chip" onclick="goTo('trust')">3 · Trust signal missing <strong>+0.4</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- §5 VISUAL ISSUE — 1 non-copy only -->
+<div id="visual-fixes" class="card">
+  <div class="sh">
+    <span class="shl"><i class="ri-palette-line"></i> Visual fixes</span>
+    <span class="phase-tag">Phase 2</span>
+  </div>
+
+  <div class="vfwrap">
+    <div class="vfsec">
+      <div style="display:flex;align-items:flex-start;gap:8px;background:var(--bs);border-radius:var(--rsm);padding:9px 11px;margin-bottom:12px">
+        <span style="color:var(--green);font-size:13px;flex-shrink:0;margin-top:1px">→</span>
+        <span style="font-size:12px;color:var(--t2);line-height:1.65">Increase subheadline to 18px weight 500 — currently reads as a caption, not a value proposition</span>
+      </div>
+    </div>
+    <div class="vfsec">
+      <div class="vftitle">Contrast (WCAG AA)</div>
+      <table class="vftbl">
+        <thead><tr><th>Element</th><th>Ratio</th><th>Status</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Hero H1</td><td>3.2:1</td><td><span class="vstatus vfail">Fail</span></td><td class="vsug">Darken text to #111</td></tr>
+          <tr><td>CTA button</td><td>4.6:1</td><td><span class="vstatus vpass">Pass</span></td><td class="vsug">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="vfsec">
+      <div class="vftitle">Typography</div>
+      <table class="vftbl">
+        <thead><tr><th>Role</th><th>Current</th><th>Suggested</th></tr></thead>
+        <tbody>
+          <tr><td>H1</td><td>40px / 1.2</td><td class="vsug">48px / 1.1</td></tr>
+          <tr><td>Subhead</td><td>16px / 1.4</td><td class="vsug">18px / 1.5 / weight 500</td></tr>
+          <tr><td>Body</td><td>15px</td><td class="vsug">16px / max-width 640px</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- §6 TRUST & META -->
+<div id="trust" class="card">
+  <div class="sh">
+    <span class="shl"><i class="ri-shield-check-line"></i> Trust & meta</span>
+  </div>
+  <div class="tmwrap">
+    <div class="tmcard">
+      <div class="tmtitle"><i class="ri-award-line"></i> Add proof</div>
+      <div class="tmitem"><i class="ri-error-warning-line"></i><span>No logos or testimonials visible above the fold</span></div>
+      <div class="tmitem"><i class="ri-error-warning-line"></i><span>«Try Liance» suggests risk without reassurance</span></div>
+      <div class="tmsug"><i class="ri-add-line"></i> Add CISO quote below CTA</div>
+    </div>
+    <div class="tmcard">
+      <div class="tmtitle"><i class="ri-search-line"></i> Meta</div>
+      <div class="tmrow"><div class="tmrowlbl">Title</div><div class="tmrowval">Liance — SOC 2 Compliance Monitoring</div></div>
+      <div class="tmrow"><div class="tmrowlbl">Description</div><div class="tmrowval">Monitor your SOC 2 controls in real time. Liance alerts you before auditors do.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- §7 EXPORT -->
+<div class="card">
+  <div class="sh">
+    <span class="shl"><i class="ri-download-line"></i> Export</span>
+    <span class="shm">take this to your team</span>
+  </div>
+  <div class="expgrid">
+    <div class="expcard"><div class="expicon"><i class="ri-file-text-line"></i></div><div class="exptitle">Copy deck</div><div class="expsub">All variants · Markdown or CSV</div></div>
+    <div class="expcard"><div class="expicon"><i class="ri-layout-grid-line"></i></div><div class="exptitle">Designer brief</div><div class="expsub">Figma-ready task list</div></div>
+    <div class="expcard"><div class="expicon"><i class="ri-code-s-slash-line"></i></div><div class="exptitle">Dev tasks</div><div class="expsub">CSS values + text changes</div></div>
+    <div class="expcard"><div class="expicon"><i class="ri-notification-4-line"></i></div><div class="exptitle">Notion / Slack</div><div class="expsub">Formatted for sharing</div></div>
+  </div>
+</div>
+
+</div>
+
+<!-- STICKY BOTTOM BAR -->
+<div class="bottom-bar">
+  <span class="bb-left"><i class="ri-information-line"></i> Applied changes? Re-run to track your score.</span>
+  <div class="bb-right">
+    <button class="btn"><i class="ri-file-pdf-line"></i> Export PDF</button>
+    <button class="btnd"><i class="ri-refresh-line"></i> Re-run audit</button>
+  </div>
+</div>
+
+<script>
+function pickV(el){el.closest('.variants').querySelectorAll('.variant').forEach(v=>v.classList.remove('sel'));el.classList.add('sel')}
+function regenClick(btn){const orig=btn.innerHTML;btn.innerHTML='<i class="ri-loader-line"></i> Generating...';setTimeout(()=>btn.innerHTML=orig,2000)}
+function goTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+function togglePass(){
+  const wrap=document.getElementById('passWrap');
+  const lbl=document.getElementById('passLabel');
+  const ico=document.getElementById('passIcon');
+  const open=wrap.classList.toggle('open');
+  lbl.textContent=open?'Hide passing checks':'Show 5 passing checks';
+  ico.className=open?'ri-eye-off-line':'ri-eye-line';
+}
+</script>
+</body>
+</html>

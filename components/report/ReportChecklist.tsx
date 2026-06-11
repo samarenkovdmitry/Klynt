@@ -5,122 +5,111 @@ import {
   RiErrorWarningFill,
   RiAlertFill,
   RiCheckboxCircleFill,
-  RiArrowDownSLine,
-  RiEdit2Line,
-  RiShieldLine,
-  RiPaletteLine,
+  RiListCheck3,
+  RiEyeLine,
+  RiEyeOffLine,
+  RiArrowRightSLine,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
 import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
-  REPORT_SECTION_TITLE_CLASS,
-  REPORT_SURFACE_BORDER_CLASS,
-  REPORT_SURFACE_SHADOW_CLASS,
 } from "@/components/report/reportStyles";
 
 // ---------------------------------------------------------------------------
-// Status config
+// Design tokens (from docs/report-mvp-v4.html)
+// --amber:#BA7517  --al:#FDF3E3  --ad:#7A4A0A
+// --green:#1D9E75  --gl:#E8F7F2  --gd:#0F6E56
+// --b1:rgba(0,0,0,.07)  --t1:#111  --t3:#999
 // ---------------------------------------------------------------------------
 
 const STATUS_CONFIG = {
   missing: {
     Icon: RiErrorWarningFill,
-    iconColor: "text-[#B45309]",
+    iconColor: "text-[#BA7517]",
     badgeBg: "bg-[#FDF3E3]",
-    badgeText: "text-[#92400E]",
-    label: "Missing",
+    badgeText: "text-[#7A4A0A]",
+    badgeLabel: "Missing",
   },
   weak: {
     Icon: RiAlertFill,
-    iconColor: "text-[#7C3AED]",
-    badgeBg: "bg-[#F5F3FF]",
-    badgeText: "text-[#5B21B6]",
-    label: "Weak",
+    iconColor: "text-[#7B5EA7]",
+    badgeBg: "bg-[#F5F0FB]",
+    badgeText: "text-[#5B3F9A]",
+    badgeLabel: "Weak",
   },
   pass: {
     Icon: RiCheckboxCircleFill,
     iconColor: "text-[#1D9E75]",
-    badgeBg: "bg-[#E1F5EE]",
+    badgeBg: "bg-[#E8F7F2]",
     badgeText: "text-[#0F6E56]",
-    label: "Pass",
+    badgeLabel: "Pass",
   },
 } as const;
 
-// ---------------------------------------------------------------------------
-// Link-to action button config
-// ---------------------------------------------------------------------------
-
-const LINK_BUTTON_CONFIG: Record<
-  ChecklistLinkTarget,
-  { label: string; Icon: typeof RiEdit2Line }
-> = {
-  "copy-headline": { label: "Fix copy", Icon: RiEdit2Line },
-  "copy-cta": { label: "Fix copy", Icon: RiEdit2Line },
-  "copy-subheadline": { label: "Fix copy", Icon: RiEdit2Line },
-  trust: { label: "See trust", Icon: RiShieldLine },
-  "visual-fixes": { label: "Fix visual", Icon: RiPaletteLine },
+const LINK_BUTTON_LABEL: Record<ChecklistLinkTarget, string> = {
+  "copy-headline": "Fix copy",
+  "copy-cta": "Fix copy",
+  "copy-subheadline": "Fix copy",
+  trust: "See trust",
+  "visual-fixes": "Fix visual",
 };
 
-function scrollToAnchor(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
 // ---------------------------------------------------------------------------
-// Single checklist row
+// Single row
 // ---------------------------------------------------------------------------
 
 function ChecklistRow({
   item,
-  dimmed = false,
+  isLast,
 }: {
   item: ReportChecklistItem;
-  dimmed?: boolean;
+  isLast: boolean;
 }) {
-  const { Icon, iconColor, badgeBg, badgeText, label } = STATUS_CONFIG[item.status];
-  const linkCfg = item.link_to ? LINK_BUTTON_CONFIG[item.link_to] : null;
+  const { Icon, iconColor, badgeBg, badgeText, badgeLabel } =
+    STATUS_CONFIG[item.status];
+  const linkLabel =
+    item.link_to && item.status !== "pass"
+      ? LINK_BUTTON_LABEL[item.link_to]
+      : null;
+
+  function handleLinkClick() {
+    if (!item.link_to) return;
+    document
+      .getElementById(item.link_to)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   return (
     <div
       className={[
-        "flex items-center justify-between gap-3 px-5 py-4 md:px-6",
-        dimmed ? "bg-[rgba(6,28,47,0.015)]" : "",
+        "flex items-center gap-2.5 py-[9px] text-[13px]",
+        isLast ? "" : "border-b border-[rgba(0,0,0,0.07)]",
       ].join(" ")}
     >
-      {/* Left: icon + text */}
-      <div className="flex min-w-0 items-center gap-3">
-        <Icon size={17} className={`shrink-0 ${iconColor}`} aria-hidden />
-        <span
-          className={[
-            "text-[14px] leading-[20px] md:text-[15px]",
-            dimmed ? "text-[rgba(6,28,47,0.55)]" : "text-[#061C2F]",
-          ].join(" ")}
-        >
-          {item.text}
-        </span>
-      </div>
+      <Icon size={16} className={`shrink-0 ${iconColor}`} aria-hidden />
 
-      {/* Right: action button + badge */}
-      <div className="flex shrink-0 items-center gap-2">
-        {linkCfg && item.status !== "pass" ? (
-          <button
-            onClick={() => scrollToAnchor(item.link_to!)}
-            className="flex items-center gap-1.5 rounded-lg border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[12px] font-medium text-[#3B7FC4] transition-colors hover:border-[rgba(59,127,196,0.3)] hover:bg-[#F0F7FF]"
-          >
-            <linkCfg.Icon size={13} aria-hidden />
-            {linkCfg.label}
-          </button>
-        ) : null}
-        <span
-          className={[
-            "rounded-md px-[9px] py-[3px] text-[11px] font-medium leading-[18px]",
-            badgeBg,
-            badgeText,
-          ].join(" ")}
+      <span className="flex-1 text-[#111] leading-[1.45]">{item.text}</span>
+
+      {linkLabel ? (
+        <button
+          onClick={handleLinkClick}
+          className="flex items-center gap-[3px] whitespace-nowrap text-[12px] text-[#1D9E75] transition-colors hover:underline"
         >
-          {label}
-        </span>
-      </div>
+          <RiArrowRightSLine size={14} aria-hidden />
+          {linkLabel}
+        </button>
+      ) : null}
+
+      <span
+        className={[
+          "whitespace-nowrap rounded-full px-[9px] py-[3px] text-[11px] font-medium",
+          badgeBg,
+          badgeText,
+        ].join(" ")}
+      >
+        {badgeLabel}
+      </span>
     </div>
   );
 }
@@ -147,60 +136,72 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
     <section
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
-      <h3 className={REPORT_SECTION_TITLE_CLASS}>What needs fixing</h3>
-      <p className="mt-1 text-[14px] leading-[21px] text-[rgba(6,28,47,0.5)] md:text-[15px]">
-        {gaps.length} gap{gaps.length !== 1 ? "s" : ""} found · ranked by priority
-      </p>
+      {/* Card */}
+      <div className="overflow-hidden rounded-2xl bg-white shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)]">
 
-      <div
-        className={[
-          "mt-6 overflow-hidden rounded-[18px] bg-white",
-          REPORT_SURFACE_BORDER_CLASS,
-          REPORT_SURFACE_SHADOW_CLASS,
-        ].join(" ")}
-      >
+        {/* Section header — compact label row */}
+        <div className="flex items-center justify-between px-5 pb-[10px] pt-[14px]">
+          <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.07em] text-[#999]">
+            <RiListCheck3 size={14} aria-hidden />
+            What needs fixing
+          </span>
+          <span className="text-[12px] text-[#C0C0BC]">
+            <span className="font-medium text-[#1D9E75]">{passes.length} pass</span>
+            {" · "}
+            <span className="font-medium text-[#E24B4A]">{gaps.length} gaps</span>
+          </span>
+        </div>
+
         {/* Gap rows */}
-        {gaps.map((item, i) => (
-          <div
-            key={item.id}
-            className={
-              i < gaps.length - 1 || passes.length > 0
-                ? "border-b border-[rgba(6,28,47,0.06)]"
-                : ""
-            }
-          >
-            <ChecklistRow item={item} />
+        {gaps.length > 0 && (
+          <div className="px-5">
+            {gaps.map((item, i) => (
+              <ChecklistRow
+                key={item.id}
+                item={item}
+                isLast={i === gaps.length - 1}
+              />
+            ))}
           </div>
-        ))}
+        )}
 
-        {/* Pass items toggle + rows */}
+        {/* Pass toggle */}
         {passes.length > 0 && (
           <>
             <button
               onClick={() => setPassVisible((v) => !v)}
-              className="flex w-full items-center justify-between gap-2 px-5 py-3.5 text-left transition-colors hover:bg-[rgba(6,28,47,0.02)] md:px-6"
+              className="flex w-full items-center gap-1.5 border-t border-[rgba(0,0,0,0.07)] px-5 pb-[14px] pt-[10px] text-[12px] text-[#999] transition-colors hover:text-[#111]"
             >
-              <span className="text-[13px] font-medium text-[rgba(6,28,47,0.4)]">
+              {passVisible ? (
+                <RiEyeOffLine size={14} aria-hidden />
+              ) : (
+                <RiEyeLine size={14} aria-hidden />
+              )}
+              <span>
                 {passVisible
                   ? "Hide passing checks"
                   : `Show ${passes.length} passing check${passes.length !== 1 ? "s" : ""}`}
               </span>
-              <RiArrowDownSLine
-                size={16}
-                className={[
-                  "shrink-0 text-[rgba(6,28,47,0.3)] transition-transform duration-200",
-                  passVisible ? "rotate-180" : "",
-                ].join(" ")}
-                aria-hidden
-              />
             </button>
 
-            {passVisible &&
-              passes.map((item) => (
-                <div key={item.id} className="border-t border-[rgba(6,28,47,0.06)]">
-                  <ChecklistRow item={item} dimmed />
-                </div>
-              ))}
+            {/* Animated pass rows */}
+            <div
+              style={{
+                maxHeight: passVisible ? `${passes.length * 44 + 8}px` : "0",
+                overflow: "hidden",
+                transition: "max-height 0.25s ease",
+              }}
+            >
+              <div className="border-t border-[rgba(0,0,0,0.07)] px-5">
+                {passes.map((item, i) => (
+                  <ChecklistRow
+                    key={item.id}
+                    item={item}
+                    isLast={i === passes.length - 1}
+                  />
+                ))}
+              </div>
+            </div>
           </>
         )}
       </div>
