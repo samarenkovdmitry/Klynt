@@ -165,38 +165,23 @@ function normalizeCopySections(copy: ReportCopyItem[]) {
 
 export function buildAnalysisQualityPromptBlock() {
   return `UNIQUENESS AND EVIDENCE RULES:
-- Each of the 4 issues MUST target a different visible section or user moment. Max 2 issues may focus on hero/above-the-fold.
-- At least 1 issue MUST come from Screenshot 2 (lower page: features, trust, pricing, footer, secondary CTAs).
-- issues[].bullets: 2-3 tags; when visible text exists, include one short quoted phrase from the page (3-8 words) in a bullet.
-- suggestions[]: each must reference a different section string; do NOT restate an issue title as the recommendation.
-- copy[]: use 3 different sections (hero headline, supporting line/subtext, primary CTA or closest equivalent).
-- Never repeat the same root cause across verdict, summary, key_observation, and multiple issue titles.
+- Each checklist gap (missing/weak) MUST reference a specific, visible element or section on the page.
+- At least 1 copy or trust gap MUST come from below the fold (features, trust, pricing, or footer).
+- copy_variants.current for each element MUST be the exact visible text — never a paraphrase or invented copy.
+- Never repeat the same root cause across verdict, summary, key_observation, and checklist items.
 - Prefer page-specific findings over generic landing-page advice. Name the element, block, or copy you see.
 
 INSIGHT DEPTH RULES:
-- Before writing each issue, ask: would this observation apply to 80% of SaaS
-  landing pages? If yes — go deeper or find a different issue.
-- Good issue: specific to this page, references visible element, explains
-  the UX consequence for this particular product/audience.
-- Bad issue: could be copied to any landing page report unchanged.
-- Each issue must answer: what specifically did you see, why does it matter
-  for THIS product, what does a visitor think or feel because of it.
-- Forbidden generic findings (do not use these as issue #1 or #2):
+- Before writing each checklist item, ask: would this observation apply to 80% of SaaS
+  landing pages? If yes — go deeper or pick a different gap.
+- Good item: specific to this page, references a visible element, explains the UX consequence.
+- Bad item: could be copied to any landing page report unchanged.
+- Forbidden generic checklist items (do not use as missing/weak):
   "headline doesn't say who it's for"
   "trust signals are missing"
   "CTA lacks context"
   "visual hierarchy could be improved"
-  These may appear only as issue #3 or #4, and only if truly the most
-  notable remaining problem on the page.
-
-EVIDENCE REQUIREMENT:
-- Every issue title must contain at least one of:
-  a quoted text fragment from the page, a specific section name,
-  or a specific UI element name.
-- Example good: "The subheadline 'built for teams' contradicts the solo
-  pricing shown below the fold"
-- Example bad: "The messaging lacks clarity about the target audience"
-- If you cannot name a specific element — the issue is too generic, find another.
+  These may appear only as pass items, or as context-specific gaps with the exact visible element named.
 
 SCORE CALIBRATION:
 - Most real-world landing pages score between 5.0 and 8.0.

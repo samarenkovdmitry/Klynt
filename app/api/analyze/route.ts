@@ -361,19 +361,17 @@ export async function POST(req: Request) {
     if (!json.breakdown || typeof json.breakdown !== "object") {
       json.breakdown = {
         clarity: 0,
-        navigation: 0,
-        visuals: 0,
         trust: 0,
-        conversion: 0,
+        friction: 0,
+        visuals: 0,
       };
     }
 
     json.breakdown = {
       clarity: clampPercent(json.breakdown.clarity),
-      navigation: clampPercent(json.breakdown.navigation),
-      visuals: clampPercent(json.breakdown.visuals),
       trust: clampPercent(json.breakdown.trust),
-      conversion: clampPercent(json.breakdown.conversion),
+      friction: clampPercent(json.breakdown.friction),
+      visuals: clampPercent(json.breakdown.visuals),
     };
 
     json.issues = Array.isArray(json.issues) ? json.issues.slice(0, 4) : [];
@@ -422,15 +420,14 @@ export async function POST(req: Request) {
 
     Object.assign(json, normalizeReportHeroCopy(json));
 
-    const normalizedScores = normalizeReportBreakdown({
+    const { breakdown: normalizedBreakdown } = normalizeReportBreakdown({
       score: Number(json.score) || 0,
       breakdown: json.breakdown,
       issues: json.issues,
     });
 
-    json.score = normalizedScores.score;
-    json.breakdown = normalizedScores.breakdown;
-    json.risk = deriveRiskFromScore(normalizedScores.score);
+    json.breakdown = normalizedBreakdown;
+    json.risk = deriveRiskFromScore(Number(json.score) || 0);
     });
 
     const reportId = generateReportId();
@@ -452,6 +449,10 @@ export async function POST(req: Request) {
       confidence: json.confidence,
       previewImage,
       metric_observations: metricObservations,
+      checklist: json.checklist,
+      copy_variants: json.copy_variants,
+      score_potential: json.score_potential,
+      meta: json.meta,
       issues: json.issues,
       suggestions: json.suggestions,
       copy: json.copy,

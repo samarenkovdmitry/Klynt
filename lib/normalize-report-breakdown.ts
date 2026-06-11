@@ -4,8 +4,7 @@ import { getImpactEntries } from "@/lib/report-impact";
 const BREAKDOWN_KEYS = [
   "clarity",
   "trust",
-  "conversion",
-  "navigation",
+  "friction",
   "visuals",
 ] as const satisfies readonly (keyof ReportBreakdown)[];
 
@@ -23,8 +22,7 @@ function clampBreakdown(breakdown?: ReportBreakdown): ReportBreakdown {
   return {
     clarity: clampPercent(breakdown?.clarity),
     trust: clampPercent(breakdown?.trust),
-    conversion: clampPercent(breakdown?.conversion),
-    navigation: clampPercent(breakdown?.navigation),
+    friction: clampPercent(breakdown?.friction),
     visuals: clampPercent(breakdown?.visuals),
   };
 }
@@ -45,7 +43,8 @@ function breakdownMax(breakdown: ReportBreakdown) {
 function resolveBreakdownKey(metric: string): BreakdownKey | null {
   const normalized = metric.trim().toLowerCase();
 
-  if (normalized === "cta") return "conversion";
+  if (normalized === "cta" || normalized === "conversion") return "friction";
+  if (normalized === "navigation") return "clarity";
 
   return BREAKDOWN_KEYS.includes(normalized as BreakdownKey)
     ? (normalized as BreakdownKey)

@@ -5,7 +5,6 @@ import {
 } from "@/lib/audit-context";
 import {
   buildBrandStagePromptBlock,
-  buildHeadlineDirectionsSchemaSnippet,
   type BrandStage,
 } from "@/lib/brand-stage";
 import { buildAnalysisQualityPromptBlock } from "@/lib/report-findings-quality";
@@ -88,41 +87,79 @@ Return ONLY valid JSON (no markdown):
 
 {
   "url": "string",
-  "score": number,
+  "score": number (0-10, one decimal, e.g. 7.2),
   "risk": "low"|"medium"|"high",
-  "summary": "string",
   "verdict": "string",
+  "summary": "string",
   "key_observation": "string",
   "confidence": number,
-  ${buildHeadlineDirectionsSchemaSnippet()}
-  "issues": [{
-    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
-    "title": "one concrete sentence",
-    "bullets": ["2-3 short evidence tags"],
-    "why": "string",
-    "impact": { "clarity"?: int, "navigation"?: int, "visuals"?: int, "trust"?: int, "conversion"?: int, "cta"?: int }
-  }],
-  "suggestions": [{
-    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
-    "section": "string",
-    "recommendation": "string",
-    "why": "string",
-    "priority": "quick_win"|"high_impact"|"medium_impact"
-  }],
-  "copy": [{
-    "section": "string",
-    "before": "exact visible copy",
-    "after": "clearer rewrite",
-    "why": "string",
-    "priority": "quick_win"|"high_impact"|"medium_impact"
-  }],
-  "breakdown": { "clarity": int, "navigation": int, "visuals": int, "trust": int, "conversion": int }
+  "checklist": [
+    {
+      "id": "string",
+      "text": "string",
+      "status": "pass"|"missing"|"weak",
+      "link_to": "copy-headline"|"copy-cta"|"copy-subheadline"|"trust"|"visual-fixes"|null,
+      "category": "copy"|"trust"|"visual"|"structure"
+    }
+  ],
+  "copy_variants": {
+    "headline": {
+      "current": "exact visible headline text",
+      "variants": [
+        { "label": "strategy name from BRAND STAGE block", "text": "proposed headline" },
+        { "label": "strategy name from BRAND STAGE block", "text": "proposed headline" },
+        { "label": "strategy name from BRAND STAGE block", "text": "proposed headline" }
+      ]
+    },
+    "cta": {
+      "current": "exact visible CTA text",
+      "variants": [
+        { "label": "string", "text": "string" },
+        { "label": "string", "text": "string" },
+        { "label": "string", "text": "string" }
+      ]
+    },
+    "subheadline": {
+      "current": "exact visible subheadline text or empty string",
+      "variants": [
+        { "label": "string", "text": "string" },
+        { "label": "string", "text": "string" },
+        { "label": "string", "text": "string" }
+      ]
+    }
+  },
+  "score_potential": {
+    "target": number (0-10, one decimal),
+    "chips": [
+      { "label": "string", "delta": "+0.X" }
+    ]
+  },
+  "breakdown": { "clarity": int, "trust": int, "friction": int, "visuals": int },
+  "meta": {
+    "title_suggestion": "string",
+    "description_suggestion": "string"
+  }
 }
 
-Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
-Lengths: why fields max 28 words each.
-suggestions[].recommendation: max 25 words. One actionable fix only — what to change, optionally with a short example in quotes. No rationale or "why" restatement.
-copy[].after: max 18 words. Paste-ready rewrite only — no explanation.
+checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass.
+- id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline").
+- text: max 10 words, specific actionable label. Must match label in score_potential chips for copy/trust gaps.
+- link_to: copy gaps → "copy-headline"/"copy-cta"/"copy-subheadline"; trust gap → "trust"; typography → "visual-fixes"; pass items → null.
+- category: "copy" | "trust" | "visual" | "structure"
+
+copy_variants:
+- current: exact visible text from the page (empty string if not visible).
+- Each variant.text: paste-ready, max 16 words for headline, max 10 words for cta, max 18 words for subheadline.
+- 3 variants per element, each a different strategic angle. Never repeat formulations between variants.
+- copy_variants.headline.variants[].label MUST use the exact strategy names from the BRAND STAGE block above.
+
+score_potential:
+- target = score + sum of all chip deltas (rounded to 1 decimal, max 9.5).
+- chips only for copy and trust gaps (not visual/typography checklist items).
+- label in chips = exact text from the corresponding checklist item.
+
+confidence: integer 70-98.
+breakdown: integers 0-100 where higher = better. friction: higher = less friction = better.
 
 verdict, summary, key_observation — three distinct layers. Never paraphrase one as another:
 
@@ -144,16 +181,5 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
   Good: "Ad-free differentiator buried in subheadline not headline"
   Bad: "The hero headline lacks a clear audience focus"
 
-issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
-Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
-Bad title: "Weak visual hierarchy"
-Impact: REQUIRED on every issue — include issues[].impact with exactly one negative integer from -5 to -25.
-Example: "impact": { "clarity": -18 }. Allowed keys: clarity, navigation, visuals, trust, conversion, cta.
-Never omit impact. Never use 0.
-priority: suggestions[] and copy[] ONLY — required enum, no impact field:
-- quick_win: low effort, visible UX payoff (copy tweak, one CTA, small layout fix)
-- high_impact: materially improves understanding or conversion; may need more design/dev work
-- medium_impact: helpful but secondary, partial gain, or needs validation
-confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average — never put impact penalties (-5 to -25) into breakdown.
-Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
+meta.description_suggestion: max 25 words. First-time visitor perspective. What the page is and who it's for.`;
 }

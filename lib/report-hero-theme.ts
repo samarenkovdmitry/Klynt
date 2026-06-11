@@ -42,7 +42,11 @@ export function getTierLabel(tier: HealthTier) {
 }
 
 export function formatOverallScore(score: number) {
-  return (Math.max(0, Math.min(100, Number(score))) / 10).toFixed(1);
+  const s = Number(score);
+  if (!Number.isFinite(s)) return "0.0";
+  // Old stored reports used 0-100 scale; new reports use 0-10 directly
+  const display = s > 10 ? s / 10 : s;
+  return Math.max(0, Math.min(10, display)).toFixed(1);
 }
 
 export function formatAnalyzedDate(value?: string) {
