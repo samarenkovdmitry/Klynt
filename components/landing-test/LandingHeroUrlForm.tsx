@@ -52,7 +52,7 @@ export function LandingHeroUrlForm({
         type="submit"
         className="m-[5px] shrink-0 rounded-lg bg-[#F2F2EF] px-5 py-2.5 font-sans text-[14px] font-semibold tracking-[-0.02em] text-[#0E0E0C] transition-opacity hover:opacity-88"
       >
-        Analyze
+        Analyze →
       </button>
     </form>
   );
