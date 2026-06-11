@@ -420,6 +420,19 @@ export async function POST(req: Request) {
 
     Object.assign(json, normalizeReportHeroCopy(json));
 
+    if (json.copy_variants && typeof json.copy_variants === "object") {
+      for (const block of Object.values(json.copy_variants) as any[]) {
+        if (Array.isArray(block?.variants)) {
+          block.variants = block.variants.map((v: any) => ({
+            ...v,
+            label: typeof v.label === "string"
+              ? v.label.replace(/^Option [A-Z] — /i, "")
+              : v.label,
+          }));
+        }
+      }
+    }
+
     const { breakdown: normalizedBreakdown } = normalizeReportBreakdown({
       score: Number(json.score) || 0,
       breakdown: json.breakdown,

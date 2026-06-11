@@ -146,12 +146,20 @@ checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 mi
 - text: max 10 words, specific actionable label. Must match label in score_potential chips for copy/trust gaps.
 - link_to: copy gaps → "copy-headline"/"copy-cta"/"copy-subheadline"; trust gap → "trust"; typography → "visual-fixes"; pass items → null.
 - category: "copy" | "trust" | "visual" | "structure"
+- pass items text: must name a specific visible element on this page — NEVER write generic observations.
+  Correct: "Single CTA button above fold"
+  Correct: "No navigation links competing in hero"
+  Wrong:   "Hero image is visually appealing"
+  Wrong:   "Strong visual but lacks clear messaging"
 
 copy_variants:
 - current: exact visible text from the page (empty string if not visible).
 - Each variant.text: paste-ready, max 16 words for headline, max 10 words for cta, max 18 words for subheadline.
 - 3 variants per element, each a different strategic angle. Never repeat formulations between variants.
 - copy_variants.headline.variants[].label MUST use the exact strategy names from the BRAND STAGE block above.
+- variants[].label: strategy name ONLY — NEVER add "Option A — ", "Option B — " or any letter prefix before the label.
+  Correct: "Category + audience"
+  Wrong:   "Option A — Category + audience"
 
 score_potential:
 - target = score + sum of all chip deltas (rounded to 1 decimal, max 9.5).
