@@ -103,9 +103,6 @@ async function requestAuditAnalysisOnce(params: {
   } as any);
 
   const raw = response.output_text;
-  console.log("=== RAW OPENAI RESPONSE ===");
-  console.log(raw);
-  console.log("=== END RAW ===");
 
   if (!raw?.trim()) {
     throw new Error("AI analysis returned an empty response.");
