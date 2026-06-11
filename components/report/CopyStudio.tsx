@@ -7,6 +7,7 @@ import {
   RiAlertLine,
   RiFileCopyLine,
   RiCheckLine,
+  RiLock2Line,
 } from "@remixicon/react";
 import type {
   ReportCopyVariants,
@@ -19,20 +20,14 @@ import type {
 import { deriveChecklistGapLabel } from "@/lib/normalize-report-checklist";
 import { REPORT_SECTION_SCROLL_MARGIN_CLASS } from "@/components/report/reportStyles";
 import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
-import { freemium, scrollToProUpgradeGate } from "@/lib/freemium";
-
-// ---------------------------------------------------------------------------
-// Design tokens (docs/report-mvp-v4.html)
-// --green:#1D9E75  --gl:#E8F7F2  --gd:#0F6E56
-// --amber:#BA7517  --al:#FDF3E3  --ad:#7A4A0A
-// --bs:#F5F5F3  --b1:rgba(0,0,0,.07)  --t1:#111  --t3:#999  --tm:#C0C0BC
-// ---------------------------------------------------------------------------
+import { freemium, type RequestProUpgrade } from "@/lib/freemium";
 
 interface CopyStudioProps {
   copyVariants: ReportCopyVariants;
   context?: { tone?: string; audience?: string };
   checklist?: ReportChecklistItem[];
   previewLocked?: boolean;
+  onRequestProUpgrade?: RequestProUpgrade;
 }
 
 const BLOCKS: {
@@ -45,10 +40,6 @@ const BLOCKS: {
   { key: "cta", label: "Primary CTA", id: "copy-cta", linkTo: "copy-cta" },
   { key: "subheadline", label: "Subheadline", id: "copy-subheadline", linkTo: "copy-subheadline" },
 ];
-
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
 
 function GapBadge({ status, text }: { status: ChecklistItemStatus; text: string }) {
   if (status === "pass") return null;
@@ -76,18 +67,20 @@ function VariantItem({
   isSelected,
   onSelect,
   locked = false,
+  onRequestProUpgrade,
 }: {
   variant: CopyVariant;
   isSelected: boolean;
   onSelect: () => void;
   locked?: boolean;
+  onRequestProUpgrade?: RequestProUpgrade;
 }) {
   const [copied, setCopied] = useState(false);
 
   function handleCopy(e: React.MouseEvent) {
     e.stopPropagation();
     if (locked) {
-      scrollToProUpgradeGate();
+      onRequestProUpgrade?.("copy-variant");
       return;
     }
     navigator.clipboard.writeText(variant.text).catch(() => {});
@@ -102,16 +95,15 @@ function VariantItem({
         isSelected
           ? "bg-[#E8F7F2] border-[rgba(29,158,117,0.25)]"
           : "bg-[#F5F5F3] border-transparent hover:border-[rgba(0,0,0,0.1)]"
-      } ${locked ? "opacity-80" : ""}`}
+      }`}
     >
-      <div className="flex-1 min-w-0">
+      <div className={`flex-1 min-w-0 ${locked ? "select-none" : ""}`}>
         <div
-          className={`text-[11px] mb-[3px] transition-colors duration-[120ms] flex items-center gap-1.5 ${
+          className={`text-[11px] mb-[3px] transition-colors duration-[120ms] ${
             isSelected ? "text-[#0F6E56]" : "text-[#999]"
           }`}
         >
           {variant.label}
-          {locked ? <FreemiumProBadge /> : null}
         </div>
         <div
           className={`text-[13px] font-medium leading-[1.5] transition-colors duration-[120ms] ${
@@ -135,6 +127,8 @@ function VariantItem({
       >
         {copied ? (
           <RiCheckLine className="w-[15px] h-[15px]" />
+        ) : locked ? (
+          <RiLock2Line className="w-[15px] h-[15px]" />
         ) : (
           <RiFileCopyLine className="w-[15px] h-[15px]" />
         )}
@@ -150,6 +144,7 @@ function CopyBlock({
   gapItem,
   context,
   previewLocked = false,
+  onRequestProUpgrade,
 }: {
   id: string;
   label: string;
@@ -157,13 +152,13 @@ function CopyBlock({
   gapItem?: ReportChecklistItem;
   context?: { tone?: string; audience?: string };
   previewLocked?: boolean;
+  onRequestProUpgrade?: RequestProUpgrade;
 }) {
   const [selected, setSelected] = useState(0);
 
   return (
     <div id={id} className={`border-t border-[rgba(0,0,0,0.07)] ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
       <div className="px-5 py-4">
-        {/* Label + gap badge */}
         <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#999] uppercase tracking-[0.05em] mb-[7px]">
           {label}
           {gapItem && gapItem.status !== "pass" && (
@@ -174,7 +169,6 @@ function CopyBlock({
           )}
         </div>
 
-        {/* Current text — strikethrough */}
         {block.current ? (
           <div className="mb-[11px] text-[13px] leading-[1.5] text-[#C0C0BC] line-through">
             {block.current}
@@ -185,7 +179,6 @@ function CopyBlock({
           </div>
         )}
 
-        {/* Variants */}
         <div className="flex flex-col gap-[7px]">
           {block.variants.slice(0, 3).map((variant, i) => (
             <VariantItem
@@ -194,6 +187,7 @@ function CopyBlock({
               isSelected={selected === i}
               onSelect={() => setSelected(i)}
               locked={previewLocked && i >= freemium.maxFreeCopyVariants}
+              onRequestProUpgrade={onRequestProUpgrade}
             />
           ))}
         </div>
@@ -220,19 +214,15 @@ function CopyBlock({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main export
-// ---------------------------------------------------------------------------
-
 export default function CopyStudio({
   copyVariants,
   context,
   checklist,
   previewLocked = false,
+  onRequestProUpgrade,
 }: CopyStudioProps) {
   return (
     <div className="bg-white rounded-2xl shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)] overflow-hidden mb-2.5">
-      {/* Section header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-[10px]">
         <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#999] uppercase tracking-[0.07em]">
           <RiPencilLine className="w-4 h-4" />
@@ -246,7 +236,6 @@ export default function CopyStudio({
         </span>
       </div>
 
-      {/* Blocks */}
       {BLOCKS.map(({ key, label, id, linkTo }) => {
         const gapItem = checklist?.find((item) => item.link_to === linkTo);
         return (
@@ -258,6 +247,7 @@ export default function CopyStudio({
             gapItem={gapItem}
             context={context}
             previewLocked={previewLocked}
+            onRequestProUpgrade={onRequestProUpgrade}
           />
         );
       })}

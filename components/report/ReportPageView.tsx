@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiArrowRightLine, RiDownloadLine, RiFilePdfLine, RiLock2Line, RiRefreshLine } from "@remixicon/react";
 
@@ -15,12 +15,12 @@ import { ExportGrid } from "@/components/report/ExportGrid";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
-import { FreemiumUpgradeGate } from "@/components/report/FreemiumUpgradeGate";
+import { FreemiumProModal } from "@/components/report/FreemiumProModal";
 import { FreemiumProStickyBar } from "@/components/report/FreemiumProStickyBar";
 import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { useFreemiumAccess } from "@/hooks/useFreemiumAccess";
-import { isFreemiumEnabled } from "@/lib/freemium";
+import { isFreemiumEnabled, type ProUpgradeTrigger } from "@/lib/freemium";
 import {
   REPORT_PAGE_CONTAINER_CLASS,
   WORKSPACE_BG_CLASS,
@@ -31,7 +31,6 @@ import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
 import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
-import { useScrollAnchorInView } from "@/hooks/useScrollAnchorInView";
 import { buildCopyStudioContext } from "@/lib/copy-studio-context";
 import {
   normalizeReportChecklist,
@@ -98,10 +97,20 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
   const { waitlistActive, unlock } = usePreLaunchWaitlist(isDemo);
   const freemiumAccess = useFreemiumAccess(isDemo);
   const gateInView = useWaitlistGateInView(waitlistActive && !freemiumAccess.active);
-  const proGateInView = useScrollAnchorInView("pro-upgrade-gate", freemiumAccess.active);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
+  const [proModalOpen, setProModalOpen] = useState(false);
+  const [proModalTrigger, setProModalTrigger] = useState<ProUpgradeTrigger | undefined>();
+
+  const openProModal = useCallback((trigger?: ProUpgradeTrigger) => {
+    setProModalTrigger(trigger);
+    setProModalOpen(true);
+  }, []);
+
+  const closeProModal = useCallback(() => {
+    setProModalOpen(false);
+  }, []);
 
   async function handleCopy(text: string, index: number) {
     await navigator.clipboard.writeText(text);
@@ -116,10 +125,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
 
   function handleExport() {
     if (freemiumAccess.exportLocked) {
-      document.getElementById("pro-upgrade-gate")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      openProModal("export-pdf");
       return;
     }
 
@@ -180,26 +186,12 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
   const useFreemium = hasNewLayout && isFreemiumEnabled() && freemiumAccess.active;
   const showLegacyWaitlist = waitlistActive && !useFreemium;
 
-  const freemiumLockedSummary = {
-    domain: formatReportDomain(data.url),
-    lockedCopyVariants: report.copy_variants
-      ? (["headline", "cta", "subheadline"] as const).reduce((count, key) => {
-          const variants = report.copy_variants?.[key]?.variants ?? [];
-          return count + Math.max(0, variants.length - 1);
-        }, 0)
-      : 0,
-    lockedExportFormats: 4,
-    lockedScoreChips: report.score_potential?.chips.length ?? 0,
-  };
-
   const mainPaddingBottom =
-    useFreemium && !proGateInView
+    useFreemium || (showLegacyWaitlist && !gateInView)
       ? "pb-24 md:pb-20"
-      : showLegacyWaitlist && !gateInView
-        ? "pb-24 md:pb-20"
-        : hasNewLayout
-          ? "pb-8"
-          : "pb-20";
+      : hasNewLayout
+        ? "pb-8"
+        : "pb-20";
 
   return (
     <>
@@ -214,7 +206,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
           {hasNewLayout ? (
             <>
-              {/* Health bar — score + verdict + metric dimensions */}
               <ReportActionLayout
                 data={report}
                 routeParam={routeParam}
@@ -229,10 +220,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                 onUnlock={unlock}
               />
 
-              {/* ReportChecklist */}
               <ReportChecklist checklist={report.checklist!} />
 
-              {/* CopyStudio + ScorePotentialCompact — grouped */}
               <div className="mt-3">
                 {report.copy_variants && (
                   <CopyStudio
@@ -240,6 +229,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     checklist={report.checklist}
                     context={buildCopyStudioContext(report)}
                     previewLocked={freemiumAccess.previewLocked}
+                    onRequestProUpgrade={useFreemium ? openProModal : undefined}
                   />
                 )}
                 {report.score_potential && (
@@ -248,33 +238,22 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     scorePotential={report.score_potential}
                     checklist={report.checklist}
                     chipsLocked={freemiumAccess.previewLocked}
+                    onRequestProUpgrade={useFreemium ? openProModal : undefined}
                   />
                 )}
               </div>
 
-              {/* VisualFixes */}
               <VisualFixes checklist={report.checklist} />
 
-              {/* TrustMeta */}
               {report.meta && (
                 <TrustMeta
                   meta={report.meta}
                   checklist={report.checklist!}
                   metaCopyLocked={freemiumAccess.previewLocked}
+                  onRequestProUpgrade={useFreemium ? openProModal : undefined}
                 />
               )}
 
-              {useFreemium ? (
-                <div className="mt-6">
-                  <FreemiumUpgradeGate
-                    reportId={routeParam}
-                    locked={freemiumLockedSummary}
-                    onJoined={freemiumAccess.markWaitlistJoined}
-                  />
-                </div>
-              ) : null}
-
-              {/* ExportGrid */}
               {report.copy_variants && report.meta && (
                 <div className="mt-2.5 overflow-hidden rounded-[16px] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)]">
                   <div className="flex items-center justify-between px-5 pb-[10px] pt-[14px]">
@@ -292,6 +271,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     meta={report.meta}
                     checklist={report.checklist}
                     locked={freemiumAccess.exportLocked}
+                    onRequestProUpgrade={useFreemium ? openProModal : undefined}
                   />
                 </div>
               )}
@@ -305,7 +285,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               )}
             </>
           ) : (
-            /* Backward compat: old reports without checklist use the previous layout */
             <ReportActionLayout
               data={data}
               routeParam={routeParam}
@@ -323,7 +302,19 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       </main>
 
       {showLegacyWaitlist && <ReportWaitlistStickyBar visible={!gateInView} />}
-      {useFreemium && <FreemiumProStickyBar visible={!proGateInView} />}
+      {useFreemium && (
+        <FreemiumProStickyBar onOpen={() => openProModal("sticky-bar")} />
+      )}
+
+      {useFreemium && (
+        <FreemiumProModal
+          open={proModalOpen}
+          onClose={closeProModal}
+          reportId={routeParam}
+          trigger={proModalTrigger}
+          onJoined={freemiumAccess.markWaitlistJoined}
+        />
+      )}
 
       <ShareReportDialog
         open={shareOpen}

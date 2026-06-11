@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  RiBarChartLine,
-  RiLock2Line,
-} from "@remixicon/react";
+import { RiBarChartLine, RiLock2Line } from "@remixicon/react";
 import type {
   ReportScorePotential,
   ReportChecklistItem,
@@ -13,13 +10,14 @@ import {
   resolveChipChecklistItem,
 } from "@/lib/normalize-report-checklist";
 import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
-import { scrollToProUpgradeGate } from "@/lib/freemium";
+import type { RequestProUpgrade } from "@/lib/freemium";
 
 interface ScorePotentialCompactProps {
   score: number;
   scorePotential: ReportScorePotential;
   checklist?: ReportChecklistItem[];
   chipsLocked?: boolean;
+  onRequestProUpgrade?: RequestProUpgrade;
 }
 
 function scrollTo(id: string) {
@@ -37,10 +35,16 @@ export default function ScorePotentialCompact({
   scorePotential,
   checklist,
   chipsLocked = false,
+  onRequestProUpgrade,
 }: ScorePotentialCompactProps) {
   const { target, chips } = scorePotential;
 
   function handleChipClick(chipLabel: string, index: number) {
+    if (chipsLocked) {
+      onRequestProUpgrade?.("score-breakdown");
+      return;
+    }
+
     const item = resolveChipChecklistItem(chipLabel, index, checklist);
     if (item?.link_to) scrollTo(item.link_to);
   }
@@ -77,8 +81,14 @@ export default function ScorePotentialCompact({
 
         <div className="mt-3 min-w-0 flex-1 sm:mt-0">
           {chips.length > 0 ? (
-            <div className="relative">
-              <div className={chipsLocked ? "pointer-events-none select-none blur-[2px]" : ""}>
+            <div className="relative min-h-[72px]">
+              <div
+                className={
+                  chipsLocked
+                    ? "pointer-events-none select-none blur-[10px] opacity-40"
+                    : ""
+                }
+              >
                 <div className="mb-2 font-['Familjen_Grotesk',sans-serif] text-[14px] font-medium tracking-[-0.2px] text-[#111]">
                   {buildTitle(chips.length)}
                 </div>
@@ -98,16 +108,16 @@ export default function ScorePotentialCompact({
               </div>
 
               {chipsLocked ? (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <button
-                    type="button"
-                    onClick={scrollToProUpgradeGate}
-                    className="pointer-events-auto inline-flex items-center gap-1.5 rounded-[10px] border border-black/[0.08] bg-white/95 px-3 py-2 text-[12px] font-medium text-[#111] shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-colors hover:bg-white"
-                  >
+                <button
+                  type="button"
+                  onClick={() => onRequestProUpgrade?.("score-breakdown")}
+                  className="absolute inset-0 flex items-center justify-center rounded-[12px] bg-[#EFEFED]/75"
+                >
+                  <span className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/[0.08] bg-white px-3 py-2 text-[12px] font-medium text-[#111] shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-colors hover:bg-[#FAFAFA]">
                     <RiLock2Line size={14} aria-hidden />
                     Upgrade to see breakdown
-                  </button>
-                </div>
+                  </span>
+                </button>
               ) : null}
             </div>
           ) : (

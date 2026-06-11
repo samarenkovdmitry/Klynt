@@ -15,20 +15,29 @@ import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
 } from "@/components/report/reportStyles";
-import { scrollToProUpgradeGate } from "@/lib/freemium";
+import type { RequestProUpgrade } from "@/lib/freemium";
 
 type Props = {
   meta: ReportMeta;
   checklist: ReportChecklistItem[];
   metaCopyLocked?: boolean;
+  onRequestProUpgrade?: RequestProUpgrade;
 };
 
-function CopyButton({ value, locked = false }: { value: string; locked?: boolean }) {
+function CopyButton({
+  value,
+  locked = false,
+  onRequestProUpgrade,
+}: {
+  value: string;
+  locked?: boolean;
+  onRequestProUpgrade?: RequestProUpgrade;
+}) {
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
     if (locked) {
-      scrollToProUpgradeGate();
+      onRequestProUpgrade?.("meta-copy");
       return;
     }
 
@@ -49,7 +58,12 @@ function CopyButton({ value, locked = false }: { value: string; locked?: boolean
   );
 }
 
-export function TrustMeta({ meta, checklist, metaCopyLocked = false }: Props) {
+export function TrustMeta({
+  meta,
+  checklist,
+  metaCopyLocked = false,
+  onRequestProUpgrade,
+}: Props) {
   const trustGaps = checklist.filter(
     (item) => item.category === "trust" && item.status !== "pass"
   );
@@ -137,7 +151,11 @@ export function TrustMeta({ meta, checklist, metaCopyLocked = false }: Props) {
                 <span className="text-[13px] leading-[1.5] text-[#111]">
                   {meta.title_suggestion}
                 </span>
-                <CopyButton value={meta.title_suggestion} locked={metaCopyLocked} />
+                <CopyButton
+                  value={meta.title_suggestion}
+                  locked={metaCopyLocked}
+                  onRequestProUpgrade={onRequestProUpgrade}
+                />
               </div>
             </div>
 
@@ -149,7 +167,11 @@ export function TrustMeta({ meta, checklist, metaCopyLocked = false }: Props) {
                 <span className="text-[13px] leading-[1.5] text-[#111]">
                   {meta.description_suggestion}
                 </span>
-                <CopyButton value={meta.description_suggestion} locked={metaCopyLocked} />
+                <CopyButton
+                  value={meta.description_suggestion}
+                  locked={metaCopyLocked}
+                  onRequestProUpgrade={onRequestProUpgrade}
+                />
               </div>
             </div>
           </div>

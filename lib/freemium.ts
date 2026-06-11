@@ -18,12 +18,16 @@ export function isFreemiumEnabled() {
   return freemium.enabled;
 }
 
-export function scrollToProUpgradeGate() {
-  document.getElementById("pro-upgrade-gate")?.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-}
+export type ProUpgradeTrigger =
+  | "copy-variant"
+  | "score-breakdown"
+  | "meta-copy"
+  | "export-pdf"
+  | "export-copy-deck"
+  | "export-designer-brief"
+  | "export-dev-tasks"
+  | "export-notion-slack"
+  | "sticky-bar";
 
 export type FreemiumLockedSummary = {
   domain: string;
@@ -31,3 +35,5 @@ export type FreemiumLockedSummary = {
   lockedExportFormats: number;
   lockedScoreChips: number;
 };
+
+export type RequestProUpgrade = (trigger?: ProUpgradeTrigger) => void;
