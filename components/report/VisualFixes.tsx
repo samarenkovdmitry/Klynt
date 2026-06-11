@@ -1,37 +1,63 @@
 "use client";
 
-import { RiPaletteLine } from "@remixicon/react";
-import type { ReportChecklistItem } from "@/lib/audit-report";
+import {
+  RiAlignVertically,
+  RiCursorLine,
+  RiLayoutGridLine,
+  RiPaletteLine,
+  RiRoundedCorner,
+  RiStackLine,
+  RiText,
+} from "@remixicon/react";
+import type { ReportChecklistItem, ReportVisualFix, VisualFixDimension } from "@/lib/audit-report";
+import {
+  getVisualFixDimensionLabel,
+  normalizeReportVisualFixes,
+} from "@/lib/report-visual-fixes";
 import { REPORT_SECTION_SCROLL_MARGIN_CLASS, REPORT_SECTION_SPACING_CLASS } from "@/components/report/reportStyles";
 
 type Props = {
   checklist?: ReportChecklistItem[];
+  visualFixes?: ReportVisualFix[];
 };
 
-const CONTRAST_ROWS: { element: string; ratio: string; pass: boolean; fix: string }[] = [
-  { element: "Hero H1", ratio: "3.2:1", pass: false, fix: "Darken text to #111" },
-  { element: "CTA button", ratio: "4.6:1", pass: true, fix: "—" },
-  { element: "Body text", ratio: "7.1:1", pass: true, fix: "—" },
-];
+const DIMENSION_ICONS: Record<VisualFixDimension, typeof RiPaletteLine> = {
+  border_radius: RiRoundedCorner,
+  density: RiLayoutGridLine,
+  color_tone: RiPaletteLine,
+  spacing: RiAlignVertically,
+  cta_hierarchy: RiCursorLine,
+  typography: RiText,
+  depth: RiStackLine,
+};
 
-const TYPOGRAPHY_ROWS = [
-  { role: "H1", current: "40px / 1.2", suggested: "48px / 1.1" },
-  { role: "Subhead", current: "16px / 1.4", suggested: "18px / 1.5 / weight 500" },
-  { role: "Body", current: "15px", suggested: "16px / max-width 640px" },
-];
+function VisualFixCard({ fix }: { fix: ReportVisualFix }) {
+  const Icon = DIMENSION_ICONS[fix.dimension];
+  const label = getVisualFixDimensionLabel(fix.dimension);
 
-function buildVisualFixText(item: ReportChecklistItem): string {
-  if (item.id === "subheadline-clarity") {
-    return "Increase subheadline to 18px weight 500 — currently reads as a caption, not a value proposition";
-  }
-
-  return item.text;
+  return (
+    <div className="rounded-[10px] border border-[rgba(0,0,0,0.06)] bg-[#FAFAF8] px-[11px] py-[10px]">
+      <div className="mb-1.5 flex items-center gap-1.5">
+        <Icon size={13} className="shrink-0 text-[#8E99A2]" aria-hidden />
+        <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[#999]">
+          {label}
+        </span>
+      </div>
+      <p className="text-[12px] leading-[1.55] text-[#555]">{fix.observation}</p>
+      <div className="mt-2 flex items-start gap-2 rounded-[8px] bg-white px-2.5 py-2">
+        <span className="mt-px shrink-0 text-[12px] text-[#1D9E75]">→</span>
+        <p className="text-[12px] leading-[1.6] text-[#333]">{fix.recommendation}</p>
+      </div>
+    </div>
+  );
 }
 
-export function VisualFixes({ checklist }: Props) {
-  const visualGap = checklist?.find(
-    (item) => item.link_to === "visual-fixes" && item.status === "weak"
-  );
+export function VisualFixes({ checklist, visualFixes }: Props) {
+  const fixes = normalizeReportVisualFixes(visualFixes, checklist);
+
+  if (fixes.length === 0) {
+    return null;
+  }
 
   return (
     <div
@@ -44,112 +70,15 @@ export function VisualFixes({ checklist }: Props) {
             <RiPaletteLine size={14} aria-hidden />
             Visual fixes
           </span>
-          <span className="rounded-full bg-[#EBF3FC] px-2 py-0.5 text-[11px] font-medium text-[#185FA5]">
-            Phase 2
+          <span className="text-[12px] text-[#C0C0BC]">
+            {fixes.length} insight{fixes.length !== 1 ? "s" : ""}
           </span>
         </div>
 
-        <div className="px-5 pb-4">
-          {visualGap ? (
-            <div className="mb-3.5 flex items-start gap-2 rounded-[10px] bg-[#F5F5F3] px-[11px] py-[9px]">
-              <span className="mt-px shrink-0 text-[13px] text-[#1D9E75]">→</span>
-              <span className="text-[12px] leading-[1.65] text-[#555]">
-                {buildVisualFixText(visualGap)}
-              </span>
-            </div>
-          ) : (
-            <div className="mb-3.5 flex items-start gap-2 rounded-[10px] bg-[#F5F5F3] px-[11px] py-[9px]">
-              <span className="mt-px shrink-0 text-[13px] text-[#1D9E75]">→</span>
-              <span className="text-[12px] leading-[1.65] text-[#555]">
-                Increase subheadline to 18px weight 500 — currently reads as a caption, not a value
-                proposition
-              </span>
-            </div>
-          )}
-
-          <div className="mb-3.5">
-            <div className="mb-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#999]">
-              Contrast (WCAG AA)
-            </div>
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  {["Element", "Ratio", "Status", "Fix"].map((h) => (
-                    <th
-                      key={h}
-                      className="border-b border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-2.5 py-1.5 text-left text-[11px] font-medium text-[#C0C0BC]"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {CONTRAST_ROWS.map((row, i) => (
-                  <tr
-                    key={row.element}
-                    className={
-                      i < CONTRAST_ROWS.length - 1
-                        ? "[&>td]:border-b [&>td]:border-[rgba(0,0,0,0.07)]"
-                        : ""
-                    }
-                  >
-                    <td className="px-2.5 py-[9px] text-[13px] text-[#111]">{row.element}</td>
-                    <td className="px-2.5 py-[9px] text-[13px] text-[#111]">{row.ratio}</td>
-                    <td className="px-2.5 py-[9px]">
-                      <span
-                        className={[
-                          "rounded-full px-2 py-0.5 text-[11px] font-medium",
-                          row.pass
-                            ? "bg-[#E8F7F2] text-[#0F6E56]"
-                            : "bg-[#FDF0F0] text-[#8B2020]",
-                        ].join(" ")}
-                      >
-                        {row.pass ? "Pass" : "Fail"}
-                      </span>
-                    </td>
-                    <td className="px-2.5 py-[9px] text-[12px] text-[#999]">{row.fix}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div>
-            <div className="mb-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#999]">
-              Typography
-            </div>
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  {["Role", "Current", "Suggested"].map((h) => (
-                    <th
-                      key={h}
-                      className="border-b border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-2.5 py-1.5 text-left text-[11px] font-medium text-[#C0C0BC]"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {TYPOGRAPHY_ROWS.map((row, i) => (
-                  <tr
-                    key={row.role}
-                    className={
-                      i < TYPOGRAPHY_ROWS.length - 1
-                        ? "[&>td]:border-b [&>td]:border-[rgba(0,0,0,0.07)]"
-                        : ""
-                    }
-                  >
-                    <td className="px-2.5 py-[9px] text-[13px] text-[#111]">{row.role}</td>
-                    <td className="px-2.5 py-[9px] text-[13px] text-[#111]">{row.current}</td>
-                    <td className="px-2.5 py-[9px] text-[12px] text-[#999]">{row.suggested}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="grid gap-2.5 px-5 pb-4 sm:grid-cols-2">
+          {fixes.map((fix) => (
+            <VisualFixCard key={fix.dimension} fix={fix} />
+          ))}
         </div>
       </div>
     </div>

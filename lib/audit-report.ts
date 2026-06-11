@@ -132,6 +132,21 @@ export type ReportMeta = {
   trust_notes?: string[];
 };
 
+export type VisualFixDimension =
+  | "border_radius"
+  | "density"
+  | "color_tone"
+  | "spacing"
+  | "cta_hierarchy"
+  | "typography"
+  | "depth";
+
+export type ReportVisualFix = {
+  dimension: VisualFixDimension;
+  observation: string;
+  recommendation: string;
+};
+
 export type AuditRisk = "low" | "medium" | "high";
 
 export type AuditReport = {
@@ -153,6 +168,8 @@ export type AuditReport = {
   copy_variants?: ReportCopyVariants;
   score_potential?: ReportScorePotential;
   meta?: ReportMeta;
+  /** Context-aware visual/design recommendations from screenshot analysis. */
+  visual_fixes?: ReportVisualFix[];
   /** @deprecated use checklist + copy_variants instead */
   issues?: ReportIssue[];
   /** @deprecated use copy_variants instead */

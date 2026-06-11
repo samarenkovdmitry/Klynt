@@ -141,7 +141,14 @@ Return ONLY valid JSON (no markdown):
     "description_suggestion": "string",
     "proof_suggestion": "string",
     "trust_notes": ["string"]
-  }
+  },
+  "visual_fixes": [
+    {
+      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth",
+      "observation": "string",
+      "recommendation": "string"
+    }
+  ]
 }
 
 checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass.
@@ -198,5 +205,27 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
 
 meta.description_suggestion: max 25 words. First-time visitor perspective. What the page is and who it's for.
 meta.proof_suggestion: max 12 words. One specific trust element to add on THIS page (e.g. "Add customer logos below CTA").
-meta.trust_notes: 1-2 items, max 14 words each. Observations about missing proof or CTA reassurance — e.g. when CTA says "Try X" without free/trial clarity, note that it suggests risk without reassurance. Do not duplicate checklist trust gap text verbatim.`;
+meta.trust_notes: 1-2 items, max 14 words each. Observations about missing proof or CTA reassurance — e.g. when CTA says "Try X" without free/trial clarity, note that it suggests risk without reassurance. Do not duplicate checklist trust gap text verbatim.
+
+visual_fixes: 2-4 items. Context-aware visual/design guidance ONLY — not copy positioning or trust proof (those belong in checklist/meta).
+STEP 1: Use BRAND STAGE + AUDIENCE + TRAFFIC context to infer who this product is for.
+STEP 2: Pick 2-4 dimensions from this list ONLY where the screenshot shows a visible mismatch with that context:
+  border_radius | density | color_tone | spacing | cta_hierarchy | typography | depth
+Skip dimensions with no visible issue. Never repeat checklist gap text verbatim.
+
+Each item:
+- dimension: one enum value above
+- observation: max 14 words. Qualitative — what you see on THIS page. No invented WCAG ratios or px values unless clearly readable.
+- recommendation: max 18 words. Specific fix aligned to context (e.g. "Enterprise B2B → tighten radius to 6–8px, not playful 24px").
+
+Examples of good recommendations:
+- border_radius: consumer app with sharp corners → add softer 12–16px radius; OR enterprise with 24px pills → tighten to 6–8px
+- density: hero has 4 text blocks + 2 CTAs → strip to headline + subhead + one CTA for cold traffic
+- color_tone: fintech with orange accent → shift to restrained blue/green for trust
+- spacing: sections stacked with no breathing room → add 80–120px vertical rhythm between blocks
+- cta_hierarchy: two CTAs same size/color → make primary 2–3× more prominent
+- typography: subhead reads as caption → bump weight/size; legal/fintech with only sans → consider serif headlines
+- depth: flat white hero → subtle #F8F8F6 tint or light gradient for polish
+
+The checklist weak typography item (link_to visual-fixes) must still exist; visual_fixes.typography may expand on it with different wording.`;
 }

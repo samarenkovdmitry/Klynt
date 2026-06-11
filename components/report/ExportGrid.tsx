@@ -8,13 +8,15 @@ import {
   RiNotification4Line,
   RiCheckLine,
 } from "@remixicon/react";
-import type { ReportChecklistItem, ReportCopyVariants, ReportMeta } from "@/lib/audit-report";
+import type { ReportChecklistItem, ReportCopyVariants, ReportMeta, ReportVisualFix } from "@/lib/audit-report";
+import { buildVisualFixesMarkdown } from "@/lib/report-visual-fixes";
 import type { ProUpgradeTrigger, RequestProUpgrade } from "@/lib/freemium";
 
 interface ExportGridProps {
   copyVariants: ReportCopyVariants;
   meta: ReportMeta;
   checklist?: ReportChecklistItem[];
+  visualFixes?: ReportVisualFix[];
   locked?: boolean;
   onRequestProUpgrade?: RequestProUpgrade;
 }
@@ -48,7 +50,8 @@ function buildCopyDeckMarkdown(variants: ReportCopyVariants): string {
 
 function buildDesignerBriefMarkdown(
   variants: ReportCopyVariants,
-  meta: ReportMeta
+  meta: ReportMeta,
+  visualFixes?: ReportVisualFix[]
 ): string {
   const LABELS: { key: keyof ReportCopyVariants; title: string }[] = [
     { key: "headline", title: "Hero headline" },
@@ -62,6 +65,11 @@ function buildDesignerBriefMarkdown(
     return [`- **${title}:** ${best}`];
   });
 
+  const visualLines =
+    visualFixes && visualFixes.length > 0
+      ? ["", "## Visual direction", buildVisualFixesMarkdown(visualFixes)]
+      : [];
+
   return [
     "# Designer Brief",
     "",
@@ -71,13 +79,15 @@ function buildDesignerBriefMarkdown(
     "## Meta updates",
     `- **Page title:** ${meta.title_suggestion}`,
     `- **Meta description:** ${meta.description_suggestion}`,
+    ...visualLines,
   ].join("\n");
 }
 
 function buildDevTasksMarkdown(
   variants: ReportCopyVariants,
   meta: ReportMeta,
-  checklist?: ReportChecklistItem[]
+  checklist?: ReportChecklistItem[],
+  visualFixes?: ReportVisualFix[]
 ): string {
   const LABELS: { key: keyof ReportCopyVariants; selector: string }[] = [
     { key: "headline", selector: "<h1>" },
@@ -91,16 +101,16 @@ function buildDevTasksMarkdown(
     return `- \`${selector}\` → "${best}"`;
   });
 
-  const visualGap = checklist?.find(
-    (item) => item.link_to === "visual-fixes" && item.status === "weak"
-  );
-  const visualLines = visualGap
-    ? [
-        "",
-        "## Visual fixes",
-        "- Subheadline: 18px / weight 500 / line-height 1.5",
-      ]
-    : [];
+  const visualLines =
+    visualFixes && visualFixes.length > 0
+      ? ["", "## Visual fixes", buildVisualFixesMarkdown(visualFixes)]
+      : checklist?.find((item) => item.link_to === "visual-fixes" && item.status === "weak")
+        ? [
+            "",
+            "## Visual fixes",
+            "- Subheadline: 18px / weight 500 / line-height 1.5",
+          ]
+        : [];
 
   return [
     "# Dev Tasks",
@@ -171,6 +181,7 @@ export function ExportGrid({
   copyVariants,
   meta,
   checklist,
+  visualFixes,
   locked = false,
   onRequestProUpgrade,
 }: ExportGridProps) {
@@ -190,10 +201,10 @@ export function ExportGrid({
           text = buildCopyDeckMarkdown(copyVariants);
           break;
         case "designer-brief":
-          text = buildDesignerBriefMarkdown(copyVariants, meta);
+          text = buildDesignerBriefMarkdown(copyVariants, meta, visualFixes);
           break;
         case "dev-tasks":
-          text = buildDevTasksMarkdown(copyVariants, meta, checklist);
+          text = buildDevTasksMarkdown(copyVariants, meta, checklist, visualFixes);
           break;
         case "notion-slack":
           text = buildNotionSlackMarkdown(copyVariants, meta);
@@ -216,7 +227,7 @@ export function ExportGrid({
       setActiveToast(id);
       setTimeout(() => setActiveToast(null), 2000);
     },
-    [copyVariants, meta, checklist, locked, onRequestProUpgrade]
+    [copyVariants, meta, checklist, visualFixes, locked, onRequestProUpgrade]
   );
 
   const CARDS: {

@@ -60,6 +60,14 @@ export const DEMO_REPORT = {
       "gap_label": "Trust signals missing"
     },
     {
+      "id": "subheadline-clarity",
+      "text": "Subheadline typography too light to scan quickly",
+      "status": "weak",
+      "link_to": "visual-fixes",
+      "category": "visual",
+      "gap_label": "Weak typography"
+    },
+    {
       "id": "features-clarity",
       "text": "Feature descriptions lack specific benefits for users.",
       "status": "pass",
@@ -169,6 +177,23 @@ export const DEMO_REPORT = {
     ],
     "target": 8
   },
+  "visual_fixes": [
+    {
+      "dimension": "typography",
+      "observation": "Subheadline weight is light — reads as caption, not value prop",
+      "recommendation": "Increase subheadline to 18px / weight 500 for faster scan"
+    },
+    {
+      "dimension": "border_radius",
+      "observation": "Large rounded cards signal consumer-playful, not team CRM",
+      "recommendation": "Tighten card and button radius to 6–8px for B2B credibility"
+    },
+    {
+      "dimension": "depth",
+      "observation": "Flat white hero — page feels unfinished, low premium signal",
+      "recommendation": "Add subtle #F8F8F6 section tint or light gradient behind hero"
+    }
+  ],
   "previewImage": "/demo/folk-preview.jpg"
 } satisfies AuditReport;
 

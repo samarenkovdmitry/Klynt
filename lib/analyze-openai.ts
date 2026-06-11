@@ -83,7 +83,7 @@ async function requestAuditAnalysisOnce(params: {
   const response = await getOpenAIClient().responses.create({
     model: "gpt-4o-mini",
     temperature: 0.4,
-    max_output_tokens: 2800,
+    max_output_tokens: 3200,
     input: [
       {
         role: "user",
