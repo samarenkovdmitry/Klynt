@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { RiArrowRightLine, RiDownloadLine, RiGridLine } from "@remixicon/react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { ReportActionLayout } from "@/components/report/ReportActionLayout";
+import { ReportChecklist } from "@/components/report/ReportChecklist";
+import CopyStudio from "@/components/report/CopyStudio";
+import ScorePotentialCompact from "@/components/report/ScorePotentialCompact";
+import { VisualFixes } from "@/components/report/VisualFixes";
+import { TrustMeta } from "@/components/report/TrustMeta";
+import { ExportGrid } from "@/components/report/ExportGrid";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
@@ -21,6 +28,43 @@ type ReportPageViewProps = {
   routeParam: string;
   initialData?: AuditReport | null;
 };
+
+function StickyBottomBar({
+  onExport,
+  onRerun,
+}: {
+  onExport?: () => void;
+  onRerun: () => void;
+}) {
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-black/[0.07] bg-white px-4 py-3">
+      <div className="mx-auto flex w-full max-w-[1000px] items-center gap-4">
+        <p className="hidden flex-1 text-[13px] text-[#888] sm:block">
+          Applied changes? Re-run to track your score.
+        </p>
+        <div className="flex items-center gap-2 sm:ml-auto">
+          {onExport && (
+            <button
+              type="button"
+              onClick={onExport}
+              className="rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] text-[#555] transition-colors hover:bg-black/[0.08]"
+            >
+              Export PDF
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onRerun}
+            className="inline-flex items-center gap-1 rounded-[8px] bg-[#111] px-[15px] py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
+          >
+            Re-run audit
+            <RiArrowRightLine size={14} aria-hidden />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function ReportPageView({ routeParam, initialData = null }: ReportPageViewProps) {
   const router = useRouter();
@@ -66,6 +110,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     remainingCopy: Math.max(0, copy.length - 1),
   };
 
+  const hasNewLayout = Array.isArray(data.checklist) && data.checklist.length > 0;
+
   return (
     <>
       <AppHeader />
@@ -73,24 +119,105 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       <main
         className={[
           "min-h-[calc(100dvh-52px)] bg-[#EBEBEB] px-4 pt-6 text-[#111] md:px-8 md:pt-6",
-          waitlistActive && !gateInView ? "pb-24 md:pb-20" : "pb-20",
+          hasNewLayout && !waitlistActive
+            ? "pb-28 md:pb-24"
+            : waitlistActive && !gateInView
+              ? "pb-24 md:pb-20"
+              : "pb-20",
         ].join(" ")}
       >
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
-          <ReportActionLayout
-            data={data}
-            routeParam={routeParam}
-            waitlistActive={waitlistActive}
-            copiedIndex={copiedIndex}
-            lockedSummary={lockedSummary}
-            onCopy={handleCopy}
-            onShare={handleShare}
-            onExport={handleExport}
-            onRerun={handleRerun}
-            onUnlock={unlock}
-          />
+          {hasNewLayout ? (
+            <>
+              {/* Health bar — score + verdict + metric dimensions */}
+              <ReportActionLayout
+                data={data}
+                routeParam={routeParam}
+                waitlistActive={waitlistActive}
+                copiedIndex={copiedIndex}
+                lockedSummary={lockedSummary}
+                heroOnly={true}
+                onCopy={handleCopy}
+                onShare={handleShare}
+                onExport={handleExport}
+                onRerun={handleRerun}
+                onUnlock={unlock}
+              />
+
+              {/* ReportChecklist */}
+              <ReportChecklist checklist={data.checklist!} />
+
+              {/* CopyStudio + ScorePotentialCompact — grouped */}
+              <div className="mt-3">
+                {data.copy_variants && (
+                  <CopyStudio
+                    copyVariants={data.copy_variants}
+                    checklist={data.checklist}
+                  />
+                )}
+                {data.score_potential && (
+                  <ScorePotentialCompact
+                    score={data.score}
+                    scorePotential={data.score_potential}
+                    checklist={data.checklist}
+                  />
+                )}
+              </div>
+
+              {/* VisualFixes */}
+              {data.breakdown && (
+                <VisualFixes
+                  breakdown={data.breakdown}
+                  checklist={data.checklist!}
+                />
+              )}
+
+              {/* TrustMeta */}
+              {data.meta && (
+                <TrustMeta
+                  meta={data.meta}
+                  checklist={data.checklist!}
+                />
+              )}
+
+              {/* ExportGrid */}
+              {data.copy_variants && data.meta && (
+                <div className="mt-12 overflow-hidden rounded-[16px] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)]">
+                  <div className="flex items-center justify-between px-5 pb-[10px] pt-[14px]">
+                    <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.07em] text-[#999]">
+                      <RiGridLine size={14} aria-hidden />
+                      Export
+                    </span>
+                    <span className="text-[12px] text-[#C0C0BC]">copy to clipboard</span>
+                  </div>
+                  <ExportGrid
+                    copyVariants={data.copy_variants}
+                    meta={data.meta}
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            /* Backward compat: old reports without checklist use the previous layout */
+            <ReportActionLayout
+              data={data}
+              routeParam={routeParam}
+              waitlistActive={waitlistActive}
+              copiedIndex={copiedIndex}
+              lockedSummary={lockedSummary}
+              onCopy={handleCopy}
+              onShare={handleShare}
+              onExport={handleExport}
+              onRerun={handleRerun}
+              onUnlock={unlock}
+            />
+          )}
         </div>
       </main>
+
+      {hasNewLayout && !waitlistActive && (
+        <StickyBottomBar onExport={handleExport} onRerun={handleRerun} />
+      )}
 
       {waitlistActive && <ReportWaitlistStickyBar visible={!gateInView} />}
 

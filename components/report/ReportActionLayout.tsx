@@ -61,6 +61,8 @@ type ReportActionLayoutProps = {
   onExport?: () => void;
   onRerun: () => void;
   onUnlock: () => void;
+  /** Render only the HeroCard (health bar) — used by new MVP layout */
+  heroOnly?: boolean;
 };
 
 const CARD_CLASS =
@@ -609,7 +611,12 @@ export function ReportActionLayout({
   onExport,
   onRerun,
   onUnlock,
+  heroOnly,
 }: ReportActionLayoutProps) {
+  if (heroOnly) {
+    return <HeroCard data={data} onShare={onShare} onExport={onExport} onRerun={onRerun} />;
+  }
+
   const issues = data.issues ?? [];
   const suggestions = data.suggestions ?? [];
   const copyItems = data.copy ?? [];
