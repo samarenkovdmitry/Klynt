@@ -13,6 +13,7 @@ import {
   getTierColor,
   normalizeRisk,
 } from "@/lib/report-metrics";
+import { getFrictionScore } from "@/lib/report-hero-theme";
 
 const titleSection =
   "text-[18px] font-semibold tracking-[-0.03em] text-[#061C2F] md:text-[26px]";
@@ -23,6 +24,7 @@ export function LandingReportMockup() {
   const data = DEMO_REPORT;
   const score = Number(data.score);
   const riskColor = getTierColor(getRiskTier(data.risk));
+  const frictionScore = getFrictionScore(data.breakdown);
 
   return (
     <div
@@ -151,9 +153,9 @@ export function LandingReportMockup() {
                   <div className="mt-3 space-y-2">
                     {(
                       [
-                        ["Clarity", data.breakdown.clarity],
-                        ["Trust", data.breakdown.trust],
-                        ["Conversion", data.breakdown.conversion],
+                        ["Clarity", data.breakdown?.clarity ?? 0],
+                        ["Trust", data.breakdown?.trust ?? 0],
+                        ["Friction", frictionScore],
                       ] as const
                     ).map(([label, value]) => {
                       const barScore = Math.max(

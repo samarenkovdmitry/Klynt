@@ -67,14 +67,33 @@ export function LandingTestMockup() {
   const trust = Math.max(0, Math.min(100, Number(data.breakdown?.trust)));
   const clarity = Math.max(0, Math.min(100, Number(data.breakdown?.clarity)));
   const friction = Math.max(0, Math.min(100, getFrictionScore(data.breakdown)));
-  const topIssue = data.issues[0];
+  const checklist = data.checklist ?? [];
+  const legacyIssues = data.issues ?? [];
+  const topIssueTitle =
+    legacyIssues[0]?.title ??
+    checklist.find((item) => item.status === "missing")?.gap_label ??
+    data.verdict;
   const overallScore = formatOverallScore(score);
   const tierLabel = getTierLabel(theme.tier);
-  const issueCount = data.issues.length;
+  const issueCount =
+    legacyIssues.length > 0
+      ? legacyIssues.length
+      : checklist.filter((item) => item.status !== "pass").length;
+  const suggestionCount =
+    (data.suggestions?.length ?? 0) > 0
+      ? data.suggestions!.length
+      : (data.score_potential?.chips?.length ?? 0);
+  const copyCount =
+    (data.copy?.length ?? 0) > 0
+      ? data.copy!.length
+      : data.copy_variants
+        ? (["headline", "cta", "subheadline"] as const).filter((key) => data.copy_variants?.[key])
+            .length
+        : 0;
   const deliverableBullets = [
     `${issueCount} issues ranked by impact`,
-    `${data.suggestions.length} suggested improvements`,
-    `${data.copy.length} copy refinements`,
+    `${suggestionCount} suggested improvements`,
+    `${copyCount} copy refinements`,
   ] as const;
 
   return (
@@ -157,7 +176,7 @@ export function LandingTestMockup() {
               </div>
             </div>
 
-            {topIssue && (
+            {topIssueTitle && (
               <div className="mt-4 rounded-[10px] border border-[rgba(32,52,94,0.08)] bg-[#F8FAFC] px-3 py-2.5 md:mt-5">
                 <p className="text-[11px] font-medium text-[rgba(6,28,47,0.45)] md:text-[12px]">
                   Top issue
@@ -165,7 +184,7 @@ export function LandingTestMockup() {
                 <p
                   className={`mt-1 text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px] ${textClamp}`}
                 >
-                  {topIssue.title}
+                  {topIssueTitle}
                 </p>
               </div>
             )}
