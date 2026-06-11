@@ -1,76 +1,64 @@
-import {
-  StepAddPageVisual,
-  StepAnalyzeVisual,
-  StepReportVisual,
-} from "./LandingStepVisuals";
+import { RiFileList3Line, RiLink, RiShareForwardLine } from "@remixicon/react";
+
 import {
   LANDING_CONTAINER,
-  LANDING_EYEBROW,
-  LANDING_LEAD,
+  LANDING_DIVIDER,
   LANDING_SECTION,
-  LANDING_TITLE,
 } from "./landingPageStyles";
 
 const STEPS = [
   {
-    step: "1",
-    title: "Add your page",
-    description: "Paste a URL or upload a screenshot — any landing or marketing page.",
-    Visual: StepAddPageVisual,
+    icon: RiLink,
+    title: "Paste a URL",
+    description:
+      "Or upload a screenshot. Add context: brand stage, traffic source, audience.",
   },
   {
-    step: "2",
-    title: "Klynt analyzes UX",
+    icon: RiFileList3Line,
+    title: "Get your improvement kit",
     description:
-      "Layout, messaging, trust signals, and conversion flow — only from what's visible on screen.",
-    Visual: StepAnalyzeVisual,
+      "Copy variants, fix checklist, score potential, and visual suggestions — in about a minute.",
   },
   {
-    step: "3",
-    title: "Ship improvements",
+    icon: RiShareForwardLine,
+    title: "Share with your team",
     description:
-      "Prioritized issues, plain-language explanations, and copy suggestions you can act on.",
-    Visual: StepReportVisual,
+      "Export as copy deck, designer brief, dev tasks, or Notion-ready summary.",
   },
 ] as const;
 
+export function LandingHowItWorksDivider() {
+  return <div className={LANDING_DIVIDER} aria-hidden />;
+}
+
 export function LandingTestHowItWorks() {
   return (
-    <section className={LANDING_SECTION} aria-labelledby="how-heading">
-      <div className={LANDING_CONTAINER}>
-        <p className={LANDING_EYEBROW}>How it works</p>
-        <h2 id="how-heading" className={LANDING_TITLE}>
-          From URL to actionable report in minutes
+    <section className={`${LANDING_SECTION} !py-20 md:!py-24`} aria-labelledby="how-heading">
+      <div className={`${LANDING_CONTAINER} max-w-[860px]`}>
+        <h2
+          id="how-heading"
+          className="text-center font-sans text-[clamp(22px,3vw,32px)] font-semibold tracking-[-0.03em] text-[#F2F2EF]"
+        >
+          How it works
         </h2>
-        <p className={LANDING_LEAD}>No setup, no account. Most analyses finish in under a minute.</p>
 
-        <ol className="mt-12 grid grid-cols-1 gap-0 lg:mt-16 lg:grid-cols-3 lg:items-stretch lg:gap-8">
-          {STEPS.map((item, index) => {
-            const Visual = item.Visual;
+        <ol className="relative mt-12 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-0">
+          <div
+            className="pointer-events-none absolute left-[calc(16.67%+20px)] right-[calc(16.67%+20px)] top-6 hidden h-px bg-gradient-to-r from-white/[0.08] via-white/[0.14] to-white/[0.08] md:block"
+            aria-hidden
+          />
 
-            return (
-              <li
-                key={item.step}
-                className={[
-                  "flex flex-col border-t border-white/[0.06] py-8 lg:border-t-0 lg:py-0",
-                  index > 0 ? "lg:border-l lg:border-white/[0.06] lg:pl-8" : "",
-                ].join(" ")}
-              >
-                <span className="text-[13px] font-medium tabular-nums text-white/30">
-                  {item.step}
-                </span>
-                <h3 className="mt-3 text-[17px] font-medium leading-[24px] text-white md:text-[18px]">
-                  {item.title}
-                </h3>
-                <p className="mt-2 max-w-[320px] text-[14px] leading-[22px] text-white/50 md:text-[15px] md:leading-[24px]">
-                  {item.description}
-                </p>
-                <div className="mt-6 lg:mt-auto lg:pt-8">
-                  <Visual />
-                </div>
-              </li>
-            );
-          })}
+          {STEPS.map(({ icon: Icon, title, description }) => (
+            <li key={title} className="relative z-[1] px-0 text-center md:px-6">
+              <div className="relative z-[1] mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-white/[0.14] bg-[#1C1C19] text-[18px] text-[#9A9A93]">
+                <Icon aria-hidden />
+              </div>
+              <h3 className="mt-4 font-sans text-[15px] font-semibold tracking-[-0.02em] text-[#F2F2EF]">
+                {title}
+              </h3>
+              <p className="mt-2 text-[13px] leading-[1.6] text-[#9A9A93]">{description}</p>
+            </li>
+          ))}
         </ol>
       </div>
     </section>

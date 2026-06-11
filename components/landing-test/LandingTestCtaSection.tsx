@@ -1,41 +1,30 @@
-import Link from "next/link";
-import { RiArrowRightLine } from "@remixicon/react";
+import { RiShieldCheckLine } from "@remixicon/react";
 
-import { Button } from "@/components/ui/Button";
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
-
-import {
-  LANDING_BUTTON,
-  LANDING_LEAD,
-  LANDING_LINK,
-  LANDING_SECTION,
-  LANDING_TITLE,
-} from "./landingPageStyles";
+import { LandingHeroUrlForm } from "./LandingHeroUrlForm";
+import { LANDING_CONTAINER, LANDING_LEAD, LANDING_SECTION, LANDING_TITLE } from "./landingPageStyles";
 
 export function LandingTestCtaSection() {
   return (
-    <section className={`${LANDING_SECTION} pb-24 md:pb-32`}>
-      <div className="mx-auto max-w-[560px] text-center">
-        <h2 className={`${LANDING_TITLE} mx-auto mt-0`}>See what your visitors are missing</h2>
-        <p className={`${LANDING_LEAD} mx-auto`}>
-          Run a free UX analysis — no signup, results in about a minute.
+    <section className={`${LANDING_SECTION} pb-24 md:pb-28`}>
+      <div className={`${LANDING_CONTAINER} mx-auto max-w-[640px] text-center`}>
+        <h2 className={`${LANDING_TITLE} mt-0`}>
+          Your landing page deserves
+          <br />a real second opinion
+        </h2>
+        <p className={`${LANDING_LEAD} mx-auto mt-4`}>
+          Paste any URL and get your improvement kit in about a minute. Free, no signup required.
         </p>
 
-        <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5 md:mt-10">
-          <Button
-            href="/analyze"
-            tone="dark"
-            icon={<RiArrowRightLine size={18} aria-hidden />}
-            fullWidth={false}
-            className={LANDING_BUTTON}
-          >
-            Start free audit
-          </Button>
+        <LandingHeroUrlForm
+          inputId="landing-cta-url"
+          className="mx-auto mt-7 justify-center"
+          maxWidthClass="w-full max-w-[480px]"
+        />
 
-          <Link href={DEMO_REPORT_PATH} className={LANDING_LINK}>
-            View sample report
-          </Link>
-        </div>
+        <p className="mt-3.5 inline-flex items-center justify-center gap-1 text-[12px] text-[#7A7A74]">
+          <RiShieldCheckLine size={13} aria-hidden />
+          Free · No signup · ~60 seconds
+        </p>
       </div>
     </section>
   );

@@ -7,7 +7,7 @@ import { DEFAULT_DESCRIPTION } from "@/lib/site";
 import { LandingBodyColor } from "./LandingBodyColor";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "AI UX review for landing pages",
+  title: "Landing improvement kit",
   description: DEFAULT_DESCRIPTION,
   path: "/",
 });

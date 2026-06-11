@@ -1,94 +1,74 @@
+import { RiLockLine, RiPagesLine, RiSparklingLine } from "@remixicon/react";
+
+import { LandingHeroUrlForm } from "./LandingHeroUrlForm";
 import {
-  RiArrowRightLine,
-  RiFilePdfLine,
-  RiLightbulbLine,
-  RiPieChartLine,
-} from "@remixicon/react";
-
-import { Button } from "@/components/ui/Button";
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
-
-import { AuditedPagesBadge } from "./AuditedPagesBadge";
+  LandingReportPreviewDesktop,
+  LandingReportPreviewMobile,
+} from "./LandingReportPreview";
 import { LandingTestHeader } from "./LandingTestHeader";
-import { LandingTestMockup } from "./LandingTestMockup";
-import { ProductHuntFeaturedBadge } from "./ProductHuntFeaturedBadge";
 import { LANDING_CONTAINER } from "./landingPageStyles";
-
-const OUTCOMES = [
-  { icon: RiPieChartLine, label: "UX score breakdown" },
-  { icon: RiLightbulbLine, label: "Prioritized fixes" },
-  { icon: RiFilePdfLine, label: "Shareable PDF" },
-] as const;
-
-const HERO_BUTTON_CLASS =
-  "!h-[52px] !min-h-[52px] !rounded-full !px-7 !text-[15px] !font-semibold";
 
 type LandingTestHeroProps = {
   auditedCount?: number | null;
 };
 
+function formatAuditedCount(count: number) {
+  return `${count.toLocaleString("en-US")}+`;
+}
+
 export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
   const hasAuditedCount = typeof auditedCount === "number" && auditedCount > 0;
 
   return (
-    <section className="relative overflow-hidden">
+    <section id="hero" className="scroll-mt-[52px]">
       <LandingTestHeader />
 
-      <div className={`relative z-10 ${LANDING_CONTAINER} px-5 pb-14 pt-8 md:px-6 md:pb-20 md:pt-12`}>
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12 xl:gap-16">
-          <div className="mx-auto max-w-[640px] text-center lg:mx-0 lg:max-w-none lg:text-left">
-            <ProductHuntFeaturedBadge />
-
-            <h1 className="max-w-[560px] text-[36px] font-semibold leading-[1.1] tracking-[-0.02em] text-white md:text-[48px] md:leading-[1.06] lg:max-w-none xl:text-[52px]">
-              See what first-time visitors don&apos;t understand.
-            </h1>
-
-            <p className="mt-4 max-w-[560px] text-[16px] font-normal leading-[26px] text-white/70 md:mt-5 md:text-[17px] md:leading-[28px] lg:max-w-[520px]">
-              Paste a URL or screenshot. Get a prioritized UX report — issues, explanations, and
-              fixes in about a minute.
-            </p>
-
-            <ul className="mt-6 hidden flex-row flex-wrap items-center justify-center gap-x-5 gap-y-1.5 sm:flex lg:justify-start">
-              {OUTCOMES.map(({ icon: Icon, label }) => (
-                <li key={label} className="flex items-center gap-2 text-[13px] text-white/45 md:text-[14px]">
-                  <Icon size={15} className="shrink-0 text-white/60" aria-hidden />
-                  {label}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
-              <Button
-                href="/analyze"
-                tone="dark"
-                icon={<RiArrowRightLine size={18} aria-hidden />}
-                fullWidth={false}
-                className={HERO_BUTTON_CLASS}
-              >
-                Start free audit
-              </Button>
-
-              <Button
-                href={DEMO_REPORT_PATH}
-                variant="secondary"
-                tone="dark"
-                fullWidth={false}
-                className={HERO_BUTTON_CLASS}
-              >
-                View sample report
-              </Button>
+      <div className={`${LANDING_CONTAINER} px-4 pb-16 pt-[calc(52px+env(safe-area-inset-top,0px)+5rem)] md:px-8 md:pb-20`}>
+        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_500px] lg:gap-20">
+          <div className="min-w-0">
+            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[rgba(29,158,117,0.18)] bg-[rgba(29,158,117,0.1)] px-3 py-[5px] text-[11px] font-medium uppercase tracking-[0.09em] text-[#1D9E75]">
+              <RiSparklingLine size={14} aria-hidden />
+              Free · No signup
             </div>
 
-            {hasAuditedCount ? (
-              <div className="mt-4 flex justify-center lg:justify-start">
-                <AuditedPagesBadge count={auditedCount} />
-              </div>
-            ) : null}
+            <h1 className="max-w-[560px] font-sans text-[clamp(34px,4.5vw,58px)] font-bold leading-[1.1] tracking-[-0.05em] text-[#F2F2EF]">
+              Your landing page,
+              <br />
+              <em className="not-italic text-[#1D9E75]">improved</em> — not just rated
+            </h1>
+
+            <p className="mt-5 max-w-[460px] text-[16px] leading-[1.75] text-[#9A9A93]">
+              Paste a URL and get copy variants, a fix checklist, and tasks your team can ship. In
+              about a minute.
+            </p>
+
+            <LandingHeroUrlForm className="mt-7" />
+
+            <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-[#7A7A74]">
+              <span className="inline-flex items-center gap-1">
+                <RiLockLine size={13} aria-hidden />
+                URLs never stored or shared
+              </span>
+              {hasAuditedCount ? (
+                <>
+                  <span className="hidden text-white/20 sm:inline" aria-hidden>
+                    ·
+                  </span>
+                  <span className="inline-flex items-center gap-1 border-l border-white/[0.08] pl-3 sm:border-l sm:pl-3">
+                    <RiPagesLine size={13} aria-hidden />
+                    <strong className="font-medium text-[#9A9A93]">
+                      {formatAuditedCount(auditedCount)}
+                    </strong>{" "}
+                    pages analyzed
+                  </span>
+                </>
+              ) : null}
+            </div>
+
+            <LandingReportPreviewMobile />
           </div>
 
-          <div className="relative lg:pt-2">
-            <LandingTestMockup />
-          </div>
+          <LandingReportPreviewDesktop />
         </div>
       </div>
     </section>

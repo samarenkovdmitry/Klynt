@@ -6,28 +6,34 @@ import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
+import { LANDING_CONTAINER, LANDING_LOGO_LIGHT } from "./landingPageStyles";
 
-import { LANDING_CONTAINER } from "./landingPageStyles";
-
-const HEADER_HEIGHT_PX = 68;
+const HEADER_HEIGHT_PX = 52;
 
 const navItems = [
+  { href: "#hero", label: "Analyze", match: (p: string) => p === "/" },
   {
-    href: "/landing-copy",
-    label: "Hero copy",
-    match: (p: string) => p.startsWith("/landing-copy"),
+    href: DEMO_REPORT_PATH,
+    label: "Sample report",
+    match: (p: string) => p.startsWith("/report"),
+    prefetch: true,
   },
-  { href: "/analyze", label: "UX audit", match: (p: string) => p.startsWith("/analyze") },
-  { href: DEMO_REPORT_PATH, label: "Sample report", match: (p: string) => p.startsWith("/report") },
   { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") },
 ];
+
+function navLinkClass(isActive: boolean) {
+  return [
+    "rounded-lg px-3 py-[5px] text-[13px] transition-colors duration-150",
+    isActive ? "font-medium text-[#F2F2EF]" : "text-[#7A7A74] hover:text-[#F2F2EF]",
+  ].join(" ");
+}
 
 function mobileNavLinkClass(isActive: boolean) {
   return [
     "block w-full rounded-xl px-4 py-3 text-left text-[15px] font-medium transition-colors",
     isActive
-      ? "bg-[#F4F8FF] font-semibold text-[#061C2F]"
-      : "text-[#061C2F]/80 hover:bg-[#F8FAFC] hover:text-[#061C2F]",
+      ? "bg-white/[0.06] font-semibold text-[#F2F2EF]"
+      : "text-[#F2F2EF]/80 hover:bg-white/[0.04] hover:text-[#F2F2EF]",
   ].join(" ");
 }
 
@@ -52,57 +58,56 @@ export function LandingTestHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-transparent bg-transparent pt-[env(safe-area-inset-top,0px)]">
-        <div className={`${LANDING_CONTAINER} flex h-[68px] items-center justify-between px-4 md:px-6`}>
-          <Link href="/" className="shrink-0" aria-label="Klynt — home">
-            <img src="/klynt-logo-light.svg" alt="Klynt" className="h-[30px] w-[100px] shrink-0" />
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.08] bg-[#0E0E0C]/88 pt-[env(safe-area-inset-top,0px)] backdrop-blur-[16px]">
+        <div className={`${LANDING_CONTAINER} flex h-[52px] items-center justify-between gap-4 px-4 md:px-8`}>
+          <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Klynt — home">
+            <img src={LANDING_LOGO_LIGHT} alt="Klynt" className="h-[22px] w-auto shrink-0" />
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
-            {navItems.map((item) => {
-              const isActive = item.match(pathname);
+          <div className="hidden items-center gap-2 md:flex">
+            <nav className="flex items-center gap-0.5" aria-label="Main">
+              {navItems.map((item) => {
+                const isActive = item.match(pathname);
+                const className = navLinkClass(isActive);
 
-              const className = [
-                "rounded-full px-4 py-2 text-[14px] font-medium transition-colors",
-                isActive
-                  ? "bg-white/5 font-semibold text-white"
-                  : "text-white/75 hover:bg-white/5 hover:text-white",
-              ].join(" ");
+                if (item.prefetch) {
+                  return (
+                    <ReportPrefetchLink
+                      key={item.href}
+                      href={item.href}
+                      routeParam={DEMO_REPORT_SLUG}
+                      className={className}
+                    >
+                      {item.label}
+                    </ReportPrefetchLink>
+                  );
+                }
 
-              if (item.href === DEMO_REPORT_PATH) {
                 return (
-                  <ReportPrefetchLink
-                    key={item.href}
-                    href={item.href}
-                    routeParam={DEMO_REPORT_SLUG}
-                    className={className}
-                  >
+                  <Link key={item.href} href={item.href} className={className}>
                     {item.label}
-                  </ReportPrefetchLink>
+                  </Link>
                 );
-              }
+              })}
+            </nav>
 
-              return (
-                <Link key={item.href} href={item.href} className={className}>
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+            <Link
+              href="#hero"
+              className="ml-1 rounded-lg bg-[#F2F2EF] px-4 py-[7px] text-[13px] font-medium text-[#0E0E0C] transition-opacity hover:opacity-85"
+            >
+              Analyze →
+            </Link>
+          </div>
 
           <button
             type="button"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 md:hidden"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#F2F2EF] transition-colors hover:bg-white/[0.06] md:hidden"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
-            aria-controls="landing-test-mobile-nav"
+            aria-controls="landing-mobile-nav"
             onClick={() => setMenuOpen((open) => !open)}
           >
-            {menuOpen ? (
-              <RiCloseLine size={24} aria-hidden />
-            ) : (
-              <RiMenuLine size={24} aria-hidden />
-            )}
+            {menuOpen ? <RiCloseLine size={24} aria-hidden /> : <RiMenuLine size={24} aria-hidden />}
           </button>
         </div>
       </header>
@@ -110,27 +115,15 @@ export function LandingTestHeader() {
       <div className="md:hidden" aria-hidden={!menuOpen}>
         <button
           type="button"
-          className={`fixed inset-0 z-40 bg-[#061C2F]/40 ${menuOpen ? "" : "pointer-events-none invisible"}`}
+          className={`fixed inset-0 z-40 bg-black/45 ${menuOpen ? "" : "pointer-events-none invisible"}`}
           aria-label="Close menu"
           tabIndex={menuOpen ? 0 : -1}
           onClick={() => setMenuOpen(false)}
         />
 
         <nav
-          id="landing-test-mobile-nav"
-          className={`
-            fixed
-            right-4
-            z-50
-            min-w-[200px]
-            rounded-2xl
-            border
-            border-[rgba(6,28,47,0.08)]
-            bg-white
-            p-2
-            shadow-[0_16px_48px_rgba(6,28,47,0.14)]
-            ${menuOpen ? "" : "pointer-events-none invisible"}
-          `}
+          id="landing-mobile-nav"
+          className={`fixed right-4 z-50 min-w-[200px] rounded-2xl border border-white/[0.08] bg-[#141412] p-2 shadow-[0_16px_48px_rgba(0,0,0,0.4)] ${menuOpen ? "" : "pointer-events-none invisible"}`}
           style={{
             top: `calc(${HEADER_HEIGHT_PX}px + env(safe-area-inset-top, 0px) + 8px)`,
           }}
@@ -139,19 +132,43 @@ export function LandingTestHeader() {
         >
           {navItems.map((item) => {
             const isActive = item.match(pathname);
+            const className = mobileNavLinkClass(isActive);
+
+            if (item.prefetch) {
+              return (
+                <ReportPrefetchLink
+                  key={item.href}
+                  href={item.href}
+                  routeParam={DEMO_REPORT_SLUG}
+                  tabIndex={menuOpen ? 0 : -1}
+                  className={className}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </ReportPrefetchLink>
+              );
+            }
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 tabIndex={menuOpen ? 0 : -1}
-                className={mobileNavLinkClass(isActive)}
+                className={className}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
               </Link>
             );
           })}
+          <Link
+            href="#hero"
+            tabIndex={menuOpen ? 0 : -1}
+            className="mt-1 flex w-full items-center justify-center rounded-xl bg-[#F2F2EF] px-4 py-3 text-[15px] font-medium text-[#0E0E0C]"
+            onClick={() => setMenuOpen(false)}
+          >
+            Analyze →
+          </Link>
         </nav>
       </div>
     </>

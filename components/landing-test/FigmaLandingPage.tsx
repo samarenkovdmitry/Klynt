@@ -1,9 +1,16 @@
-import { LandingPageAtmosphere } from "@/components/landing-test/LandingPageAtmosphere";
 import { LandingTestCtaSection } from "@/components/landing-test/LandingTestCtaSection";
+import {
+  LandingFeaturesDivider,
+  LandingTestFeatures,
+} from "@/components/landing-test/LandingTestFeatures";
+import { LandingTestFooter } from "@/components/landing-test/LandingTestFooter";
 import { LandingTestHero } from "@/components/landing-test/LandingTestHero";
-import { LandingTestHowItWorks } from "@/components/landing-test/LandingTestHowItWorks";
-import { LandingTestReportScope } from "@/components/landing-test/LandingTestReportScope";
-import { LANDING_DARK } from "@/components/landing-test/landingPageStyles";
+import {
+  LandingHowItWorksDivider,
+  LandingTestHowItWorks,
+} from "@/components/landing-test/LandingTestHowItWorks";
+import { LandingTestSeo } from "@/components/landing-test/LandingTestSeo";
+import { LANDING_DARK, LANDING_DIVIDER } from "@/components/landing-test/landingPageStyles";
 
 type FigmaLandingPageProps = {
   auditedCount?: number | null;
@@ -11,17 +18,17 @@ type FigmaLandingPageProps = {
 
 export function FigmaLandingPage({ auditedCount = null }: FigmaLandingPageProps) {
   return (
-    <main
-      className="relative overflow-hidden text-white"
-      style={{ backgroundColor: LANDING_DARK }}
-    >
-      <LandingPageAtmosphere />
-      <div className="relative z-[1]">
-        <LandingTestHero auditedCount={auditedCount} />
-        <LandingTestHowItWorks />
-        <LandingTestReportScope />
-        <LandingTestCtaSection />
-      </div>
+    <main className="text-[#F2F2EF]" style={{ backgroundColor: LANDING_DARK }}>
+      <LandingTestHero auditedCount={auditedCount} />
+      <LandingHowItWorksDivider />
+      <LandingTestHowItWorks />
+      <div className={LANDING_DIVIDER} aria-hidden />
+      <LandingTestFeatures />
+      <LandingFeaturesDivider />
+      <LandingTestCtaSection />
+      <LandingTestSeo />
+      <div className={LANDING_DIVIDER} aria-hidden />
+      <LandingTestFooter />
     </main>
   );
 }

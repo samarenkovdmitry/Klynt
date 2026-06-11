@@ -24,7 +24,7 @@ export function AppFooterWrapper() {
   const isWorkspaceFooter = isWorkspacePath(pathname);
   const isPrintRoute = pathname?.includes("/print");
 
-  if (isPrintRoute) {
+  if (isPrintRoute || pathname === "/") {
     return null;
   }
 
