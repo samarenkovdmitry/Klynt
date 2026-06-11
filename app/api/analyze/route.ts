@@ -451,6 +451,13 @@ export async function POST(req: Request) {
       if (typeof meta.proof_suggestion === "string") {
         meta.proof_suggestion = meta.proof_suggestion.trim().slice(0, 80);
       }
+      if (Array.isArray(meta.trust_notes)) {
+        meta.trust_notes = meta.trust_notes
+          .filter((note): note is string => typeof note === "string")
+          .map((note) => note.trim().slice(0, 120))
+          .filter(Boolean)
+          .slice(0, 2);
+      }
     }
 
     const { breakdown: normalizedBreakdown } = normalizeReportBreakdown({

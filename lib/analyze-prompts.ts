@@ -139,7 +139,8 @@ Return ONLY valid JSON (no markdown):
   "meta": {
     "title_suggestion": "string",
     "description_suggestion": "string",
-    "proof_suggestion": "string"
+    "proof_suggestion": "string",
+    "trust_notes": ["string"]
   }
 }
 
@@ -195,5 +196,6 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
   Bad: "The hero headline lacks a clear audience focus"
 
 meta.description_suggestion: max 25 words. First-time visitor perspective. What the page is and who it's for.
-meta.proof_suggestion: max 12 words. One specific trust element to add on THIS page (e.g. "Add customer logos below CTA").`;
+meta.proof_suggestion: max 12 words. One specific trust element to add on THIS page (e.g. "Add customer logos below CTA").
+meta.trust_notes: 1-2 items, max 14 words each. Observations about missing proof or CTA reassurance — e.g. when CTA says "Try X" without free/trial clarity, note that it suggests risk without reassurance. Do not duplicate checklist trust gap text verbatim.`;
 }

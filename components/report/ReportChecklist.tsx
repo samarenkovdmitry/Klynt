@@ -11,10 +11,7 @@ import {
   RiArrowRightSLine,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
-import {
-  deriveChecklistGapLabel,
-  getChecklistBadgeLabel,
-} from "@/lib/normalize-report-checklist";
+import { getChecklistBadgeLabel } from "@/lib/normalize-report-checklist";
 import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
@@ -72,9 +69,6 @@ function ChecklistRow({
 }) {
   const { Icon, iconColor, badgeBg, badgeText } = STATUS_CONFIG[item.status];
   const badgeLabel = getChecklistBadgeLabel(item);
-  const gapLabel =
-    item.status !== "pass" ? deriveChecklistGapLabel(item) : undefined;
-  const showTwoTier = Boolean(gapLabel && gapLabel !== item.text);
   const linkLabel =
     item.link_to && item.status !== "pass"
       ? LINK_BUTTON_LABEL[item.link_to]
@@ -90,27 +84,18 @@ function ChecklistRow({
   return (
     <div
       className={[
-        "flex items-start gap-2.5 py-[10px] text-[13px]",
+        "flex items-center gap-2.5 py-[9px] text-[13px]",
         isLast ? "" : "border-b border-[rgba(0,0,0,0.07)]",
       ].join(" ")}
     >
-      <Icon size={16} className={`mt-0.5 shrink-0 ${iconColor}`} aria-hidden />
+      <Icon size={16} className={`shrink-0 ${iconColor}`} aria-hidden />
 
-      <div className="min-w-0 flex-1">
-        {showTwoTier ? (
-          <>
-            <div className="font-medium leading-[1.4] text-[#111]">{gapLabel}</div>
-            <div className="mt-0.5 text-[12px] leading-[1.45] text-[#999]">{item.text}</div>
-          </>
-        ) : (
-          <div className="leading-[1.45] text-[#111]">{item.text}</div>
-        )}
-      </div>
+      <span className="flex-1 leading-[1.45] text-[#111]">{item.text}</span>
 
       {linkLabel ? (
         <button
           onClick={handleLinkClick}
-          className="mt-0.5 flex shrink-0 items-center gap-[3px] whitespace-nowrap text-[12px] text-[#1D9E75] transition-colors hover:underline"
+          className="flex shrink-0 items-center gap-[3px] whitespace-nowrap text-[12px] text-[#1D9E75] transition-colors hover:underline"
         >
           <RiArrowRightSLine size={14} aria-hidden />
           {linkLabel}
@@ -119,7 +104,7 @@ function ChecklistRow({
 
       <span
         className={[
-          "mt-0.5 shrink-0 whitespace-nowrap rounded-full px-[9px] py-[3px] text-[11px] font-medium",
+          "shrink-0 whitespace-nowrap rounded-full px-[9px] py-[3px] text-[11px] font-medium",
           badgeBg,
           badgeText,
         ].join(" ")}

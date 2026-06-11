@@ -128,6 +128,8 @@ export type ReportMeta = {
   description_suggestion: string;
   /** Actionable trust proof to add (e.g. "Add CISO quote below CTA"). */
   proof_suggestion?: string;
+  /** Extra trust observations (logos, CTA reassurance, etc.). */
+  trust_notes?: string[];
 };
 
 export type AuditRisk = "low" | "medium" | "high";

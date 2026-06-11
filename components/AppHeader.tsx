@@ -12,7 +12,7 @@ import {
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
 const HEADER_HEIGHT_PX = 52;
-const REPORT_HEADER_HEIGHT_PX = 70;
+const REPORT_HEADER_HEIGHT_PX = 50;
 
 type NavItem = {
   href: string;
@@ -106,7 +106,7 @@ export function AppHeader() {
         className={[
           "app-site-header w-full pt-[env(safe-area-inset-top,0px)]",
           isReportOrAnalyze
-            ? "relative z-10 border-b border-transparent bg-[#EBEBEB]"
+            ? "sticky top-0 z-50 border-b border-black/[0.07] bg-[#EFEFED]/88 backdrop-blur-md"
             : "sticky top-0 z-50 border-b border-transparent",
           isLanding
             ? "bg-transparent"

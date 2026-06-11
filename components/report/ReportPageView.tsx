@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RiArrowRightLine, RiDownloadLine, RiGridLine } from "@remixicon/react";
+import { RiArrowRightLine, RiDownloadLine, RiFilePdfLine, RiRefreshLine } from "@remixicon/react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { ReportActionLayout } from "@/components/report/ReportActionLayout";
@@ -41,27 +41,28 @@ function StickyBottomBar({
   onExport?: () => void;
   onRerun: () => void;
 }) {
+  const btnClass =
+    "inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] font-medium text-[#555] transition-colors hover:bg-black/[0.08]";
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-black/[0.07] bg-[#EFEFED]/92 px-4 py-3 backdrop-blur-md">
-      <div className={`flex w-full items-center gap-4 ${REPORT_PAGE_CONTAINER_CLASS}`}>
+    <div className="sticky bottom-0 z-40 mt-3 border-t border-black/[0.07] bg-[#EFEFED]/92 py-3 backdrop-blur-md">
+      <div className="flex items-center gap-4">
         <p className="hidden flex-1 text-[13px] text-[#888] sm:block">
           Applied changes? Re-run to track your score.
         </p>
         <div className="flex items-center gap-2 sm:ml-auto">
           {onExport && (
-            <button
-              type="button"
-              onClick={onExport}
-              className="rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] text-[#555] transition-colors hover:bg-black/[0.08]"
-            >
+            <button type="button" onClick={onExport} className={btnClass}>
+              <RiFilePdfLine size={14} aria-hidden />
               Export PDF
             </button>
           )}
           <button
             type="button"
             onClick={onRerun}
-            className="inline-flex items-center gap-1 rounded-[8px] bg-[#111] px-[15px] py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
+            className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#111] px-[15px] py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
           >
+            <RiRefreshLine size={14} aria-hidden />
             Re-run audit
             <RiArrowRightLine size={14} aria-hidden />
           </button>
@@ -139,9 +140,9 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
 
       <main
         className={[
-          "min-h-[calc(100dvh-52px)] bg-[#EBEBEB] px-4 pt-6 text-[#111] md:px-8 md:pt-6",
+          "min-h-[calc(100dvh-50px)] bg-[#EBEBEB] px-4 pt-6 text-[#111] md:px-8 md:pt-6",
           hasNewLayout && !waitlistActive
-            ? "pb-28 md:pb-24"
+            ? "pb-8"
             : waitlistActive && !gateInView
               ? "pb-24 md:pb-20"
               : "pb-20",
@@ -202,10 +203,10 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                 <div className="mt-2.5 overflow-hidden rounded-[16px] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)]">
                   <div className="flex items-center justify-between px-5 pb-[10px] pt-[14px]">
                     <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.07em] text-[#999]">
-                      <RiGridLine size={14} aria-hidden />
+                      <RiDownloadLine size={14} aria-hidden />
                       Export
                     </span>
-                    <span className="text-[12px] text-[#C0C0BC]">copy to clipboard</span>
+                    <span className="text-[12px] text-[#C0C0BC]">take this to your team</span>
                   </div>
                   <ExportGrid
                     copyVariants={report.copy_variants}
@@ -213,6 +214,10 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     checklist={report.checklist}
                   />
                 </div>
+              )}
+
+              {hasNewLayout && !waitlistActive && (
+                <StickyBottomBar onExport={handleExport} onRerun={handleRerun} />
               )}
             </>
           ) : (
@@ -232,10 +237,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
           )}
         </div>
       </main>
-
-      {hasNewLayout && !waitlistActive && (
-        <StickyBottomBar onExport={handleExport} onRerun={handleRerun} />
-      )}
 
       {waitlistActive && <ReportWaitlistStickyBar visible={!gateInView} />}
 

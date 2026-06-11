@@ -70,7 +70,7 @@ export function TrustMeta({ meta, checklist }: Props) {
               Add proof
             </div>
 
-            {trustGaps.length === 0 ? (
+            {trustGaps.length === 0 && !(meta.trust_notes?.length ?? 0) ? (
               <p className="text-[13px] leading-[1.5] text-[#1D9E75]">
                 Trust signals look good
               </p>
@@ -88,6 +88,19 @@ export function TrustMeta({ meta, checklist }: Props) {
                         aria-hidden
                       />
                       <span>{item.text}</span>
+                    </li>
+                  ))}
+                  {(meta.trust_notes ?? []).map((note) => (
+                    <li
+                      key={note}
+                      className="flex items-start gap-1.5 text-[13px] leading-[1.5] text-[#555]"
+                    >
+                      <RiErrorWarningLine
+                        size={14}
+                        className="mt-[2px] shrink-0 text-[#D4832A]"
+                        aria-hidden
+                      />
+                      <span>{note}</span>
                     </li>
                   ))}
                 </ul>

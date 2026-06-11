@@ -72,38 +72,18 @@ export default function ScorePotentialCompact({
             <div className="mb-2 font-['Familjen_Grotesk',sans-serif] text-[14px] font-medium tracking-[-0.2px] text-[#111]">
               {buildTitle(chips.length)}
             </div>
-            <div className="flex flex-col gap-1.5">
-              {chips.map((chip, i) => {
-                const shortLabel = getScoreChipShortLabel(chip.label, checklist);
-                const detail = resolveChipChecklistItem(chip.label, i, checklist)?.text;
-                const showDetail = detail && detail !== shortLabel;
-
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => handleChipClick(chip.label, i)}
-                    className="flex w-full items-center gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-3 py-2 text-left transition-all duration-[120ms] hover:border-[#1D9E75] hover:bg-white"
-                  >
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-[11px] font-medium text-[#999] shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-                      {i + 1}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[13px] font-medium text-[#111]">
-                        {shortLabel}
-                      </span>
-                      {showDetail ? (
-                        <span className="mt-0.5 block text-[11px] leading-[1.4] text-[#999]">
-                          {detail}
-                        </span>
-                      ) : null}
-                    </span>
-                    <strong className="shrink-0 text-[12px] font-medium text-[#1D9E75]">
-                      {chip.delta}
-                    </strong>
-                  </button>
-                );
-              })}
+            <div className="flex flex-wrap gap-1.5">
+              {chips.map((chip, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => handleChipClick(chip.label, i)}
+                  className="cursor-pointer rounded-[10px] border border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-2.5 py-[5px] text-left text-[12px] text-[#555] transition-all duration-[120ms] hover:border-[#1D9E75] hover:text-[#0F6E56]"
+                >
+                  {i + 1} · {getScoreChipShortLabel(chip.label, checklist)}{" "}
+                  <strong className="font-medium text-[#1D9E75]">{chip.delta}</strong>
+                </button>
+              ))}
             </div>
           </div>
         )}
