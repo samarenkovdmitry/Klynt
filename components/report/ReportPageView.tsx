@@ -40,7 +40,7 @@ function StickyBottomBar({
 }) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-black/[0.07] bg-[#EFEFED]/92 px-4 py-3 backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-[1000px] items-center gap-4">
+      <div className={`flex w-full items-center gap-4 ${REPORT_PAGE_CONTAINER_CLASS}`}>
         <p className="hidden flex-1 text-[13px] text-[#888] sm:block">
           Applied changes? Re-run to track your score.
         </p>

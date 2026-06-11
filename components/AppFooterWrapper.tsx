@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 
 import { AppFooter } from "@/components/AppFooter";
-import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
+import { APP_SHELL_CONTAINER_CLASS } from "@/components/report/reportStyles";
 
 export function AppFooterWrapper() {
   const pathname = usePathname();
@@ -18,7 +18,7 @@ export function AppFooterWrapper() {
   return (
     <AppFooter
       variant={isDarkFooter ? "dark" : "light"}
-      containerClass={isDarkFooter ? undefined : REPORT_PAGE_CONTAINER_CLASS}
+      containerClass={isDarkFooter ? undefined : APP_SHELL_CONTAINER_CLASS}
     />
   );
 }

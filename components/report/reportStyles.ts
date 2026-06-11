@@ -1,8 +1,13 @@
-export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1000px]";
+/** Product shell — header and footer align to this width. */
+export const APP_SHELL_CONTAINER_CLASS = "mx-auto w-full max-w-[1180px]";
+
+/** Report workspace column — slightly wider than v4 (800px), still compact. */
+export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[860px]";
+
 export const APP_HEADER_CONTAINER_CLASS =
-  "mx-auto flex h-[52px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-8";
+  "mx-auto flex h-[52px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-6";
 export const APP_REPORT_HEADER_CONTAINER_CLASS =
-  "mx-auto flex w-full max-w-[1300px] items-center justify-between gap-4 px-4 py-5 md:px-8";
+  "mx-auto flex w-full max-w-[1180px] items-center justify-between gap-4 px-4 py-5 md:px-6";
 
 export const REPORT_SECTION_SPACING_CLASS = "mt-2.5";
 
