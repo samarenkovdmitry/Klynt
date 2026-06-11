@@ -7,7 +7,6 @@ import {
   RiAlertLine,
   RiFileCopyLine,
   RiRefreshLine,
-  RiLoader4Line,
   RiCheckLine,
 } from "@remixicon/react";
 import type {
@@ -18,6 +17,7 @@ import type {
   ReportChecklistItem,
   ChecklistLinkTarget,
 } from "@/lib/audit-report";
+import { deriveChecklistGapLabel } from "@/lib/normalize-report-checklist";
 import { REPORT_SECTION_SCROLL_MARGIN_CLASS } from "@/components/report/reportStyles";
 
 // ---------------------------------------------------------------------------
@@ -133,27 +133,11 @@ function VariantItem({
 }
 
 function RegenButton() {
-  const [loading, setLoading] = useState(false);
-
-  function handleClick() {
-    if (loading) return;
-    setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
-  }
-
   return (
-    <button
-      onClick={handleClick}
-      disabled={loading}
-      className="flex items-center gap-[5px] text-[12px] text-[#555] bg-transparent border border-[rgba(0,0,0,0.11)] px-3 py-[5px] rounded-full cursor-pointer transition-all duration-[120ms] hover:bg-[#F5F5F3] disabled:opacity-60 disabled:cursor-not-allowed"
-    >
-      {loading ? (
-        <RiLoader4Line className="w-3.5 h-3.5 animate-spin" />
-      ) : (
-        <RiRefreshLine className="w-3.5 h-3.5" />
-      )}
-      {loading ? "Loading…" : "3 more variants"}
-    </button>
+    <span className="inline-flex items-center gap-[5px] rounded-full border border-[rgba(0,0,0,0.07)] px-3 py-[5px] text-[12px] text-[#C0C0BC]">
+      <RiRefreshLine className="h-3.5 w-3.5 opacity-60" aria-hidden />
+      Coming soon
+    </span>
   );
 }
 
@@ -179,7 +163,10 @@ function CopyBlock({
         <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#999] uppercase tracking-[0.05em] mb-[7px]">
           {label}
           {gapItem && gapItem.status !== "pass" && (
-            <GapBadge status={gapItem.status} text={gapItem.text} />
+            <GapBadge
+              status={gapItem.status}
+              text={deriveChecklistGapLabel(gapItem) ?? "Needs fix"}
+            />
           )}
         </div>
 

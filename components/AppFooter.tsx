@@ -69,7 +69,7 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
       <div className={container}>
         <div className="flex flex-col items-center text-center md:hidden">
           <p className={`text-[14px] font-normal ${styles.text}`}>
-            © 2026 Klynt – UX Clarity Analyzer
+            © 2026 Klynt – Landing improvement workspace
           </p>
 
           <div
@@ -104,7 +104,7 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
           <div
             className={`flex flex-wrap items-center gap-x-7 gap-y-2 text-[14px] ${styles.text}`}
           >
-            <p className="font-normal">© 2026 Klynt – UX Clarity Analyzer</p>
+            <p className="font-normal">© 2026 Klynt – Landing improvement workspace</p>
             {legalLinks.map((link) => (
               <Link key={link.href} href={link.href} className={`font-medium ${styles.link}`}>
                 {link.label}

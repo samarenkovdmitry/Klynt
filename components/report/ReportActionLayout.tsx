@@ -215,11 +215,6 @@ function HeroCard({
     ).length;
     const scorePercent = data.score > 10 ? data.score : data.score * 10;
 
-    const riskBg =
-      theme.tier === "healthy" ? "#E8F7F2" : theme.tier === "critical" ? "#FDF0F0" : "#FDF3E3";
-    const riskColor =
-      theme.tier === "healthy" ? "#0F6E56" : theme.tier === "critical" ? "#8B2020" : "#7A4A0A";
-
     return (
       <div className={CARD_CLASS}>
         <div className="flex flex-wrap items-center justify-between gap-3 border-b-[0.5px] border-black/[0.08] bg-[#F9F9F9] px-[22px] py-3">
@@ -236,10 +231,6 @@ function HeroCard({
             {onExport ? (
               <button type="button" onClick={onExport} className={BTN_CLASS}>PDF</button>
             ) : null}
-            <button type="button" onClick={onRerun} className={BTN_PRIMARY_CLASS}>
-              Re-run
-              <RiArrowRightLine size={14} aria-hidden />
-            </button>
           </div>
         </div>
 
@@ -253,13 +244,6 @@ function HeroCard({
             </span>
             <span className="ml-0.5 text-[14px] text-[#bbb]">/10</span>
           </div>
-
-          <span
-            className="shrink-0 rounded-full px-[11px] py-1 text-[12px] font-medium"
-            style={{ backgroundColor: riskBg, color: riskColor }}
-          >
-            {getTierLabel(theme.tier)}
-          </span>
 
           <div className="h-[3px] min-w-[48px] flex-1 rounded-full bg-black/[0.07]">
             <div

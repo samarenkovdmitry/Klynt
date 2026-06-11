@@ -96,6 +96,7 @@ Return ONLY valid JSON (no markdown):
   "checklist": [
     {
       "id": "string",
+      "gap_label": "string",
       "text": "string",
       "status": "pass"|"missing"|"weak",
       "link_to": "copy-headline"|"copy-cta"|"copy-subheadline"|"trust"|"visual-fixes"|null,
@@ -137,15 +138,19 @@ Return ONLY valid JSON (no markdown):
   "breakdown": { "clarity": int, "trust": int, "friction": int, "visuals": int },
   "meta": {
     "title_suggestion": "string",
-    "description_suggestion": "string"
+    "description_suggestion": "string",
+    "proof_suggestion": "string"
   }
 }
 
 checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass.
-- id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline").
+- id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline"). Typography weak → id "subheadline-clarity".
+- gap_label: max 4 words, short badge for Copy studio ONLY. Examples: "Category missing", "Trial unclear", "Content weak", "Trust missing", "Weak typography". NEVER repeat checklist text or use ALL CAPS.
 - text: max 10 words, specific actionable label. Must match label in score_potential chips for copy/trust gaps.
-- link_to: copy gaps → "copy-headline"/"copy-cta"/"copy-subheadline"; trust gap → "trust"; typography → "visual-fixes"; pass items → null.
+- link_to: copy gaps → "copy-headline"/"copy-cta"/"copy-subheadline"; trust gap → "trust"; typography weak → "visual-fixes"; pass items → null.
 - category: "copy" | "trust" | "visual" | "structure"
+- NEVER create two gaps about the same root cause (e.g. two headline/category items). One gap per link_to.
+- Exactly 1 weak item for typography/subheadline weight → link_to "visual-fixes", gap_label "Weak typography".
 - pass items text: must name a specific visible element on this page — NEVER write generic observations.
   Correct: "Single CTA button above fold"
   Correct: "No navigation links competing in hero"
@@ -189,5 +194,6 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
   Good: "Ad-free differentiator buried in subheadline not headline"
   Bad: "The hero headline lacks a clear audience focus"
 
-meta.description_suggestion: max 25 words. First-time visitor perspective. What the page is and who it's for.`;
+meta.description_suggestion: max 25 words. First-time visitor perspective. What the page is and who it's for.
+meta.proof_suggestion: max 12 words. One specific trust element to add on THIS page (e.g. "Add customer logos below CTA").`;
 }

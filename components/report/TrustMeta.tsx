@@ -92,10 +92,12 @@ export function TrustMeta({ meta, checklist }: Props) {
                   ))}
                 </ul>
 
-                <button className="inline-flex items-center gap-1.5 rounded-full bg-[#E8F7F2] px-2.5 py-1 text-[12px] font-medium text-[#0F6E56] transition-colors hover:bg-[#D4F0E8]">
-                  <RiAddLine size={13} aria-hidden />
-                  Add CISO quote below CTA
-                </button>
+                {meta.proof_suggestion ? (
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-[#E8F7F2] px-2.5 py-1 text-[12px] font-medium text-[#0F6E56]">
+                    <RiAddLine size={13} aria-hidden />
+                    {meta.proof_suggestion}
+                  </div>
+                ) : null}
               </>
             )}
           </div>

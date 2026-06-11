@@ -34,6 +34,7 @@ import {
   resolveHeadlineBeforeGap,
 } from "@/lib/brand-stage";
 import { normalizeReportFindings } from "@/lib/report-findings-quality";
+import { normalizeReportChecklist } from "@/lib/normalize-report-checklist";
 import {
   formatIssueTitleDisplay,
   normalizeReportCopyLengths,
@@ -420,6 +421,8 @@ export async function POST(req: Request) {
 
     Object.assign(json, normalizeReportHeroCopy(json));
 
+    json.checklist = normalizeReportChecklist(json.checklist);
+
     if (json.copy_variants && typeof json.copy_variants === "object") {
       for (const block of Object.values(json.copy_variants) as any[]) {
         if (Array.isArray(block?.variants)) {
@@ -430,6 +433,13 @@ export async function POST(req: Request) {
               : v.label,
           }));
         }
+      }
+    }
+
+    if (json.meta && typeof json.meta === "object") {
+      const meta = json.meta as Record<string, unknown>;
+      if (typeof meta.proof_suggestion === "string") {
+        meta.proof_suggestion = meta.proof_suggestion.trim().slice(0, 80);
       }
     }
 

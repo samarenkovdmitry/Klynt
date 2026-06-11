@@ -182,6 +182,8 @@ INSIGHT DEPTH RULES:
   "CTA lacks context"
   "visual hierarchy could be improved"
   These may appear only as pass items, or as context-specific gaps with the exact visible element named.
+- Never output two missing gaps for the same element (headline category + hero title clarity = one gap).
+- gap_label must be 2-4 words and different from text — short badge only, never a sentence.
 
 SCORE CALIBRATION:
 - Most real-world landing pages score between 5.0 and 8.0.

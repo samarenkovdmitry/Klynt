@@ -4,7 +4,7 @@ export const APP_HEADER_CONTAINER_CLASS =
 export const APP_REPORT_HEADER_CONTAINER_CLASS =
   "mx-auto flex w-full max-w-[1300px] items-center justify-between gap-4 px-4 py-5 md:px-8";
 
-export const REPORT_SECTION_SPACING_CLASS = "mt-12";
+export const REPORT_SECTION_SPACING_CLASS = "mt-2.5";
 
 export const REPORT_SECTION_TITLE_CLASS =
   "text-[24px] md:text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]";

@@ -30,8 +30,8 @@ function scrollTo(id: string) {
 
 function buildTitle(count: number) {
   if (count === 0) return "Your score has improvement potential";
-  if (count === 1) return "Fix 1 gap to close most of the distance";
-  return `Fix ${count} gaps to close most of the distance`;
+  if (count === 1) return "Fix 1 copy & trust gap to close most of the distance";
+  return `Fix ${count} copy & trust gaps to close most of the distance`;
 }
 
 export default function ScorePotentialCompact({

@@ -8,7 +8,7 @@ import {
   RiNotification4Line,
   RiCheckLine,
 } from "@remixicon/react";
-import type { ReportCopyVariants, ReportMeta } from "@/lib/audit-report";
+import type { ReportChecklistItem, ReportCopyVariants, ReportMeta } from "@/lib/audit-report";
 
 // ---------------------------------------------------------------------------
 // Design tokens (docs/report-mvp-v4.html §7 EXPORT)
@@ -19,6 +19,7 @@ import type { ReportCopyVariants, ReportMeta } from "@/lib/audit-report";
 interface ExportGridProps {
   copyVariants: ReportCopyVariants;
   meta: ReportMeta;
+  checklist?: ReportChecklistItem[];
 }
 
 type CardId = "copy-deck" | "designer-brief" | "dev-tasks" | "notion-slack";
@@ -75,7 +76,8 @@ function buildDesignerBriefMarkdown(
 
 function buildDevTasksMarkdown(
   variants: ReportCopyVariants,
-  meta: ReportMeta
+  meta: ReportMeta,
+  checklist?: ReportChecklistItem[]
 ): string {
   const LABELS: { key: keyof ReportCopyVariants; selector: string }[] = [
     { key: "headline", selector: "<h1>" },
@@ -89,6 +91,17 @@ function buildDevTasksMarkdown(
     return `- \`${selector}\` → "${best}"`;
   });
 
+  const visualGap = checklist?.find(
+    (item) => item.link_to === "visual-fixes" && item.status === "weak"
+  );
+  const visualLines = visualGap
+    ? [
+        "",
+        "## Visual fixes",
+        "- Subheadline: 18px / weight 500 / line-height 1.5",
+      ]
+    : [];
+
   return [
     "# Dev Tasks",
     "",
@@ -98,6 +111,7 @@ function buildDevTasksMarkdown(
     "## Meta tags",
     `- \`<title>\` → "${meta.title_suggestion}"`,
     `- \`<meta name="description">\` → "${meta.description_suggestion}"`,
+    ...visualLines,
   ].join("\n");
 }
 
@@ -164,7 +178,7 @@ function ExportCard({ icon, title, sub, cardId, activeToast, onClick }: ExportCa
 // Main component
 // ---------------------------------------------------------------------------
 
-export function ExportGrid({ copyVariants, meta }: ExportGridProps) {
+export function ExportGrid({ copyVariants, meta, checklist }: ExportGridProps) {
   const [activeToast, setActiveToast] = useState<CardId | null>(null);
 
   const copyToClipboard = useCallback(
@@ -179,7 +193,7 @@ export function ExportGrid({ copyVariants, meta }: ExportGridProps) {
           text = buildDesignerBriefMarkdown(copyVariants, meta);
           break;
         case "dev-tasks":
-          text = buildDevTasksMarkdown(copyVariants, meta);
+          text = buildDevTasksMarkdown(copyVariants, meta, checklist);
           break;
         case "notion-slack":
           text = buildNotionSlackMarkdown(copyVariants, meta);
@@ -203,7 +217,7 @@ export function ExportGrid({ copyVariants, meta }: ExportGridProps) {
       setActiveToast(id);
       setTimeout(() => setActiveToast(null), 2000);
     },
-    [copyVariants, meta]
+    [copyVariants, meta, checklist]
   );
 
   const CARDS: {

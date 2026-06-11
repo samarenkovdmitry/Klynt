@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiArrowRightLine, RiDownloadLine, RiGridLine } from "@remixicon/react";
 
@@ -23,6 +23,8 @@ import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
 import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
+import { buildCopyStudioContext } from "@/lib/copy-studio-context";
+import { normalizeReportChecklist } from "@/lib/normalize-report-checklist";
 
 type ReportPageViewProps = {
   routeParam: string;
@@ -37,7 +39,7 @@ function StickyBottomBar({
   onRerun: () => void;
 }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-black/[0.07] bg-white px-4 py-3">
+    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-black/[0.07] bg-[#EFEFED]/92 px-4 py-3 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-[1000px] items-center gap-4">
         <p className="hidden flex-1 text-[13px] text-[#888] sm:block">
           Applied changes? Re-run to track your score.
@@ -96,7 +98,18 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     router.push("/analyze");
   }
 
-  if (loadState !== "ready" || !data) {
+  const report = useMemo(() => {
+    if (!data?.checklist?.length) {
+      return data;
+    }
+
+    return {
+      ...data,
+      checklist: normalizeReportChecklist(data.checklist),
+    };
+  }, [data]);
+
+  if (loadState !== "ready" || !data || !report) {
     return <ReportPageStates loadState={loadState} />;
   }
 
@@ -110,7 +123,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     remainingCopy: Math.max(0, copy.length - 1),
   };
 
-  const hasNewLayout = Array.isArray(data.checklist) && data.checklist.length > 0;
+  const hasNewLayout = Array.isArray(report.checklist) && report.checklist.length > 0;
 
   return (
     <>
@@ -131,7 +144,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
             <>
               {/* Health bar — score + verdict + metric dimensions */}
               <ReportActionLayout
-                data={data}
+                data={report}
                 routeParam={routeParam}
                 waitlistActive={waitlistActive}
                 copiedIndex={copiedIndex}
@@ -145,44 +158,40 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               />
 
               {/* ReportChecklist */}
-              <ReportChecklist checklist={data.checklist!} />
+              <ReportChecklist checklist={report.checklist!} />
 
               {/* CopyStudio + ScorePotentialCompact — grouped */}
               <div className="mt-3">
-                {data.copy_variants && (
+                {report.copy_variants && (
                   <CopyStudio
-                    copyVariants={data.copy_variants}
-                    checklist={data.checklist}
+                    copyVariants={report.copy_variants}
+                    checklist={report.checklist}
+                    context={buildCopyStudioContext(report)}
                   />
                 )}
-                {data.score_potential && (
+                {report.score_potential && (
                   <ScorePotentialCompact
-                    score={data.score}
-                    scorePotential={data.score_potential}
-                    checklist={data.checklist}
+                    score={report.score}
+                    scorePotential={report.score_potential}
+                    checklist={report.checklist}
                   />
                 )}
               </div>
 
               {/* VisualFixes */}
-              {data.breakdown && (
-                <VisualFixes
-                  breakdown={data.breakdown}
-                  checklist={data.checklist!}
-                />
-              )}
+              <VisualFixes checklist={report.checklist} />
 
               {/* TrustMeta */}
-              {data.meta && (
+              {report.meta && (
                 <TrustMeta
-                  meta={data.meta}
-                  checklist={data.checklist!}
+                  meta={report.meta}
+                  checklist={report.checklist!}
                 />
               )}
 
               {/* ExportGrid */}
-              {data.copy_variants && data.meta && (
-                <div className="mt-12 overflow-hidden rounded-[16px] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)]">
+              {report.copy_variants && report.meta && (
+                <div className="mt-2.5 overflow-hidden rounded-[16px] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)]">
                   <div className="flex items-center justify-between px-5 pb-[10px] pt-[14px]">
                     <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.07em] text-[#999]">
                       <RiGridLine size={14} aria-hidden />
@@ -191,8 +200,9 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     <span className="text-[12px] text-[#C0C0BC]">copy to clipboard</span>
                   </div>
                   <ExportGrid
-                    copyVariants={data.copy_variants}
-                    meta={data.meta}
+                    copyVariants={report.copy_variants}
+                    meta={report.meta}
+                    checklist={report.checklist}
                   />
                 </div>
               )}

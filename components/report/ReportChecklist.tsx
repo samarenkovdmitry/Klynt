@@ -11,6 +11,7 @@ import {
   RiArrowRightSLine,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
+import { getChecklistBadgeLabel } from "@/lib/normalize-report-checklist";
 import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
@@ -66,8 +67,8 @@ function ChecklistRow({
   item: ReportChecklistItem;
   isLast: boolean;
 }) {
-  const { Icon, iconColor, badgeBg, badgeText, badgeLabel } =
-    STATUS_CONFIG[item.status];
+  const { Icon, iconColor, badgeBg, badgeText } = STATUS_CONFIG[item.status];
+  const badgeLabel = getChecklistBadgeLabel(item);
   const linkLabel =
     item.link_to && item.status !== "pass"
       ? LINK_BUTTON_LABEL[item.link_to]

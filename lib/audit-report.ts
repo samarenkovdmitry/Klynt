@@ -90,6 +90,8 @@ export type ChecklistCategory = "copy" | "trust" | "visual" | "structure";
 export type ReportChecklistItem = {
   id: string;
   text: string;
+  /** Short label for Copy studio badges (3–5 words). */
+  gap_label?: string;
   status: ChecklistItemStatus;
   link_to: ChecklistLinkTarget | null;
   category: ChecklistCategory;
@@ -124,6 +126,8 @@ export type ReportScorePotential = {
 export type ReportMeta = {
   title_suggestion: string;
   description_suggestion: string;
+  /** Actionable trust proof to add (e.g. "Add CISO quote below CTA"). */
+  proof_suggestion?: string;
 };
 
 export type AuditRisk = "low" | "medium" | "high";
