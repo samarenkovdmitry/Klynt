@@ -67,26 +67,32 @@ export default function ScorePotentialCompact({
 
         <div className="mx-4 hidden h-10 w-px shrink-0 bg-[rgba(0,0,0,0.07)] sm:block" />
 
-        {chips.length > 0 && (
-          <div className="mt-3 min-w-0 flex-1 sm:mt-0">
-            <div className="mb-2 font-['Familjen_Grotesk',sans-serif] text-[14px] font-medium tracking-[-0.2px] text-[#111]">
-              {buildTitle(chips.length)}
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {chips.map((chip, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => handleChipClick(chip.label, i)}
-                  className="cursor-pointer rounded-[10px] border border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-2.5 py-[5px] text-left text-[12px] text-[#555] transition-all duration-[120ms] hover:border-[#1D9E75] hover:text-[#0F6E56]"
-                >
-                  {i + 1} · {getScoreChipShortLabel(chip.label, checklist)}{" "}
-                  <strong className="font-medium text-[#1D9E75]">{chip.delta}</strong>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="mt-3 min-w-0 flex-1 sm:mt-0">
+          {chips.length > 0 ? (
+            <>
+              <div className="mb-2 font-['Familjen_Grotesk',sans-serif] text-[14px] font-medium tracking-[-0.2px] text-[#111]">
+                {buildTitle(chips.length)}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {chips.map((chip, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleChipClick(chip.label, i)}
+                    className="cursor-pointer rounded-[10px] border border-[rgba(0,0,0,0.07)] bg-[#F5F5F3] px-2.5 py-[5px] text-left text-[12px] text-[#555] transition-all duration-[120ms] hover:border-[#1D9E75] hover:text-[#0F6E56]"
+                  >
+                    {i + 1} · {getScoreChipShortLabel(chip.label, checklist)}{" "}
+                    <strong className="font-medium text-[#1D9E75]">{chip.delta}</strong>
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-[13px] leading-[1.5] text-[#888]">
+              Fix copy and trust gaps above to see how much your score could improve.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

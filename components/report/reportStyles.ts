@@ -1,3 +1,6 @@
+/** Workspace canvas — header, page, footer, sticky bars. */
+export const WORKSPACE_BG_CLASS = "bg-[#EFEFED]";
+
 /** Product shell — header and footer align to this width. */
 export const APP_SHELL_CONTAINER_CLASS = "mx-auto w-full max-w-[1180px]";
 

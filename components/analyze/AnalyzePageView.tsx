@@ -19,6 +19,7 @@ import {
   type AnalyzeInputMode,
 } from "@/hooks/useAnalyzePage";
 import { AppHeader } from "@/components/AppHeader";
+import { WORKSPACE_BG_CLASS } from "@/components/report/reportStyles";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
 import { useLoadingStall } from "@/hooks/useLoadingStall";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
@@ -212,7 +213,7 @@ export function AnalyzePageView() {
     <>
       <AppHeader />
 
-      <main className="min-h-[calc(100dvh-52px)] bg-[#EBEBEB] px-4 pb-16 pt-10 text-[#111] md:px-8 md:pt-16">
+      <main className={`min-h-[calc(100dvh-50px)] ${WORKSPACE_BG_CLASS} px-4 pb-16 pt-10 text-[#111] md:px-8 md:pt-16`}>
         <div className="mx-auto max-w-[520px]">
           <header className="text-center">
             <h1 className="text-[26px] font-semibold leading-[1.2] tracking-[-0.04em] text-[#111] md:text-[34px]">

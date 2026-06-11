@@ -426,10 +426,13 @@ export async function POST(req: Request) {
 
     json.checklist = normalizeReportChecklist(json.checklist);
 
-    if (json.score_potential && Array.isArray(json.checklist)) {
+    if (Array.isArray(json.checklist)) {
       json.score_potential = normalizeScorePotential(
-        json.score_potential as { target: number; chips: { label: string; delta: string }[] },
-        json.checklist
+        json.score_potential as
+          | { target: number; chips: { label: string; delta: string }[] }
+          | undefined,
+        json.checklist,
+        Number(json.score) || 0
       );
     }
 

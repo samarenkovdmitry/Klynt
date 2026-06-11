@@ -8,6 +8,7 @@ import {
 import type { RemixiconComponentType } from "@remixicon/react";
 
 import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
+import { WORKSPACE_BG_CLASS } from "@/components/report/reportStyles";
 
 const legalLinks = [
   { href: "/privacy", label: "Privacy" },
@@ -51,29 +52,43 @@ const variantStyles = {
     link: "transition hover:text-white/80",
     social: "text-white/40 transition hover:text-white/75",
   },
+  workspace: {
+    footer: `border-t border-black/[0.06] ${WORKSPACE_BG_CLASS}`,
+    text: "text-[#999]",
+    link: "transition hover:text-[#555]",
+    social: "text-[#C0C0BC] transition hover:text-[#555]",
+  },
 } as const;
 
 type AppFooterProps = {
   variant?: keyof typeof variantStyles;
   containerClass?: string;
+  compact?: boolean;
 };
 
-export function AppFooter({ variant = "light", containerClass }: AppFooterProps) {
+export function AppFooter({
+  variant = "light",
+  containerClass,
+  compact = false,
+}: AppFooterProps) {
   const styles = variantStyles[variant];
   const container = containerClass ?? LANDING_UPDATE_CONTAINER;
+  const paddingClass = compact
+    ? "px-4 py-6 md:px-8 md:py-7"
+    : "px-6 py-[33px] md:px-6 md:py-10";
 
   return (
     <footer
-      className={`app-site-footer mt-auto w-full shrink-0 px-6 py-[33px] md:px-6 md:py-10 ${styles.footer}`}
+      className={`app-site-footer mt-auto w-full shrink-0 ${paddingClass} ${styles.footer}`}
     >
       <div className={container}>
         <div className="flex flex-col items-center text-center md:hidden">
-          <p className={`text-[14px] font-normal ${styles.text}`}>
-            © 2026 Klynt – Landing improvement workspace
+          <p className={`text-[13px] font-normal ${styles.text}`}>
+            © 2026 Klynt · Landing improvement workspace
           </p>
 
           <div
-            className={`mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px] font-medium ${styles.text}`}
+            className={`mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[13px] font-medium ${styles.text}`}
           >
             {legalLinks.map((link) => (
               <Link key={link.href} href={link.href} className={styles.link}>
@@ -82,7 +97,7 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
             ))}
           </div>
 
-          <div className="mt-10 flex items-center justify-center gap-5 md:gap-4">
+          <div className={`mt-6 flex items-center justify-center gap-4 ${compact ? "mt-5" : "mt-10"}`}>
             {socialLinks.map((link) => {
               const Icon = link.icon;
 
@@ -90,10 +105,10 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
                 <a
                   key={link.label}
                   href={link.href}
-                  className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
+                  className={`inline-flex h-9 w-9 items-center justify-center ${styles.social}`}
                   aria-label={link.label}
                 >
-                  <Icon size={20} />
+                  <Icon size={18} />
                 </a>
               );
             })}
@@ -102,9 +117,9 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
 
         <div className="hidden items-center justify-between md:flex">
           <div
-            className={`flex flex-wrap items-center gap-x-7 gap-y-2 text-[14px] ${styles.text}`}
+            className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] ${styles.text}`}
           >
-            <p className="font-normal">© 2026 Klynt – Landing improvement workspace</p>
+            <p className="font-normal">© 2026 Klynt · Landing improvement workspace</p>
             {legalLinks.map((link) => (
               <Link key={link.href} href={link.href} className={`font-medium ${styles.link}`}>
                 {link.label}
@@ -112,7 +127,7 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
             ))}
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1">
             {socialLinks.map((link) => {
               const Icon = link.icon;
 
@@ -120,10 +135,10 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
                 <a
                   key={link.label}
                   href={link.href}
-                  className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
+                  className={`inline-flex h-9 w-9 items-center justify-center ${styles.social}`}
                   aria-label={link.label}
                 >
-                  <Icon size={20} />
+                  <Icon size={18} />
                 </a>
               );
             })}

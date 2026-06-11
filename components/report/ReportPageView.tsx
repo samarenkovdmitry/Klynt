@@ -16,7 +16,10 @@ import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
-import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
+import {
+  REPORT_PAGE_CONTAINER_CLASS,
+  WORKSPACE_BG_CLASS,
+} from "@/components/report/reportStyles";
 import type { AuditReport } from "@/lib/audit-report";
 import { isDemoReportRouteParam } from "@/lib/report-route";
 import { formatReportDomain } from "@/lib/report-hero-theme";
@@ -45,7 +48,9 @@ function StickyBottomBar({
     "inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] font-medium text-[#555] transition-colors hover:bg-black/[0.08]";
 
   return (
-    <div className="sticky bottom-0 z-40 mt-3 border-t border-black/[0.07] bg-[#EFEFED]/92 py-3 backdrop-blur-md">
+    <div
+      className={`sticky bottom-0 z-40 -mx-4 mt-3 border-t border-black/[0.07] px-4 py-3 backdrop-blur-md md:-mx-8 md:px-8 ${WORKSPACE_BG_CLASS}/92`}
+    >
       <div className="flex items-center gap-4">
         <p className="hidden flex-1 text-[13px] text-[#888] sm:block">
           Applied changes? Re-run to track your score.
@@ -112,9 +117,11 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     return {
       ...data,
       checklist,
-      score_potential: data.score_potential
-        ? normalizeScorePotential(data.score_potential, checklist)
-        : data.score_potential,
+      score_potential: normalizeScorePotential(
+        data.score_potential,
+        checklist,
+        data.score
+      ),
     };
   }, [data]);
 
@@ -140,7 +147,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
 
       <main
         className={[
-          "min-h-[calc(100dvh-50px)] bg-[#EBEBEB] px-4 pt-6 text-[#111] md:px-8 md:pt-6",
+          `min-h-[calc(100dvh-50px)] ${WORKSPACE_BG_CLASS} px-4 pt-6 text-[#111] md:px-8 md:pt-6`,
           hasNewLayout && !waitlistActive
             ? "pb-8"
             : waitlistActive && !gateInView

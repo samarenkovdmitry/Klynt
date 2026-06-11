@@ -273,27 +273,80 @@ type ScorePotentialInput = {
   chips: { label: string; delta: string }[];
 };
 
+const SCORE_CHIP_DEFAULT_DELTAS = ["+0.8", "+0.6", "+0.4", "+0.3"];
+
+function parseScoreChipDelta(delta: string): number {
+  const match = delta.match(/\+?([\d.]+)/);
+  return match ? Number.parseFloat(match[1]) : 0;
+}
+
+
+function deriveScoreChipsFromChecklist(
+  checklist: ReportChecklistItem[]
+): ScorePotentialInput["chips"] {
+  return checklist
+    .filter(
+      (item) =>
+        item.status !== "pass" &&
+        item.link_to &&
+        item.link_to !== "visual-fixes" &&
+        (item.category === "copy" || item.category === "trust")
+    )
+    .slice(0, 3)
+    .map((item, index) => ({
+      label: deriveChecklistGapLabel(item) ?? item.text,
+      delta: SCORE_CHIP_DEFAULT_DELTAS[index] ?? "+0.3",
+    }));
+}
+
+function normalizeScorePotentialChips(
+  chips: ScorePotentialInput["chips"],
+  checklist: ReportChecklistItem[]
+): ScorePotentialInput["chips"] {
+  return chips.map((chip, index) => {
+    const item =
+      findChecklistItemForChip(checklist, chip.label) ??
+      resolveChipChecklistItem(chip.label, index, checklist);
+    const shortLabel = item ? deriveChecklistGapLabel(item) : undefined;
+
+    return {
+      ...chip,
+      label: shortLabel ?? chip.label,
+    };
+  });
+}
+
 export function normalizeScorePotential(
   scorePotential: ScorePotentialInput | undefined,
-  checklist: ReportChecklistItem[]
+  checklist: ReportChecklistItem[],
+  score = 0
 ): ScorePotentialInput | undefined {
-  if (!scorePotential?.chips?.length) {
+  const rawChips = scorePotential?.chips?.length
+    ? scorePotential.chips
+    : deriveScoreChipsFromChecklist(checklist);
+
+  if (!rawChips.length) {
     return scorePotential;
   }
 
-  return {
-    ...scorePotential,
-    chips: scorePotential.chips.map((chip, index) => {
-      const item =
-        findChecklistItemForChip(checklist, chip.label) ??
-        resolveChipChecklistItem(chip.label, index, checklist);
-      const shortLabel = item ? deriveChecklistGapLabel(item) : undefined;
+  const chips = normalizeScorePotentialChips(rawChips, checklist);
+  const deltaSum = chips.reduce(
+    (sum, chip) => sum + parseScoreChipDelta(chip.delta),
+    0
+  );
+  const computedTarget = Math.min(
+    9.5,
+    Math.round((score + deltaSum) * 10) / 10
+  );
+  const incomingTarget = scorePotential?.target;
+  const targetLooksStale =
+    incomingTarget === undefined ||
+    Math.abs(incomingTarget - score) < 0.05 ||
+    incomingTarget <= score;
 
-      return {
-        ...chip,
-        label: shortLabel ?? chip.label,
-      };
-    }),
+  return {
+    target: targetLooksStale && deltaSum > 0 ? computedTarget : (incomingTarget ?? computedTarget),
+    chips,
   };
 }
 

@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { RiCloseLine, RiMenuLine } from "@remixicon/react";
+import { RiAddLine, RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
 import {
   APP_HEADER_CONTAINER_CLASS,
   APP_REPORT_HEADER_CONTAINER_CLASS,
+  WORKSPACE_BG_CLASS,
 } from "@/components/report/reportStyles";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
@@ -20,6 +21,10 @@ type NavItem = {
   isActive?: (pathname: string) => boolean;
 };
 
+function isReportPath(pathname: string) {
+  return pathname.startsWith("/report") && !pathname.includes("/print");
+}
+
 const navItems: NavItem[] = [
   {
     href: "/landing-copy",
@@ -28,12 +33,12 @@ const navItems: NavItem[] = [
   },
   {
     href: "/analyze",
-    label: "Landing report",
-    isActive: (p) => p.startsWith("/analyze"),
+    label: "Analyze",
+    isActive: (p) => p.startsWith("/analyze") || isReportPath(p),
   },
   {
     href: DEMO_REPORT_PATH,
-    label: "Sample report",
+    label: "Sample",
     isActive: (p) => p === DEMO_REPORT_PATH || p.startsWith(`${DEMO_REPORT_PATH}/`),
   },
   { href: "/contact", label: "Contact" },
@@ -79,9 +84,8 @@ function isNavActive(item: NavItem, pathname: string) {
 export function AppHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
-  const isReportOrAnalyze =
-    (pathname.startsWith("/report") && !pathname.includes("/print")) ||
-    pathname.startsWith("/analyze");
+  const isReportPage = isReportPath(pathname);
+  const isReportOrAnalyze = isReportPage || pathname.startsWith("/analyze");
   const [menuOpen, setMenuOpen] = useState(false);
   const headerHeightPx = isReportOrAnalyze ? REPORT_HEADER_HEIGHT_PX : HEADER_HEIGHT_PX;
 
@@ -106,13 +110,13 @@ export function AppHeader() {
         className={[
           "app-site-header w-full pt-[env(safe-area-inset-top,0px)]",
           isReportOrAnalyze
-            ? "sticky top-0 z-50 border-b border-black/[0.07] bg-[#EFEFED]/88 backdrop-blur-md"
+            ? `border-b border-black/[0.07] ${WORKSPACE_BG_CLASS}`
             : "sticky top-0 z-50 border-b border-transparent",
           isLanding
             ? "bg-transparent"
             : isReportOrAnalyze
               ? ""
-              : "bg-[#EFEFED]",
+              : `sticky top-0 z-50 ${WORKSPACE_BG_CLASS}`,
         ].join(" ")}
       >
         <div
@@ -134,9 +138,9 @@ export function AppHeader() {
               />
             ) : isReportOrAnalyze ? (
               <img
-                src="/klynt-logo-dark.svg"
+                src="/klynt-logo-dark-compact.svg"
                 alt="Klynt"
-                className="h-[30px] w-[100px] shrink-0"
+                className="h-[22px] w-auto shrink-0"
               />
             ) : (
               <>
@@ -153,31 +157,40 @@ export function AppHeader() {
             )}
           </Link>
 
-          <nav
-            className="hidden shrink-0 items-center gap-0.5 md:flex"
-            aria-label="Main"
-          >
-            {navItems.map((item) =>
-              item.href === DEMO_REPORT_PATH ? (
-                <ReportPrefetchLink
-                  key={item.href}
-                  href={item.href}
-                  routeParam={DEMO_REPORT_SLUG}
-                  className={navLinkClass(isNavActive(item, pathname), isLanding)}
-                >
-                  {item.label}
-                </ReportPrefetchLink>
-              ) : (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={navLinkClass(isNavActive(item, pathname), isLanding)}
-                >
-                  {item.label}
-                </Link>
-              )
+          <div className="hidden shrink-0 items-center gap-2 md:flex">
+            <nav className="flex items-center gap-0.5" aria-label="Main">
+              {navItems.map((item) =>
+                item.href === DEMO_REPORT_PATH ? (
+                  <ReportPrefetchLink
+                    key={item.href}
+                    href={item.href}
+                    routeParam={DEMO_REPORT_SLUG}
+                    className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                  >
+                    {item.label}
+                  </ReportPrefetchLink>
+                ) : (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
+            </nav>
+
+            {isReportPage && (
+              <Link
+                href="/analyze"
+                className="ml-1 inline-flex items-center gap-1 rounded-[8px] bg-[#111] px-[13px] py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
+              >
+                <RiAddLine size={14} aria-hidden />
+                New audit
+              </Link>
             )}
-          </nav>
+          </div>
 
           <button
             type="button"
@@ -254,6 +267,18 @@ export function AppHeader() {
                 {item.label}
               </Link>
             )
+          )}
+
+          {isReportPage && (
+            <Link
+              href="/analyze"
+              tabIndex={menuOpen ? 0 : -1}
+              className="mt-1 flex w-full items-center justify-center gap-1 rounded-xl bg-[#111] px-4 py-3 text-[15px] font-medium text-white"
+              onClick={() => setMenuOpen(false)}
+            >
+              <RiAddLine size={16} aria-hidden />
+              New audit
+            </Link>
           )}
         </nav>
       </div>
