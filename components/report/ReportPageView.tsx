@@ -152,7 +152,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       data.visual_passes,
       checklist,
       undefined,
-      data.score
+      data.score,
+      data.checklist ?? undefined
     );
 
     return {

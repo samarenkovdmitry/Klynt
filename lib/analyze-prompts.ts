@@ -181,9 +181,10 @@ CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
   Correct: "No navigation links competing in hero"
   Wrong:   "Hero image is visually appealing"
   Wrong:   "Strong visual but lacks clear messaging"
-- NEVER mark an item pass if its text describes a problem (lacks, unclear, missing, without).
-- NEVER use gap_label values like "Trial unclear" or "Category missing" on pass items.
-- NEVER pass "Single CTA" if 2+ hero buttons are visible — use a missing CTA hierarchy gap instead.
+- NEVER mark an item pass if its text describes a problem (lacks, unclear, missing, without, too light, too playful, cramped, reducing).
+- NEVER use gap_label values like "Trial unclear", "Category missing", "CTA clarity", "Color tone mismatch", or "Spacing issue" on pass items — those belong in gaps or visual_fixes.
+- NEVER put spacing, color tone, typography weight, or CTA hierarchy problems in checklist pass — put them in visual_fixes with the matching dimension.
+- NEVER pass "Single CTA" if 2+ hero buttons are visible — use copy-cta missing or visual_fixes.cta_hierarchy instead.
 - trust missing gaps: say "above the fold" — proof below fold still counts as a hero gap.
 
 copy_variants:

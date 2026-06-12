@@ -5,6 +5,7 @@ import type {
   ReportChecklistItem,
 } from "@/lib/audit-report";
 import { isLlmPlaceholderText } from "@/lib/llm-placeholder-text";
+import { isMisclassifiedVisualPassItem, isProblemPassText } from "@/lib/report-visual-fixes";
 
 const GAP_LABEL_DEFAULTS: Record<string, string> = {
   "copy-headline:missing": "Category missing",
@@ -30,6 +31,7 @@ const GAP_TEXT_FALLBACKS: Record<string, string> = {
 const CHIP_GAP_LABEL_ALIASES: Record<string, string> = {
   "Trust missing": "Trust missing above fold",
   "Trust signals missing": "Trust missing above fold",
+  "CTA lacks clarity": "CTA clarity",
 };
 
 const VALID_LINK_TARGETS = new Set<ChecklistLinkTarget>([
@@ -312,6 +314,7 @@ function createFallbackGap(slot: GapSlot): ReportChecklistItem {
 const GAP_LABEL_TO_SLOT: Record<string, GapSlot> = {
   "Category missing": COPY_TRUST_GAP_SLOTS[0],
   "Trial unclear": COPY_TRUST_GAP_SLOTS[1],
+  "CTA clarity": COPY_TRUST_GAP_SLOTS[1],
   "Trust missing above fold": COPY_TRUST_GAP_SLOTS[2],
   "Trust missing": COPY_TRUST_GAP_SLOTS[2],
   "Content weak": COPY_TRUST_GAP_SLOTS[3],
@@ -336,15 +339,29 @@ function repairContradictoryChecklistItem(item: ReportChecklistItem): ReportChec
   if (gapLabel) {
     const slot = resolveGapSlotFromLabel(gapLabel);
     if (slot) {
-      return createFallbackGap(slot);
+      const gap = createFallbackGap(slot);
+      return {
+        ...gap,
+        gap_label: gapLabel,
+        text:
+          item.text.trim().length >= 10 && !isGarbledChecklistText(item.text)
+            ? item.text
+            : gap.text,
+      };
     }
   }
 
   const text = item.text.toLowerCase();
 
+  if (isMisclassifiedVisualPassItem(item)) {
+    return null;
+  }
+
   if (
     /\bcta\b/.test(text) &&
-    /\b(lacks clarity|unclear|trial|next step|does not)\b/.test(text)
+    /\b(lacks clarity|lacks clear|unclear|trial|next step|does not|similar in size|multiple|competing|reduce|reducing)\b/.test(
+      text
+    )
   ) {
     return createFallbackGap(COPY_TRUST_GAP_SLOTS[1]);
   }
@@ -363,7 +380,16 @@ function repairContradictoryChecklistItem(item: ReportChecklistItem): ReportChec
     return createFallbackGap(COPY_TRUST_GAP_SLOTS[0]);
   }
 
+  if (isProblemPassText(item.text)) {
+    return null;
+  }
+
   return item;
+}
+
+function isTypographyPassItem(item: ReportChecklistItem): boolean {
+  const haystack = `${item.gap_label ?? ""} ${item.text}`.toLowerCase();
+  return /\b(typography|font weight|too light|legibility|subheadline font)\b/.test(haystack);
 }
 
 function filterInvalidPassItems(
@@ -372,11 +398,31 @@ function filterInvalidPassItems(
 ): ReportChecklistItem[] {
   const hasCtaGap = gaps.some((item) => item.link_to === "copy-cta");
   const hasMultipleCtaSignals = gaps.some((item) =>
-    /\b(two|three|multiple|competing|several)\b.*\bcta\b/i.test(item.text)
+    /\b(two|three|multiple|competing|several|similar in size)\b.*\bcta\b/i.test(item.text)
+  );
+  const hasTypographyWeak = gaps.some(
+    (item) => item.link_to === "visual-fixes" && item.status === "weak"
   );
 
   return passes.filter((item) => {
+    if (isProblemPassText(item.text) || isMisclassifiedVisualPassItem(item)) {
+      return false;
+    }
+
+    if (hasTypographyWeak && isTypographyPassItem(item)) {
+      return false;
+    }
+
     if (!/single (primary )?cta/i.test(item.text)) {
+      if (
+        hasCtaGap &&
+        /\b(multiple|similar in size|competing|cta hierarchy)\b/i.test(
+          `${item.gap_label ?? ""} ${item.text}`
+        )
+      ) {
+        return false;
+      }
+
       return true;
     }
 
@@ -585,13 +631,44 @@ function normalizeScorePotentialChips(
   });
 }
 
+function mergeScorePotentialChips(
+  incoming: ScorePotentialInput["chips"],
+  checklist: ReportChecklistItem[]
+): ScorePotentialInput["chips"] {
+  const derived = deriveScoreChipsFromChecklist(checklist);
+  const merged = [...incoming];
+  const filledLinks = new Set(
+    merged
+      .map((chip, index) => resolveChipChecklistItem(chip.label, index, checklist)?.link_to)
+      .filter((link): link is ChecklistLinkTarget => Boolean(link))
+  );
+
+  for (const chip of derived) {
+    if (merged.length >= 3) {
+      break;
+    }
+
+    const item = findChecklistItemForChip(checklist, chip.label);
+    if (item?.link_to && filledLinks.has(item.link_to)) {
+      continue;
+    }
+
+    merged.push(chip);
+    if (item?.link_to) {
+      filledLinks.add(item.link_to);
+    }
+  }
+
+  return merged.slice(0, 3);
+}
+
 export function normalizeScorePotential(
   scorePotential: ScorePotentialInput | undefined,
   checklist: ReportChecklistItem[],
   score = 0
 ): ScorePotentialInput | undefined {
   const rawChips = scorePotential?.chips?.length
-    ? scorePotential.chips
+    ? mergeScorePotentialChips(scorePotential.chips, checklist)
     : deriveScoreChipsFromChecklist(checklist);
 
   if (!rawChips.length) {

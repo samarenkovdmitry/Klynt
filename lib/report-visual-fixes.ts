@@ -86,6 +86,126 @@ function parseVisualPassItem(raw: unknown): ReportVisualPass | null {
   };
 }
 
+const VISUAL_PROBLEM_GAP_LABELS = new Set([
+  "Weak typography",
+  "Spacing issue",
+  "Color tone mismatch",
+  "CTA hierarchy",
+]);
+
+const DEFAULT_DIMENSION_RECOMMENDATIONS: Record<VisualFixDimension, string> = {
+  border_radius: "Tighten corner radius to 6–8px for a more credible product tone",
+  density: "Strip hero to headline, subhead, and one CTA for cold traffic",
+  color_tone: "Shift accent palette toward restrained trust tones for cold-traffic credibility",
+  spacing: "Add 80–120px vertical rhythm between hero sections to reduce cramped feel",
+  cta_hierarchy: "Make primary CTA 2–3× more prominent — demote secondary actions visually",
+  typography: "Increase subheadline to 18px / weight 500 for faster value-prop scan",
+  depth: "Add a subtle background tint or gradient to separate hero from page body",
+};
+
+export function isProblemPassText(text: string): boolean {
+  return /\b(lacks?|lack|missing|unclear|too light|too thin|too playful|too cramped|cramped|reduce[sd]?|reducing|without|not visible|feels too|inadequate|similar in size|undermines|mismatch|weight is too|font weight is too)\b/i.test(
+    text
+  );
+}
+
+function resolveVisualDimensionFromPass(item: ReportChecklistItem): VisualFixDimension | null {
+  const label = (item.gap_label ?? "").toLowerCase();
+  const text = item.text.toLowerCase();
+  const haystack = `${label} ${text}`;
+
+  if (/color|playful|palette|tone|mismatch/.test(haystack)) {
+    return "color_tone";
+  }
+
+  if (/spacing|cramped|breathing|rhythm/.test(haystack)) {
+    return "spacing";
+  }
+
+  if (/cta hierarchy|multiple cta|similar in size|competing cta/.test(haystack)) {
+    return "cta_hierarchy";
+  }
+
+  if (/typography|font weight|too light|legibility|subheadline font/.test(haystack)) {
+    return "typography";
+  }
+
+  if (/radius|corner|rounded/.test(haystack)) {
+    return "border_radius";
+  }
+
+  if (/density|overloaded|clutter|crowded/.test(haystack)) {
+    return "density";
+  }
+
+  if (/depth|flat|background|gradient/.test(haystack)) {
+    return "depth";
+  }
+
+  return null;
+}
+
+export function isMisclassifiedVisualPassItem(item: ReportChecklistItem): boolean {
+  if (item.status !== "pass") {
+    return false;
+  }
+
+  if (!isProblemPassText(item.text)) {
+    return false;
+  }
+
+  if (item.category === "visual" || item.id === "visual-fixes") {
+    return true;
+  }
+
+  const gapLabel = item.gap_label?.trim();
+  if (gapLabel && VISUAL_PROBLEM_GAP_LABELS.has(gapLabel)) {
+    return true;
+  }
+
+  return resolveVisualDimensionFromPass(item) !== null && item.category !== "copy" && item.category !== "trust";
+}
+
+export function extractVisualFixesFromMisclassifiedPasses(
+  items: ReportChecklistItem[] | undefined,
+  options?: {
+    skipDimensions?: Set<VisualFixDimension>;
+  }
+): ReportVisualFix[] {
+  if (!items?.length) {
+    return [];
+  }
+
+  const skipDimensions = options?.skipDimensions ?? new Set<VisualFixDimension>();
+  const fixes: ReportVisualFix[] = [];
+  const seen = new Set<VisualFixDimension>();
+
+  for (const item of items) {
+    if (!isMisclassifiedVisualPassItem(item)) {
+      continue;
+    }
+
+    const dimension = resolveVisualDimensionFromPass(item);
+
+    if (!dimension || seen.has(dimension) || skipDimensions.has(dimension)) {
+      continue;
+    }
+
+    seen.add(dimension);
+    fixes.push({
+      dimension,
+      observation: clampWords(item.text, 14, true),
+      recommendation: DEFAULT_DIMENSION_RECOMMENDATIONS[dimension],
+    });
+
+    if (fixes.length >= 4) {
+      break;
+    }
+  }
+
+  return fixes;
+}
+
 function fallbackFixesFromChecklist(checklist?: ReportChecklistItem[]): ReportVisualFix[] {
   const visualGap = checklist?.find(
     (item) => item.link_to === "visual-fixes" && item.status === "weak"
@@ -130,7 +250,8 @@ export function normalizeVisualSection(
   passesRaw?: unknown,
   checklist?: ReportChecklistItem[],
   existingFixes?: ReportVisualFix[],
-  score?: number
+  score?: number,
+  rawChecklist?: ReportChecklistItem[]
 ): NormalizedVisualSection {
   const parsedFixes = Array.isArray(fixesRaw)
     ? fixesRaw
@@ -154,18 +275,34 @@ export function normalizeVisualSection(
     }
   }
 
-  let fixes = dedupedFixes;
+  const hasTypographyWeakGap = checklist?.some(
+    (item) => item.link_to === "visual-fixes" && item.status === "weak"
+  );
+  const skipExtractDimensions = new Set<VisualFixDimension>(fixDimensions);
 
-  if (fixes.length >= 2) {
-    fixes = dedupedFixes;
-  } else {
-    const fallback = fallbackFixesFromChecklist(checklist);
+  if (hasTypographyWeakGap || fixDimensions.has("typography")) {
+    skipExtractDimensions.add("typography");
+  }
 
-    if (fixes.length === 0) {
-      fixes = fallback;
-    } else if (fixes.length === 1 && fallback.length > 0 && fixes[0].dimension !== "typography") {
-      fixes = [...fixes, ...fallback].slice(0, 4);
+  for (const item of extractVisualFixesFromMisclassifiedPasses(rawChecklist ?? checklist, {
+    skipDimensions: skipExtractDimensions,
+  })) {
+    if (fixDimensions.has(item.dimension) || dedupedFixes.length >= 4) {
+      continue;
     }
+
+    fixDimensions.add(item.dimension);
+    dedupedFixes.push(item);
+  }
+
+  let fixes = dedupedFixes;
+  const checklistFallback = fallbackFixesFromChecklist(checklist);
+
+  if (fixes.length === 0) {
+    fixes = checklistFallback;
+  } else if (checklistFallback.length > 0 && !fixDimensions.has("typography")) {
+    fixes = [...checklistFallback, ...fixes].slice(0, 4);
+    fixDimensions.add("typography");
   }
 
   fixDimensions.clear();

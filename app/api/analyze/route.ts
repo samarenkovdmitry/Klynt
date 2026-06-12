@@ -36,8 +36,6 @@ import {
 import { normalizeReportFindings } from "@/lib/report-findings-quality";
 import {
   finalizeReportChecklist,
-  normalizeReportChecklist,
-  normalizeScorePotential,
 } from "@/lib/normalize-report-checklist";
 import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
 import { normalizeVisualSection } from "@/lib/report-visual-fixes";
@@ -428,8 +426,10 @@ export async function POST(req: Request) {
 
     Object.assign(json, normalizeReportHeroCopy(json));
 
+    const rawChecklist = json.checklist as import("@/lib/audit-report").ReportChecklistItem[];
+
     const finalized = finalizeReportChecklist(
-      json.checklist,
+      rawChecklist,
       Number(json.score) || 0,
       json.score_potential as
         | { target: number; chips: { label: string; delta: string }[] }
@@ -441,9 +441,10 @@ export async function POST(req: Request) {
     const visualSection = normalizeVisualSection(
       json.visual_fixes,
       json.visual_passes,
-      json.checklist as import("@/lib/audit-report").ReportChecklistItem[],
+      json.checklist,
       undefined,
-      Number(json.score) || 0
+      Number(json.score) || 0,
+      rawChecklist
     );
     json.visual_fixes = visualSection.fixes;
     json.visual_passes = visualSection.passes;
