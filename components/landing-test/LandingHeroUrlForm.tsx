@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useCallback } from "react";
+import { FormEvent, useCallback, useState } from "react";
+import { buildAnalyzeUrl } from "@/lib/analyze-route";
 
 type LandingHeroUrlFormProps = {
   inputId?: string;
@@ -15,11 +16,13 @@ export function LandingHeroUrlForm({
   maxWidthClass = "max-w-[480px]",
 }: LandingHeroUrlFormProps) {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const goAnalyze = useCallback(
     (rawUrl?: string) => {
       const url = rawUrl?.trim();
-      router.push(url ? `/analyze?url=${encodeURIComponent(url)}` : "/analyze");
+      setIsSubmitting(true);
+      router.push(buildAnalyzeUrl({ url, autostart: Boolean(url) }));
     },
     [router]
   );
@@ -46,13 +49,15 @@ export function LandingHeroUrlForm({
         type="url"
         inputMode="url"
         placeholder="https://yoursite.com"
-        className="min-w-0 flex-1 bg-transparent px-4 py-[13px] text-[14px] text-[#F2F2EF] outline-none placeholder:text-[#7A7A74]"
+        disabled={isSubmitting}
+        className="min-w-0 flex-1 bg-transparent px-4 py-[13px] text-[14px] text-[#F2F2EF] outline-none placeholder:text-[#7A7A74] disabled:opacity-70"
       />
       <button
         type="submit"
-        className="m-[5px] shrink-0 rounded-lg bg-[#F2F2EF] px-5 py-2.5 font-sans text-[14px] font-semibold tracking-[-0.02em] text-[#0E0E0C] transition-opacity hover:opacity-88"
+        disabled={isSubmitting}
+        className="m-[5px] shrink-0 rounded-lg bg-[#F2F2EF] px-5 py-2.5 font-sans text-[14px] font-semibold tracking-[-0.02em] text-[#0E0E0C] transition-opacity hover:opacity-88 disabled:cursor-wait disabled:opacity-70"
       >
-        Analyze →
+        {isSubmitting ? "Analyzing…" : "Analyze →"}
       </button>
     </form>
   );

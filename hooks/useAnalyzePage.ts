@@ -150,6 +150,8 @@ export function useAnalyzePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const autostartHandledRef = useRef(false);
+  const runAnalysisRef = useRef<(urlOverride?: string) => Promise<void>>(async () => {});
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -178,12 +180,33 @@ export function useAnalyzePage() {
   }, []);
 
   useEffect(() => {
-    const prefill = searchParams.get("url")?.trim();
+    const prefill = searchParams.get("url")?.trim() ?? "";
+    const shouldAutostart = searchParams.get("autostart") === "1";
+
     if (prefill) {
       setUrl(prefill);
       setInputMode("url");
     }
-  }, [searchParams]);
+
+    if (!shouldAutostart || autostartHandledRef.current) {
+      return;
+    }
+
+    autostartHandledRef.current = true;
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("autostart");
+    const query = params.toString();
+    router.replace(query ? `/analyze?${query}` : "/analyze", { scroll: false });
+
+    setFormSubmitted(true);
+
+    if (!prefill || validateWebsiteUrl(prefill)) {
+      return;
+    }
+
+    void runAnalysisRef.current(prefill);
+  }, [router, searchParams]);
 
   const urlValidationError = url.trim() ? validateWebsiteUrl(url) : null;
   const showUrlError =
@@ -238,7 +261,9 @@ export function useAnalyzePage() {
     void handleAnalyze();
   }
 
-  async function handleAnalyze() {
+  async function runAnalysis(urlOverride?: string) {
+    const activeMode: AnalyzeInputMode = urlOverride ? "url" : inputMode;
+    const activeUrl = urlOverride ?? url;
     let progressTimer: ReturnType<typeof setInterval> | null = null;
     let latestProgress = 0;
 
@@ -252,9 +277,9 @@ export function useAnalyzePage() {
     try {
       setFormSubmitted(true);
 
-      if (inputMode === "url") {
-        if (!url.trim()) return;
-        if (validateWebsiteUrl(url)) return;
+      if (activeMode === "url") {
+        if (!activeUrl.trim()) return;
+        if (validateWebsiteUrl(activeUrl)) return;
       } else if (!uploadedImage) {
         return;
       }
@@ -271,8 +296,8 @@ export function useAnalyzePage() {
 
       const form = new FormData();
 
-      if (inputMode === "url") {
-        form.append("url", url);
+      if (activeMode === "url") {
+        form.append("url", activeUrl);
       } else if (uploadedImage) {
         form.append("screenshot", uploadedImage);
       }
@@ -282,7 +307,7 @@ export function useAnalyzePage() {
       form.append("audienceType", audienceType);
 
       const analysisFailureKind: Exclude<AnalyzeErrorKind, null | "rate_limit" | "storage"> =
-        inputMode === "url" ? "url_analysis" : "screenshot_analysis";
+        activeMode === "url" ? "url_analysis" : "screenshot_analysis";
 
       let outcome = await postAnalyzeRequest(form);
 
@@ -320,7 +345,7 @@ export function useAnalyzePage() {
           : generateReportId();
 
       const flat: AuditResponseFlat = {
-        url: json.url ?? url ?? "",
+        url: json.url ?? activeUrl ?? "",
         score: json.score ?? 0,
         risk: json.risk === "medium" || json.risk === "high" ? json.risk : "low",
         summary: json.summary ?? "",
@@ -375,7 +400,7 @@ export function useAnalyzePage() {
       stopProgressTimer();
       setProgress(0);
       failAnalysis(
-        inputMode === "url" ? "url_analysis" : "screenshot_analysis",
+        activeMode === "url" ? "url_analysis" : "screenshot_analysis",
         caught instanceof Error
           ? caught.message
           : "Something went wrong while analyzing the website."
@@ -383,6 +408,12 @@ export function useAnalyzePage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  runAnalysisRef.current = runAnalysis;
+
+  async function handleAnalyze() {
+    await runAnalysis();
   }
 
   function handleBrandStageChange(stage: BrandStage) {
