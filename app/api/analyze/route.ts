@@ -427,7 +427,7 @@ export async function POST(req: Request) {
 
     Object.assign(json, normalizeReportHeroCopy(json));
 
-    json.checklist = normalizeReportChecklist(json.checklist);
+    json.checklist = normalizeReportChecklist(json.checklist, Number(json.score) || 0);
 
     const visualSection = normalizeVisualSection(
       json.visual_fixes,

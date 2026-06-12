@@ -196,8 +196,9 @@ SCORE CALIBRATION:
   7.0-8.4:  Good — one or two fixable gaps, strong overall first impression.
   5.5-6.9:  At risk — multiple clarity or trust issues, visitor may leave
              before understanding the product. Most pages land here.
+             Checklist MUST include at least 3 gaps (missing + weak).
   4.0-5.4:  Weak — visitor likely confused within 5 seconds,
-             core message unclear or buried.
+             core message unclear or buried. At least 3 missing + 1 weak typography.
   2.0-3.9:  Critical — no clear value prop, broken hierarchy,
              or completely missing trust signals. Very rare.
   0.0-1.9:  Do not use — reserved for empty or placeholder pages only.

@@ -250,6 +250,111 @@ function ensureVisualWeakItem(gaps: ReportChecklistItem[]): ReportChecklistItem[
   return gaps;
 }
 
+type GapSlot = {
+  link_to: ChecklistLinkTarget;
+  status: ChecklistItemStatus;
+  id: string;
+  category: ChecklistCategory;
+};
+
+const COPY_TRUST_GAP_SLOTS: GapSlot[] = [
+  {
+    link_to: "copy-headline",
+    status: "missing",
+    id: "headline-category",
+    category: "copy",
+  },
+  {
+    link_to: "copy-cta",
+    status: "missing",
+    id: "copy-cta",
+    category: "copy",
+  },
+  {
+    link_to: "trust",
+    status: "missing",
+    id: "trust",
+    category: "trust",
+  },
+  {
+    link_to: "copy-subheadline",
+    status: "missing",
+    id: "copy-subheadline",
+    category: "copy",
+  },
+];
+
+const VISUAL_WEAK_SLOT: GapSlot = {
+  link_to: "visual-fixes",
+  status: "weak",
+  id: "subheadline-clarity",
+  category: "visual",
+};
+
+function createFallbackGap(slot: GapSlot): ReportChecklistItem {
+  const key = `${slot.link_to}:${slot.status}`;
+
+  return {
+    id: slot.id,
+    text: GAP_TEXT_FALLBACKS[key] ?? "Needs improvement",
+    status: slot.status,
+    link_to: slot.link_to,
+    category: slot.category,
+    gap_label: GAP_LABEL_DEFAULTS[key],
+  };
+}
+
+function countGaps(gaps: ReportChecklistItem[]) {
+  return {
+    total: gaps.length,
+    missing: gaps.filter((item) => item.status === "missing").length,
+    weak: gaps.filter((item) => item.status === "weak").length,
+  };
+}
+
+function ensureMinimumChecklistGaps(
+  gaps: ReportChecklistItem[],
+  score?: number
+): ReportChecklistItem[] {
+  const numericScore = Number(score);
+
+  if (!Number.isFinite(numericScore) || numericScore >= 7) {
+    return ensureVisualWeakItem(gaps);
+  }
+
+  const minTotalGaps = 3;
+  const requireWeakTypography = numericScore < 6.5;
+  const minMissing = numericScore < 6.0 ? 3 : 2;
+
+  let result = [...gaps];
+  const filledLinks = new Set(
+    result.map((item) => item.link_to).filter((link): link is ChecklistLinkTarget => Boolean(link))
+  );
+
+  if (requireWeakTypography && !filledLinks.has("visual-fixes")) {
+    result.push(createFallbackGap(VISUAL_WEAK_SLOT));
+    filledLinks.add("visual-fixes");
+  }
+
+  for (const slot of COPY_TRUST_GAP_SLOTS) {
+    if (countGaps(result).total >= minTotalGaps && countGaps(result).missing >= minMissing) {
+      break;
+    }
+
+    if (filledLinks.has(slot.link_to)) {
+      continue;
+    }
+
+    result.push(createFallbackGap(slot));
+    filledLinks.add(slot.link_to);
+  }
+
+  const missing = result.filter((item) => item.status === "missing").slice(0, 3);
+  const weak = result.filter((item) => item.status === "weak").slice(0, 1);
+
+  return ensureVisualWeakItem([...missing, ...weak]);
+}
+
 export function findChecklistItemForChip(
   checklist: ReportChecklistItem[] | undefined,
   chipLabel: string
@@ -383,7 +488,7 @@ export function normalizeScorePotential(
   };
 }
 
-export function normalizeReportChecklist(raw: unknown): ReportChecklistItem[] {
+export function normalizeReportChecklist(raw: unknown, score?: number): ReportChecklistItem[] {
   if (!Array.isArray(raw)) {
     return [];
   }
@@ -395,7 +500,7 @@ export function normalizeReportChecklist(raw: unknown): ReportChecklistItem[] {
   const withDedupedGaps = dedupeGaps(parsed);
   const gaps = withDedupedGaps.filter((item) => item.status !== "pass");
   const passes = withDedupedGaps.filter((item) => item.status === "pass");
-  const normalizedGaps = ensureVisualWeakItem(gaps);
+  const normalizedGaps = ensureMinimumChecklistGaps(gaps, score);
 
   return [...normalizedGaps, ...passes].map((item) => {
     const gap_label = deriveChecklistGapLabel(item);

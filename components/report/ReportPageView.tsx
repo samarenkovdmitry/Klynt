@@ -142,7 +142,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       return data;
     }
 
-    const checklist = normalizeReportChecklist(data.checklist);
+    const checklist = normalizeReportChecklist(data.checklist, data.score);
     const visualSection = normalizeVisualSection(
       data.visual_fixes,
       data.visual_passes,

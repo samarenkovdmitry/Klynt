@@ -162,6 +162,13 @@ Return ONLY valid JSON (no markdown):
 }
 
 checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass.
+
+CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
+- score < 7.0: at least 3 gaps total (missing + weak combined). Never fewer than 3 when score is 6.x.
+- score < 6.5: include exactly 1 weak typography item (link_to visual-fixes) in addition to copy/trust missing gaps.
+- score < 6.0: at least 3 missing + 1 weak typography (4 gaps total before pass items).
+- If score is below 7.0, do NOT mark copy/trust elements as pass when they contributed to the low score.
+- score_potential.chips MUST list one chip per copy/trust missing gap (same gap_label).
 - id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline"). Typography weak → id "subheadline-clarity".
 - gap_label: max 4 words, short badge for Copy studio ONLY. Examples: "Category missing", "Trial unclear", "Content weak", "Trust missing", "Weak typography". NEVER repeat checklist text or use ALL CAPS.
 - text: max 10 words, specific actionable label. Must match label in score_potential chips for copy/trust gaps.
