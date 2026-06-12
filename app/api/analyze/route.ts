@@ -449,7 +449,8 @@ export async function POST(req: Request) {
 
     if (json.copy_variants && typeof json.copy_variants === "object") {
       json.copy_variants = normalizeReportCopyVariants(
-        json.copy_variants as import("@/lib/audit-report").ReportCopyVariants
+        json.copy_variants as import("@/lib/audit-report").ReportCopyVariants,
+        parseBrandStage(json.brand_stage ?? brandStage)
       );
     }
 

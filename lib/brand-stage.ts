@@ -100,6 +100,24 @@ export const HEADLINE_STRATEGY_LABELS: Record<BrandStage, [string, string, strin
   established: ["Bold / brand-led", "Outcome-led", "Positioning-led"],
 };
 
+export const CTA_STRATEGY_LABELS = [
+  "Trial explicit",
+  "Risk-free",
+  "Direct action",
+] as const;
+
+export const SUBHEADLINE_STRATEGY_LABELS = [
+  "Value proposition",
+  "Specificity",
+  "Outcome",
+] as const;
+
+export const COPY_VARIANT_WORD_LIMITS = {
+  headline: 14,
+  cta: 5,
+  subheadline: 14,
+} as const;
+
 function isGenericHeadlineOptionLabel(label: string) {
   const trimmed = label.trim();
 
@@ -127,6 +145,63 @@ export function normalizeHeadlineOptionLabel(
   return candidate;
 }
 
+function normalizeStrategyLabel(
+  label: string,
+  index: number,
+  defaults: readonly string[]
+): string {
+  const trimmed = label.trim();
+  const strippedPrefix = trimmed.replace(/^option\s*[a-c]\s*[—–-]\s*/i, "").trim();
+  const candidate = strippedPrefix || trimmed;
+
+  if (!candidate || isGenericHeadlineOptionLabel(candidate)) {
+    return defaults[index] ?? `Direction ${index + 1}`;
+  }
+
+  const match = defaults.find(
+    (defaultLabel) => defaultLabel.toLowerCase() === candidate.toLowerCase()
+  );
+
+  return match ?? defaults[index] ?? candidate;
+}
+
+export function normalizeCtaOptionLabel(label: string, index: number): string {
+  return normalizeStrategyLabel(label, index, CTA_STRATEGY_LABELS);
+}
+
+export function normalizeSubheadlineOptionLabel(label: string, index: number): string {
+  return normalizeStrategyLabel(label, index, SUBHEADLINE_STRATEGY_LABELS);
+}
+
+export function buildCopyStudioPromptBlock() {
+  const ctaLabels = CTA_STRATEGY_LABELS.join('", "');
+  const subheadLabels = SUBHEADLINE_STRATEGY_LABELS.join('", "');
+
+  return `COPY STUDIO (copy_variants) — paste-ready hero copy, not marketing essays.
+
+Shared rules:
+- current: exact visible text only ("" if not readable).
+- 3 variants per element. Each variant uses a different strategic angle — never paraphrase the same idea.
+- Ban generic SaaS filler: "intuitive", "seamless", "boost productivity", "unlock", "claim instantly", "everything you need", "designed to".
+- If trial/pricing clarity is the gap, put duration or terms in subheadline — NOT in the CTA button.
+
+Headline variants:
+- variants[].label: MUST use exact strategy names from the BRAND STAGE block.
+- variants[].text: max ${COPY_VARIANT_WORD_LIMITS.headline} words. Sharp H1 — declarative, specific, memorable.
+
+CTA variants (primary button label ONLY):
+- variants[].label: MUST be exactly one of: "${ctaLabels}" (one per variant).
+- Trial explicit: name free/trial clearly in ≤${COPY_VARIANT_WORD_LIMITS.cta} words (e.g. "Start free trial").
+- Risk-free: reduce signup anxiety in ≤${COPY_VARIANT_WORD_LIMITS.cta} words (e.g. "Try it free").
+- Direct action: imperative verb + free/trial if relevant (e.g. "Get started free").
+- max ${COPY_VARIANT_WORD_LIMITS.cta} words. Button register: no "your", no "now", no "instantly", no stacking "14-day free trial" in one label.
+- Put trial duration in subheadline, not CTA.
+
+Subheadline variants:
+- variants[].label: MUST be exactly one of: "${subheadLabels}" (one per variant).
+- variants[].text: max ${COPY_VARIANT_WORD_LIMITS.subheadline} words. One supporting sentence under the headline.`;
+}
+
 export function buildBrandStagePromptBlock(stage: BrandStage) {
   const sharedRules = `
 headline_directions: REQUIRED object for the visible hero headline (H1 or largest promise line above the fold).
@@ -135,7 +210,7 @@ headline_directions: REQUIRED object for the visible hero headline (H1 or larges
 - context: 1-2 sentences (max 32 words) explaining why these strategies fit this brand stage.
 - options: exactly 3 items. Each MUST use a different sentence structure and strategic angle — never paraphrase the same idea.
 - options[].label: MUST be the exact strategy name from the list below — never "Option A", "Option B", or "Option C".
-- options[].text: proposed headline (max 16 words).
+- options[].text: proposed headline (max ${COPY_VARIANT_WORD_LIMITS.headline} words).
 - Tone for every options[].text: punchy, confident, specific, memorable. NOT fluffy, sentimental, soft, or corporate.
 - Prefer short declarative sentences. Ban filler phrases like "actually", "everything you need", "designed to", "platform your team".
 - Be bold and sharp while staying credible. Clarity and confidence over warmth.

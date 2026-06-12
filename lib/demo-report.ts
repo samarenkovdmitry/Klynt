@@ -110,16 +110,16 @@ export const DEMO_REPORT = {
       "current": "Start for free",
       "variants": [
         {
-          "text": "Start your 14-day free trial now",
-          "label": "Trial clarity"
+          "text": "Start free trial",
+          "label": "Trial explicit"
         },
         {
-          "text": "Unlock your free trial today",
-          "label": "Action-oriented"
+          "text": "Try it free",
+          "label": "Risk-free"
         },
         {
-          "text": "Claim your free trial instantly",
-          "label": "Urgency"
+          "text": "Get started free",
+          "label": "Direct action"
         }
       ]
     },
@@ -135,7 +135,7 @@ export const DEMO_REPORT = {
           "label": "Problem + solution"
         },
         {
-          "text": "Boost team productivity with our intuitive CRM solution.",
+          "text": "Simple CRM for teams who outgrew spreadsheets.",
           "label": "Outcome + audience"
         }
       ]
@@ -144,16 +144,16 @@ export const DEMO_REPORT = {
       "current": "folk CRM captures the full context of your relationships in one beautifully simple CRM.",
       "variants": [
         {
-          "text": "Experience seamless relationship management with folk.",
+          "text": "Manage every relationship in one simple CRM — free 14-day trial.",
           "label": "Value proposition"
         },
         {
-          "text": "Your relationships, simplified and automated.",
-          "label": "Simplification"
+          "text": "Full relationship context in one place, built for growing teams.",
+          "label": "Specificity"
         },
         {
-          "text": "Automate busywork and focus on what matters.",
-          "label": "Efficiency focus"
+          "text": "Less busywork, more time on the relationships that matter.",
+          "label": "Outcome"
         }
       ]
     }

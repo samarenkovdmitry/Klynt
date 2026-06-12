@@ -152,7 +152,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     return {
       ...data,
       checklist,
-      copy_variants: normalizeReportCopyVariants(data.copy_variants),
+      copy_variants: normalizeReportCopyVariants(data.copy_variants, data.brand_stage),
       meta: data.meta
         ? {
             ...data.meta,
