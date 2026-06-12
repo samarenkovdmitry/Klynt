@@ -141,10 +141,10 @@ export function LandingTestFeatures() {
               <p className="mt-2 text-[13px] leading-[1.65] text-[#9A9A93]">
                 See where you can get after fixes — specific estimates per gap, not vague promises.
               </p>
-              <div className="mt-[18px] flex items-center gap-2.5">
-                <span className="font-sans text-[32px] font-bold leading-none tracking-[-0.04em] text-[#BA7517]">6.8</span>
-                <span className="text-[#7A7A74]">→</span>
-                <span className="font-sans text-[32px] font-bold leading-none tracking-[-0.04em] text-[#1D9E75]">8.5</span>
+              <div className="mt-[18px] flex items-center gap-2">
+                <span className="font-sans text-[20px] font-bold leading-none tracking-[-0.03em] text-[#BA7517]">6.8</span>
+                <span className="text-[13px] text-[#7A7A74]">→</span>
+                <span className="font-sans text-[20px] font-bold leading-none tracking-[-0.03em] text-[#1D9E75]">8.5</span>
                 <span className="text-[11px] text-[#7A7A74]">estimate</span>
               </div>
               <div className="mt-2 flex flex-wrap gap-1">

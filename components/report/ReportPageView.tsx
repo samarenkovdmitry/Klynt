@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RiArrowRightLine, RiDownloadLine, RiFilePdfLine, RiLock2Line, RiRefreshLine } from "@remixicon/react";
+import { RiDownloadLine, RiFilePdfLine, RiLock2Line, RiRefreshLine } from "@remixicon/react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { ReportActionLayout } from "@/components/report/ReportActionLayout";
@@ -53,7 +53,7 @@ function StickyBottomBar({
   onRerun: () => void;
   exportLocked?: boolean;
 }) {
-  const btnClass =
+  const ghostBtnClass =
     "inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] font-medium text-[#555] transition-colors hover:bg-black/[0.08]";
 
   return (
@@ -62,11 +62,11 @@ function StickyBottomBar({
     >
       <div className="flex items-center gap-4">
         <p className="hidden flex-1 text-[13px] text-[#888] sm:block">
-          Applied changes? Re-run to track your score.
+          Shipped fixes? Re-run to update your score.
         </p>
-        <div className="flex items-center gap-2 sm:ml-auto">
+        <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
           {onExport && (
-            <button type="button" onClick={onExport} className={btnClass}>
+            <button type="button" onClick={onExport} className={ghostBtnClass}>
               {exportLocked ? (
                 <RiLock2Line size={14} aria-hidden />
               ) : (
@@ -75,14 +75,9 @@ function StickyBottomBar({
               Export PDF
             </button>
           )}
-          <button
-            type="button"
-            onClick={onRerun}
-            className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#111] px-[15px] py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
-          >
+          <button type="button" onClick={onRerun} className={ghostBtnClass}>
             <RiRefreshLine size={14} aria-hidden />
             Re-run audit
-            <RiArrowRightLine size={14} aria-hidden />
           </button>
         </div>
       </div>

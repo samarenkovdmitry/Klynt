@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useState } from "react";
 import { buildAnalyzeUrl } from "@/lib/analyze-route";
+import { RiArrowRightLine } from "@remixicon/react";
 import { LANDING_DARK_INPUT_FOCUS } from "./landingPageStyles";
 
 type LandingHeroUrlFormProps = {
@@ -14,7 +15,7 @@ type LandingHeroUrlFormProps = {
 export function LandingHeroUrlForm({
   inputId = "landing-hero-url",
   className = "",
-  maxWidthClass = "max-w-[480px]",
+  maxWidthClass = "max-w-[400px]",
 }: LandingHeroUrlFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,9 +61,10 @@ export function LandingHeroUrlForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="m-[5px] shrink-0 rounded-lg bg-[#F2F2EF] px-5 py-2.5 font-sans text-[14px] font-semibold tracking-[-0.02em] text-[#0E0E0C] transition-opacity hover:opacity-88 disabled:cursor-wait disabled:opacity-70"
+        className="m-[5px] inline-flex shrink-0 items-center gap-1 rounded-lg bg-[#F2F2EF] px-5 py-2.5 font-sans text-[14px] font-semibold tracking-[-0.02em] text-[#0E0E0C] transition-opacity hover:opacity-88 disabled:cursor-wait disabled:opacity-70"
       >
-        {isSubmitting ? "Analyzing…" : "Analyze →"}
+        {isSubmitting ? "Analyzing…" : "Analyze"}
+        {!isSubmitting ? <RiArrowRightLine size={16} aria-hidden /> : null}
       </button>
     </form>
   );

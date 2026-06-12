@@ -11,57 +11,33 @@ import {
   WORKSPACE_BG_CLASS,
 } from "@/components/report/reportStyles";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
+import { SITE_NAV_ITEMS } from "@/lib/site-nav";
 
 const HEADER_HEIGHT_PX = 52;
 const REPORT_HEADER_HEIGHT_PX = 50;
-
-type NavItem = {
-  href: string;
-  label: string;
-  isActive?: (pathname: string) => boolean;
-};
 
 function isReportPath(pathname: string) {
   return pathname.startsWith("/report") && !pathname.includes("/print");
 }
 
-const navItems: NavItem[] = [
-  {
-    href: "/landing-copy",
-    label: "Hero copy",
-    isActive: (p) => p.startsWith("/landing-copy"),
-  },
-  {
-    href: "/analyze",
-    label: "Analyze",
-    isActive: (p) => p.startsWith("/analyze") || isReportPath(p),
-  },
-  {
-    href: DEMO_REPORT_PATH,
-    label: "Sample",
-    isActive: (p) => p === DEMO_REPORT_PATH || p.startsWith(`${DEMO_REPORT_PATH}/`),
-  },
-  { href: "/contact", label: "Contact" },
-];
-
 function navLinkClass(isActive: boolean, isLanding: boolean) {
   const base =
-    "rounded-lg px-[11px] py-[5px] text-[13px] transition-all duration-150";
+    "rounded-lg px-3 py-[5px] text-[14px] transition-colors duration-150";
 
   if (isLanding) {
     return [
       base,
       isActive
-        ? "bg-white/15 font-medium text-white"
-        : "text-white/75 hover:bg-white/10 hover:text-white",
+        ? "font-medium text-white"
+        : "text-white/75 hover:text-white",
     ].join(" ");
   }
 
   return [
     base,
     isActive
-      ? "bg-black/[0.07] font-medium text-[#111]"
-      : "text-[#999] hover:bg-black/[0.05] hover:text-[#111]",
+      ? "font-medium text-[#111]"
+      : "text-[#999] hover:text-[#111]",
   ].join(" ");
 }
 
@@ -69,16 +45,9 @@ function mobileNavLinkClass(isActive: boolean) {
   return [
     "block w-full rounded-xl px-4 py-3 text-left text-[15px] font-medium transition-colors",
     isActive
-      ? "bg-black/[0.06] font-semibold text-[#111]"
+      ? "font-semibold text-[#111]"
       : "text-[#111]/80 hover:bg-black/[0.04] hover:text-[#111]",
   ].join(" ");
-}
-
-function isNavActive(item: NavItem, pathname: string) {
-  if (item.isActive) return item.isActive(pathname);
-  if (item.href === "/") return pathname === "/";
-  if (item.href.startsWith("#")) return false;
-  return pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 
 export function AppHeader() {
@@ -134,13 +103,13 @@ export function AppHeader() {
               <img
                 src="/klynt-logo-light.svg"
                 alt="Klynt"
-                className="h-[30px] w-[100px] shrink-0"
+                className="h-[26px] w-auto shrink-0"
               />
             ) : isReportOrAnalyze ? (
               <img
-                src="/klynt-logo-dark-compact.svg"
+                src="/klynt-logo-dark.svg"
                 alt="Klynt"
-                className="h-[22px] w-auto shrink-0"
+                className="h-[26px] w-auto shrink-0"
               />
             ) : (
               <>
@@ -159,13 +128,13 @@ export function AppHeader() {
 
           <div className="hidden shrink-0 items-center gap-2 md:flex">
             <nav className="flex items-center gap-0.5" aria-label="Main">
-              {navItems.map((item) =>
+              {SITE_NAV_ITEMS.map((item) =>
                 item.href === DEMO_REPORT_PATH ? (
                   <ReportPrefetchLink
                     key={item.href}
                     href={item.href}
                     routeParam={DEMO_REPORT_SLUG}
-                    className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                    className={navLinkClass(item.isActive(pathname), isLanding)}
                   >
                     {item.label}
                   </ReportPrefetchLink>
@@ -173,7 +142,7 @@ export function AppHeader() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                    className={navLinkClass(item.isActive(pathname), isLanding)}
                   >
                     {item.label}
                   </Link>
@@ -184,7 +153,7 @@ export function AppHeader() {
             {isReportPage && (
               <Link
                 href="/analyze"
-                className="ml-1 inline-flex items-center gap-1 rounded-[8px] bg-[#111] px-[13px] py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
+                className="ml-1 inline-flex items-center gap-1 rounded-[8px] bg-[#111] px-[13px] py-1.5 text-[14px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
               >
                 <RiAddLine size={14} aria-hidden />
                 New audit
@@ -244,14 +213,14 @@ export function AppHeader() {
           aria-label="Main mobile"
           aria-hidden={!menuOpen}
         >
-          {navItems.map((item) =>
+          {SITE_NAV_ITEMS.map((item) =>
             item.href === DEMO_REPORT_PATH ? (
               <ReportPrefetchLink
                 key={item.href}
                 href={item.href}
                 routeParam={DEMO_REPORT_SLUG}
                 tabIndex={menuOpen ? 0 : -1}
-                className={mobileNavLinkClass(isNavActive(item, pathname))}
+                className={mobileNavLinkClass(item.isActive(pathname))}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -261,7 +230,7 @@ export function AppHeader() {
                 key={item.href}
                 href={item.href}
                 tabIndex={menuOpen ? 0 : -1}
-                className={mobileNavLinkClass(isNavActive(item, pathname))}
+                className={mobileNavLinkClass(item.isActive(pathname))}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}

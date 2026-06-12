@@ -47,10 +47,10 @@ const variantStyles = {
     social: "text-[#8E99A2] transition hover:text-[#061C2F]",
   },
   dark: {
-    footer: "border-t border-white/[0.06] bg-[#18181B]",
-    text: "text-white/40",
-    link: "transition hover:text-white/80",
-    social: "text-white/40 transition hover:text-white/75",
+    footer: "border-t border-white/[0.08] bg-[#0E0E0C]",
+    text: "text-[#7A7A74]",
+    link: "transition hover:text-[#9A9A93]",
+    social: "text-[#7A7A74] transition hover:text-[#9A9A93]",
   },
   workspace: {
     footer: `border-t border-black/[0.06] ${WORKSPACE_BG_CLASS}`,
@@ -74,7 +74,7 @@ export function AppFooter({
   const styles = variantStyles[variant];
   const container = containerClass ?? LANDING_UPDATE_CONTAINER;
   const paddingClass = compact
-    ? "px-4 py-6 md:px-8 md:py-7"
+    ? "px-4 py-5 md:px-8 md:py-6"
     : "px-6 py-[33px] md:px-6 md:py-10";
 
   return (

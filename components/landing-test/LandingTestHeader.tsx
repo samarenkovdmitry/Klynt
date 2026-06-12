@@ -6,24 +6,33 @@ import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
-import { LANDING_CONTAINER, LANDING_LOGO_LIGHT } from "./landingPageStyles";
+import {
+  isContactActive,
+  isLandingHomeActive,
+  isSampleReportActive,
+} from "@/lib/site-nav";
+import {
+  LANDING_CONTAINER,
+  LANDING_LOGO_LIGHT,
+  LANDING_LOGO_LIGHT_CLASS,
+} from "./landingPageStyles";
 
 const HEADER_HEIGHT_PX = 52;
 
 const navItems = [
-  { href: "#hero", label: "Analyze", match: (p: string) => p === "/" },
+  { href: "#hero", label: "Analyze", match: isLandingHomeActive },
   {
     href: DEMO_REPORT_PATH,
     label: "Sample report",
-    match: (p: string) => p.startsWith("/report"),
+    match: isSampleReportActive,
     prefetch: true,
   },
-  { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") },
+  { href: "/contact", label: "Contact", match: isContactActive },
 ];
 
 function navLinkClass(isActive: boolean) {
   return [
-    "rounded-lg px-3 py-[5px] text-[13px] transition-colors duration-150",
+    "rounded-lg px-3 py-[5px] text-[14px] transition-colors duration-150",
     isActive ? "font-medium text-[#F2F2EF]" : "text-[#7A7A74] hover:text-[#F2F2EF]",
   ].join(" ");
 }
@@ -61,7 +70,7 @@ export function LandingTestHeader() {
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.08] bg-[#0E0E0C]/88 pt-[env(safe-area-inset-top,0px)] backdrop-blur-[16px]">
         <div className={`${LANDING_CONTAINER} flex h-[52px] items-center justify-between gap-4 px-4 md:px-8`}>
           <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Klynt — home">
-            <img src={LANDING_LOGO_LIGHT} alt="Klynt" className="h-[22px] w-auto shrink-0" />
+            <img src={LANDING_LOGO_LIGHT} alt="Klynt" className={LANDING_LOGO_LIGHT_CLASS} />
           </Link>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -93,7 +102,7 @@ export function LandingTestHeader() {
 
             <Link
               href="#hero"
-              className="ml-1 rounded-lg bg-[#F2F2EF] px-4 py-[7px] text-[13px] font-medium text-[#0E0E0C] transition-opacity hover:opacity-85"
+              className="ml-1 rounded-lg bg-[#F2F2EF] px-4 py-[7px] text-[14px] font-medium text-[#0E0E0C] transition-opacity hover:opacity-85"
             >
               Analyze →
             </Link>

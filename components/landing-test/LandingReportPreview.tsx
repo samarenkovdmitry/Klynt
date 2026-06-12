@@ -69,7 +69,7 @@ export function LandingReportPreviewDesktop() {
         className={`pointer-events-none absolute -right-20 -top-20 h-[360px] w-[360px] rounded-full ${LANDING_WARM_GLOW}`}
         aria-hidden
       />
-      <div className="relative overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141412] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_32px_64px_rgba(0,0,0,0.5)]">
+      <div className="relative overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141412] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_32px_64px_rgba(0,0,0,0.5)] select-none">
         <div className="flex items-center justify-between border-b border-white/[0.08] bg-[#1C1C19] px-[14px] py-[11px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 rounded-[7px] bg-white/[0.06] px-2.5 py-[3px] text-[11px] font-medium text-[#9A9A93]">
@@ -123,7 +123,7 @@ export function LandingReportPreviewDesktop() {
         <div className="border-b border-white/[0.08] px-[14px] py-2.5">
           <div className="mb-1.5 flex items-center gap-1 text-[10px] font-medium uppercase tracking-[0.07em] text-[#7A7A74]">
             <RiPencilLine size={12} aria-hidden />
-            Copy studio · Hero headline
+            Copy studio · Headline
           </div>
           <div className="mb-1 rounded-[7px] border border-[rgba(29,158,117,0.18)] bg-[rgba(29,158,117,0.08)] px-[9px] py-[7px]">
             <div className="mb-0.5 text-[9px] text-[#1D9E75]">Category + audience</div>
@@ -151,9 +151,9 @@ export function LandingReportPreviewDesktop() {
             Score potential
           </div>
           <div className="mb-1.5 flex items-center gap-2.5">
-            <span className="font-sans text-[32px] font-bold leading-none tracking-[-0.04em] text-[#BA7517]">6.5</span>
+            <span className="font-sans text-[20px] font-bold leading-none tracking-[-0.03em] text-[#BA7517]">6.5</span>
             <span className="text-[13px] text-[#7A7A74]">→</span>
-            <span className="font-sans text-[32px] font-bold leading-none tracking-[-0.04em] text-[#1D9E75]">8.0</span>
+            <span className="font-sans text-[20px] font-bold leading-none tracking-[-0.03em] text-[#1D9E75]">8.0</span>
             <span className="text-[11px] text-[#7A7A74]">after 3 fixes · estimate</span>
           </div>
           <div className="flex flex-wrap gap-1">
@@ -178,7 +178,7 @@ export function LandingReportPreviewDesktop() {
 
 export function LandingReportPreviewMobile() {
   return (
-    <div className="mt-6 overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#141412] lg:hidden">
+    <div className="mt-6 overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#141412] select-none lg:hidden">
       <div className="flex items-center gap-2.5 border-b border-white/[0.08] px-[14px] py-3">
         <div>
           <span className="font-sans text-[28px] font-bold leading-none tracking-[-0.04em] text-[#BA7517]">

@@ -8,9 +8,13 @@ export const APP_SHELL_CONTAINER_CLASS = "mx-auto w-full max-w-[1180px]";
 export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[860px]";
 
 export const APP_HEADER_CONTAINER_CLASS =
-  "mx-auto flex h-[52px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-6";
+  "mx-auto flex h-[52px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-8";
 export const APP_REPORT_HEADER_CONTAINER_CLASS =
-  "mx-auto flex h-[50px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-6";
+  "mx-auto flex h-[50px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-8";
+
+/** Workspace / analyze lead paragraph */
+export const WORKSPACE_LEAD_CLASS =
+  "text-[16px] leading-[1.75] text-[#999]";
 
 export const REPORT_SECTION_SPACING_CLASS = "mt-2.5";
 

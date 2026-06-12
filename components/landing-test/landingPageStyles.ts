@@ -45,8 +45,11 @@ export const LANDING_BORDER = "border-white/[0.08]";
 
 export const LANDING_BORDER_STRONG = "border-white/[0.14]";
 
-export const LANDING_DIVIDER =
-  "h-px w-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent";
+export const LANDING_DIVIDER = "h-px w-full bg-white/[0.08]";
+
+/** Body / lead copy on dark marketing pages */
+export const LANDING_BODY =
+  "text-[16px] leading-[1.75] text-[#9A9A93]";
 
 export const LANDING_SECTION = "px-4 py-20 md:px-8 md:py-24";
 
@@ -81,5 +84,7 @@ export const LANDING_FONT_DISPLAY = "font-sans";
 export const LANDING_LINK =
   "text-[14px] font-medium text-[#9A9A93] underline-offset-4 transition hover:text-[#F2F2EF] hover:underline";
 
-/** Compact wordmark for dark landing header */
-export const LANDING_LOGO_LIGHT = "/klynt-logo-light-compact.svg";
+/** Wordmark for dark landing header */
+export const LANDING_LOGO_LIGHT = "/klynt-logo-light.svg";
+
+export const LANDING_LOGO_LIGHT_CLASS = "h-[26px] w-auto shrink-0";

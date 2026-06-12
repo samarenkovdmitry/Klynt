@@ -8,6 +8,7 @@ import {
 import { LandingTestHeader } from "./LandingTestHeader";
 import {
   LANDING_BADGE,
+  LANDING_BODY,
   LANDING_CONTAINER,
   LANDING_DISPLAY_H1,
   LANDING_HERO_ACCENT,
@@ -28,8 +29,8 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
     <section id="hero" className="scroll-mt-[52px]">
       <LandingTestHeader />
 
-      <div className={`${LANDING_CONTAINER} px-4 pb-16 pt-[calc(52px+env(safe-area-inset-top,0px)+5rem)] md:px-8 md:pb-20`}>
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_500px] lg:gap-20">
+      <div className={`${LANDING_CONTAINER} px-4 pb-16 pt-[calc(52px+env(safe-area-inset-top,0px)+4rem)] md:px-8 md:pb-20`}>
+        <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_500px] lg:gap-20">
           <div className="min-w-0">
             <div className={`mb-6 ${LANDING_BADGE}`}>
               <RiSparklingLine size={14} className="text-[#9A9A93]" aria-hidden />
@@ -42,7 +43,7 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
               <em className={LANDING_HERO_ACCENT}>improved</em> — not just rated
             </h1>
 
-            <p className="mt-5 max-w-[460px] text-[16px] leading-[1.75] text-[#9A9A93]">
+            <p className={`mt-5 max-w-[460px] ${LANDING_BODY}`}>
               Paste a URL and get copy variants, a fix checklist, and tasks your team can ship. In
               about a minute.
             </p>

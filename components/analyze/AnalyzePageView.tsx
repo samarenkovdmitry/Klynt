@@ -19,7 +19,7 @@ import {
   type AnalyzeInputMode,
 } from "@/hooks/useAnalyzePage";
 import { AppHeader } from "@/components/AppHeader";
-import { WORKSPACE_BG_CLASS } from "@/components/report/reportStyles";
+import { WORKSPACE_BG_CLASS, WORKSPACE_LEAD_CLASS } from "@/components/report/reportStyles";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
 import { useLoadingStall } from "@/hooks/useLoadingStall";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
@@ -167,9 +167,8 @@ function AnalyzeFormActions({
   return (
     <button
       type="button"
-      disabled={isButtonDisabled}
       onClick={handleAnalyze}
-      className="inline-flex w-full items-center justify-center gap-1 rounded-[13px] bg-[#111] px-4 py-3.5 text-[15px] font-medium tracking-[-0.01em] text-white transition-all hover:bg-[#2a2a2a] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+      className="inline-flex w-full items-center justify-center gap-1 rounded-[13px] bg-[#111] px-4 py-3.5 text-[15px] font-medium tracking-[-0.01em] text-white transition-all hover:bg-[#2a2a2a] active:scale-[0.99]"
     >
       Analyze UX
       <RiArrowRightLine size={18} aria-hidden />
@@ -219,7 +218,7 @@ export function AnalyzePageView() {
             <h1 className="text-[26px] font-semibold leading-[1.2] tracking-[-0.04em] text-[#111] md:text-[34px]">
               What are visitors missing?
             </h1>
-            <p className="mx-auto mt-3 max-w-[460px] text-[14px] leading-[1.7] text-[#999]">
+            <p className={`mx-auto mt-3 max-w-[460px] ${WORKSPACE_LEAD_CLASS}`}>
               Paste a URL and get a prioritized UX report — issues, fixes, and copy
               rewrites — in about a minute.
             </p>

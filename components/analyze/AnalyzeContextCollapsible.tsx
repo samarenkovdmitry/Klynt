@@ -54,9 +54,9 @@ function ContextPills<T extends string>({
             disabled={disabled}
             onClick={() => onChange(option.id)}
             className={[
-              "rounded-full border-[0.5px] px-[13px] py-[5px] text-[12px] transition-all",
+              "rounded-full border-[0.5px] px-[13px] py-[5px] text-[12px] font-medium transition-all",
               isActive
-                ? "border-[rgba(29,158,117,0.3)] bg-[#E1F5EE] font-medium text-[#0F6E56]"
+                ? "border-[rgba(29,158,117,0.3)] bg-[#E1F5EE] text-[#0F6E56]"
                 : "border-transparent bg-[#E8E8E6] text-[#555] hover:bg-[#E5E5E3] hover:text-[#111]",
               disabled ? "cursor-not-allowed opacity-60" : "",
             ].join(" ")}

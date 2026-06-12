@@ -16,31 +16,30 @@ function isWorkspacePath(pathname: string | null) {
   );
 }
 
+function isDarkFooterPath(pathname: string | null) {
+  if (!pathname) return false;
+  return (
+    pathname === "/" ||
+    pathname === "/contact" ||
+    pathname.startsWith("/landing-copy")
+  );
+}
+
 export function AppFooterWrapper() {
   const pathname = usePathname();
-  const isDarkFooter =
-    pathname === "/" || pathname === "/landing-copy" || pathname?.startsWith("/landing-copy/");
-  const isWorkspaceFooter = isWorkspacePath(pathname);
   const isPrintRoute = pathname?.includes("/print");
 
-  if (isPrintRoute || pathname === "/" || pathname === "/contact") {
+  if (isPrintRoute) {
     return null;
   }
 
-  if (isWorkspaceFooter) {
-    return (
-      <AppFooter
-        variant="workspace"
-        compact
-        containerClass={APP_SHELL_CONTAINER_CLASS}
-      />
-    );
-  }
+  const variant = isDarkFooterPath(pathname)
+    ? "dark"
+    : isWorkspacePath(pathname)
+      ? "workspace"
+      : "light";
 
   return (
-    <AppFooter
-      variant={isDarkFooter ? "dark" : "light"}
-      containerClass={isDarkFooter ? undefined : APP_SHELL_CONTAINER_CLASS}
-    />
+    <AppFooter variant={variant} compact containerClass={APP_SHELL_CONTAINER_CLASS} />
   );
 }

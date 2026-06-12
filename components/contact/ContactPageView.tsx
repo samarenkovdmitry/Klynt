@@ -8,14 +8,14 @@ import {
 } from "@remixicon/react";
 
 import { ContactOtherLinks } from "@/components/contact/ContactOtherLinks";
-import { LandingTestFooter } from "@/components/landing-test/LandingTestFooter";
+import { ServiceDarkHeader } from "@/components/service/ServiceDarkHeader";
 import {
+  LANDING_BODY,
   LANDING_CONTAINER,
   LANDING_DARK,
   LANDING_DISPLAY_H1,
   LANDING_DIVIDER,
 } from "@/components/landing-test/landingPageStyles";
-import { ServiceDarkHeader } from "@/components/service/ServiceDarkHeader";
 
 const REASONS = [
   "Feedback",
@@ -98,7 +98,7 @@ export function ContactPageView() {
               <br />
               to hear from you
             </h1>
-            <p className="mt-4 max-w-[360px] text-[15px] leading-[1.75] text-[#9A9A93]">
+            <p className={`mt-4 max-w-[360px] ${LANDING_BODY}`}>
               Questions about the product, feedback, partnership ideas — drop a message and
               we&apos;ll get back to you.
             </p>
@@ -244,7 +244,6 @@ export function ContactPageView() {
       <div className={LANDING_CONTAINER}>
         <div className={LANDING_DIVIDER} aria-hidden />
       </div>
-      <LandingTestFooter />
     </div>
   );
 }

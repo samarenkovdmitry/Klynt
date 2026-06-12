@@ -18,7 +18,7 @@ export function LandingTestCtaSection() {
         <LandingHeroUrlForm
           inputId="landing-cta-url"
           className="mx-auto mt-7"
-          maxWidthClass="w-full max-w-[480px]"
+          maxWidthClass="w-full max-w-[400px]"
         />
 
         <div className="mt-3.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] text-[#7A7A74]">

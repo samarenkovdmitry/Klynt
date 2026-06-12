@@ -3,7 +3,6 @@ import {
   LandingFeaturesDivider,
   LandingTestFeatures,
 } from "@/components/landing-test/LandingTestFeatures";
-import { LandingTestFooter } from "@/components/landing-test/LandingTestFooter";
 import { LandingTestHero } from "@/components/landing-test/LandingTestHero";
 import {
   LandingHowItWorksDivider,
@@ -32,7 +31,6 @@ export function FigmaLandingPage({ auditedCount = null }: FigmaLandingPageProps)
       <div className={LANDING_CONTAINER}>
         <div className={LANDING_DIVIDER} aria-hidden />
       </div>
-      <LandingTestFooter />
     </main>
   );
 }

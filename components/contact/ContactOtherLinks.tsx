@@ -36,7 +36,7 @@ export function ContactOtherLinks({
         </p>
       ) : null}
 
-      <ul className="space-y-1">
+      <ul className="space-y-2">
         {LINKS.map(({ href, label, value, icon: Icon, accent, external }) => (
           <li key={label}>
             <a
@@ -44,15 +44,17 @@ export function ContactOtherLinks({
               {...(external
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
-              className="group inline-flex items-center gap-2.5 rounded-lg py-1.5 text-[13px] text-[#9A9A93] transition-colors hover:text-[#F2F2EF]"
+              className="group grid grid-cols-[16px_4.5rem_minmax(0,1fr)] items-center gap-x-2.5 rounded-lg py-1 text-[14px] transition-colors hover:text-[#F2F2EF]"
             >
               <Icon
                 size={16}
-                className={accent ? "text-[#1D9E75]" : "text-[#7A7A74]"}
+                className={accent ? "text-[#C9C5BC]" : "text-[#7A7A74]"}
                 aria-hidden
               />
               <span className="text-[#7A7A74]">{label}</span>
-              <span className="font-medium text-[#F2F2EF] group-hover:underline">{value}</span>
+              <span className="min-w-0 truncate font-medium text-[#F2F2EF] group-hover:underline">
+                {value}
+              </span>
             </a>
           </li>
         ))}
