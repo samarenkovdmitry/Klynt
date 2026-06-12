@@ -451,7 +451,7 @@ function ensureMinimumChecklistGaps(
   }
 
   const minTotalGaps = 3;
-  const requireWeakTypography = numericScore < 6.5;
+  const requireWeakTypography = numericScore < 7;
   const minMissing = numericScore < 6.0 ? 3 : 2;
 
   let result = [...gaps];

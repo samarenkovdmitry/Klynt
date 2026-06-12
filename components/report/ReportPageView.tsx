@@ -150,7 +150,9 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     const visualSection = normalizeVisualSection(
       data.visual_fixes,
       data.visual_passes,
-      checklist
+      checklist,
+      undefined,
+      data.score
     );
 
     return {

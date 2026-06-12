@@ -428,16 +428,6 @@ export async function POST(req: Request) {
 
     Object.assign(json, normalizeReportHeroCopy(json));
 
-    json.checklist = normalizeReportChecklist(json.checklist, Number(json.score) || 0);
-
-    const visualSection = normalizeVisualSection(
-      json.visual_fixes,
-      json.visual_passes,
-      json.checklist as import("@/lib/audit-report").ReportChecklistItem[]
-    );
-    json.visual_fixes = visualSection.fixes;
-    json.visual_passes = visualSection.passes;
-
     const finalized = finalizeReportChecklist(
       json.checklist,
       Number(json.score) || 0,
@@ -447,6 +437,16 @@ export async function POST(req: Request) {
     );
     json.checklist = finalized.checklist;
     json.score_potential = finalized.scorePotential;
+
+    const visualSection = normalizeVisualSection(
+      json.visual_fixes,
+      json.visual_passes,
+      json.checklist as import("@/lib/audit-report").ReportChecklistItem[],
+      undefined,
+      Number(json.score) || 0
+    );
+    json.visual_fixes = visualSection.fixes;
+    json.visual_passes = visualSection.passes;
 
     if (json.copy_variants && typeof json.copy_variants === "object") {
       json.copy_variants = normalizeReportCopyVariants(

@@ -105,6 +105,12 @@ function fallbackFixesFromChecklist(checklist?: ReportChecklistItem[]): ReportVi
   ];
 }
 
+const DEFAULT_SUB7_VISUAL_FIX: ReportVisualFix = {
+  dimension: "typography",
+  observation: "Hero typography may slow scan for cold visitors",
+  recommendation: "Increase subheadline weight and size for faster value-prop scan",
+};
+
 export function normalizeReportVisualFixes(
   raw: unknown,
   checklist?: ReportChecklistItem[]
@@ -123,7 +129,8 @@ export function normalizeVisualSection(
   fixesRaw?: unknown,
   passesRaw?: unknown,
   checklist?: ReportChecklistItem[],
-  existingFixes?: ReportVisualFix[]
+  existingFixes?: ReportVisualFix[],
+  score?: number
 ): NormalizedVisualSection {
   const parsedFixes = Array.isArray(fixesRaw)
     ? fixesRaw
@@ -186,6 +193,17 @@ export function normalizeVisualSection(
     if (passes.length >= 3) {
       break;
     }
+  }
+
+  const numericScore = Number(score);
+  if (
+    fixes.length === 0 &&
+    passes.length === 0 &&
+    Number.isFinite(numericScore) &&
+    numericScore < 7
+  ) {
+    const checklistFallback = fallbackFixesFromChecklist(checklist);
+    fixes = checklistFallback.length > 0 ? checklistFallback : [DEFAULT_SUB7_VISUAL_FIX];
   }
 
   return { fixes, passes };
