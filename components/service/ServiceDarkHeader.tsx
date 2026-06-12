@@ -13,6 +13,7 @@ import {
 } from "@/lib/site-nav";
 import {
   LANDING_CONTAINER,
+  LANDING_HEADER_OUTLINE_CTA,
   LANDING_LOGO_LIGHT,
   LANDING_LOGO_LIGHT_CLASS,
 } from "@/components/landing-test/landingPageStyles";
@@ -77,14 +78,14 @@ export function ServiceDarkHeader() {
     <>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.08] bg-[#0E0E0C]/88 pt-[env(safe-area-inset-top,0px)] backdrop-blur-[16px]">
         <div
-          className={`${LANDING_CONTAINER} flex h-[52px] items-center justify-between gap-4 px-4 md:px-8`}
+          className={`${LANDING_CONTAINER} flex h-[52px] items-center gap-4 px-4 md:px-8`}
         >
-          <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Klynt — home">
-            <img src={LANDING_LOGO_LIGHT} alt="Klynt" className={LANDING_LOGO_LIGHT_CLASS} />
-          </Link>
+          <div className="flex min-w-0 flex-1 items-center gap-6 md:gap-8">
+            <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Klynt — home">
+              <img src={LANDING_LOGO_LIGHT} alt="Klynt" className={LANDING_LOGO_LIGHT_CLASS} />
+            </Link>
 
-          <div className="hidden items-center gap-2 md:flex">
-            <nav className="flex items-center gap-0.5" aria-label="Main">
+            <nav className="hidden items-center gap-0.5 md:flex" aria-label="Main">
               {navItems.map((item) => {
                 const isActive = item.match(pathname);
                 const className = navLinkClass(isActive);
@@ -109,14 +110,11 @@ export function ServiceDarkHeader() {
                 );
               })}
             </nav>
-
-            <Link
-              href="/analyze"
-              className="ml-1 rounded-lg bg-[#F2F2EF] px-4 py-[7px] text-[14px] font-medium text-[#0E0E0C] transition-opacity hover:opacity-85"
-            >
-              Analyze →
-            </Link>
           </div>
+
+          <Link href="/analyze" className={`${LANDING_HEADER_OUTLINE_CTA} hidden md:inline-flex`}>
+            Analyze →
+          </Link>
 
           <button
             type="button"
@@ -183,7 +181,7 @@ export function ServiceDarkHeader() {
           <Link
             href="/analyze"
             tabIndex={menuOpen ? 0 : -1}
-            className="mt-1 flex w-full items-center justify-center rounded-xl bg-[#F2F2EF] px-4 py-3 text-[15px] font-medium text-[#0E0E0C]"
+            className={`${LANDING_HEADER_OUTLINE_CTA} mt-1 w-full justify-center`}
             onClick={() => setMenuOpen(false)}
           >
             Analyze →

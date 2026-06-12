@@ -1,4 +1,4 @@
-import { RiLockLine, RiSparklingLine } from "@remixicon/react";
+import { RiLockLine } from "@remixicon/react";
 
 import { LandingHeroUrlForm } from "./LandingHeroUrlForm";
 import { LANDING_CONTAINER, LANDING_LEAD, LANDING_SECTION, LANDING_TITLE } from "./landingPageStyles";
@@ -22,10 +22,7 @@ export function LandingTestCtaSection() {
         />
 
         <div className="mt-3.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] text-[#7A7A74]">
-          <span className="inline-flex items-center gap-1">
-            <RiSparklingLine size={13} aria-hidden />
-            Free · No signup
-          </span>
+          <span>Free · No signup</span>
           <span className="inline-flex items-center gap-1 border-l border-white/[0.08] pl-3">
             <RiLockLine size={13} aria-hidden />
             URLs never stored

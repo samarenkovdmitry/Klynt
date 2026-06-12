@@ -1,5 +1,6 @@
-import { RiLockLine, RiPagesLine, RiSparklingLine } from "@remixicon/react";
+import { RiLockLine, RiPagesLine } from "@remixicon/react";
 
+import { LandingHeroDotPattern } from "./LandingHeroDotPattern";
 import { LandingHeroUrlForm } from "./LandingHeroUrlForm";
 import {
   LandingReportPreviewDesktop,
@@ -26,18 +27,18 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
   const hasAuditedCount = typeof auditedCount === "number" && auditedCount > 0;
 
   return (
-    <section id="hero" className="scroll-mt-[52px]">
+    <section id="hero" className="relative scroll-mt-[52px] overflow-hidden">
+      <LandingHeroDotPattern />
       <LandingTestHeader />
 
-      <div className={`${LANDING_CONTAINER} px-4 pb-16 pt-[calc(52px+env(safe-area-inset-top,0px)+4rem)] md:px-8 md:pb-20`}>
+      <div
+        className={`relative ${LANDING_CONTAINER} px-4 pb-16 pt-[calc(52px+env(safe-area-inset-top,0px)+4rem)] md:px-8 md:pb-20`}
+      >
         <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_500px] lg:gap-20">
           <div className="min-w-0">
-            <div className={`mb-6 ${LANDING_BADGE}`}>
-              <RiSparklingLine size={14} className="text-[#9A9A93]" aria-hidden />
-              Free · No signup
-            </div>
+            <div className={LANDING_BADGE}>Free · No signup</div>
 
-            <h1 className={`max-w-[560px] ${LANDING_DISPLAY_H1}`}>
+            <h1 className={`mt-6 max-w-[560px] ${LANDING_DISPLAY_H1}`}>
               Your landing page,
               <br />
               <em className={LANDING_HERO_ACCENT}>improved</em> — not just rated
@@ -57,11 +58,11 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
               </span>
               {hasAuditedCount ? (
                 <span className="inline-flex items-center gap-1 border-l border-white/[0.08] pl-3">
-                    <RiPagesLine size={13} aria-hidden />
-                    <strong className="font-medium text-[#9A9A93]">
-                      {formatAuditedCount(auditedCount)}
-                    </strong>{" "}
-                    pages analyzed
+                  <RiPagesLine size={13} aria-hidden />
+                  <strong className="font-medium text-[#9A9A93]">
+                    {formatAuditedCount(auditedCount)}
+                  </strong>{" "}
+                  pages analyzed
                 </span>
               ) : null}
             </div>
@@ -69,7 +70,9 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
             <LandingReportPreviewMobile />
           </div>
 
-          <LandingReportPreviewDesktop />
+          <div className="min-w-0 lg:pt-2">
+            <LandingReportPreviewDesktop />
+          </div>
         </div>
       </div>
     </section>

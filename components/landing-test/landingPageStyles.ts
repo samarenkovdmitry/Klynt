@@ -68,7 +68,17 @@ export const LANDING_DARK_INPUT_FOCUS =
   "focus-within:border-white/[0.22] focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.06)]";
 
 export const LANDING_WARM_GLOW =
-  "bg-[radial-gradient(circle,rgba(232,228,220,0.10)_0%,transparent_65%)]";
+  "bg-[radial-gradient(circle,rgba(232,228,220,0.06)_0%,transparent_68%)]";
+
+/** Outline CTA for header — secondary to hero primary button. */
+export const LANDING_HEADER_OUTLINE_CTA =
+  "inline-flex items-center rounded-lg border border-white/[0.14] bg-transparent px-4 py-[7px] text-[14px] font-medium text-[#F2F2EF] transition-colors hover:border-white/[0.22] hover:bg-white/[0.04]";
+
+export const LANDING_MOCKUP_GHOST_BTN =
+  "rounded-md border border-white/[0.08] bg-transparent px-2 py-[3px] text-[11px] text-[#7A7A74]";
+
+export const LANDING_MOCKUP_OUTLINE_BTN =
+  "rounded-md border border-white/[0.12] bg-transparent px-2 py-[3px] text-[11px] font-medium text-[#9A9A93]";
 
 export const LANDING_TITLE =
   "font-sans text-[clamp(26px,3.5vw,40px)] font-bold leading-[1.15] tracking-[-0.04em] text-[#F2F2EF]";

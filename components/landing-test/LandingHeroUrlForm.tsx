@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useState } from "react";
+import { RiArrowRightLine, RiGlobalLine } from "@remixicon/react";
 import { buildAnalyzeUrl } from "@/lib/analyze-route";
-import { RiArrowRightLine } from "@remixicon/react";
 import { LANDING_DARK_INPUT_FOCUS } from "./landingPageStyles";
 
 type LandingHeroUrlFormProps = {
@@ -41,12 +41,17 @@ export function LandingHeroUrlForm({
       noValidate
       onSubmit={handleSubmit}
       className={[
-        "flex overflow-hidden rounded-xl border border-white/[0.14] bg-[#1C1C19] transition-[border-color,box-shadow]",
+        "relative flex overflow-hidden rounded-xl border border-white/[0.14] bg-[#1C1C19] transition-[border-color,box-shadow]",
         LANDING_DARK_INPUT_FOCUS,
         maxWidthClass,
         className,
       ].join(" ")}
     >
+      <RiGlobalLine
+        size={14}
+        className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[#7A7A74]"
+        aria-hidden
+      />
       <input
         id={inputId}
         name="url"
@@ -56,7 +61,7 @@ export function LandingHeroUrlForm({
         spellCheck={false}
         placeholder="https://yoursite.com"
         disabled={isSubmitting}
-        className="min-w-0 flex-1 bg-transparent px-4 py-[13px] text-[14px] text-[#F2F2EF] outline-none placeholder:text-[#7A7A74] disabled:opacity-70"
+        className="min-w-0 flex-1 bg-transparent py-[13px] pr-4 pl-[42px] text-[14px] text-[#F2F2EF] outline-none placeholder:text-[#7A7A74] disabled:opacity-70"
       />
       <button
         type="submit"

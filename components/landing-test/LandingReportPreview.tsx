@@ -7,7 +7,11 @@ import {
   RiPencilLine,
 } from "@remixicon/react";
 
-import { LANDING_WARM_GLOW } from "./landingPageStyles";
+import {
+  LANDING_MOCKUP_GHOST_BTN,
+  LANDING_MOCKUP_OUTLINE_BTN,
+  LANDING_WARM_GLOW,
+} from "./landingPageStyles";
 
 function PreviewBadge({
   children,
@@ -66,7 +70,7 @@ export function LandingReportPreviewDesktop() {
   return (
     <div className="relative hidden lg:block">
       <div
-        className={`pointer-events-none absolute -right-20 -top-20 h-[360px] w-[360px] rounded-full ${LANDING_WARM_GLOW}`}
+        className={`pointer-events-none absolute -right-16 -top-16 h-[320px] w-[320px] rounded-full ${LANDING_WARM_GLOW}`}
         aria-hidden
       />
       <div className="relative overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141412] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_32px_64px_rgba(0,0,0,0.5)] select-none">
@@ -82,15 +86,9 @@ export function LandingReportPreviewDesktop() {
             <span className="text-[11px] text-[#7A7A74]">June 2026</span>
           </div>
           <div className="flex gap-1">
-            <span className="rounded-md border border-white/[0.08] bg-white/[0.05] px-2 py-[3px] text-[11px] text-[#7A7A74]">
-              Share
-            </span>
-            <span className="rounded-md border border-white/[0.08] bg-white/[0.05] px-2 py-[3px] text-[11px] text-[#7A7A74]">
-              PDF
-            </span>
-            <span className="rounded-md bg-[#F2F2EF] px-2 py-[3px] text-[11px] font-medium text-[#0E0E0C]">
-              Re-run →
-            </span>
+            <span className={LANDING_MOCKUP_GHOST_BTN}>Share</span>
+            <span className={LANDING_MOCKUP_GHOST_BTN}>PDF</span>
+            <span className={LANDING_MOCKUP_OUTLINE_BTN}>Re-run</span>
           </div>
         </div>
 
