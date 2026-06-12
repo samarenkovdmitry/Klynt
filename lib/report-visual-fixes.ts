@@ -36,15 +36,85 @@ export function getVisualFixDimensionLabel(dimension: VisualFixDimension): strin
   return DIMENSION_LABELS[dimension];
 }
 
+const DIMENSION_ALIASES: Record<string, VisualFixDimension> = {
+  border_radius: "border_radius",
+  borderradius: "border_radius",
+  corner_radius: "border_radius",
+  radius: "border_radius",
+  density: "density",
+  information_density: "density",
+  color_tone: "color_tone",
+  colortone: "color_tone",
+  color: "color_tone",
+  spacing: "spacing",
+  spacing_rhythm: "spacing",
+  cta_hierarchy: "cta_hierarchy",
+  ctahierarchy: "cta_hierarchy",
+  cta: "cta_hierarchy",
+  typography: "typography",
+  type: "typography",
+  depth: "depth",
+  background_depth: "depth",
+};
+
+export function normalizeVisualDimension(raw: string | undefined | null): VisualFixDimension | null {
+  if (!raw) {
+    return null;
+  }
+
+  const normalized = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
+
+  if (VISUAL_FIX_DIMENSIONS.includes(normalized as VisualFixDimension)) {
+    return normalized as VisualFixDimension;
+  }
+
+  return DIMENSION_ALIASES[normalized] ?? null;
+}
+
+function resolveVisualDimensionFromGapLabel(gapLabel: string): VisualFixDimension | null {
+  switch (gapLabel.trim()) {
+    case "Weak typography":
+      return "typography";
+    case "Spacing issue":
+      return "spacing";
+    case "Color tone mismatch":
+      return "color_tone";
+    case "CTA hierarchy":
+      return "cta_hierarchy";
+    default:
+      return null;
+  }
+}
+
+function resolveVisualDimensionFromChecklistItem(
+  item: ReportChecklistItem
+): VisualFixDimension | null {
+  const gapLabel = item.gap_label?.trim();
+
+  if (gapLabel) {
+    const fromLabel = resolveVisualDimensionFromGapLabel(gapLabel);
+
+    if (fromLabel) {
+      return fromLabel;
+    }
+  }
+
+  if (item.link_to === "visual-fixes") {
+    return "typography";
+  }
+
+  return resolveVisualDimensionFromPass(item);
+}
+
 function parseVisualFixItem(raw: unknown): ReportVisualFix | null {
   if (!raw || typeof raw !== "object") {
     return null;
   }
 
   const item = raw as Record<string, unknown>;
-  const dimension = String(item.dimension ?? "").trim() as VisualFixDimension;
+  const dimension = normalizeVisualDimension(String(item.dimension ?? ""));
 
-  if (!VISUAL_FIX_DIMENSIONS.includes(dimension)) {
+  if (!dimension) {
     return null;
   }
 
@@ -68,9 +138,9 @@ function parseVisualPassItem(raw: unknown): ReportVisualPass | null {
   }
 
   const item = raw as Record<string, unknown>;
-  const dimension = String(item.dimension ?? "").trim() as VisualFixDimension;
+  const dimension = normalizeVisualDimension(String(item.dimension ?? ""));
 
-  if (!VISUAL_FIX_DIMENSIONS.includes(dimension)) {
+  if (!dimension) {
     return null;
   }
 
@@ -150,6 +220,12 @@ export function isMisclassifiedVisualPassItem(item: ReportChecklistItem): boolea
     return false;
   }
 
+  const gapLabel = item.gap_label?.trim();
+
+  if (gapLabel && VISUAL_PROBLEM_GAP_LABELS.has(gapLabel)) {
+    return true;
+  }
+
   if (!isProblemPassText(item.text)) {
     return false;
   }
@@ -158,12 +234,11 @@ export function isMisclassifiedVisualPassItem(item: ReportChecklistItem): boolea
     return true;
   }
 
-  const gapLabel = item.gap_label?.trim();
-  if (gapLabel && VISUAL_PROBLEM_GAP_LABELS.has(gapLabel)) {
-    return true;
-  }
-
-  return resolveVisualDimensionFromPass(item) !== null && item.category !== "copy" && item.category !== "trust";
+  return (
+    resolveVisualDimensionFromChecklistItem(item) !== null &&
+    item.category !== "copy" &&
+    item.category !== "trust"
+  );
 }
 
 export function extractVisualFixesFromMisclassifiedPasses(
@@ -185,7 +260,7 @@ export function extractVisualFixesFromMisclassifiedPasses(
       continue;
     }
 
-    const dimension = resolveVisualDimensionFromPass(item);
+    const dimension = resolveVisualDimensionFromChecklistItem(item);
 
     if (!dimension || seen.has(dimension) || skipDimensions.has(dimension)) {
       continue;
@@ -204,6 +279,67 @@ export function extractVisualFixesFromMisclassifiedPasses(
   }
 
   return fixes;
+}
+
+export function extractVisualFixesFromChecklistGaps(
+  items: ReportChecklistItem[] | undefined,
+  options?: {
+    skipDimensions?: Set<VisualFixDimension>;
+  }
+): ReportVisualFix[] {
+  if (!items?.length) {
+    return [];
+  }
+
+  const skipDimensions = options?.skipDimensions ?? new Set<VisualFixDimension>();
+  const fixes: ReportVisualFix[] = [];
+  const seen = new Set<VisualFixDimension>();
+
+  for (const item of items) {
+    if (item.status === "pass") {
+      continue;
+    }
+
+    const dimension = resolveVisualDimensionFromChecklistItem(item);
+
+    if (
+      !dimension ||
+      seen.has(dimension) ||
+      skipDimensions.has(dimension) ||
+      item.category === "copy" ||
+      item.category === "trust"
+    ) {
+      continue;
+    }
+
+    seen.add(dimension);
+    fixes.push({
+      dimension,
+      observation: clampWords(item.text, 14, true),
+      recommendation: DEFAULT_DIMENSION_RECOMMENDATIONS[dimension],
+    });
+
+    if (fixes.length >= 4) {
+      break;
+    }
+  }
+
+  return fixes;
+}
+
+function mergeExtractedVisualFixes(
+  target: ReportVisualFix[],
+  fixDimensions: Set<VisualFixDimension>,
+  extracted: ReportVisualFix[]
+) {
+  for (const item of extracted) {
+    if (fixDimensions.has(item.dimension) || target.length >= 4) {
+      continue;
+    }
+
+    fixDimensions.add(item.dimension);
+    target.push(item);
+  }
 }
 
 function fallbackFixesFromChecklist(checklist?: ReportChecklistItem[]): ReportVisualFix[] {
@@ -284,16 +420,23 @@ export function normalizeVisualSection(
     skipExtractDimensions.add("typography");
   }
 
-  for (const item of extractVisualFixesFromMisclassifiedPasses(rawChecklist ?? checklist, {
-    skipDimensions: skipExtractDimensions,
-  })) {
-    if (fixDimensions.has(item.dimension) || dedupedFixes.length >= 4) {
-      continue;
-    }
+  const checklistSource = rawChecklist ?? checklist;
 
-    fixDimensions.add(item.dimension);
-    dedupedFixes.push(item);
-  }
+  mergeExtractedVisualFixes(
+    dedupedFixes,
+    fixDimensions,
+    extractVisualFixesFromMisclassifiedPasses(checklistSource, {
+      skipDimensions: skipExtractDimensions,
+    })
+  );
+
+  mergeExtractedVisualFixes(
+    dedupedFixes,
+    fixDimensions,
+    extractVisualFixesFromChecklistGaps(checklistSource, {
+      skipDimensions: fixDimensions,
+    })
+  );
 
   let fixes = dedupedFixes;
   const checklistFallback = fallbackFixesFromChecklist(checklist);

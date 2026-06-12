@@ -14,19 +14,16 @@ import {
   RiText,
 } from "@remixicon/react";
 import type {
-  ReportChecklistItem,
   ReportVisualFix,
   ReportVisualPass,
   VisualFixDimension,
 } from "@/lib/audit-report";
 import {
   getVisualFixDimensionLabel,
-  normalizeVisualSection,
 } from "@/lib/report-visual-fixes";
 import { REPORT_SECTION_SCROLL_MARGIN_CLASS, REPORT_SECTION_SPACING_CLASS } from "@/components/report/reportStyles";
 
 type Props = {
-  checklist?: ReportChecklistItem[];
   visualFixes?: ReportVisualFix[];
   visualPasses?: ReportVisualPass[];
 };
@@ -91,9 +88,10 @@ function VisualPassRow({
   );
 }
 
-export function VisualFixes({ checklist, visualFixes, visualPasses }: Props) {
+export function VisualFixes({ visualFixes, visualPasses }: Props) {
   const [passVisible, setPassVisible] = useState(false);
-  const { fixes, passes } = normalizeVisualSection(visualFixes, visualPasses, checklist);
+  const fixes = visualFixes ?? [];
+  const passes = visualPasses ?? [];
 
   if (fixes.length === 0 && passes.length === 0) {
     return null;

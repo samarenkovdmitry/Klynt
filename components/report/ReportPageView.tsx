@@ -255,7 +255,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               </div>
 
               <VisualFixes
-                checklist={report.checklist}
                 visualFixes={report.visual_fixes}
                 visualPasses={report.visual_passes}
               />
