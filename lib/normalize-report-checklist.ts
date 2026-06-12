@@ -6,6 +6,12 @@ import type {
 } from "@/lib/audit-report";
 import { isLlmPlaceholderText } from "@/lib/llm-placeholder-text";
 import { isMisclassifiedVisualPassItem, isProblemPassText } from "@/lib/report-visual-fixes";
+import {
+  collectTrustEvidenceTexts,
+  isTrustMissingChipLabel,
+  shouldSkipTrustMissingGap,
+  type TrustCalibrationInput,
+} from "@/lib/trust-calibration";
 
 const GAP_LABEL_DEFAULTS: Record<string, string> = {
   "copy-headline:missing": "Category missing",
@@ -447,7 +453,8 @@ function repairChecklistItems(items: ReportChecklistItem[]): ReportChecklistItem
 function reconcileChecklistWithScorePotential(
   checklist: ReportChecklistItem[],
   scorePotential?: ScorePotentialInput,
-  score?: number
+  score?: number,
+  evidenceTexts: string[] = []
 ): ReportChecklistItem[] {
   let gaps = checklist.filter((item) => item.status !== "pass");
   let passes = checklist.filter((item) => item.status === "pass");
@@ -456,9 +463,17 @@ function reconcileChecklistWithScorePotential(
   );
 
   for (const chip of scorePotential?.chips ?? []) {
+    if (shouldSkipTrustMissingGap(evidenceTexts) && isTrustMissingChipLabel(chip.label)) {
+      continue;
+    }
+
     const slot = resolveGapSlotFromLabel(chip.label);
 
     if (!slot || filledLinks.has(slot.link_to)) {
+      continue;
+    }
+
+    if (slot.link_to === "trust" && shouldSkipTrustMissingGap(evidenceTexts)) {
       continue;
     }
 
@@ -466,7 +481,7 @@ function reconcileChecklistWithScorePotential(
     filledLinks.add(slot.link_to);
   }
 
-  gaps = ensureMinimumChecklistGaps(gaps, score);
+  gaps = ensureMinimumChecklistGaps(gaps, score, evidenceTexts);
   passes = filterInvalidPassItems(passes, gaps);
 
   const missing = gaps.filter((item) => item.status === "missing").slice(0, 3);
@@ -488,7 +503,8 @@ function countGaps(gaps: ReportChecklistItem[]) {
 
 function ensureMinimumChecklistGaps(
   gaps: ReportChecklistItem[],
-  score?: number
+  score?: number,
+  evidenceTexts: string[] = []
 ): ReportChecklistItem[] {
   const numericScore = Number(score);
 
@@ -511,6 +527,10 @@ function ensureMinimumChecklistGaps(
   }
 
   for (const slot of COPY_TRUST_GAP_SLOTS) {
+    if (slot.link_to === "trust" && shouldSkipTrustMissingGap(evidenceTexts)) {
+      continue;
+    }
+
     if (countGaps(result).total >= minTotalGaps && countGaps(result).missing >= minMissing) {
       break;
     }
@@ -636,16 +656,33 @@ function mergeScorePotentialChips(
   checklist: ReportChecklistItem[]
 ): ScorePotentialInput["chips"] {
   const derived = deriveScoreChipsFromChecklist(checklist);
-  const merged = [...incoming];
-  const filledLinks = new Set(
-    merged
-      .map((chip, index) => resolveChipChecklistItem(chip.label, index, checklist)?.link_to)
-      .filter((link): link is ChecklistLinkTarget => Boolean(link))
-  );
+  const merged: ScorePotentialInput["chips"] = [];
+  const filledLinks = new Set<ChecklistLinkTarget>();
+  const seenLabels = new Set<string>();
+
+  for (const [index, chip] of incoming.entries()) {
+    const label = chip.label.trim();
+    if (!label || seenLabels.has(label)) {
+      continue;
+    }
+
+    seenLabels.add(label);
+    merged.push(chip);
+
+    const linkTo = resolveChipChecklistItem(chip.label, index, checklist)?.link_to;
+    if (linkTo) {
+      filledLinks.add(linkTo);
+    }
+  }
 
   for (const chip of derived) {
     if (merged.length >= 3) {
       break;
+    }
+
+    const label = chip.label.trim();
+    if (!label || seenLabels.has(label)) {
+      continue;
     }
 
     const item = findChecklistItemForChip(checklist, chip.label);
@@ -653,6 +690,7 @@ function mergeScorePotentialChips(
       continue;
     }
 
+    seenLabels.add(label);
     merged.push(chip);
     if (item?.link_to) {
       filledLinks.add(item.link_to);
@@ -696,7 +734,67 @@ export function normalizeScorePotential(
   };
 }
 
-export function normalizeReportChecklist(raw: unknown, score?: number): ReportChecklistItem[] {
+function calibrateTrustGaps(
+  checklist: ReportChecklistItem[],
+  scorePotential: ScorePotentialInput | undefined,
+  evidenceTexts: string[],
+  score = 0
+): {
+  checklist: ReportChecklistItem[];
+  scorePotential: ScorePotentialInput | undefined;
+} {
+  if (!shouldSkipTrustMissingGap(evidenceTexts)) {
+    return { checklist, scorePotential };
+  }
+
+  const gaps = checklist.filter((item) => item.status !== "pass");
+  const passes = checklist.filter((item) => item.status === "pass");
+  const filteredGaps = gaps.filter(
+    (item) => !(item.link_to === "trust" && item.status === "missing")
+  );
+
+  const filteredChips: ScorePotentialInput["chips"] = [];
+  const seenChipLabels = new Set<string>();
+
+  for (const chip of scorePotential?.chips ?? []) {
+    if (isTrustMissingChipLabel(chip.label)) {
+      continue;
+    }
+
+    const label = chip.label.trim();
+    if (!label || seenChipLabels.has(label)) {
+      continue;
+    }
+
+    seenChipLabels.add(label);
+    filteredChips.push(chip);
+  }
+  const deltaSum = filteredChips.reduce(
+    (sum, chip) => sum + parseScoreChipDelta(chip.delta),
+    0
+  );
+  const computedTarget = Math.min(9.5, Math.round((score + deltaSum) * 10) / 10);
+
+  return {
+    checklist: [...filteredGaps, ...passes].map((item) => {
+      const gap_label = deriveChecklistGapLabel(item);
+      return gap_label && !item.gap_label ? { ...item, gap_label } : item;
+    }),
+    scorePotential: scorePotential
+      ? {
+          ...scorePotential,
+          chips: filteredChips,
+          target: filteredChips.length > 0 ? computedTarget : scorePotential.target,
+        }
+      : scorePotential,
+  };
+}
+
+export function normalizeReportChecklist(
+  raw: unknown,
+  score?: number,
+  evidenceTexts: string[] = []
+): ReportChecklistItem[] {
   if (!Array.isArray(raw)) {
     return [];
   }
@@ -709,30 +807,46 @@ export function normalizeReportChecklist(raw: unknown, score?: number): ReportCh
   const withDedupedGaps = dedupeGaps(repaired);
   const gaps = withDedupedGaps.filter((item) => item.status !== "pass");
   const passes = withDedupedGaps.filter((item) => item.status === "pass");
-  const normalizedGaps = ensureMinimumChecklistGaps(gaps, score);
+  const normalizedGaps = ensureMinimumChecklistGaps(gaps, score, evidenceTexts);
 
-  return [...normalizedGaps, ...passes].map((item) => {
+  const combined = [...normalizedGaps, ...passes].map((item) => {
     const gap_label = deriveChecklistGapLabel(item);
 
     return gap_label && !item.gap_label ? { ...item, gap_label } : item;
   });
+
+  return calibrateTrustGaps(combined, undefined, evidenceTexts, score ?? 0).checklist;
 }
 
 export function finalizeReportChecklist(
   raw: unknown,
   score?: number,
-  scorePotential?: ScorePotentialInput
+  scorePotential?: ScorePotentialInput,
+  context?: TrustCalibrationInput
 ): {
   checklist: ReportChecklistItem[];
   scorePotential: ScorePotentialInput | undefined;
 } {
-  let checklist = normalizeReportChecklist(raw, score);
+  const evidenceTexts = collectTrustEvidenceTexts(context ?? {});
+  let checklist = normalizeReportChecklist(raw, score, evidenceTexts);
   let normalizedPotential = normalizeScorePotential(scorePotential, checklist, score ?? 0);
-  checklist = reconcileChecklistWithScorePotential(checklist, normalizedPotential, score);
+  checklist = reconcileChecklistWithScorePotential(
+    checklist,
+    normalizedPotential,
+    score,
+    evidenceTexts
+  );
   normalizedPotential = normalizeScorePotential(normalizedPotential, checklist, score ?? 0);
 
-  return {
+  const calibrated = calibrateTrustGaps(
     checklist,
-    scorePotential: normalizedPotential,
+    normalizedPotential,
+    evidenceTexts,
+    score ?? 0
+  );
+
+  return {
+    checklist: calibrated.checklist,
+    scorePotential: calibrated.scorePotential,
   };
 }

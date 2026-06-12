@@ -144,7 +144,12 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     const finalized = finalizeReportChecklist(
       data.checklist,
       data.score,
-      data.score_potential
+      data.score_potential,
+      {
+        copyVariants: data.copy_variants,
+        meta: data.meta,
+        rawChecklist: data.checklist,
+      }
     );
     const checklist = finalized.checklist;
     const visualSection = normalizeVisualSection(

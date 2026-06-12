@@ -220,6 +220,7 @@ export function buildCopyStudioPromptBlock() {
 
 Shared rules:
 - current: exact visible text only ("" if not readable).
+- subheadline.current: include the visible hero subhead AND any adjacent usage stat or social-proof line above the fold (space-separated if separate lines).
 - 3 variants per element. Each variant uses a different strategic angle — never paraphrase the same idea.
 - Ban generic SaaS filler: "intuitive", "seamless", "boost productivity", "unlock", "claim instantly", "everything you need", "designed to", "proven strategies".
 - If trial/pricing clarity is the gap, put duration or terms in subheadline — NOT in the CTA button.

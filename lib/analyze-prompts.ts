@@ -186,6 +186,11 @@ CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
 - NEVER put spacing, color tone, typography weight, or CTA hierarchy problems in checklist pass — put them in visual_fixes with the matching dimension.
 - NEVER pass "Single CTA" if 2+ hero buttons are visible — use copy-cta missing or visual_fixes.cta_hierarchy instead.
 - trust missing gaps: say "above the fold" — proof below fold still counts as a hero gap.
+- TRUST CALIBRATION (mandatory):
+  - Count/stat social proof above fold ("380 landing pages audited", "Used by 500+ teams", ratings, badges) → do NOT use trust:missing.
+  - trust:missing ONLY when hero shows zero credibility signals (no logos, no stats, no testimonials, no security badges).
+  - If a usage stat or social-proof line exists but logos/testimonials are absent → omit the trust checklist gap; put logo/testimonial advice in meta.proof_suggestion only.
+  - Never claim "no trust signals" when a visible usage stat or social-proof line is in the hero.
 
 copy_variants:
 - current: exact visible text from the page (empty string if not visible).

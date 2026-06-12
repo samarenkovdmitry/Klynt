@@ -433,7 +433,12 @@ export async function POST(req: Request) {
       Number(json.score) || 0,
       json.score_potential as
         | { target: number; chips: { label: string; delta: string }[] }
-        | undefined
+        | undefined,
+      {
+        copyVariants: json.copy_variants as import("@/lib/audit-report").ReportCopyVariants,
+        meta: json.meta as import("@/lib/audit-report").ReportMeta,
+        rawChecklist,
+      }
     );
     json.checklist = finalized.checklist;
     json.score_potential = finalized.scorePotential;
