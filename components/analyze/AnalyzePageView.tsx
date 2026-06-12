@@ -116,7 +116,7 @@ function AnalyzeFormActions({
   if (loading) {
     return (
       <LoadingProgressPanel
-        title="Generating UX report"
+        title="Building your report"
         loadingLabel={getStallLoadingLabel(
           loadingStalled,
           loadingLabel,
@@ -124,7 +124,7 @@ function AnalyzeFormActions({
         )}
         progress={progress}
         loadingStalled={loadingStalled}
-        helperText="Evaluating hierarchy, clarity, trust and conversion flow"
+        helperText="Hierarchy, clarity, trust, and conversion flow"
         stallHelperText={ANALYZE_STALL_HELPER}
       />
     );
