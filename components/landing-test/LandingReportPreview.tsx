@@ -7,6 +7,8 @@ import {
   RiPencilLine,
 } from "@remixicon/react";
 
+import { LANDING_WARM_GLOW } from "./landingPageStyles";
+
 function PreviewBadge({
   children,
   tone,
@@ -64,14 +66,17 @@ export function LandingReportPreviewDesktop() {
   return (
     <div className="relative hidden lg:block">
       <div
-        className="pointer-events-none absolute -right-20 -top-20 h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(29,158,117,0.12)_0%,transparent_65%)]"
+        className={`pointer-events-none absolute -right-20 -top-20 h-[360px] w-[360px] rounded-full ${LANDING_WARM_GLOW}`}
         aria-hidden
       />
       <div className="relative overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141412] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_32px_64px_rgba(0,0,0,0.5)]">
         <div className="flex items-center justify-between border-b border-white/[0.08] bg-[#1C1C19] px-[14px] py-[11px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 rounded-[7px] bg-white/[0.06] px-2.5 py-[3px] text-[11px] font-medium text-[#9A9A93]">
-              <span className="h-[5px] w-[5px] rounded-full bg-[#1D9E75]" aria-hidden />
+              <span
+                className="h-[5px] w-[5px] rounded-full bg-[#C9C5BC]"
+                aria-hidden
+              />
               folk.app
             </div>
             <span className="text-[11px] text-[#7A7A74]">June 2026</span>

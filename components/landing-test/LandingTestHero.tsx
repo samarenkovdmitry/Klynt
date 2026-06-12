@@ -6,7 +6,12 @@ import {
   LandingReportPreviewMobile,
 } from "./LandingReportPreview";
 import { LandingTestHeader } from "./LandingTestHeader";
-import { LANDING_CONTAINER, LANDING_DISPLAY_H1 } from "./landingPageStyles";
+import {
+  LANDING_BADGE,
+  LANDING_CONTAINER,
+  LANDING_DISPLAY_H1,
+  LANDING_HERO_ACCENT,
+} from "./landingPageStyles";
 
 type LandingTestHeroProps = {
   auditedCount?: number | null;
@@ -26,15 +31,15 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
       <div className={`${LANDING_CONTAINER} px-4 pb-16 pt-[calc(52px+env(safe-area-inset-top,0px)+5rem)] md:px-8 md:pb-20`}>
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_500px] lg:gap-20">
           <div className="min-w-0">
-            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[rgba(29,158,117,0.18)] bg-[rgba(29,158,117,0.1)] px-3 py-[5px] text-[11px] font-medium uppercase tracking-[0.09em] text-[#1D9E75]">
-              <RiSparklingLine size={14} aria-hidden />
+            <div className={`mb-6 ${LANDING_BADGE}`}>
+              <RiSparklingLine size={14} className="text-[#9A9A93]" aria-hidden />
               Free · No signup
             </div>
 
             <h1 className={`max-w-[560px] ${LANDING_DISPLAY_H1}`}>
               Your landing page,
               <br />
-              <em className="not-italic text-[#1D9E75]">improved</em> — not just rated
+              <em className={LANDING_HERO_ACCENT}>improved</em> — not just rated
             </h1>
 
             <p className="mt-5 max-w-[460px] text-[16px] leading-[1.75] text-[#9A9A93]">

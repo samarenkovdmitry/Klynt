@@ -26,6 +26,11 @@ export const LANDING_DISPLAY_H1 =
 export const LANDING_DISPLAY_SECTION =
   "font-sans text-[clamp(22px,3vw,32px)] font-semibold tracking-[-0.03em] text-[#F2F2EF]";
 
+export const LANDING_CREAM = "#E8E4DC";
+
+export const LANDING_CREAM_MUTED = "#C9C5BC";
+
+/** Product semantics inside report mockups only — not for dark landing chrome. */
 export const LANDING_GREEN = "#1D9E75";
 
 export const LANDING_AMBER = "#BA7517";
@@ -46,7 +51,21 @@ export const LANDING_DIVIDER =
 export const LANDING_SECTION = "px-4 py-20 md:px-8 md:py-24";
 
 export const LANDING_EYEBROW =
-  "text-[11px] font-medium uppercase tracking-[0.09em] text-[#1D9E75]";
+  "text-[11px] font-medium uppercase tracking-[0.09em] text-[#9A9A93]";
+
+export const LANDING_BADGE =
+  "inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-white/[0.04] px-3 py-[5px] text-[11px] font-medium uppercase tracking-[0.09em] text-[#C9C5BC]";
+
+export const LANDING_HERO_ACCENT = "not-italic text-[#E8E4DC]";
+
+export const LANDING_ICON_ACCENT =
+  "border-white/[0.12] bg-white/[0.04] text-[#E8E4DC]";
+
+export const LANDING_DARK_INPUT_FOCUS =
+  "focus-within:border-white/[0.22] focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.06)]";
+
+export const LANDING_WARM_GLOW =
+  "bg-[radial-gradient(circle,rgba(232,228,220,0.10)_0%,transparent_65%)]";
 
 export const LANDING_TITLE =
   "font-sans text-[clamp(26px,3.5vw,40px)] font-bold leading-[1.15] tracking-[-0.04em] text-[#F2F2EF]";

@@ -22,19 +22,18 @@ import {
   LANDING_DIVIDER,
   LANDING_EYEBROW,
   LANDING_FEATURES_MAX,
+  LANDING_ICON_ACCENT,
   LANDING_LEAD,
   LANDING_SECTION,
   LANDING_TITLE,
 } from "./landingPageStyles";
 
-function FeatureIcon({ green, children }: { green?: boolean; children: React.ReactNode }) {
+function FeatureIcon({ accent, children }: { accent?: boolean; children: React.ReactNode }) {
   return (
     <div
       className={[
         "mb-[18px] flex h-[30px] w-[30px] items-center justify-center rounded-[8px] border",
-        green
-          ? "border-[rgba(29,158,117,0.15)] bg-[rgba(29,158,117,0.08)] text-[#1D9E75]"
-          : "border-white/[0.06] bg-white/[0.03] text-[#7A7A74]",
+        accent ? LANDING_ICON_ACCENT : "border-white/[0.06] bg-white/[0.03] text-[#7A7A74]",
       ].join(" ")}
     >
       {children}
@@ -81,7 +80,7 @@ export function LandingTestFeatures() {
         <div className={`${LANDING_FEATURES_MAX} mt-14 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08]`}>
           <div className="grid grid-cols-1 gap-px md:grid-cols-3">
             <Cell className="md:col-span-2">
-              <FeatureIcon green>
+              <FeatureIcon accent>
                 <RiPencilLine size={15} aria-hidden />
               </FeatureIcon>
               <h3 className={LANDING_CARD_TITLE}>Copy studio</h3>

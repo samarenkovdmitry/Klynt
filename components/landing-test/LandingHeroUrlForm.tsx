@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useState } from "react";
 import { buildAnalyzeUrl } from "@/lib/analyze-route";
+import { LANDING_DARK_INPUT_FOCUS } from "./landingPageStyles";
 
 type LandingHeroUrlFormProps = {
   inputId?: string;
@@ -39,7 +40,8 @@ export function LandingHeroUrlForm({
       noValidate
       onSubmit={handleSubmit}
       className={[
-        "flex overflow-hidden rounded-xl border border-white/[0.14] bg-[#1C1C19] transition-[border-color,box-shadow] focus-within:border-[#1D9E75]/50 focus-within:shadow-[0_0_0_3px_rgba(29,158,117,0.08)]",
+        "flex overflow-hidden rounded-xl border border-white/[0.14] bg-[#1C1C19] transition-[border-color,box-shadow]",
+        LANDING_DARK_INPUT_FOCUS,
         maxWidthClass,
         className,
       ].join(" ")}
