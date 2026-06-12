@@ -36,6 +36,7 @@ export function LandingHeroUrlForm({
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className={[
         "flex overflow-hidden rounded-xl border border-white/[0.14] bg-[#1C1C19] transition-[border-color,box-shadow] focus-within:border-[#1D9E75]/50 focus-within:shadow-[0_0_0_3px_rgba(29,158,117,0.08)]",
@@ -46,8 +47,10 @@ export function LandingHeroUrlForm({
       <input
         id={inputId}
         name="url"
-        type="url"
+        type="text"
         inputMode="url"
+        autoComplete="url"
+        spellCheck={false}
         placeholder="https://yoursite.com"
         disabled={isSubmitting}
         className="min-w-0 flex-1 bg-transparent px-4 py-[13px] text-[14px] text-[#F2F2EF] outline-none placeholder:text-[#7A7A74] disabled:opacity-70"
