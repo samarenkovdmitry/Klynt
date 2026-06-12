@@ -2,6 +2,9 @@ import type { BrandStage, ReportCopyVariants } from "@/lib/audit-report";
 import {
   COPY_VARIANT_WORD_LIMITS,
   DEFAULT_BRAND_STAGE,
+  isGenericTrialCtaVariant,
+  isTrialStyleCta,
+  NON_TRIAL_CTA_VARIANTS,
   normalizeCtaOptionLabel,
   normalizeHeadlineOptionLabel,
   normalizeSubheadlineOptionLabel,
@@ -21,17 +24,50 @@ function normalizeVariantLabel(
   key: (typeof COPY_VARIANT_KEYS)[number],
   label: string,
   index: number,
-  brandStage: BrandStage
+  brandStage: BrandStage,
+  useTrialCtaStrategies: boolean
 ) {
   if (key === "headline") {
     return normalizeHeadlineOptionLabel(label, index, brandStage);
   }
 
   if (key === "cta") {
-    return normalizeCtaOptionLabel(label, index);
+    return normalizeCtaOptionLabel(label, index, useTrialCtaStrategies);
   }
 
   return normalizeSubheadlineOptionLabel(label, index);
+}
+
+function normalizeCtaBlock(
+  block: ReportCopyVariants["cta"],
+  pageContext: string
+): ReportCopyVariants["cta"] {
+  const useTrialStrategies = isTrialStyleCta(block.current, pageContext);
+
+  return {
+    ...block,
+    current: sanitizeLlmVisibleText(block.current),
+    variants: block.variants.slice(0, 3).map((variant, index) => {
+      const sanitized = sanitizeLlmVisibleText(variant.text);
+      const fallback = NON_TRIAL_CTA_VARIANTS[index] ?? NON_TRIAL_CTA_VARIANTS[0];
+      const text =
+        !useTrialStrategies && isGenericTrialCtaVariant(sanitized)
+          ? fallback.text
+          : sanitized;
+
+      return {
+        ...variant,
+        label: normalizeCtaOptionLabel(
+          !useTrialStrategies && isGenericTrialCtaVariant(variant.label)
+            ? fallback.label
+            : variant.label,
+          index,
+          useTrialStrategies
+        ),
+        text: clampWords(text, VARIANT_WORD_LIMITS.cta, false),
+      };
+    }),
+  };
 }
 
 export function normalizeReportCopyVariants(
@@ -42,11 +78,24 @@ export function normalizeReportCopyVariants(
     return copyVariants;
   }
 
+  const pageContext = [
+    copyVariants.headline?.current,
+    copyVariants.subheadline?.current,
+    copyVariants.cta?.current,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const normalized = { ...copyVariants };
 
   for (const key of COPY_VARIANT_KEYS) {
     const block = normalized[key];
     if (!block || typeof block !== "object") {
+      continue;
+    }
+
+    if (key === "cta") {
+      normalized[key] = normalizeCtaBlock(block, pageContext);
       continue;
     }
 
@@ -62,12 +111,13 @@ export function normalizeReportCopyVariants(
                 ? variant.label.replace(/^Option [A-Z] — /i, "").trim()
                 : "",
               index,
-              brandStage
+              brandStage,
+              false
             ),
             text: clampWords(
               sanitizeLlmVisibleText(variant.text),
               VARIANT_WORD_LIMITS[key],
-              key !== "cta"
+              true
             ),
           }))
         : block.variants,

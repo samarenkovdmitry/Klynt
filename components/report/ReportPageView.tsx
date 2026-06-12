@@ -33,8 +33,7 @@ import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
 import { buildCopyStudioContext } from "@/lib/copy-studio-context";
 import {
-  normalizeReportChecklist,
-  normalizeScorePotential,
+  finalizeReportChecklist,
 } from "@/lib/normalize-report-checklist";
 import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
 import { normalizeVisualSection } from "@/lib/report-visual-fixes";
@@ -142,7 +141,12 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       return data;
     }
 
-    const checklist = normalizeReportChecklist(data.checklist, data.score);
+    const finalized = finalizeReportChecklist(
+      data.checklist,
+      data.score,
+      data.score_potential
+    );
+    const checklist = finalized.checklist;
     const visualSection = normalizeVisualSection(
       data.visual_fixes,
       data.visual_passes,
@@ -166,11 +170,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               .filter(Boolean),
           }
         : data.meta,
-      score_potential: normalizeScorePotential(
-        data.score_potential,
-        checklist,
-        data.score
-      ),
+      score_potential: finalized.scorePotential,
       visual_fixes: visualSection.fixes,
       visual_passes: visualSection.passes,
     };

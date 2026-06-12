@@ -57,7 +57,7 @@ export const DEMO_REPORT = {
       "status": "missing",
       "link_to": "trust",
       "category": "trust",
-      "gap_label": "Trust signals missing"
+      "gap_label": "Trust missing above fold"
     },
     {
       "id": "subheadline-clarity",

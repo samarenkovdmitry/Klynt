@@ -106,6 +106,24 @@ export const CTA_STRATEGY_LABELS = [
   "Direct action",
 ] as const;
 
+export const CTA_PATH_STRATEGY_LABELS = [
+  "Path clarity",
+  "Audience split",
+  "Primary action",
+] as const;
+
+export const NON_TRIAL_CTA_VARIANTS: readonly { label: (typeof CTA_PATH_STRATEGY_LABELS)[number]; text: string }[] = [
+  { label: "Path clarity", text: "Explore launches" },
+  { label: "Audience split", text: "Browse startups" },
+  { label: "Primary action", text: "See how it works" },
+] as const;
+
+const TRIAL_CTA_SIGNAL =
+  /\b(free trial|try free|start free|sign up|signup|get started free|start free trial|try it free|no credit card|14-day|14 day)\b/i;
+
+const GENERIC_TRIAL_CTA_VARIANT =
+  /\b(free trial|try it free|get started free|start free trial|unlock|claim instantly)\b/i;
+
 export const SUBHEADLINE_STRATEGY_LABELS = [
   "Value proposition",
   "Specificity",
@@ -165,8 +183,28 @@ function normalizeStrategyLabel(
   return match ?? defaults[index] ?? candidate;
 }
 
-export function normalizeCtaOptionLabel(label: string, index: number): string {
-  return normalizeStrategyLabel(label, index, CTA_STRATEGY_LABELS);
+export function normalizeCtaOptionLabel(
+  label: string,
+  index: number,
+  useTrialStrategies = true
+): string {
+  const defaults = useTrialStrategies ? CTA_STRATEGY_LABELS : CTA_PATH_STRATEGY_LABELS;
+  return normalizeStrategyLabel(label, index, defaults);
+}
+
+export function isTrialStyleCta(current?: string, pageContext?: string): boolean {
+  const combined = `${current ?? ""} ${pageContext ?? ""}`.trim();
+
+  if (!combined) {
+    return false;
+  }
+
+  return TRIAL_CTA_SIGNAL.test(combined);
+}
+
+export function isGenericTrialCtaVariant(text?: string): boolean {
+  const trimmed = text?.trim() ?? "";
+  return trimmed.length > 0 && GENERIC_TRIAL_CTA_VARIANT.test(trimmed);
 }
 
 export function normalizeSubheadlineOptionLabel(label: string, index: number): string {
@@ -174,7 +212,8 @@ export function normalizeSubheadlineOptionLabel(label: string, index: number): s
 }
 
 export function buildCopyStudioPromptBlock() {
-  const ctaLabels = CTA_STRATEGY_LABELS.join('", "');
+  const trialCtaLabels = CTA_STRATEGY_LABELS.join('", "');
+  const pathCtaLabels = CTA_PATH_STRATEGY_LABELS.join('", "');
   const subheadLabels = SUBHEADLINE_STRATEGY_LABELS.join('", "');
 
   return `COPY STUDIO (copy_variants) — paste-ready hero copy, not marketing essays.
@@ -182,20 +221,22 @@ export function buildCopyStudioPromptBlock() {
 Shared rules:
 - current: exact visible text only ("" if not readable).
 - 3 variants per element. Each variant uses a different strategic angle — never paraphrase the same idea.
-- Ban generic SaaS filler: "intuitive", "seamless", "boost productivity", "unlock", "claim instantly", "everything you need", "designed to".
+- Ban generic SaaS filler: "intuitive", "seamless", "boost productivity", "unlock", "claim instantly", "everything you need", "designed to", "proven strategies".
 - If trial/pricing clarity is the gap, put duration or terms in subheadline — NOT in the CTA button.
 
 Headline variants:
 - variants[].label: MUST use exact strategy names from the BRAND STAGE block.
 - variants[].text: max ${COPY_VARIANT_WORD_LIMITS.headline} words. Sharp H1 — declarative, specific, memorable.
 
-CTA variants (primary button label ONLY):
-- variants[].label: MUST be exactly one of: "${ctaLabels}" (one per variant).
-- Trial explicit: name free/trial clearly in ≤${COPY_VARIANT_WORD_LIMITS.cta} words (e.g. "Start free trial").
-- Risk-free: reduce signup anxiety in ≤${COPY_VARIANT_WORD_LIMITS.cta} words (e.g. "Try it free").
-- Direct action: imperative verb + free/trial if relevant (e.g. "Get started free").
-- max ${COPY_VARIANT_WORD_LIMITS.cta} words. Button register: no "your", no "now", no "instantly", no stacking "14-day free trial" in one label.
-- Put trial duration in subheadline, not CTA.
+CTA variants (primary button label ONLY — use the PRIMARY hero button text as current):
+- If current CTA OR visible hero copy mentions free trial, sign up, or get started free → use labels: "${trialCtaLabels}".
+  Trial explicit / Risk-free / Direct action — max ${COPY_VARIANT_WORD_LIMITS.cta} words each.
+- Otherwise (Discover, Explore, Launch, Create, Browse, Join, etc.) → use labels: "${pathCtaLabels}".
+  Path clarity: sharpen what the button does (e.g. "Explore startups").
+  Audience split: name the user path (e.g. "Launch on Pond", "Create bounties").
+  Primary action: strongest single verb + object from the page (e.g. "Discover startups").
+  NEVER suggest "Start free trial" or "Try it free" when the page has no trial/signup language.
+- max ${COPY_VARIANT_WORD_LIMITS.cta} words. Button register: no "your", no "now", no "instantly".
 
 Subheadline variants:
 - variants[].label: MUST be exactly one of: "${subheadLabels}" (one per variant).

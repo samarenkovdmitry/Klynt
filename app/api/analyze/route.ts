@@ -35,6 +35,7 @@ import {
 } from "@/lib/brand-stage";
 import { normalizeReportFindings } from "@/lib/report-findings-quality";
 import {
+  finalizeReportChecklist,
   normalizeReportChecklist,
   normalizeScorePotential,
 } from "@/lib/normalize-report-checklist";
@@ -437,15 +438,15 @@ export async function POST(req: Request) {
     json.visual_fixes = visualSection.fixes;
     json.visual_passes = visualSection.passes;
 
-    if (Array.isArray(json.checklist)) {
-      json.score_potential = normalizeScorePotential(
-        json.score_potential as
-          | { target: number; chips: { label: string; delta: string }[] }
-          | undefined,
-        json.checklist,
-        Number(json.score) || 0
-      );
-    }
+    const finalized = finalizeReportChecklist(
+      json.checklist,
+      Number(json.score) || 0,
+      json.score_potential as
+        | { target: number; chips: { label: string; delta: string }[] }
+        | undefined
+    );
+    json.checklist = finalized.checklist;
+    json.score_potential = finalized.scorePotential;
 
     if (json.copy_variants && typeof json.copy_variants === "object") {
       json.copy_variants = normalizeReportCopyVariants(
