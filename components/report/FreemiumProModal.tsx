@@ -9,8 +9,10 @@ import {
   RiShieldCheckLine,
 } from "@remixicon/react";
 
-import { inputFieldClass } from "@/components/ui/inputClasses";
 import type { ProUpgradeTrigger } from "@/lib/freemium";
+
+const PRO_MODAL_EMAIL_INPUT_CLASS =
+  "w-full rounded-[10px] border border-black/[0.13] bg-[#F5F5F3] px-[14px] py-[11px] text-[14px] text-[#111] outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-[#C0C0BC] focus:border-[#1D9E75] focus:shadow-[0_0_0_3px_rgba(29,158,117,0.1)] disabled:cursor-not-allowed disabled:opacity-60";
 
 type FreemiumProModalProps = {
   open: boolean;
@@ -226,7 +228,10 @@ export function FreemiumProModal({
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={submitting}
                 aria-invalid={error ? true : undefined}
-                className={`${inputFieldClass({ disabled: submitting, withMargin: false })} h-[44px] bg-[#F5F5F3]`}
+                className={[
+                  PRO_MODAL_EMAIL_INPUT_CLASS,
+                  error ? "border-[#FFD9D6] bg-[#FFF4F3] focus:border-[#FFD9D6] focus:shadow-none" : "",
+                ].join(" ")}
               />
 
               {error ? (
