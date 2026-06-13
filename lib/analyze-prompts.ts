@@ -180,8 +180,9 @@ CHECKLIST BY SCORE (must match breakdown-derived score):
 - score 6.5–7.4: mixed quality — some strong elements alongside real gaps; gaps must reflect actual visible problems.
 - score >= 7.5: mark genuinely strong elements pass; 0-2 gaps is normal.
 - weak typography (link_to visual-fixes) ONLY when subhead is visibly hard to read on its local background — omit when a dark hero uses intentional lighter subhead weight.
-- structure-nav missing ONLY when hero/header shows zero nav links or menu (footer-only links do not count).
-- hero-density weak ONLY when hero subhead is a long paragraph (3+ sentences) that buries the CTA for cold traffic.
+- copy-cta trial gap ONLY when the visible primary CTA text mentions trial/try/free/sign up — never for "Explore", "Browse", "Download", "Get started" alone.
+- structure-nav missing ONLY when HERO INVENTORY confirms zero header nav links — never when pass items mention visible nav/menu.
+- hero-density weak belongs in checklist (link_to hero-density), NOT as a pass item and NOT duplicated in visual_fixes spacing.
 - If score is below 7.0, do NOT mark copy/trust elements as pass when they contributed to the low score.
 - score_potential.chips MUST list one chip per copy/trust missing gap (same gap_label).
 - id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline"). Typography weak → id "subheadline-clarity".

@@ -5,7 +5,7 @@ import type {
   ReportChecklistItem,
 } from "@/lib/audit-report";
 import { isLlmPlaceholderText } from "@/lib/llm-placeholder-text";
-import { isMisclassifiedVisualPassItem, isProblemPassText } from "@/lib/report-visual-fixes";
+import { isMisclassifiedVisualPassItem, isHeroDensityProblemText, isProblemPassText } from "@/lib/report-visual-fixes";
 import {
   collectTrustEvidenceTexts,
   isTrustMissingChipLabel,
@@ -337,9 +337,62 @@ function isServerFallbackGapItem(item: ReportChecklistItem): boolean {
   return item.status !== "pass" && SERVER_FALLBACK_GAP_TEXTS.has(item.text.trim());
 }
 
+function hasNavEvidence(
+  allItems: ReportChecklistItem[],
+  evidenceTexts: string[] = []
+): boolean {
+  for (const item of allItems) {
+    if (item.status !== "pass") {
+      continue;
+    }
+
+    const text = item.text.toLowerCase();
+
+    if (
+      /\b(nav|navigation|menu|header links)\b/.test(text) &&
+      !/\b(no |missing|without|zero|shows no|lacks)\b/.test(text)
+    ) {
+      return true;
+    }
+  }
+
+  const blob = [...allItems.map((item) => item.text), ...evidenceTexts]
+    .join(" ")
+    .toLowerCase();
+
+  return /\b(header nav shows|navigation links visible|nav links include|menu shows|nav includes)\b/.test(
+    blob
+  );
+}
+
+function shouldSkipTrialClarityGap(
+  item: ReportChecklistItem,
+  ctaText: string
+): boolean {
+  if (item.link_to !== "copy-cta") {
+    return false;
+  }
+
+  const haystack = `${item.gap_label ?? ""} ${item.text}`.toLowerCase();
+
+  if (!/\b(trial|terms|duration|free trial|trial clarity)\b/.test(haystack)) {
+    return false;
+  }
+
+  const cta = ctaText.trim().toLowerCase();
+
+  if (!cta) {
+    return false;
+  }
+
+  return !/\b(trial|try|free|sign up|get started|start your|start free)\b/.test(cta);
+}
+
 function isContradictoryChecklistGap(
   item: ReportChecklistItem,
-  evidenceTexts: string[] = []
+  evidenceTexts: string[] = [],
+  allItems: ReportChecklistItem[] = [],
+  ctaText = ""
 ): boolean {
   if (item.status === "pass") {
     return false;
@@ -360,9 +413,21 @@ function isContradictoryChecklistGap(
   }
 
   if (
+    item.link_to === "structure-nav" &&
+    (hasNavEvidence(allItems, evidenceTexts) ||
+      SERVER_FALLBACK_GAP_TEXTS.has(item.text.trim()))
+  ) {
+    return true;
+  }
+
+  if (shouldSkipTrialClarityGap(item, ctaText)) {
+    return true;
+  }
+
+  if (
     item.link_to === "copy-cta" &&
     /\b(below the fold|below fold|not visible|not clear)\b/i.test(text) &&
-    /\b(download|get started|setup|try|sign up|continue|start for free)\b/i.test(
+    /\b(download|get started|setup|try|sign up|continue|start for free|explore|browse|launch)\b/i.test(
       evidenceTexts.join(" ").toLowerCase()
     )
   ) {
@@ -464,8 +529,24 @@ function filterInvalidPassItems(
 
 function repairChecklistItems(items: ReportChecklistItem[]): ReportChecklistItem[] {
   const repaired: ReportChecklistItem[] = [];
+  let hasHeroDensity = false;
 
   for (const item of items) {
+    if (item.status === "pass" && isHeroDensityProblemText(item.text)) {
+      if (!hasHeroDensity) {
+        repaired.push({
+          id: "hero-density",
+          text: item.text,
+          status: "weak",
+          link_to: "hero-density",
+          category: "structure",
+          gap_label: "Hero density",
+        });
+        hasHeroDensity = true;
+      }
+      continue;
+    }
+
     const next = repairContradictoryChecklistItem(item);
 
     if (next) {
@@ -480,7 +561,8 @@ function reconcileChecklistWithScorePotential(
   checklist: ReportChecklistItem[],
   _scorePotential?: ScorePotentialInput,
   _score?: number,
-  evidenceTexts: string[] = []
+  evidenceTexts: string[] = [],
+  ctaText = ""
 ): ReportChecklistItem[] {
   void _scorePotential;
   void _score;
@@ -488,7 +570,7 @@ function reconcileChecklistWithScorePotential(
   let gaps = checklist.filter((item) => item.status !== "pass");
   let passes = checklist.filter((item) => item.status === "pass");
 
-  gaps = finalizeChecklistGaps(gaps, evidenceTexts);
+  gaps = finalizeChecklistGaps(gaps, evidenceTexts, checklist, ctaText);
   passes = filterInvalidPassItems(passes, gaps);
 
   const missing = gaps.filter((item) => item.status === "missing").slice(0, 3);
@@ -502,11 +584,14 @@ function reconcileChecklistWithScorePotential(
 
 function finalizeChecklistGaps(
   gaps: ReportChecklistItem[],
-  evidenceTexts: string[] = []
+  evidenceTexts: string[] = [],
+  allItems: ReportChecklistItem[] = [],
+  ctaText = ""
 ): ReportChecklistItem[] {
   const result = gaps.filter(
     (item) =>
-      !isServerFallbackGapItem(item) && !isContradictoryChecklistGap(item, evidenceTexts)
+      !isServerFallbackGapItem(item) &&
+      !isContradictoryChecklistGap(item, evidenceTexts, allItems, ctaText)
   );
 
   const missing = result.filter((item) => item.status === "missing").slice(0, 3);
@@ -759,7 +844,8 @@ function calibrateTrustGaps(
 export function normalizeReportChecklist(
   raw: unknown,
   score?: number,
-  evidenceTexts: string[] = []
+  evidenceTexts: string[] = [],
+  ctaText = ""
 ): ReportChecklistItem[] {
   if (!Array.isArray(raw)) {
     return [];
@@ -773,7 +859,12 @@ export function normalizeReportChecklist(
   const withDedupedGaps = dedupeGaps(repaired);
   const gaps = withDedupedGaps.filter((item) => item.status !== "pass");
   const passes = withDedupedGaps.filter((item) => item.status === "pass");
-  const normalizedGaps = finalizeChecklistGaps(gaps, evidenceTexts);
+  const normalizedGaps = finalizeChecklistGaps(
+    gaps,
+    evidenceTexts,
+    withDedupedGaps,
+    ctaText
+  );
 
   const combined = [...normalizedGaps, ...passes].map((item) => {
     const gap_label = deriveChecklistGapLabel(item);
@@ -794,13 +885,15 @@ export function finalizeReportChecklist(
   scorePotential: ScorePotentialInput | undefined;
 } {
   const evidenceTexts = collectTrustEvidenceTexts(context ?? {});
-  let checklist = normalizeReportChecklist(raw, score, evidenceTexts);
+  const ctaText = context?.copyVariants?.cta?.current?.trim() ?? "";
+  let checklist = normalizeReportChecklist(raw, score, evidenceTexts, ctaText);
   let normalizedPotential = normalizeScorePotential(scorePotential, checklist, score ?? 0);
   checklist = reconcileChecklistWithScorePotential(
     checklist,
     normalizedPotential,
     score,
-    evidenceTexts
+    evidenceTexts,
+    ctaText
   );
   normalizedPotential = normalizeScorePotential(normalizedPotential, checklist, score ?? 0);
 

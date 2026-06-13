@@ -221,6 +221,13 @@ export function isActionableVisualFix(fix: ReportVisualFix): boolean {
     return false;
   }
 
+  if (
+    fix.dimension === "spacing" &&
+    isHeroDensityProblemText(`${fix.observation} ${fix.recommendation}`)
+  ) {
+    return false;
+  }
+
   if (!hasVisibleVisualEvidence(fix.observation)) {
     return false;
   }
@@ -240,6 +247,47 @@ export function isActionableVisualPass(pass: ReportVisualPass): boolean {
   return hasVisibleVisualEvidence(pass.note);
 }
 
+export function isProblemPassText(text: string): boolean {
+  return /\b(lacks?|lack|missing|unclear|too light|too thin|too playful|too cramped|cramped|reduce[sd]?|reducing|without|not visible|feels too|inadequate|similar in size|undermines|mismatch|weight is too|font weight is too|lengthy|too long|overwhelm|wall of text|multi-paragraph|essay|buries|cold visitors|may overwhelm)\b/i.test(
+    text
+  );
+}
+
+export function isHeroDensityProblemText(text: string): boolean {
+  return /\b(lengthy|too long|overwhelm|wall of text|multi-paragraph|essay|paragraph subhead|long subhead|subhead.*(long|lengthy)|cold visitors|bur(y|ies) the cta)\b/i.test(
+    text
+  );
+}
+
+function overlapsChecklistGapText(
+  fix: ReportVisualFix,
+  checklist?: ReportChecklistItem[]
+): boolean {
+  if (!checklist?.length) {
+    return false;
+  }
+
+  const observation = fix.observation.toLowerCase();
+
+  for (const item of checklist) {
+    if (item.status === "pass") {
+      continue;
+    }
+
+    const text = item.text.toLowerCase();
+
+    if (isHeroDensityProblemText(text) && isHeroDensityProblemText(observation)) {
+      return true;
+    }
+
+    if (text.length >= 16 && observation.includes(text.slice(0, Math.min(24, text.length)))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function isServerFallbackVisualGap(item: ReportChecklistItem): boolean {
   return (
     item.link_to === "visual-fixes" &&
@@ -248,12 +296,19 @@ export function isServerFallbackVisualGap(item: ReportChecklistItem): boolean {
   );
 }
 
-export function filterActionableVisualFixes(fixes: ReportVisualFix[]): ReportVisualFix[] {
+export function filterActionableVisualFixes(
+  fixes: ReportVisualFix[],
+  checklist?: ReportChecklistItem[]
+): ReportVisualFix[] {
   const seen = new Set<VisualFixDimension>();
   const filtered: ReportVisualFix[] = [];
 
   for (const fix of fixes) {
-    if (seen.has(fix.dimension) || !isActionableVisualFix(fix)) {
+    if (
+      seen.has(fix.dimension) ||
+      !isActionableVisualFix(fix) ||
+      overlapsChecklistGapText(fix, checklist)
+    ) {
       continue;
     }
 
@@ -293,12 +348,6 @@ export function filterActionableVisualPasses(
   }
 
   return filtered;
-}
-
-export function isProblemPassText(text: string): boolean {
-  return /\b(lacks?|lack|missing|unclear|too light|too thin|too playful|too cramped|cramped|reduce[sd]?|reducing|without|not visible|feels too|inadequate|similar in size|undermines|mismatch|weight is too|font weight is too)\b/i.test(
-    text
-  );
 }
 
 function resolveVisualDimensionFromPass(item: ReportChecklistItem): VisualFixDimension | null {
@@ -386,7 +435,7 @@ export function normalizeVisualSection(
   _rawChecklist?: ReportChecklistItem[],
   _breakdown?: ReportBreakdown
 ): NormalizedVisualSection {
-  void checklist;
+  const checklistSource = _rawChecklist ?? checklist;
 
   const parsedFixes = Array.isArray(fixesRaw)
     ? fixesRaw
@@ -394,7 +443,7 @@ export function normalizeVisualSection(
         .filter((item): item is ReportVisualFix => item !== null)
     : (existingFixes ?? []);
 
-  const fixes = filterActionableVisualFixes(parsedFixes);
+  const fixes = filterActionableVisualFixes(parsedFixes, checklistSource);
   const fixDimensions = new Set(fixes.map((fix) => fix.dimension));
 
   const parsedPasses = Array.isArray(passesRaw)
