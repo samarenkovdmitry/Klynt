@@ -43,8 +43,13 @@ export const SERVER_FALLBACK_VISUAL_GAP_TEXT =
 const BANNED_GENERIC_VISUAL_PATTERNS = [
   /^subheadline weight feels too light/i,
   /^increase subheadline weight for better readability/i,
+  /^subheadline color blends into the background/i,
+  /^increase contrast on subheadline/i,
+  /^increase contrast on weight for better legibility/i,
   /^hero section has cramped elements/i,
+  /^elements feel cramped in the hero section/i,
   /^add more vertical spacing between headline and subheadline/i,
+  /^increase vertical spacing between headline and subheadline/i,
   /hero blocks feel stacked without enough vertical breathing room/i,
   /subheadline weight slows scan of the value proposition/i,
   /hero typography may slow scan/i,

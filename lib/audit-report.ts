@@ -84,7 +84,9 @@ export type ChecklistLinkTarget =
   | "copy-cta"
   | "copy-subheadline"
   | "trust"
-  | "visual-fixes";
+  | "visual-fixes"
+  | "structure-nav"
+  | "hero-density";
 export type ChecklistCategory = "copy" | "trust" | "visual" | "structure";
 
 export type ReportChecklistItem = {

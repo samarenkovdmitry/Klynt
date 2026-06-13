@@ -165,11 +165,12 @@ function normalizeCopySections(copy: ReportCopyItem[]) {
 
 export function buildAnalysisQualityPromptBlock() {
   return `UNIQUENESS AND EVIDENCE RULES:
-- Each checklist gap (missing/weak) MUST reference a specific, visible element or section on the page.
-- At least 1 copy or trust gap MUST come from below the fold (features, trust, pricing, or footer).
+- Run HERO INVENTORY (theme, nav, CTA count+labels, trust elements, subhead length) before writing gaps.
+- Each checklist gap (missing/weak) MUST reference a specific, visible element from that inventory.
 - copy_variants.current for each element MUST be the exact visible text — never a paraphrase or invented copy.
 - Never repeat the same root cause across verdict, summary, key_observation, and checklist items.
 - Prefer page-specific findings over generic landing-page advice. Name the element, block, or copy you see.
+- Never inject gaps to reach a quota — 0-2 real gaps beats 3 template gaps.
 
 INSIGHT DEPTH RULES:
 - Before writing each checklist item, ask: would this observation apply to 80% of SaaS

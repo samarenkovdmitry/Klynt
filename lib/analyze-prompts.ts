@@ -103,7 +103,7 @@ Return ONLY valid JSON (no markdown):
       "gap_label": "string",
       "text": "string",
       "status": "pass"|"missing"|"weak",
-      "link_to": "copy-headline"|"copy-cta"|"copy-subheadline"|"trust"|"visual-fixes"|null,
+      "link_to": "copy-headline"|"copy-cta"|"copy-subheadline"|"trust"|"visual-fixes"|"structure-nav"|"hero-density"|null,
       "category": "copy"|"trust"|"visual"|"structure"
     }
   ],
@@ -161,9 +161,17 @@ Return ONLY valid JSON (no markdown):
   ]
 }
 
-checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass.
+checklist: 6-8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass. Fewer real gaps is OK — never invent gaps to fill slots.
 
-CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
+HERO INVENTORY (mandatory — decide internally before any gap or visual_fix):
+  1) Hero theme: dark | light | mixed.
+  2) Header nav: yes/no — if yes, name 2+ visible nav labels.
+  3) Hero CTAs: count buttons above fold + exact labels (e.g. "Download for iOS", "Setup now").
+  4) Trust above fold: list stats, logos, badges, press, Product Hunt, testimonials — or "none".
+  5) Subhead: one line vs multi-paragraph essay; approximate word count feel.
+Every gap and visual_fix MUST match this inventory. Do NOT contradict it.
+
+CHECKLIST BY SCORE (must match breakdown-derived score):
 - score MUST equal round((clarity + trust + friction + visuals) / 40, 1 decimal).
 - breakdown scores must reflect actual visible strengths and weaknesses — vary all four values; never copy the same number into clarity/trust/friction/visuals.
 - Use the full 0–10 score range based on what you see. Strong pages score 7–9; poor pages score 3–5; average pages score 5–7. Do NOT cluster scores in the 6–7 range by default.
@@ -172,27 +180,32 @@ CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
 - score 6.5–7.4: mixed quality — some strong elements alongside real gaps; gaps must reflect actual visible problems.
 - score >= 7.5: mark genuinely strong elements pass; 0-2 gaps is normal.
 - weak typography (link_to visual-fixes) ONLY when subhead is visibly hard to read on its local background — omit when a dark hero uses intentional lighter subhead weight.
+- structure-nav missing ONLY when hero/header shows zero nav links or menu (footer-only links do not count).
+- hero-density weak ONLY when hero subhead is a long paragraph (3+ sentences) that buries the CTA for cold traffic.
 - If score is below 7.0, do NOT mark copy/trust elements as pass when they contributed to the low score.
 - score_potential.chips MUST list one chip per copy/trust missing gap (same gap_label).
 - id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline"). Typography weak → id "subheadline-clarity".
 - gap_label: max 4 words, short badge for Copy studio ONLY. Examples: "Category missing", "Trial unclear", "Content weak", "Trust missing", "Weak typography". NEVER repeat checklist text or use ALL CAPS.
 - text: max 10 words, specific actionable label. Must match label in score_potential chips for copy/trust gaps.
-- link_to: copy gaps → "copy-headline"/"copy-cta"/"copy-subheadline"; trust gap → "trust"; typography weak → "visual-fixes"; pass items → null.
+- link_to: copy gaps → "copy-headline"/"copy-cta"/"copy-subheadline"; trust gap → "trust"; typography weak → "visual-fixes"; no nav → "structure-nav"; hero essay subhead → "hero-density"; pass items → null.
 - category: "copy" | "trust" | "visual" | "structure"
 - NEVER create two gaps about the same root cause (e.g. two headline/category items). One gap per link_to.
 - At most 1 weak typography item → link_to "visual-fixes", gap_label "Weak typography" — only when legibility is visibly poor on this screenshot.
 - pass items text: must name a specific visible element on this page — NEVER write generic observations.
-  Correct: "Single CTA button above fold"
-  Correct: "No navigation links competing in hero"
+  Correct: "Two hero CTAs visible — Download for iOS and Continue on web"
+  Correct: "Header nav shows Features, Blog, Try Demo"
+  Correct: "Product Hunt badge visible below hero CTAs"
   Wrong:   "Hero image is visually appealing"
   Wrong:   "Strong visual but lacks clear messaging"
+- NEVER mark an item missing/weak if its text describes something working (e.g. "Single CTA above fold" must be pass, not missing).
+- NEVER claim CTA is below the fold when HERO INVENTORY lists hero button labels.
+- NEVER claim trust missing when HERO INVENTORY lists stats, logos, badges, or Product Hunt.
 - NEVER mark an item pass if its text describes a problem (lacks, unclear, missing, without, too light, too playful, cramped, reducing).
 - NEVER use gap_label values like "Trial unclear", "Category missing", "CTA clarity", "Color tone mismatch", or "Spacing issue" on pass items — those belong in gaps or visual_fixes.
 - NEVER put spacing, color tone, typography weight, or CTA hierarchy problems in checklist pass — put them in visual_fixes with the matching dimension.
-- NEVER pass "Single CTA" if 2+ hero buttons are visible — use copy-cta missing or visual_fixes.cta_hierarchy instead.
-- trust missing gaps: say "above the fold" — proof below fold still counts as a hero gap.
+- NEVER pass "Single CTA" if 2+ hero buttons are visible — use pass "Two hero CTAs visible" or visual_fixes.cta_hierarchy if they compete.
 - TRUST CALIBRATION (mandatory):
-  - Count/stat social proof above fold ("380 landing pages audited", "Used by 500+ teams", ratings, badges) → do NOT use trust:missing.
+  - Stats, usage counts, Product Hunt badge, press/Featured In logos, security audit badges above fold → do NOT use trust:missing.
   - trust:missing ONLY when hero shows zero credibility signals (no logos, no stats, no testimonials, no security badges).
   - If a usage stat or social-proof line exists but logos/testimonials are absent → omit the trust checklist gap; put logo/testimonial advice in meta.proof_suggestion only.
   - Never claim "no trust signals" when a visible usage stat or social-proof line is in the hero.
@@ -240,7 +253,7 @@ meta.trust_notes: 1-2 items, max 14 words each. Observations about missing proof
 visual_fixes: 0-4 items. Context-aware visual/design guidance ONLY — not copy positioning or trust proof (those belong in checklist/meta).
 Include a dimension ONLY when the screenshot shows a visible mismatch. Empty visual_fixes is valid when design aligns.
 
-STEP 0 — HERO THEME (mandatory before any visual_fix):
+STEP 0 — HERO THEME (use HERO INVENTORY theme):
   Classify hero background: dark | light | mixed.
   dark: near-black/navy hero with light text — lighter subheads are often intentional; do NOT flag typography unless illegible or same contrast as body copy.
   light: white/off-white hero — watch for low-contrast gray subheads and flat depth.
@@ -258,7 +271,9 @@ Each item MUST cite what you see on this page:
 
 BANNED templates (instant failure — never output these or close paraphrases):
 - "Subheadline weight feels too light for emphasis" / "Increase subheadline weight for better readability"
-- "Hero section has cramped elements" / "Add more vertical spacing between headline and subheadline"
+- "Subheadline color blends into the background" / "Increase contrast on subheadline" without naming dark/light hero
+- "Hero section has cramped elements" / "Elements feel cramped in the hero section"
+- "Add more vertical spacing between headline and subheadline" / "Increase vertical spacing between headline and subheadline"
 - Generic spacing/typography advice that ignores dark vs light background
 - Fixes without naming a visible element on this screenshot
 

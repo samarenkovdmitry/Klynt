@@ -54,6 +54,18 @@ const LINK_BUTTON_LABEL: Record<ChecklistLinkTarget, string> = {
   "copy-subheadline": "Fix copy",
   trust: "See trust",
   "visual-fixes": "Fix visual",
+  "structure-nav": "See layout",
+  "hero-density": "Fix visual",
+};
+
+const LINK_ANCHOR: Record<ChecklistLinkTarget, string> = {
+  "copy-headline": "copy-headline",
+  "copy-cta": "copy-cta",
+  "copy-subheadline": "copy-subheadline",
+  trust: "trust",
+  "visual-fixes": "visual-fixes",
+  "structure-nav": "visual-fixes",
+  "hero-density": "visual-fixes",
 };
 
 // ---------------------------------------------------------------------------
@@ -76,8 +88,9 @@ function ChecklistRow({
 
   function handleLinkClick() {
     if (!item.link_to) return;
+    const anchor = LINK_ANCHOR[item.link_to];
     document
-      .getElementById(item.link_to)
+      .getElementById(anchor)
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 

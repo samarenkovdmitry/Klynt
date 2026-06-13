@@ -20,6 +20,8 @@ const GAP_LABEL_DEFAULTS: Record<string, string> = {
   "copy-subheadline:weak": "Content weak",
   "trust:missing": "Trust missing above fold",
   "visual-fixes:weak": "Weak typography",
+  "structure-nav:missing": "Nav missing",
+  "hero-density:weak": "Hero density",
 };
 
 const GAP_TEXT_FALLBACKS: Record<string, string> = {
@@ -32,7 +34,11 @@ const GAP_TEXT_FALLBACKS: Record<string, string> = {
   "trust:missing": "Trust proof missing above the fold",
   "trust:weak": "Trust proof above the fold is weak",
   "visual-fixes:weak": "Subheadline typography too light to scan quickly",
+  "structure-nav:missing": "No header navigation or menu above the fold",
+  "hero-density:weak": "Hero subhead is too long for cold-traffic scan",
 };
+
+const SERVER_FALLBACK_GAP_TEXTS = new Set(Object.values(GAP_TEXT_FALLBACKS));
 
 const CHIP_GAP_LABEL_ALIASES: Record<string, string> = {
   "Trust missing": "Trust missing above fold",
@@ -46,6 +52,8 @@ const VALID_LINK_TARGETS = new Set<ChecklistLinkTarget>([
   "copy-subheadline",
   "trust",
   "visual-fixes",
+  "structure-nav",
+  "hero-density",
 ]);
 
 const VALID_CATEGORIES = new Set<ChecklistCategory>([
@@ -128,6 +136,10 @@ export function getChecklistBadgeLabel(item: ReportChecklistItem): string {
     return "Weak typography";
   }
 
+  if (item.link_to === "structure-nav" || item.link_to === "hero-density") {
+    return item.gap_label?.trim() || "Structure";
+  }
+
   if (item.link_to === "copy-subheadline") {
     return "Content weak";
   }
@@ -191,15 +203,7 @@ function parseChecklistItem(raw: unknown): ReportChecklistItem | null {
   };
 
   if (isLlmPlaceholderText(parsed.text)) {
-    if (parsed.status === "pass") {
-      return null;
-    }
-
-    const fallbackKey = parsed.link_to ? `${parsed.link_to}:${parsed.status}` : null;
-    parsed.text =
-      (fallbackKey ? GAP_TEXT_FALLBACKS[fallbackKey] : undefined) ??
-      deriveChecklistGapLabel(parsed) ??
-      "Needs improvement";
+    return null;
   }
 
   if (parsed.gap_label && isLlmPlaceholderText(parsed.gap_label)) {
@@ -329,57 +333,86 @@ function resolveGapSlotFromLabel(label: string): GapSlot | undefined {
   return GAP_LABEL_TO_SLOT[normalized] ?? GAP_LABEL_TO_SLOT[label.trim()];
 }
 
+function isServerFallbackGapItem(item: ReportChecklistItem): boolean {
+  return item.status !== "pass" && SERVER_FALLBACK_GAP_TEXTS.has(item.text.trim());
+}
+
+function isContradictoryChecklistGap(
+  item: ReportChecklistItem,
+  evidenceTexts: string[] = []
+): boolean {
+  if (item.status === "pass") {
+    return false;
+  }
+
+  const text = item.text.toLowerCase();
+
+  if (
+    /\b(single|two|dual|both|pair of)\b.*\bcta\b/i.test(text) &&
+    /\b(above fold|visible|in hero|prominent|clear)\b/i.test(text) &&
+    !/\b(lacks|missing|no |without|unclear|weak|below)\b/i.test(text)
+  ) {
+    return true;
+  }
+
+  if (item.link_to === "trust" && shouldSkipTrustMissingGap(evidenceTexts)) {
+    return true;
+  }
+
+  if (
+    item.link_to === "copy-cta" &&
+    /\b(below the fold|below fold|not visible|not clear)\b/i.test(text) &&
+    /\b(download|get started|setup|try|sign up|continue|start for free)\b/i.test(
+      evidenceTexts.join(" ").toLowerCase()
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 function repairContradictoryChecklistItem(item: ReportChecklistItem): ReportChecklistItem | null {
   if (item.status !== "pass") {
     return item;
   }
 
   const gapLabel = item.gap_label?.trim();
-  if (gapLabel) {
-    const slot = resolveGapSlotFromLabel(gapLabel);
-    if (slot) {
-      const gap = createFallbackGap(slot);
-      return {
-        ...gap,
-        gap_label: gapLabel,
-        text:
-          item.text.trim().length >= 10 && !isGarbledChecklistText(item.text)
-            ? item.text
-            : gap.text,
-      };
-    }
-  }
 
-  const text = item.text.toLowerCase();
+  if (gapLabel && resolveGapSlotFromLabel(gapLabel)) {
+    return null;
+  }
 
   if (isMisclassifiedVisualPassItem(item)) {
     return null;
   }
 
+  if (isProblemPassText(item.text)) {
+    return null;
+  }
+
+  const text = item.text.toLowerCase();
+
   if (
     /\bcta\b/.test(text) &&
-    /\b(lacks clarity|lacks clear|unclear|trial|next step|does not|similar in size|multiple|competing|reduce|reducing)\b/.test(
+    /\b(lacks clarity|lacks clear|unclear|trial|next step|does not|similar in size|multiple|competing|reduce|reducing|below fold|missing|not visible)\b/.test(
       text
     )
   ) {
-    return createFallbackGap(COPY_TRUST_GAP_SLOTS[1]);
+    return null;
   }
 
   if (
     /\b(trust|logos|testimonials|credibility|proof)\b/.test(text) &&
     /\b(missing|no visible|without|not visible|lacks)\b/.test(text)
   ) {
-    return createFallbackGap(COPY_TRUST_GAP_SLOTS[2]);
+    return null;
   }
 
   if (
     /\bheadline\b/.test(text) &&
-    /\b(doesn't|does not|missing|unclear|category|audience)\b/.test(text)
+    /\b(doesn't|does not|missing|unclear|category|audience|lacks)\b/.test(text)
   ) {
-    return createFallbackGap(COPY_TRUST_GAP_SLOTS[0]);
-  }
-
-  if (isProblemPassText(item.text)) {
     return null;
   }
 
@@ -445,36 +478,17 @@ function repairChecklistItems(items: ReportChecklistItem[]): ReportChecklistItem
 
 function reconcileChecklistWithScorePotential(
   checklist: ReportChecklistItem[],
-  scorePotential?: ScorePotentialInput,
-  score?: number,
+  _scorePotential?: ScorePotentialInput,
+  _score?: number,
   evidenceTexts: string[] = []
 ): ReportChecklistItem[] {
+  void _scorePotential;
+  void _score;
+
   let gaps = checklist.filter((item) => item.status !== "pass");
   let passes = checklist.filter((item) => item.status === "pass");
-  const filledLinks = new Set(
-    gaps.map((item) => item.link_to).filter((link): link is ChecklistLinkTarget => Boolean(link))
-  );
 
-  for (const chip of scorePotential?.chips ?? []) {
-    if (shouldSkipTrustMissingGap(evidenceTexts) && isTrustMissingChipLabel(chip.label)) {
-      continue;
-    }
-
-    const slot = resolveGapSlotFromLabel(chip.label);
-
-    if (!slot || filledLinks.has(slot.link_to)) {
-      continue;
-    }
-
-    if (slot.link_to === "trust" && shouldSkipTrustMissingGap(evidenceTexts)) {
-      continue;
-    }
-
-    gaps.push(createFallbackGap(slot));
-    filledLinks.add(slot.link_to);
-  }
-
-  gaps = ensureMinimumChecklistGaps(gaps, score, evidenceTexts);
+  gaps = finalizeChecklistGaps(gaps, evidenceTexts);
   passes = filterInvalidPassItems(passes, gaps);
 
   const missing = gaps.filter((item) => item.status === "missing").slice(0, 3);
@@ -486,49 +500,14 @@ function reconcileChecklistWithScorePotential(
   });
 }
 
-function countGaps(gaps: ReportChecklistItem[]) {
-  return {
-    total: gaps.length,
-    missing: gaps.filter((item) => item.status === "missing").length,
-    weak: gaps.filter((item) => item.status === "weak").length,
-  };
-}
-
-function ensureMinimumChecklistGaps(
+function finalizeChecklistGaps(
   gaps: ReportChecklistItem[],
-  score?: number,
   evidenceTexts: string[] = []
 ): ReportChecklistItem[] {
-  const numericScore = Number(score);
-
-  if (!Number.isFinite(numericScore) || numericScore >= 7) {
-    return ensureVisualWeakItem(gaps);
-  }
-
-  const minTotalGaps = 3;
-  const minMissing = numericScore < 6.0 ? 3 : 2;
-
-  let result = [...gaps];
-  const filledLinks = new Set(
-    result.map((item) => item.link_to).filter((link): link is ChecklistLinkTarget => Boolean(link))
+  const result = gaps.filter(
+    (item) =>
+      !isServerFallbackGapItem(item) && !isContradictoryChecklistGap(item, evidenceTexts)
   );
-
-  for (const slot of COPY_TRUST_GAP_SLOTS) {
-    if (slot.link_to === "trust" && shouldSkipTrustMissingGap(evidenceTexts)) {
-      continue;
-    }
-
-    if (countGaps(result).total >= minTotalGaps && countGaps(result).missing >= minMissing) {
-      break;
-    }
-
-    if (filledLinks.has(slot.link_to)) {
-      continue;
-    }
-
-    result.push(createFallbackGap(slot));
-    filledLinks.add(slot.link_to);
-  }
 
   const missing = result.filter((item) => item.status === "missing").slice(0, 3);
   const weak = result.filter((item) => item.status === "weak").slice(0, 1);
@@ -794,7 +773,7 @@ export function normalizeReportChecklist(
   const withDedupedGaps = dedupeGaps(repaired);
   const gaps = withDedupedGaps.filter((item) => item.status !== "pass");
   const passes = withDedupedGaps.filter((item) => item.status === "pass");
-  const normalizedGaps = ensureMinimumChecklistGaps(gaps, score, evidenceTexts);
+  const normalizedGaps = finalizeChecklistGaps(gaps, evidenceTexts);
 
   const combined = [...normalizedGaps, ...passes].map((item) => {
     const gap_label = deriveChecklistGapLabel(item);
