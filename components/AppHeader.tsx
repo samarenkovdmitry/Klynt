@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { RiAddLine, RiCloseLine, RiMenuLine } from "@remixicon/react";
+import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
 import {
   APP_HEADER_CONTAINER_CLASS,
@@ -20,11 +20,11 @@ function isReportPath(pathname: string) {
   return pathname.startsWith("/report") && !pathname.includes("/print");
 }
 
-function navLinkClass(isActive: boolean, isLanding: boolean) {
+function navLinkClass(isActive: boolean, isDarkPage: boolean) {
   const base =
     "rounded-lg px-3 py-[5px] text-[14px] transition-colors duration-150";
 
-  if (isLanding) {
+  if (isDarkPage) {
     return [
       base,
       isActive
@@ -52,11 +52,10 @@ function mobileNavLinkClass(isActive: boolean) {
 
 export function AppHeader() {
   const pathname = usePathname();
-  const isLanding = pathname === "/";
+  const isDarkPage = pathname === "/" || pathname.startsWith("/analyze");
   const isReportPage = isReportPath(pathname);
-  const isReportOrAnalyze = isReportPage || pathname.startsWith("/analyze");
   const [menuOpen, setMenuOpen] = useState(false);
-  const headerHeightPx = isReportOrAnalyze ? REPORT_HEADER_HEIGHT_PX : HEADER_HEIGHT_PX;
+  const headerHeightPx = isReportPage ? REPORT_HEADER_HEIGHT_PX : HEADER_HEIGHT_PX;
 
   useEffect(() => {
     setMenuOpen(false);
@@ -78,19 +77,14 @@ export function AppHeader() {
       <header
         className={[
           "app-site-header w-full pt-[env(safe-area-inset-top,0px)]",
-          isReportOrAnalyze
+          isReportPage
             ? `border-b border-black/[0.07] ${WORKSPACE_BG_CLASS}`
-            : "sticky top-0 z-50 border-b border-transparent",
-          isLanding
-            ? "bg-transparent"
-            : isReportOrAnalyze
-              ? ""
-              : `sticky top-0 z-50 ${WORKSPACE_BG_CLASS}`,
+            : `sticky top-0 z-50 border-b border-transparent ${isDarkPage ? "bg-transparent" : WORKSPACE_BG_CLASS}`,
         ].join(" ")}
       >
         <div
           className={
-            isReportOrAnalyze ? APP_REPORT_HEADER_CONTAINER_CLASS : APP_HEADER_CONTAINER_CLASS
+            isReportPage ? APP_REPORT_HEADER_CONTAINER_CLASS : APP_HEADER_CONTAINER_CLASS
           }
         >
           <Link
@@ -99,13 +93,13 @@ export function AppHeader() {
             aria-label="Klynt — home"
             onClick={() => setMenuOpen(false)}
           >
-            {isLanding ? (
+            {isDarkPage ? (
               <img
                 src="/klynt-logo-light.svg"
                 alt="Klynt"
                 className="h-[26px] w-auto shrink-0"
               />
-            ) : isReportOrAnalyze ? (
+            ) : isReportPage ? (
               <img
                 src="/klynt-logo-dark.svg"
                 alt="Klynt"
@@ -134,7 +128,7 @@ export function AppHeader() {
                     key={item.href}
                     href={item.href}
                     routeParam={DEMO_REPORT_SLUG}
-                    className={navLinkClass(item.isActive(pathname), isLanding)}
+                    className={navLinkClass(item.isActive(pathname), isDarkPage)}
                   >
                     {item.label}
                   </ReportPrefetchLink>
@@ -142,30 +136,20 @@ export function AppHeader() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={navLinkClass(item.isActive(pathname), isLanding)}
+                    className={navLinkClass(item.isActive(pathname), isDarkPage)}
                   >
                     {item.label}
                   </Link>
                 )
               )}
             </nav>
-
-            {isReportPage && (
-              <Link
-                href="/analyze"
-                className="ml-1 inline-flex items-center gap-1 rounded-[8px] bg-[#111] px-[13px] py-1.5 text-[14px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
-              >
-                <RiAddLine size={14} aria-hidden />
-                New audit
-              </Link>
-            )}
           </div>
 
           <button
             type="button"
             className={[
               "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors md:hidden",
-              isLanding
+              isDarkPage
                 ? "text-white hover:bg-white/10"
                 : "text-[#111] hover:bg-black/[0.05]",
             ].join(" ")}
@@ -236,18 +220,6 @@ export function AppHeader() {
                 {item.label}
               </Link>
             )
-          )}
-
-          {isReportPage && (
-            <Link
-              href="/analyze"
-              tabIndex={menuOpen ? 0 : -1}
-              className="mt-1 flex w-full items-center justify-center gap-1 rounded-xl bg-[#111] px-4 py-3 text-[15px] font-medium text-white"
-              onClick={() => setMenuOpen(false)}
-            >
-              <RiAddLine size={16} aria-hidden />
-              New audit
-            </Link>
           )}
         </nav>
       </div>

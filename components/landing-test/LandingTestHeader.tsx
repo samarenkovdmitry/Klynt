@@ -6,10 +6,8 @@ import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
-import { isContactActive, isSampleReportActive } from "@/lib/site-nav";
+import { isAnalyzeActive, isContactActive, isSampleReportActive } from "@/lib/site-nav";
 import {
-  LANDING_CONTAINER,
-  LANDING_HEADER_OUTLINE_CTA,
   LANDING_LOGO_LIGHT,
   LANDING_LOGO_LIGHT_CLASS,
 } from "./landingPageStyles";
@@ -17,6 +15,11 @@ import {
 const HEADER_HEIGHT_PX = 52;
 
 const navItems = [
+  {
+    href: "/analyze",
+    label: "Analyze",
+    match: isAnalyzeActive,
+  },
   {
     href: DEMO_REPORT_PATH,
     label: "Sample report",
@@ -64,7 +67,7 @@ export function LandingTestHeader() {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.08] bg-[#0E0E0C]/88 pt-[env(safe-area-inset-top,0px)] backdrop-blur-[16px]">
-        <div className={`${LANDING_CONTAINER} flex h-[52px] items-center gap-4 px-4 md:px-8`}>
+        <div className="mx-auto flex h-[52px] w-full max-w-[1400px] items-center justify-between gap-4 px-6">
           <div className="flex min-w-0 flex-1 items-center gap-6 md:gap-8">
             <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Klynt — home">
               <img src={LANDING_LOGO_LIGHT} alt="Klynt" className={LANDING_LOGO_LIGHT_CLASS} />
@@ -96,10 +99,6 @@ export function LandingTestHeader() {
               })}
             </nav>
           </div>
-
-          <Link href="#hero" className={`${LANDING_HEADER_OUTLINE_CTA} hidden md:inline-flex`}>
-            Analyze →
-          </Link>
 
           <button
             type="button"
@@ -163,14 +162,6 @@ export function LandingTestHeader() {
               </Link>
             );
           })}
-          <Link
-            href="#hero"
-            tabIndex={menuOpen ? 0 : -1}
-            className={`${LANDING_HEADER_OUTLINE_CTA} mt-1 w-full justify-center`}
-            onClick={() => setMenuOpen(false)}
-          >
-            Analyze →
-          </Link>
         </nav>
       </div>
     </>

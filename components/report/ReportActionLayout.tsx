@@ -12,7 +12,7 @@ import {
   RiFilePdfLine,
   RiLightbulbLine,
   RiRefreshLine,
-  RiShareLine,
+  RiShare2Line,
 } from "@remixicon/react";
 
 import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
@@ -229,14 +229,8 @@ function HeroCard({
           <div className="flex flex-wrap items-center gap-1.5">
             {onShare ? (
               <button type="button" onClick={onShare} className={BTN_CLASS}>
-                <RiShareLine size={14} aria-hidden />
+                <RiShare2Line size={14} aria-hidden />
                 Share
-              </button>
-            ) : null}
-            {onExport ? (
-              <button type="button" onClick={onExport} className={BTN_CLASS}>
-                <RiFilePdfLine size={14} aria-hidden />
-                PDF
               </button>
             ) : null}
           </div>
@@ -310,11 +304,6 @@ function HeroCard({
           {onShare ? (
             <button type="button" onClick={onShare} className={BTN_CLASS}>
               Share
-            </button>
-          ) : null}
-          {onExport ? (
-            <button type="button" onClick={onExport} className={BTN_CLASS}>
-              Export PDF
             </button>
           ) : null}
           <button type="button" onClick={onRerun} className={BTN_PRIMARY_CLASS}>

@@ -2,15 +2,15 @@
 export const WORKSPACE_BG_CLASS = "bg-[#EFEFED]";
 
 /** Product shell — header and footer align to this width. */
-export const APP_SHELL_CONTAINER_CLASS = "mx-auto w-full max-w-[1180px]";
+export const APP_SHELL_CONTAINER_CLASS = "mx-auto w-full max-w-[1400px]";
 
 /** Report workspace column — slightly wider than v4 (800px), still compact. */
 export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[860px]";
 
 export const APP_HEADER_CONTAINER_CLASS =
-  "mx-auto flex h-[52px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-8";
+  "mx-auto flex h-[52px] w-full max-w-[1400px] items-center justify-between gap-4 px-6";
 export const APP_REPORT_HEADER_CONTAINER_CLASS =
-  "mx-auto flex h-[50px] w-full max-w-[1180px] items-center justify-between gap-4 px-4 md:px-8";
+  "mx-auto flex h-[50px] w-full max-w-[1400px] items-center justify-between gap-4 px-6";
 
 /** Workspace / analyze lead paragraph */
 export const WORKSPACE_LEAD_CLASS =

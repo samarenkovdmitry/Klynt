@@ -74,8 +74,8 @@ export function AppFooter({
   const styles = variantStyles[variant];
   const container = containerClass ?? LANDING_UPDATE_CONTAINER;
   const paddingClass = compact
-    ? "px-4 py-5 md:px-8 md:py-6"
-    : "px-6 py-[33px] md:px-6 md:py-10";
+    ? "px-6 py-5 md:py-6"
+    : "px-6 py-[33px] md:py-10";
 
   return (
     <footer
