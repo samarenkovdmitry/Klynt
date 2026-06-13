@@ -343,10 +343,6 @@ export async function POST(req: Request) {
     }
 
     const rawScreenshotsBase64 = [...screenshotsBase64];
-    screenshotsBase64 = await timing.measure("optimize_ms", () =>
-      optimizeScreenshots(screenshotsBase64)
-    );
-
     const rawHeroBase64 = rawScreenshotsBase64[0];
     const previewImagePromise = rawHeroBase64
       ? buildReportPreviewImage(rawHeroBase64).catch((previewError) => {
@@ -354,6 +350,10 @@ export async function POST(req: Request) {
           return undefined;
         })
       : Promise.resolve(undefined);
+
+    screenshotsBase64 = await timing.measure("optimize_ms", () =>
+      optimizeScreenshots(screenshotsBase64)
+    );
     const basePrompt = buildFullAuditPrompt(brandStage, trafficSource, audienceType);
 
     const json: Record<string, any> = await timing.measure("openai_ms", () =>
@@ -463,7 +463,7 @@ export async function POST(req: Request) {
     json.checklist = finalized.checklist;
 
     json.score = calibrateReportScore(
-      workingScore,
+      llmScore,
       normalizedBreakdown,
       json.checklist
     );
@@ -549,6 +549,8 @@ export async function POST(req: Request) {
       audience_type: audienceType,
       headline_directions: json.headline_directions,
       breakdown: json.breakdown,
+      visual_fixes: json.visual_fixes ?? [],
+      visual_passes: json.visual_passes ?? [],
       generatedAt: new Date().toISOString(),
     };
 
@@ -556,17 +558,13 @@ export async function POST(req: Request) {
     const previewImagePath = buildReportPreviewPath(reportSlug);
 
     if (isAuditReport(reportPayload)) {
-      try {
-        await timing.measure("db_ms", () =>
-          saveReportToDb({
-            id: reportId,
-            auditedUrl,
-            report: reportPayload,
-          })
-        );
-      } catch (persistError) {
+      saveReportToDb({
+        id: reportId,
+        auditedUrl,
+        report: reportPayload,
+      }).catch((persistError) => {
         console.error("[analyze] Failed to persist report:", persistError);
-      }
+      });
 
       scheduleReportOgBackfill(reportId, reportPayload, previewImage);
     }

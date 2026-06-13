@@ -166,9 +166,11 @@ checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 mi
 CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
 - score MUST equal round((clarity + trust + friction + visuals) / 40, 1 decimal).
 - breakdown scores must reflect actual visible strengths and weaknesses — vary all four values; never copy the same number into clarity/trust/friction/visuals.
-- score < 6.0: at least 2 missing gaps plus 1 weak typography (link_to visual-fixes).
-- score 6.0-6.9: 2-4 gaps total that match visible issues — do not invent gaps to hit a quota.
-- score >= 7.0: mark genuinely strong elements pass; 0-2 gaps is normal.
+- Use the full 0–10 score range based on what you see. Strong pages score 7–9; poor pages score 3–5; average pages score 5–7. Do NOT cluster scores in the 6–7 range by default.
+- score < 5.0: page has fundamental clarity or trust failures — 3+ missing gaps expected.
+- score 5.0–6.4: meaningful problems visible — include gaps that match the actual issues; do not invent gaps to hit a quota.
+- score 6.5–7.4: mixed quality — some strong elements alongside real gaps; gaps must reflect actual visible problems.
+- score >= 7.5: mark genuinely strong elements pass; 0-2 gaps is normal.
 - score < 7.0: include exactly 1 weak typography item (link_to visual-fixes) when subhead weight or legibility is visibly soft.
 - If score is below 7.0, do NOT mark copy/trust elements as pass when they contributed to the low score.
 - score_potential.chips MUST list one chip per copy/trust missing gap (same gap_label).
