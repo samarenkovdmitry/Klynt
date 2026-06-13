@@ -297,13 +297,6 @@ const COPY_TRUST_GAP_SLOTS: GapSlot[] = [
   },
 ];
 
-const VISUAL_WEAK_SLOT: GapSlot = {
-  link_to: "visual-fixes",
-  status: "weak",
-  id: "subheadline-clarity",
-  category: "visual",
-};
-
 function createFallbackGap(slot: GapSlot): ReportChecklistItem {
   const key = `${slot.link_to}:${slot.status}`;
 
@@ -513,18 +506,12 @@ function ensureMinimumChecklistGaps(
   }
 
   const minTotalGaps = 3;
-  const requireWeakTypography = numericScore < 7;
   const minMissing = numericScore < 6.0 ? 3 : 2;
 
   let result = [...gaps];
   const filledLinks = new Set(
     result.map((item) => item.link_to).filter((link): link is ChecklistLinkTarget => Boolean(link))
   );
-
-  if (requireWeakTypography && !filledLinks.has("visual-fixes")) {
-    result.push(createFallbackGap(VISUAL_WEAK_SLOT));
-    filledLinks.add("visual-fixes");
-  }
 
   for (const slot of COPY_TRUST_GAP_SLOTS) {
     if (slot.link_to === "trust" && shouldSkipTrustMissingGap(evidenceTexts)) {

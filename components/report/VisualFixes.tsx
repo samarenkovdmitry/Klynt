@@ -89,9 +89,9 @@ function VisualPassRow({
 }
 
 export function VisualFixes({ visualFixes, visualPasses }: Props) {
-  const [passVisible, setPassVisible] = useState(false);
   const fixes = visualFixes ?? [];
   const passes = visualPasses ?? [];
+  const [passVisible, setPassVisible] = useState(fixes.length === 0 && passes.length > 0);
 
   if (fixes.length === 0 && passes.length === 0) {
     return null;

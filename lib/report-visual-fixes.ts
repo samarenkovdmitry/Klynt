@@ -37,6 +37,34 @@ export function getVisualFixDimensionLabel(dimension: VisualFixDimension): strin
   return DIMENSION_LABELS[dimension];
 }
 
+export const SERVER_FALLBACK_VISUAL_GAP_TEXT =
+  "Subheadline typography too light to scan quickly";
+
+const BANNED_GENERIC_VISUAL_PATTERNS = [
+  /^subheadline weight feels too light/i,
+  /^increase subheadline weight for better readability/i,
+  /^hero section has cramped elements/i,
+  /^add more vertical spacing between headline and subheadline/i,
+  /hero blocks feel stacked without enough vertical breathing room/i,
+  /subheadline weight slows scan of the value proposition/i,
+  /hero typography may slow scan/i,
+  /subheadline typography too light to scan quickly/i,
+  /increase subheadline to 18px \/ weight 500/i,
+  /for faster value-prop scan/i,
+  /reduce cramped feel/i,
+  /reads as a caption, not a value proposition/i,
+  /tighten corner radius to 6–8px for a more credible product tone/i,
+  /shift accent palette toward restrained trust tones/i,
+  /add 80–120px vertical rhythm between hero sections/i,
+  /make primary cta 2–3× more prominent — demote secondary actions visually/i,
+  /add a subtle background tint or gradient to separate hero from page body/i,
+  /strip hero to headline, subhead, and one cta for cold traffic/i,
+  /corner radius reads louder than this product category expects/i,
+  /accent palette may undersell trust for cold-traffic visitors/i,
+  /primary and secondary actions compete above the fold/i,
+  /flat hero background blurs separation from the rest of the page/i,
+];
+
 const DIMENSION_ALIASES: Record<string, VisualFixDimension> = {
   border_radius: "border_radius",
   borderradius: "border_radius",
@@ -164,97 +192,102 @@ const VISUAL_PROBLEM_GAP_LABELS = new Set([
   "CTA hierarchy",
 ]);
 
-const DEFAULT_DIMENSION_RECOMMENDATIONS: Record<VisualFixDimension, string> = {
-  border_radius: "Tighten corner radius to 6–8px for a more credible product tone",
-  density: "Strip hero to headline, subhead, and one CTA for cold traffic",
-  color_tone: "Shift accent palette toward restrained trust tones for cold-traffic credibility",
-  spacing: "Add 80–120px vertical rhythm between hero sections to reduce cramped feel",
-  cta_hierarchy: "Make primary CTA 2–3× more prominent — demote secondary actions visually",
-  typography: "Increase subheadline to 18px / weight 500 for faster value-prop scan",
-  depth: "Add a subtle background tint or gradient to separate hero from page body",
-};
+export function isBannedGenericVisualText(text: string): boolean {
+  const normalized = text.trim();
 
-const INFERRED_VISUAL_OBSERVATIONS: Record<VisualFixDimension, string> = {
-  border_radius: "Corner radius reads louder than this product category expects",
-  density: "Hero packs multiple messages before the first clear action",
-  color_tone: "Accent palette may undersell trust for cold-traffic visitors",
-  spacing: "Hero blocks feel stacked without enough vertical breathing room",
-  cta_hierarchy: "Primary and secondary actions compete above the fold",
-  typography: "Subheadline weight slows scan of the value proposition",
-  depth: "Flat hero background blurs separation from the rest of the page",
-};
-
-const SUPPLEMENT_DIMENSION_ORDER: VisualFixDimension[] = [
-  "spacing",
-  "cta_hierarchy",
-  "border_radius",
-  "depth",
-  "color_tone",
-  "density",
-  "typography",
-];
-
-function inferVisualDimensionsFromBreakdown(
-  breakdown?: ReportBreakdown
-): VisualFixDimension[] {
-  if (!breakdown) {
-    return [];
+  if (!normalized) {
+    return true;
   }
 
-  const inferred: VisualFixDimension[] = [];
-
-  if (Number(breakdown.friction) < 64) {
-    inferred.push("cta_hierarchy");
-  }
-
-  if (Number(breakdown.visuals) < 64) {
-    inferred.push("spacing", "border_radius");
-  }
-
-  if (Number(breakdown.clarity) < 60) {
-    inferred.push("density");
-  }
-
-  if (Number(breakdown.trust) < 58) {
-    inferred.push("color_tone", "depth");
-  }
-
-  return inferred;
+  return BANNED_GENERIC_VISUAL_PATTERNS.some((pattern) => pattern.test(normalized));
 }
 
-function supplementUnderDeliveredVisualFixes(
-  fixes: ReportVisualFix[],
-  fixDimensions: Set<VisualFixDimension>,
-  breakdown?: ReportBreakdown
-): ReportVisualFix[] {
-  if (fixes.length >= 2) {
-    return fixes;
+export function hasVisibleVisualEvidence(text: string): boolean {
+  return /\b(dark|light|black|white|gray|grey|muted|hero|headline|subhead|subheadline|cta|button|pill|card|mockup|nav|logo|fold|accent|primary|secondary|radius|rounded|padding|gap|shadow|gradient|tint|#[0-9a-f]{3,6}|\d+\s*px|\d+\s*rem|download|trial|free|sign up|get started|start for free)\b/i.test(
+    text
+  );
+}
+
+export function isActionableVisualFix(fix: ReportVisualFix): boolean {
+  if (
+    isBannedGenericVisualText(fix.observation) ||
+    isBannedGenericVisualText(fix.recommendation)
+  ) {
+    return false;
   }
 
-  const next = [...fixes];
-  const candidates = [
-    ...inferVisualDimensionsFromBreakdown(breakdown),
-    ...SUPPLEMENT_DIMENSION_ORDER,
-  ];
+  if (!hasVisibleVisualEvidence(fix.observation)) {
+    return false;
+  }
 
-  for (const dimension of candidates) {
-    if (next.length >= 3) {
-      break;
-    }
+  if (fix.observation.trim().toLowerCase() === fix.recommendation.trim().toLowerCase()) {
+    return false;
+  }
 
-    if (fixDimensions.has(dimension)) {
+  return true;
+}
+
+export function isActionableVisualPass(pass: ReportVisualPass): boolean {
+  if (isBannedGenericVisualText(pass.note)) {
+    return false;
+  }
+
+  return hasVisibleVisualEvidence(pass.note);
+}
+
+export function isServerFallbackVisualGap(item: ReportChecklistItem): boolean {
+  return (
+    item.link_to === "visual-fixes" &&
+    item.status === "weak" &&
+    item.text.trim() === SERVER_FALLBACK_VISUAL_GAP_TEXT
+  );
+}
+
+export function filterActionableVisualFixes(fixes: ReportVisualFix[]): ReportVisualFix[] {
+  const seen = new Set<VisualFixDimension>();
+  const filtered: ReportVisualFix[] = [];
+
+  for (const fix of fixes) {
+    if (seen.has(fix.dimension) || !isActionableVisualFix(fix)) {
       continue;
     }
 
-    fixDimensions.add(dimension);
-    next.push({
-      dimension,
-      observation: INFERRED_VISUAL_OBSERVATIONS[dimension],
-      recommendation: DEFAULT_DIMENSION_RECOMMENDATIONS[dimension],
-    });
+    seen.add(fix.dimension);
+    filtered.push(fix);
+
+    if (filtered.length >= 4) {
+      break;
+    }
   }
 
-  return next.slice(0, 4);
+  return filtered;
+}
+
+export function filterActionableVisualPasses(
+  passes: ReportVisualPass[],
+  blockedDimensions: Set<VisualFixDimension>
+): ReportVisualPass[] {
+  const seen = new Set<VisualFixDimension>();
+  const filtered: ReportVisualPass[] = [];
+
+  for (const pass of passes) {
+    if (
+      blockedDimensions.has(pass.dimension) ||
+      seen.has(pass.dimension) ||
+      !isActionableVisualPass(pass)
+    ) {
+      continue;
+    }
+
+    seen.add(pass.dimension);
+    filtered.push(pass);
+
+    if (filtered.length >= 4) {
+      break;
+    }
+  }
+
+  return filtered;
 }
 
 export function isProblemPassText(text: string): boolean {
@@ -325,132 +358,6 @@ export function isMisclassifiedVisualPassItem(item: ReportChecklistItem): boolea
   );
 }
 
-export function extractVisualFixesFromMisclassifiedPasses(
-  items: ReportChecklistItem[] | undefined,
-  options?: {
-    skipDimensions?: Set<VisualFixDimension>;
-  }
-): ReportVisualFix[] {
-  if (!items?.length) {
-    return [];
-  }
-
-  const skipDimensions = options?.skipDimensions ?? new Set<VisualFixDimension>();
-  const fixes: ReportVisualFix[] = [];
-  const seen = new Set<VisualFixDimension>();
-
-  for (const item of items) {
-    if (!isMisclassifiedVisualPassItem(item)) {
-      continue;
-    }
-
-    const dimension = resolveVisualDimensionFromChecklistItem(item);
-
-    if (!dimension || seen.has(dimension) || skipDimensions.has(dimension)) {
-      continue;
-    }
-
-    seen.add(dimension);
-    fixes.push({
-      dimension,
-      observation: clampWords(item.text, 14, true),
-      recommendation: DEFAULT_DIMENSION_RECOMMENDATIONS[dimension],
-    });
-
-    if (fixes.length >= 4) {
-      break;
-    }
-  }
-
-  return fixes;
-}
-
-export function extractVisualFixesFromChecklistGaps(
-  items: ReportChecklistItem[] | undefined,
-  options?: {
-    skipDimensions?: Set<VisualFixDimension>;
-  }
-): ReportVisualFix[] {
-  if (!items?.length) {
-    return [];
-  }
-
-  const skipDimensions = options?.skipDimensions ?? new Set<VisualFixDimension>();
-  const fixes: ReportVisualFix[] = [];
-  const seen = new Set<VisualFixDimension>();
-
-  for (const item of items) {
-    if (item.status === "pass") {
-      continue;
-    }
-
-    const dimension = resolveVisualDimensionFromChecklistItem(item);
-
-    if (
-      !dimension ||
-      seen.has(dimension) ||
-      skipDimensions.has(dimension) ||
-      item.category === "copy" ||
-      item.category === "trust"
-    ) {
-      continue;
-    }
-
-    seen.add(dimension);
-    fixes.push({
-      dimension,
-      observation: clampWords(item.text, 14, true),
-      recommendation: DEFAULT_DIMENSION_RECOMMENDATIONS[dimension],
-    });
-
-    if (fixes.length >= 4) {
-      break;
-    }
-  }
-
-  return fixes;
-}
-
-function mergeExtractedVisualFixes(
-  target: ReportVisualFix[],
-  fixDimensions: Set<VisualFixDimension>,
-  extracted: ReportVisualFix[]
-) {
-  for (const item of extracted) {
-    if (fixDimensions.has(item.dimension) || target.length >= 4) {
-      continue;
-    }
-
-    fixDimensions.add(item.dimension);
-    target.push(item);
-  }
-}
-
-function fallbackFixesFromChecklist(checklist?: ReportChecklistItem[]): ReportVisualFix[] {
-  const visualGap = checklist?.find(
-    (item) => item.link_to === "visual-fixes" && item.status === "weak"
-  );
-
-  if (!visualGap) {
-    return [];
-  }
-
-  return [
-    {
-      dimension: "typography",
-      observation: clampWords(visualGap.text, 14, true),
-      recommendation:
-        "Increase subheadline to 18px / weight 500 — currently reads as a caption, not a value proposition",
-    },
-  ];
-}
-
-const DEFAULT_SUB7_VISUAL_FIX: ReportVisualFix = {
-  dimension: "typography",
-  observation: "Hero typography may slow scan for cold visitors",
-  recommendation: "Increase subheadline weight and size for faster value-prop scan",
-};
-
 export function normalizeReportVisualFixes(
   raw: unknown,
   checklist?: ReportChecklistItem[]
@@ -470,75 +377,20 @@ export function normalizeVisualSection(
   passesRaw?: unknown,
   checklist?: ReportChecklistItem[],
   existingFixes?: ReportVisualFix[],
-  score?: number,
-  rawChecklist?: ReportChecklistItem[],
-  breakdown?: ReportBreakdown
+  _score?: number,
+  _rawChecklist?: ReportChecklistItem[],
+  _breakdown?: ReportBreakdown
 ): NormalizedVisualSection {
+  void checklist;
+
   const parsedFixes = Array.isArray(fixesRaw)
     ? fixesRaw
         .map(parseVisualFixItem)
         .filter((item): item is ReportVisualFix => item !== null)
     : (existingFixes ?? []);
 
-  const dedupedFixes: ReportVisualFix[] = [];
-  const fixDimensions = new Set<VisualFixDimension>();
-
-  for (const item of parsedFixes) {
-    if (fixDimensions.has(item.dimension)) {
-      continue;
-    }
-
-    fixDimensions.add(item.dimension);
-    dedupedFixes.push(item);
-
-    if (dedupedFixes.length >= 4) {
-      break;
-    }
-  }
-
-  const hasTypographyWeakGap = checklist?.some(
-    (item) => item.link_to === "visual-fixes" && item.status === "weak"
-  );
-  const skipExtractDimensions = new Set<VisualFixDimension>(fixDimensions);
-
-  if (hasTypographyWeakGap || fixDimensions.has("typography")) {
-    skipExtractDimensions.add("typography");
-  }
-
-  const checklistSource = rawChecklist ?? checklist;
-
-  mergeExtractedVisualFixes(
-    dedupedFixes,
-    fixDimensions,
-    extractVisualFixesFromMisclassifiedPasses(checklistSource, {
-      skipDimensions: skipExtractDimensions,
-    })
-  );
-
-  mergeExtractedVisualFixes(
-    dedupedFixes,
-    fixDimensions,
-    extractVisualFixesFromChecklistGaps(checklistSource, {
-      skipDimensions: fixDimensions,
-    })
-  );
-
-  let fixes = dedupedFixes;
-  const checklistFallback = fallbackFixesFromChecklist(checklist);
-
-  if (fixes.length === 0) {
-    fixes = checklistFallback;
-  } else if (checklistFallback.length > 0 && !fixDimensions.has("typography")) {
-    fixes = [...checklistFallback, ...fixes].slice(0, 4);
-    fixDimensions.add("typography");
-  }
-
-  fixes = supplementUnderDeliveredVisualFixes(fixes, fixDimensions, breakdown);
-
-  fixDimensions.clear();
-  for (const fix of fixes) {
-    fixDimensions.add(fix.dimension);
-  }
+  const fixes = filterActionableVisualFixes(parsedFixes);
+  const fixDimensions = new Set(fixes.map((fix) => fix.dimension));
 
   const parsedPasses = Array.isArray(passesRaw)
     ? passesRaw
@@ -546,32 +398,7 @@ export function normalizeVisualSection(
         .filter((item): item is ReportVisualPass => item !== null)
     : [];
 
-  const passes: ReportVisualPass[] = [];
-  const seenPass = new Set<VisualFixDimension>();
-
-  for (const item of parsedPasses) {
-    if (fixDimensions.has(item.dimension) || seenPass.has(item.dimension)) {
-      continue;
-    }
-
-    seenPass.add(item.dimension);
-    passes.push(item);
-
-    if (passes.length >= 3) {
-      break;
-    }
-  }
-
-  const numericScore = Number(score);
-  if (
-    fixes.length === 0 &&
-    passes.length === 0 &&
-    Number.isFinite(numericScore) &&
-    numericScore < 7
-  ) {
-    const checklistFallback = fallbackFixesFromChecklist(checklist);
-    fixes = checklistFallback.length > 0 ? checklistFallback : [DEFAULT_SUB7_VISUAL_FIX];
-  }
+  const passes = filterActionableVisualPasses(parsedPasses, fixDimensions);
 
   return { fixes, passes };
 }

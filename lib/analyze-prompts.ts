@@ -171,7 +171,7 @@ CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
 - score 5.0–6.4: meaningful problems visible — include gaps that match the actual issues; do not invent gaps to hit a quota.
 - score 6.5–7.4: mixed quality — some strong elements alongside real gaps; gaps must reflect actual visible problems.
 - score >= 7.5: mark genuinely strong elements pass; 0-2 gaps is normal.
-- score < 7.0: include exactly 1 weak typography item (link_to visual-fixes) when subhead weight or legibility is visibly soft.
+- weak typography (link_to visual-fixes) ONLY when subhead is visibly hard to read on its local background — omit when a dark hero uses intentional lighter subhead weight.
 - If score is below 7.0, do NOT mark copy/trust elements as pass when they contributed to the low score.
 - score_potential.chips MUST list one chip per copy/trust missing gap (same gap_label).
 - id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline"). Typography weak → id "subheadline-clarity".
@@ -180,7 +180,7 @@ CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
 - link_to: copy gaps → "copy-headline"/"copy-cta"/"copy-subheadline"; trust gap → "trust"; typography weak → "visual-fixes"; pass items → null.
 - category: "copy" | "trust" | "visual" | "structure"
 - NEVER create two gaps about the same root cause (e.g. two headline/category items). One gap per link_to.
-- Exactly 1 weak item for typography/subheadline weight → link_to "visual-fixes", gap_label "Weak typography".
+- At most 1 weak typography item → link_to "visual-fixes", gap_label "Weak typography" — only when legibility is visibly poor on this screenshot.
 - pass items text: must name a specific visible element on this page — NEVER write generic observations.
   Correct: "Single CTA button above fold"
   Correct: "No navigation links competing in hero"
@@ -237,32 +237,41 @@ meta.description_suggestion: max 25 words. First-time visitor perspective. What 
 meta.proof_suggestion: max 12 words. One specific trust element to add on THIS page (e.g. "Add customer logos below CTA").
 meta.trust_notes: 1-2 items, max 14 words each. Observations about missing proof or CTA reassurance — e.g. when CTA says "Try X" without free/trial clarity, note that it suggests risk without reassurance. Do not duplicate checklist trust gap text verbatim.
 
-visual_fixes: 2-4 items REQUIRED. Context-aware visual/design guidance ONLY — not copy positioning or trust proof (those belong in checklist/meta).
-FAILURE: returning only typography, or fewer than 2 items — always include at least one non-typography dimension when spacing, CTA size, color, radius, or depth issues are visible.
+visual_fixes: 0-4 items. Context-aware visual/design guidance ONLY — not copy positioning or trust proof (those belong in checklist/meta).
+Include a dimension ONLY when the screenshot shows a visible mismatch. Empty visual_fixes is valid when design aligns.
+
+STEP 0 — HERO THEME (mandatory before any visual_fix):
+  Classify hero background: dark | light | mixed.
+  dark: near-black/navy hero with light text — lighter subheads are often intentional; do NOT flag typography unless illegible or same contrast as body copy.
+  light: white/off-white hero — watch for low-contrast gray subheads and flat depth.
+  mixed: split layout or photo overlay — judge contrast relative to the local background behind each text block.
+
 STEP 1: Use BRAND STAGE + AUDIENCE + TRAFFIC context to infer who this product is for.
-STEP 2: Pick 2-4 dimensions from this list ONLY where the screenshot shows a visible mismatch with that context:
+STEP 2: Pick dimensions ONLY with visible evidence on THIS screenshot:
   border_radius | density | color_tone | spacing | cta_hierarchy | typography | depth
 Skip dimensions with no visible issue. Never repeat checklist gap text verbatim.
 
-Each item:
+Each item MUST cite what you see on this page:
 - dimension: one enum value above
-- observation: max 14 words. Qualitative — what you see on THIS page. No invented WCAG ratios or px values unless clearly readable.
-- recommendation: max 18 words. Specific fix aligned to context (e.g. "Enterprise B2B → tighten radius to 6–8px, not playful 24px").
+- observation: max 14 words. Name visible UI (button labels, dark/light treatment, radius, spacing between named blocks). No invented WCAG ratios unless clearly readable.
+- recommendation: max 18 words. Concrete change for THIS page and theme (e.g. "On dark hero, brighten gray subhead — not bold weight").
 
-Examples of good recommendations:
-- border_radius: consumer app with sharp corners → add softer 12–16px radius; OR enterprise with 24px pills → tighten to 6–8px
-- density: hero has 4 text blocks + 2 CTAs → strip to headline + subhead + one CTA for cold traffic
-- color_tone: fintech with orange accent → shift to restrained blue/green for trust
-- spacing: sections stacked with no breathing room → add 80–120px vertical rhythm between blocks
-- cta_hierarchy: two CTAs same size/color → make primary 2–3× more prominent
-- typography: subhead reads as caption → bump weight/size; legal/fintech with only sans → consider serif headlines
-- depth: flat white hero → subtle #F8F8F6 tint or light gradient for polish
+BANNED templates (instant failure — never output these or close paraphrases):
+- "Subheadline weight feels too light for emphasis" / "Increase subheadline weight for better readability"
+- "Hero section has cramped elements" / "Add more vertical spacing between headline and subheadline"
+- Generic spacing/typography advice that ignores dark vs light background
+- Fixes without naming a visible element on this screenshot
 
-The checklist weak typography item (link_to visual-fixes) must still exist; visual_fixes.typography may expand on it with different wording.
+Good examples:
+- cta_hierarchy: "Start for free and Download share equal pill weight on dark hero" → "Fill primary CTA, outline secondary Download for cold traffic"
+- typography (light hero only): "Gray subhead on white hero matches body copy weight" → "Darken subhead to #555 and bump to 18px for scan"
+- depth (dark hero): "Pure black hero merges with page body" → "Add subtle #111/#0A0A0A section break below hero mockup"
+- border_radius: "24px pill CTAs read consumer-playful for enterprise CRM" → "Tighten CTA radius to 8px for B2B tone"
 
-visual_passes: 1-3 items. Dimensions you evaluated and found aligned with BRAND STAGE + AUDIENCE context.
+visual_passes: 1-4 items. REQUIRED when score >= 7.5 OR when fewer than 2 real visual_fixes exist.
+Dimensions you evaluated and found aligned with BRAND STAGE + AUDIENCE + hero theme.
 - Use only dimensions NOT already in visual_fixes (no overlap).
-- note: max 12 words. One line — why this looks correct for THIS product (e.g. "8px radius fits enterprise B2B tone").
+- note: max 12 words. Reference visible evidence (button labels, radius, spacing, dark/light treatment).
 - Do NOT repeat checklist pass items (CTA visibility, footer links, etc.) — design language only.
-- Skip visual_passes entirely if fewer than 1 dimension is clearly aligned; never invent praise.`;
+- Never invent praise; skip a dimension rather than writing a generic compliment.`;
 }
