@@ -1,4 +1,4 @@
-import { RiMailLine, RiTwitterXLine } from "@remixicon/react";
+import { RiMailLine, RiRocketLine, RiTwitterXLine } from "@remixicon/react";
 
 const LINKS = [
   {
@@ -14,6 +14,14 @@ const LINKS = [
     label: "X",
     value: "@useklynt",
     icon: RiTwitterXLine,
+    accent: false,
+    external: true,
+  },
+  {
+    href: "https://www.producthunt.com/products/klynt",
+    label: "Product Hunt",
+    value: "Leave a review",
+    icon: RiRocketLine,
     accent: false,
     external: true,
   },
@@ -44,7 +52,7 @@ export function ContactOtherLinks({
               {...(external
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
-              className="group grid grid-cols-[16px_4.5rem_minmax(0,1fr)] items-center gap-x-2.5 rounded-lg py-1 text-[14px] transition-colors hover:text-[#F2F2EF]"
+              className="group grid grid-cols-[16px_6.5rem_minmax(0,1fr)] items-center gap-x-2.5 rounded-lg py-1 text-[14px] transition-colors hover:text-[#F2F2EF]"
             >
               <Icon
                 size={16}

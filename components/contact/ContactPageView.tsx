@@ -13,7 +13,6 @@ import {
   LANDING_BODY,
   LANDING_CONTAINER,
   LANDING_DARK,
-  LANDING_DISPLAY_H1,
   LANDING_DIVIDER,
 } from "@/components/landing-test/landingPageStyles";
 
@@ -93,7 +92,7 @@ export function ContactPageView() {
               <RiChat1Line size={14} aria-hidden />
               Get in touch
             </p>
-            <h1 className={`max-w-[360px] ${LANDING_DISPLAY_H1}`}>
+            <h1 className="max-w-[360px] font-sans text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.1] tracking-[-0.05em] text-[#F2F2EF]">
               We&apos;d love
               <br />
               to hear from you
