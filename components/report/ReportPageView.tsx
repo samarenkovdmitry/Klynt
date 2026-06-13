@@ -153,7 +153,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       checklist,
       undefined,
       data.score,
-      data.checklist ?? undefined
+      data.checklist ?? undefined,
+      data.breakdown
     );
 
     return {

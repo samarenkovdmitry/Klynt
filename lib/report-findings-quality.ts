@@ -187,25 +187,20 @@ INSIGHT DEPTH RULES:
 - NEVER use placeholder phrases like "No content available to assess" in checklist text, copy_variants, or meta fields.
 
 SCORE CALIBRATION:
-- Most real-world landing pages score between 5.0 and 8.0.
-  Scores below 4.0 are rare and reserved for genuinely broken pages.
+- score MUST equal round((clarity + trust + friction + visuals) / 40, 1 decimal).
+  Example: breakdown 72/68/61/70 → score 6.8. Never pick a score independent of breakdown.
+- Vary the four breakdown values — do NOT set all four to the same number (e.g. four 65s).
+  Spread reflects real strengths: a page can have clarity 78, trust 71, friction 58, visuals 64.
+- Most real-world landing pages score between 4.5 and 8.5. Scores below 4.0 are rare.
 - Score is a float with one decimal (e.g. 6.4, 7.1, 5.8). Never an integer.
-- Anchor points:
-  8.5-10.0: Exceptional — clear targeted headline, trust signals above fold,
-             single prominent CTA, strong visual hierarchy. Rare.
-  7.0-8.4:  Good — one or two fixable gaps, strong overall first impression.
-  5.5-6.9:  At risk — multiple clarity or trust issues, visitor may leave
-             before understanding the product. Most pages land here.
-             Checklist MUST include at least 3 gaps (missing + weak).
-  4.0-5.4:  Weak — visitor likely confused within 5 seconds,
-             core message unclear or buried. At least 3 missing + 1 weak typography.
-  2.0-3.9:  Critical — no clear value prop, broken hierarchy,
-             or completely missing trust signals. Very rare.
-  0.0-1.9:  Do not use — reserved for empty or placeholder pages only.
-- When in doubt, score higher rather than lower.
-  A page with good visuals but weak copy is 6.x, not 4.x.
-- Never score a page below 4.0 unless it has no visible headline,
-  no CTA, and no recognizable product description.`;
+- Anchor points (guide breakdown first, then derive score):
+  8.5-10.0: Exceptional — clear targeted headline, trust above fold, single prominent CTA.
+  7.0-8.4:  Good — one or two fixable gaps, strong first impression.
+  5.5-6.9:  At risk — multiple clarity or trust issues; gap count usually 2-4, not a fixed template.
+  4.0-5.4:  Weak — visitor likely confused within 5 seconds.
+  2.0-3.9:  Critical — no clear value prop or broken hierarchy. Very rare.
+- When in doubt between two bands, reflect it in breakdown spread, then derive score.
+- Never score below 4.0 unless there is no visible headline, no CTA, and no product description.`;
 }
 
 export function normalizeReportFindings<

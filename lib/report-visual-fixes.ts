@@ -1,4 +1,5 @@
 import type {
+  ReportBreakdown,
   ReportChecklistItem,
   ReportVisualFix,
   ReportVisualPass,
@@ -172,6 +173,89 @@ const DEFAULT_DIMENSION_RECOMMENDATIONS: Record<VisualFixDimension, string> = {
   typography: "Increase subheadline to 18px / weight 500 for faster value-prop scan",
   depth: "Add a subtle background tint or gradient to separate hero from page body",
 };
+
+const INFERRED_VISUAL_OBSERVATIONS: Record<VisualFixDimension, string> = {
+  border_radius: "Corner radius reads louder than this product category expects",
+  density: "Hero packs multiple messages before the first clear action",
+  color_tone: "Accent palette may undersell trust for cold-traffic visitors",
+  spacing: "Hero blocks feel stacked without enough vertical breathing room",
+  cta_hierarchy: "Primary and secondary actions compete above the fold",
+  typography: "Subheadline weight slows scan of the value proposition",
+  depth: "Flat hero background blurs separation from the rest of the page",
+};
+
+const SUPPLEMENT_DIMENSION_ORDER: VisualFixDimension[] = [
+  "spacing",
+  "cta_hierarchy",
+  "border_radius",
+  "depth",
+  "color_tone",
+  "density",
+  "typography",
+];
+
+function inferVisualDimensionsFromBreakdown(
+  breakdown?: ReportBreakdown
+): VisualFixDimension[] {
+  if (!breakdown) {
+    return [];
+  }
+
+  const inferred: VisualFixDimension[] = [];
+
+  if (Number(breakdown.friction) < 64) {
+    inferred.push("cta_hierarchy");
+  }
+
+  if (Number(breakdown.visuals) < 64) {
+    inferred.push("spacing", "border_radius");
+  }
+
+  if (Number(breakdown.clarity) < 60) {
+    inferred.push("density");
+  }
+
+  if (Number(breakdown.trust) < 58) {
+    inferred.push("color_tone", "depth");
+  }
+
+  return inferred;
+}
+
+function supplementUnderDeliveredVisualFixes(
+  fixes: ReportVisualFix[],
+  fixDimensions: Set<VisualFixDimension>,
+  breakdown?: ReportBreakdown
+): ReportVisualFix[] {
+  if (fixes.length >= 2) {
+    return fixes;
+  }
+
+  const next = [...fixes];
+  const candidates = [
+    ...inferVisualDimensionsFromBreakdown(breakdown),
+    ...SUPPLEMENT_DIMENSION_ORDER,
+  ];
+
+  for (const dimension of candidates) {
+    if (next.length >= 3) {
+      break;
+    }
+
+    if (fixDimensions.has(dimension)) {
+      continue;
+    }
+
+    fixDimensions.add(dimension);
+    next.push({
+      dimension,
+      observation: INFERRED_VISUAL_OBSERVATIONS[dimension],
+      recommendation: DEFAULT_DIMENSION_RECOMMENDATIONS[dimension],
+    });
+  }
+
+  return next.slice(0, 4);
+}
 
 export function isProblemPassText(text: string): boolean {
   return /\b(lacks?|lack|missing|unclear|too light|too thin|too playful|too cramped|cramped|reduce[sd]?|reducing|without|not visible|feels too|inadequate|similar in size|undermines|mismatch|weight is too|font weight is too)\b/i.test(
@@ -387,7 +471,8 @@ export function normalizeVisualSection(
   checklist?: ReportChecklistItem[],
   existingFixes?: ReportVisualFix[],
   score?: number,
-  rawChecklist?: ReportChecklistItem[]
+  rawChecklist?: ReportChecklistItem[],
+  breakdown?: ReportBreakdown
 ): NormalizedVisualSection {
   const parsedFixes = Array.isArray(fixesRaw)
     ? fixesRaw
@@ -447,6 +532,8 @@ export function normalizeVisualSection(
     fixes = [...checklistFallback, ...fixes].slice(0, 4);
     fixDimensions.add("typography");
   }
+
+  fixes = supplementUnderDeliveredVisualFixes(fixes, fixDimensions, breakdown);
 
   fixDimensions.clear();
   for (const fix of fixes) {

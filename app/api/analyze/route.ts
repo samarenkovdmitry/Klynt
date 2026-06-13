@@ -36,7 +36,12 @@ import {
 import { normalizeReportFindings } from "@/lib/report-findings-quality";
 import {
   finalizeReportChecklist,
+  normalizeScorePotential,
 } from "@/lib/normalize-report-checklist";
+import {
+  calibrateReportScore,
+  deriveScoreFromBreakdown,
+} from "@/lib/normalize-report-score";
 import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
 import { normalizeVisualSection } from "@/lib/report-visual-fixes";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
@@ -428,9 +433,24 @@ export async function POST(req: Request) {
 
     const rawChecklist = json.checklist as import("@/lib/audit-report").ReportChecklistItem[];
 
+    const { breakdown: normalizedBreakdown } = normalizeReportBreakdown({
+      score: Number(json.score) || 0,
+      breakdown: json.breakdown,
+      issues: json.issues,
+    });
+
+    json.breakdown = normalizedBreakdown;
+
+    const llmScore = Number(json.score) || 0;
+    const derivedScore = deriveScoreFromBreakdown(normalizedBreakdown);
+    const workingScore =
+      llmScore > 0
+        ? Math.round((derivedScore * 0.7 + llmScore * 0.3) * 10) / 10
+        : derivedScore;
+
     const finalized = finalizeReportChecklist(
       rawChecklist,
-      Number(json.score) || 0,
+      workingScore,
       json.score_potential as
         | { target: number; chips: { label: string; delta: string }[] }
         | undefined,
@@ -441,15 +461,26 @@ export async function POST(req: Request) {
       }
     );
     json.checklist = finalized.checklist;
-    json.score_potential = finalized.scorePotential;
+
+    json.score = calibrateReportScore(
+      workingScore,
+      normalizedBreakdown,
+      json.checklist
+    );
+    json.score_potential = normalizeScorePotential(
+      finalized.scorePotential,
+      json.checklist,
+      json.score
+    );
 
     const visualSection = normalizeVisualSection(
       json.visual_fixes,
       json.visual_passes,
       json.checklist,
       undefined,
-      Number(json.score) || 0,
-      rawChecklist
+      json.score,
+      rawChecklist,
+      normalizedBreakdown
     );
     json.visual_fixes = visualSection.fixes;
     json.visual_passes = visualSection.passes;
@@ -484,14 +515,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const { breakdown: normalizedBreakdown } = normalizeReportBreakdown({
-      score: Number(json.score) || 0,
-      breakdown: json.breakdown,
-      issues: json.issues,
-    });
-
-    json.breakdown = normalizedBreakdown;
-    json.risk = deriveRiskFromScore(Number(json.score) || 0);
+    json.risk = deriveRiskFromScore(json.score);
     });
 
     const reportId = generateReportId();

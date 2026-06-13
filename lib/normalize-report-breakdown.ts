@@ -18,6 +18,14 @@ function clampPercent(value: unknown) {
   return Math.max(0, Math.min(100, Math.round(parsed)));
 }
 
+function toBreakdownScale(score: number) {
+  const parsed = Number(score ?? 0);
+
+  if (!Number.isFinite(parsed)) return 0;
+
+  return parsed <= 10 ? clampPercent(parsed * 10) : clampPercent(parsed);
+}
+
 function clampBreakdown(breakdown?: ReportBreakdown): ReportBreakdown {
   return {
     clarity: clampPercent(breakdown?.clarity),
@@ -52,14 +60,15 @@ function resolveBreakdownKey(metric: string): BreakdownKey | null {
 }
 
 function isPenaltyBreakdown(score: number, breakdown: ReportBreakdown) {
+  const scaledScore = toBreakdownScale(score);
   const average = breakdownAverage(breakdown);
   const max = breakdownMax(breakdown);
 
-  return score >= 50 && max <= 35 && average <= 40;
+  return scaledScore >= 50 && max <= 35 && average <= 40;
 }
 
 function deriveBreakdownFromScore(score: number, issues: ReportIssue[]): ReportBreakdown {
-  const baseScore = clampPercent(score);
+  const baseScore = toBreakdownScale(score);
   const values = Object.fromEntries(
     BREAKDOWN_KEYS.map((key) => [key, baseScore])
   ) as Record<BreakdownKey, number>;
@@ -80,7 +89,7 @@ function deriveBreakdownFromScore(score: number, issues: ReportIssue[]): ReportB
 export function isBreakdownMismatched(score: number, breakdown: ReportBreakdown) {
   return (
     isPenaltyBreakdown(score, breakdown) ||
-    Math.abs(breakdownAverage(breakdown) - score) >= 12
+    Math.abs(breakdownAverage(breakdown) - toBreakdownScale(score)) >= 12
   );
 }
 
@@ -93,14 +102,14 @@ export function normalizeReportBreakdown({
   breakdown?: ReportBreakdown;
   issues?: ReportIssue[];
 }) {
-  const modelScore = clampPercent(score);
+  const modelScore = toBreakdownScale(score);
   let normalizedBreakdown = clampBreakdown(breakdown);
 
-  if (isPenaltyBreakdown(modelScore, normalizedBreakdown)) {
-    normalizedBreakdown = deriveBreakdownFromScore(modelScore, issues);
+  if (isPenaltyBreakdown(score, normalizedBreakdown)) {
+    normalizedBreakdown = deriveBreakdownFromScore(score, issues);
   }
 
-  const alignedScore = clampPercent(breakdownAverage(normalizedBreakdown));
+  const alignedScore = breakdownAverage(normalizedBreakdown) / 10;
 
   return {
     score: alignedScore,

@@ -164,9 +164,12 @@ Return ONLY valid JSON (no markdown):
 checklist: exactly 8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass.
 
 CHECKLIST MINIMUM BY SCORE (mandatory — must match score calibration):
-- score < 7.0: at least 3 gaps total (missing + weak combined). Never fewer than 3 when score is 6.x.
-- score < 7.0: include exactly 1 weak typography item (link_to visual-fixes) in addition to copy/trust missing gaps.
-- score < 6.0: at least 3 missing + 1 weak typography (4 gaps total before pass items).
+- score MUST equal round((clarity + trust + friction + visuals) / 40, 1 decimal).
+- breakdown scores must reflect actual visible strengths and weaknesses — vary all four values; never copy the same number into clarity/trust/friction/visuals.
+- score < 6.0: at least 2 missing gaps plus 1 weak typography (link_to visual-fixes).
+- score 6.0-6.9: 2-4 gaps total that match visible issues — do not invent gaps to hit a quota.
+- score >= 7.0: mark genuinely strong elements pass; 0-2 gaps is normal.
+- score < 7.0: include exactly 1 weak typography item (link_to visual-fixes) when subhead weight or legibility is visibly soft.
 - If score is below 7.0, do NOT mark copy/trust elements as pass when they contributed to the low score.
 - score_potential.chips MUST list one chip per copy/trust missing gap (same gap_label).
 - id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline"). Typography weak → id "subheadline-clarity".
@@ -232,7 +235,8 @@ meta.description_suggestion: max 25 words. First-time visitor perspective. What 
 meta.proof_suggestion: max 12 words. One specific trust element to add on THIS page (e.g. "Add customer logos below CTA").
 meta.trust_notes: 1-2 items, max 14 words each. Observations about missing proof or CTA reassurance — e.g. when CTA says "Try X" without free/trial clarity, note that it suggests risk without reassurance. Do not duplicate checklist trust gap text verbatim.
 
-visual_fixes: 2-4 items. Context-aware visual/design guidance ONLY — not copy positioning or trust proof (those belong in checklist/meta).
+visual_fixes: 2-4 items REQUIRED. Context-aware visual/design guidance ONLY — not copy positioning or trust proof (those belong in checklist/meta).
+FAILURE: returning only typography, or fewer than 2 items — always include at least one non-typography dimension when spacing, CTA size, color, radius, or depth issues are visible.
 STEP 1: Use BRAND STAGE + AUDIENCE + TRAFFIC context to infer who this product is for.
 STEP 2: Pick 2-4 dimensions from this list ONLY where the screenshot shows a visible mismatch with that context:
   border_radius | density | color_tone | spacing | cta_hierarchy | typography | depth
