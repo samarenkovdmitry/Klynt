@@ -3,9 +3,9 @@
 import {
   RiCheckLine,
   RiCloseLine,
+  RiImageUploadLine,
   RiLink,
   RiShieldCheckLine,
-  RiUpload2Line,
 } from "@remixicon/react";
 
 import {
@@ -135,7 +135,7 @@ function AnalyzeFormActions({
           type="button"
           variant="primary"
           onClick={switchToScreenshotUpload}
-          icon={<RiUpload2Line size={18} aria-hidden />}
+          icon={<RiImageUploadLine size={18} aria-hidden />}
           className={ANALYZE_PRIMARY_BUTTON_CLASS}
         >
           Upload screenshot
@@ -258,40 +258,42 @@ export function AnalyzePageView() {
 
           <div className={`${ANALYZE_CARD_CLASS} mx-auto mt-5 w-full max-w-[500px]`}>
             {inputMode === "url" ? (
-              <div className="group relative" role="tabpanel" aria-label="Website URL">
-                <RiLink
-                  size={18}
-                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#8E99A2] transition-colors group-focus-within:text-[#646E76]"
-                  aria-hidden
-                />
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(event) => setUrl(event.target.value)}
-                  onKeyDown={handleUrlKeyDown}
-                  placeholder="yoursite.com"
-                  disabled={loading}
-                  aria-label="Website URL"
-                  aria-invalid={showUrlError ? true : undefined}
-                  aria-describedby={showUrlError ? "url-error" : undefined}
-                  className={`${inputFieldClass({
-                    disabled: loading,
-                    error: showUrlError,
-                    withClearButton: url.length > 0,
-                    withMargin: false,
-                  })} ${ANALYZE_INPUT_CLASS} ${ANALYZE_URL_INPUT_CLASS}`}
-                />
+              <div role="tabpanel" aria-label="Website URL">
+                <div className="group relative">
+                  <RiLink
+                    size={18}
+                    className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#8E99A2] transition-colors group-focus-within:text-[#646E76]"
+                    aria-hidden
+                  />
+                  <input
+                    type="text"
+                    value={url}
+                    onChange={(event) => setUrl(event.target.value)}
+                    onKeyDown={handleUrlKeyDown}
+                    placeholder="yoursite.com"
+                    disabled={loading}
+                    aria-label="Website URL"
+                    aria-invalid={showUrlError ? true : undefined}
+                    aria-describedby={showUrlError ? "url-error" : undefined}
+                    className={`${inputFieldClass({
+                      disabled: loading,
+                      error: showUrlError,
+                      withClearButton: url.length > 0,
+                      withMargin: false,
+                    })} ${ANALYZE_INPUT_CLASS} ${ANALYZE_URL_INPUT_CLASS}`}
+                  />
 
-                {url.length > 0 && !loading && (
-                  <button
-                    type="button"
-                    onClick={clearUrl}
-                    aria-label="Clear URL"
-                    className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
-                  >
-                    <RiCloseLine size={18} aria-hidden />
-                  </button>
-                )}
+                  {url.length > 0 && !loading && (
+                    <button
+                      type="button"
+                      onClick={clearUrl}
+                      aria-label="Clear URL"
+                      className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
+                    >
+                      <RiCloseLine size={18} aria-hidden />
+                    </button>
+                  )}
+                </div>
 
                 {showUrlError && urlValidationError && (
                   <p id="url-error" role="alert" className="mt-2 text-[13px] text-[#D14343]">
@@ -306,7 +308,7 @@ export function AnalyzePageView() {
                   onClick={openFilePicker}
                   disabled={loading}
                   className={[
-                    "w-full rounded-[20px] border-2 border-dashed text-left transition",
+                    "w-full rounded-[20px] border border-dashed text-left transition",
                     uploadedImage
                       ? "border-[#A4F4CF] bg-[#ECFDF5]"
                       : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
@@ -316,7 +318,7 @@ export function AnalyzePageView() {
                   {!uploadedImage ? (
                     <span className="flex items-center gap-4 px-4 py-5 md:px-5">
                       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(6,28,47,0.05)]">
-                        <RiUpload2Line size={22} className="text-[var(--ink-primary)]" aria-hidden />
+                        <RiImageUploadLine size={22} className="text-[var(--ink-primary)]" aria-hidden />
                       </span>
                       <span className="min-w-0 text-left">
                         <span className="block text-[15px] font-medium text-[var(--ink-primary)]">

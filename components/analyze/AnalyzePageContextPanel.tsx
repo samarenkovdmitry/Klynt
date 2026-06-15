@@ -97,7 +97,7 @@ export function AnalyzePageContextPanel({
   const audienceLabel = AUDIENCE_COLLAPSED_LABELS[audienceType];
 
   return (
-    <div className="mt-4">
+    <div className="mt-6">
       <button
         type="button"
         disabled={disabled}
@@ -112,7 +112,7 @@ export function AnalyzePageContextPanel({
           Page context
           <RiQuestionLine
             size={16}
-            className="-translate-y-[1px] text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2]"
+            className="text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2]"
             aria-hidden
           />
         </span>
