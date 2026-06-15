@@ -2,12 +2,18 @@ import { NextResponse } from "next/server";
 import sharp from "sharp";
 
 import { requestAuditAnalysis } from "@/lib/analyze-openai";
+import { buildFullAuditPrompt } from "@/lib/analyze-prompts";
 import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
 
 import { isAuditReport, type AuditReport } from "@/lib/audit-report";
 import { normalizeMetricObservations } from "@/lib/metric-observations";
 import { normalizeReportHeroCopy } from "@/lib/report-hero-copy";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { createAnalyzeTiming } from "@/lib/analyze-timing";
+import {
+  buildRateLimitHeaders,
+  checkRateLimit,
+  getClientIp,
+} from "@/lib/rate-limit";
 import { generateReportId } from "@/lib/report-id";
 import { buildReportSlug } from "@/lib/report-slug";
 import { buildReportPreviewImage } from "@/lib/report-preview";
@@ -19,21 +25,30 @@ import { saveReportToDb } from "@/lib/reports-db";
 import { scheduleReportOgBackfill } from "@/lib/report-og-backfill";
 import { buildReportPreviewPath } from "@/lib/report-preview-url";
 import {
-  buildAuditContextPromptBlock,
   parseAudienceType,
   parseTrafficSource,
 } from "@/lib/audit-context";
 import {
-  buildBrandStagePromptBlock,
-  buildHeadlineDirectionsSchemaSnippet,
   normalizeHeadlineDirections,
   parseBrandStage,
   resolveHeadlineBeforeGap,
 } from "@/lib/brand-stage";
+import { normalizeReportFindings } from "@/lib/report-findings-quality";
 import {
-  buildAnalysisQualityPromptBlock,
-  normalizeReportFindings,
-} from "@/lib/report-findings-quality";
+  finalizeReportChecklist,
+  normalizeScorePotential,
+} from "@/lib/normalize-report-checklist";
+import {
+  calibrateReportScore,
+  deriveScoreFromBreakdown,
+} from "@/lib/normalize-report-score";
+import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
+import { normalizeVisualSection } from "@/lib/report-visual-fixes";
+import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
+import {
+  formatIssueTitleDisplay,
+  normalizeReportCopyLengths,
+} from "@/lib/report-copy-limits";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
 
 export const runtime = "nodejs";
@@ -221,11 +236,15 @@ function normalizeIssueTitle(item: {
   const title = String(item.title ?? "").trim();
   const why = String(item.why ?? "").trim();
 
-  if (!isAbstractIssueTitle(title)) return title;
+  if (!isAbstractIssueTitle(title)) {
+    return formatIssueTitleDisplay(title) || title;
+  }
   if (why.length < 20) return title;
 
   const firstSentence = why.match(/^[^.!?]+[.!?]/)?.[0]?.trim();
-  return firstSentence || why;
+  const resolved = firstSentence || why;
+
+  return formatIssueTitleDisplay(resolved) || resolved;
 }
 
 
@@ -234,6 +253,9 @@ function normalizeIssueTitle(item: {
 // ROUTE
 // -----------------------------
 export async function POST(req: Request) {
+  const timing = createAnalyzeTiming();
+  let captureMode: "upload" | "url" | "none" = "none";
+
   try {
     const clientIp = getClientIp(req);
     const rateLimit = checkRateLimit(
@@ -243,16 +265,18 @@ export async function POST(req: Request) {
     );
 
     if (!rateLimit.ok) {
+      timing.log({ outcome: "rate_limited", clientIp });
+
       return NextResponse.json(
         { error: "Too many requests. Please try again later." },
         {
           status: 429,
-          headers: {
-            "Retry-After": String(rateLimit.retryAfterSec),
-          },
+          headers: buildRateLimitHeaders(rateLimit),
         }
       );
     }
+
+    const rateLimitHeaders = buildRateLimitHeaders(rateLimit);
 
     const formData = await req.formData();
 
@@ -291,14 +315,20 @@ export async function POST(req: Request) {
 
     // PRIORITY #1 — uploaded screenshot
     if (uploadedScreenshot) {
-     const uploadedBase64 = await blobToBase64(uploadedScreenshot);
+      captureMode = "upload";
+      const uploadedBase64 = await timing.measure("upload_ms", () =>
+        blobToBase64(uploadedScreenshot)
+      );
 
-     screenshotsBase64 = [uploadedBase64];
+      screenshotsBase64 = [uploadedBase64];
     }
 
     // PRIORITY #2 — auto capture from URL
     else if (url) {
-      screenshotsBase64 = await captureWebsiteScreenshots(url);
+      captureMode = "url";
+      screenshotsBase64 = await timing.measure("capture_ms", () =>
+        captureWebsiteScreenshots(url)
+      );
     }
 
     if (screenshotsBase64.length === 0) {
@@ -313,8 +343,6 @@ export async function POST(req: Request) {
     }
 
     const rawScreenshotsBase64 = [...screenshotsBase64];
-    screenshotsBase64 = await optimizeScreenshots(screenshotsBase64);
-
     const rawHeroBase64 = rawScreenshotsBase64[0];
     const previewImagePromise = rawHeroBase64
       ? buildReportPreviewImage(rawHeroBase64).catch((previewError) => {
@@ -322,125 +350,39 @@ export async function POST(req: Request) {
           return undefined;
         })
       : Promise.resolve(undefined);
-    const brandStagePrompt = buildBrandStagePromptBlock(brandStage);
-    const auditContextPrompt = buildAuditContextPromptBlock(
-      trafficSource,
-      audienceType
+
+    screenshotsBase64 = await timing.measure("optimize_ms", () =>
+      optimizeScreenshots(screenshotsBase64)
     );
-    const analysisQualityPrompt = buildAnalysisQualityPromptBlock();
+    const basePrompt = buildFullAuditPrompt(brandStage, trafficSource, audienceType);
 
-    const basePrompt = `You are a senior SaaS UX auditor (clarity, conversion, positioning).
+    const json: Record<string, any> = await timing.measure("openai_ms", () =>
+      requestAuditAnalysis({
+        basePrompt,
+        url,
+        screenshotsBase64,
+      })
+    );
 
-Analyze ONLY what is visible in the screenshot(s). Never invent UI. No generic advice — name the actual element/section.
-
-${auditContextPrompt}
-
-${brandStagePrompt}
-
-${analysisQualityPrompt}
-
-Return ONLY valid JSON (no markdown):
-
-{
-  "url": "string",
-  "score": number,
-  "risk": "low"|"medium"|"high",
-  "summary": "string",
-  "verdict": "string",
-  "key_observation": "string",
-  "confidence": number,
-  ${buildHeadlineDirectionsSchemaSnippet()}
-  "metric_observations": {
-    "trust": "string",
-    "clarity": "string",
-    "friction": "string",
-    "overall": "string"
-  },
-  "issues": [{
-    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
-    "title": "one concrete sentence",
-    "bullets": ["2-3 short evidence tags"],
-    "why": "string",
-    "impact": { "clarity"?: int, "navigation"?: int, "visuals"?: int, "trust"?: int, "conversion"?: int, "cta"?: int }
-  }],
-  "suggestions": [{
-    "category": "Clarity"|"Navigation"|"Visuals"|"Trust"|"Conversion",
-    "section": "string",
-    "recommendation": "string",
-    "why": "string",
-    "priority": "quick_win"|"high_impact"|"medium_impact"
-  }],
-  "copy": [{
-    "section": "string",
-    "before": "exact visible copy",
-    "after": "clearer rewrite",
-    "why": "string",
-    "priority": "quick_win"|"high_impact"|"medium_impact"
-  }],
-  "breakdown": { "clarity": int, "navigation": int, "visuals": int, "trust": int, "conversion": int }
-}
-
-Counts: exactly 4 issues, 3 suggestions, 3 copy (different sections).
-Lengths: summary 14-22 words; verdict 6-10 words; key_observation max 14 words; why fields max 28 words each.
-
-Hero copy — three distinct layers. Never paraphrase one layer as another:
-- verdict: auditor diagnosis in 6-10 words. Name the main UX or conversion problem on THIS page.
-  Good: "Hero headline hides who the product is for."
-  Bad: "Messaging clarity issues"
-- summary: visitor first-impression in 14-22 words. Describe what a new visitor likely feels, misunderstands, or fails to decide. Empathy and behavior, not a restated diagnosis.
-  Good: "New visitors likely pause because the hero never names the audience or immediate payoff."
-  Bad: repeating the verdict with different wording
-- key_observation: one non-obvious insight in max 14 words. A second-angle finding (trust gap, expectation mismatch, hierarchy surprise) that is NOT the same point as verdict or summary.
-  Good: "Trust badges appear before the value prop, which can feel like marketing noise."
-  Bad: another headline-clarity sentence
-
-issues[].title: exactly ONE sentence (12-22 words). State what is wrong on THIS page, what users fail to understand, where friction happens, and why it hurts conversion. Name the visible section/element when possible. NEVER use abstract audit labels (e.g. "Weak visual hierarchy", "Messaging clarity issues", "CTA optimization gap", "Navigation friction", "Low clarity").
-Good title: "The hero headline never states who the product is for, so visitors can't judge fit before scrolling."
-Bad title: "Weak visual hierarchy"
-Impact: REQUIRED on every issue — include issues[].impact with exactly one negative integer from -5 to -25.
-Example: "impact": { "clarity": -18 }. Allowed keys: clarity, navigation, visuals, trust, conversion, cta.
-Never omit impact. Never use 0.
-priority: suggestions[] and copy[] ONLY — required enum, no impact field:
-- quick_win: low effort, visible UX payoff (copy tweak, one CTA, small layout fix)
-- high_impact: materially improves understanding or conversion; may need more design/dev work
-- medium_impact: helpful but secondary, partial gain, or needs validation
-confidence: integer 70-98. breakdown: integers 0-100 where higher = stronger (70+ strong, 40-69 at risk, below 40 critical). score: integer 0-100 aligned with breakdown average — never put impact penalties (-5 to -25) into breakdown.
-metric_observations: expert UX consultant observations (NOT metric labels). Each field 12-16 words.
-- Do NOT repeat category names (Trust, Clarity, Friction, Overall) or the word "metric".
-- Describe likely user perception and behavioral impact, like a consultant briefing a team.
-- trust: what users likely feel about credibility and professionalism.
-- clarity: what users likely understand about value and the next step.
-- friction: how much competing UI or copy may slow first-pass understanding.
-- overall: holistic read of the page experience; do not repeat verdict verbatim.
-Copy: improve clarity (what/who/outcome), not hype. Preserve brand tone.`;
-
-    const json: Record<string, any> = await requestAuditAnalysis({
-      basePrompt,
-      url,
-      screenshotsBase64,
-    });
-
-json.confidence = Number.isFinite(Number(json.confidence))
-  ? Math.max(70, Math.min(98, Number(json.confidence)))
-  : 82;
-
+    timing.measureSync("normalize_ms", () => {
+      json.confidence = Number.isFinite(Number(json.confidence))
+        ? Math.max(70, Math.min(98, Number(json.confidence)))
+        : 82;
 
     if (!json.breakdown || typeof json.breakdown !== "object") {
       json.breakdown = {
         clarity: 0,
-        navigation: 0,
-        visuals: 0,
         trust: 0,
-        conversion: 0,
+        friction: 0,
+        visuals: 0,
       };
     }
 
     json.breakdown = {
       clarity: clampPercent(json.breakdown.clarity),
-      navigation: clampPercent(json.breakdown.navigation),
-      visuals: clampPercent(json.breakdown.visuals),
       trust: clampPercent(json.breakdown.trust),
-      conversion: clampPercent(json.breakdown.conversion),
+      friction: clampPercent(json.breakdown.friction),
+      visuals: clampPercent(json.breakdown.visuals),
     };
 
     json.issues = Array.isArray(json.issues) ? json.issues.slice(0, 4) : [];
@@ -460,6 +402,11 @@ json.confidence = Number.isFinite(Number(json.confidence))
       };
     });
 
+    json.issues = json.issues.map((item: any) => ({
+      ...item,
+      title: formatIssueTitleDisplay(item.title) || item.title,
+    }));
+
     json.suggestions = json.suggestions.map((item: any) =>
       normalizePriorityItem(item)
     );
@@ -467,6 +414,8 @@ json.confidence = Number.isFinite(Number(json.confidence))
     json.copy = json.copy.map((item: any) => normalizePriorityItem(item));
 
     Object.assign(json, normalizeReportFindings(json));
+
+    Object.assign(json, normalizeReportCopyLengths(json));
 
     let headlineDirections = normalizeHeadlineDirections(json.headline_directions, brandStage);
 
@@ -482,15 +431,92 @@ json.confidence = Number.isFinite(Number(json.confidence))
 
     Object.assign(json, normalizeReportHeroCopy(json));
 
-    const normalizedScores = normalizeReportBreakdown({
+    const rawChecklist = json.checklist as import("@/lib/audit-report").ReportChecklistItem[];
+
+    const { breakdown: normalizedBreakdown } = normalizeReportBreakdown({
       score: Number(json.score) || 0,
       breakdown: json.breakdown,
       issues: json.issues,
     });
 
-    json.score = normalizedScores.score;
-    json.breakdown = normalizedScores.breakdown;
-    json.risk = deriveRiskFromScore(normalizedScores.score);
+    json.breakdown = normalizedBreakdown;
+
+    const llmScore = Number(json.score) || 0;
+    const derivedScore = deriveScoreFromBreakdown(normalizedBreakdown);
+    const workingScore =
+      llmScore > 0
+        ? Math.round((derivedScore * 0.7 + llmScore * 0.3) * 10) / 10
+        : derivedScore;
+
+    const finalized = finalizeReportChecklist(
+      rawChecklist,
+      workingScore,
+      json.score_potential as
+        | { target: number; chips: { label: string; delta: string }[] }
+        | undefined,
+      {
+        copyVariants: json.copy_variants as import("@/lib/audit-report").ReportCopyVariants,
+        meta: json.meta as import("@/lib/audit-report").ReportMeta,
+        rawChecklist,
+      }
+    );
+    json.checklist = finalized.checklist;
+
+    json.score = calibrateReportScore(
+      llmScore,
+      normalizedBreakdown,
+      json.checklist
+    );
+    json.score_potential = normalizeScorePotential(
+      finalized.scorePotential,
+      json.checklist,
+      json.score
+    );
+
+    const visualSection = normalizeVisualSection(
+      json.visual_fixes,
+      json.visual_passes,
+      json.checklist,
+      undefined,
+      json.score,
+      rawChecklist,
+      normalizedBreakdown
+    );
+    json.visual_fixes = visualSection.fixes;
+    json.visual_passes = visualSection.passes;
+
+    if (json.copy_variants && typeof json.copy_variants === "object") {
+      json.copy_variants = normalizeReportCopyVariants(
+        json.copy_variants as import("@/lib/audit-report").ReportCopyVariants,
+        parseBrandStage(json.brand_stage ?? brandStage)
+      );
+    }
+
+    if (json.meta && typeof json.meta === "object") {
+      const meta = json.meta as Record<string, unknown>;
+      if (typeof meta.title_suggestion === "string") {
+        meta.title_suggestion = sanitizeLlmVisibleText(meta.title_suggestion).slice(0, 120);
+      }
+      if (typeof meta.description_suggestion === "string") {
+        meta.description_suggestion = sanitizeLlmVisibleText(meta.description_suggestion).slice(
+          0,
+          200
+        );
+      }
+      if (typeof meta.proof_suggestion === "string") {
+        meta.proof_suggestion = sanitizeLlmVisibleText(meta.proof_suggestion).slice(0, 80);
+      }
+      if (Array.isArray(meta.trust_notes)) {
+        meta.trust_notes = meta.trust_notes
+          .filter((note): note is string => typeof note === "string")
+          .map((note) => sanitizeLlmVisibleText(note).slice(0, 120))
+          .filter(Boolean)
+          .slice(0, 2);
+      }
+    }
+
+    json.risk = deriveRiskFromScore(json.score);
+    });
 
     const reportId = generateReportId();
     const auditedUrl =
@@ -499,7 +525,7 @@ json.confidence = Number.isFinite(Number(json.confidence))
         : url;
 
     const metricObservations = normalizeMetricObservations(json.metric_observations);
-    const previewImage = await previewImagePromise;
+    const previewImage = await timing.measure("preview_ms", () => previewImagePromise);
 
     const reportPayload: AuditReport = {
       url: auditedUrl,
@@ -511,14 +537,20 @@ json.confidence = Number.isFinite(Number(json.confidence))
       confidence: json.confidence,
       previewImage,
       metric_observations: metricObservations,
+      checklist: json.checklist,
+      copy_variants: json.copy_variants,
+      score_potential: json.score_potential,
+      meta: json.meta,
       issues: json.issues,
       suggestions: json.suggestions,
       copy: json.copy,
       brand_stage: brandStage,
       traffic_source: trafficSource,
       audience_type: audienceType,
-      headline_directions: headlineDirections,
+      headline_directions: json.headline_directions,
       breakdown: json.breakdown,
+      visual_fixes: json.visual_fixes ?? [],
+      visual_passes: json.visual_passes ?? [],
       generatedAt: new Date().toISOString(),
     };
 
@@ -526,18 +558,22 @@ json.confidence = Number.isFinite(Number(json.confidence))
     const previewImagePath = buildReportPreviewPath(reportSlug);
 
     if (isAuditReport(reportPayload)) {
-      try {
-        await saveReportToDb({
-          id: reportId,
-          auditedUrl,
-          report: reportPayload,
-        });
-      } catch (persistError) {
+      saveReportToDb({
+        id: reportId,
+        auditedUrl,
+        report: reportPayload,
+      }).catch((persistError) => {
         console.error("[analyze] Failed to persist report:", persistError);
-      }
+      });
 
       scheduleReportOgBackfill(reportId, reportPayload, previewImage);
     }
+
+    timing.log({
+      outcome: "success",
+      captureMode,
+      reportId,
+    });
 
     return NextResponse.json({
       ...json,
@@ -547,13 +583,18 @@ json.confidence = Number.isFinite(Number(json.confidence))
       brand_stage: brandStage,
       traffic_source: trafficSource,
       audience_type: audienceType,
-      headline_directions: headlineDirections,
+      headline_directions: json.headline_directions,
       generatedAt: reportPayload.generatedAt,
       previewImage: previewImagePath,
       metric_observations: metricObservations,
-    });
+    }, { headers: rateLimitHeaders });
   } catch (error: any) {
-    
+    timing.log({
+      outcome: "error",
+      captureMode,
+      message: error?.message || "Unknown server error",
+    });
+
     console.error("ANALYZE ERROR:");
     console.error(error);
     console.error(error?.stack);

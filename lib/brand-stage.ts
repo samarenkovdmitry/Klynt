@@ -100,6 +100,42 @@ export const HEADLINE_STRATEGY_LABELS: Record<BrandStage, [string, string, strin
   established: ["Bold / brand-led", "Outcome-led", "Positioning-led"],
 };
 
+export const CTA_STRATEGY_LABELS = [
+  "Trial explicit",
+  "Risk-free",
+  "Direct action",
+] as const;
+
+export const CTA_PATH_STRATEGY_LABELS = [
+  "Path clarity",
+  "Audience split",
+  "Primary action",
+] as const;
+
+export const NON_TRIAL_CTA_VARIANTS: readonly { label: (typeof CTA_PATH_STRATEGY_LABELS)[number]; text: string }[] = [
+  { label: "Path clarity", text: "Explore launches" },
+  { label: "Audience split", text: "Browse startups" },
+  { label: "Primary action", text: "See how it works" },
+] as const;
+
+const TRIAL_CTA_SIGNAL =
+  /\b(free trial|try free|start free|sign up|signup|get started free|start free trial|try it free|no credit card|14-day|14 day)\b/i;
+
+const GENERIC_TRIAL_CTA_VARIANT =
+  /\b(free trial|try it free|get started free|start free trial|unlock|claim instantly)\b/i;
+
+export const SUBHEADLINE_STRATEGY_LABELS = [
+  "Value proposition",
+  "Specificity",
+  "Outcome",
+] as const;
+
+export const COPY_VARIANT_WORD_LIMITS = {
+  headline: 14,
+  cta: 5,
+  subheadline: 14,
+} as const;
+
 function isGenericHeadlineOptionLabel(label: string) {
   const trimmed = label.trim();
 
@@ -127,6 +163,87 @@ export function normalizeHeadlineOptionLabel(
   return candidate;
 }
 
+function normalizeStrategyLabel(
+  label: string,
+  index: number,
+  defaults: readonly string[]
+): string {
+  const trimmed = label.trim();
+  const strippedPrefix = trimmed.replace(/^option\s*[a-c]\s*[—–-]\s*/i, "").trim();
+  const candidate = strippedPrefix || trimmed;
+
+  if (!candidate || isGenericHeadlineOptionLabel(candidate)) {
+    return defaults[index] ?? `Direction ${index + 1}`;
+  }
+
+  const match = defaults.find(
+    (defaultLabel) => defaultLabel.toLowerCase() === candidate.toLowerCase()
+  );
+
+  return match ?? defaults[index] ?? candidate;
+}
+
+export function normalizeCtaOptionLabel(
+  label: string,
+  index: number,
+  useTrialStrategies = true
+): string {
+  const defaults = useTrialStrategies ? CTA_STRATEGY_LABELS : CTA_PATH_STRATEGY_LABELS;
+  return normalizeStrategyLabel(label, index, defaults);
+}
+
+export function isTrialStyleCta(current?: string, pageContext?: string): boolean {
+  const combined = `${current ?? ""} ${pageContext ?? ""}`.trim();
+
+  if (!combined) {
+    return false;
+  }
+
+  return TRIAL_CTA_SIGNAL.test(combined);
+}
+
+export function isGenericTrialCtaVariant(text?: string): boolean {
+  const trimmed = text?.trim() ?? "";
+  return trimmed.length > 0 && GENERIC_TRIAL_CTA_VARIANT.test(trimmed);
+}
+
+export function normalizeSubheadlineOptionLabel(label: string, index: number): string {
+  return normalizeStrategyLabel(label, index, SUBHEADLINE_STRATEGY_LABELS);
+}
+
+export function buildCopyStudioPromptBlock() {
+  const trialCtaLabels = CTA_STRATEGY_LABELS.join('", "');
+  const pathCtaLabels = CTA_PATH_STRATEGY_LABELS.join('", "');
+  const subheadLabels = SUBHEADLINE_STRATEGY_LABELS.join('", "');
+
+  return `COPY STUDIO (copy_variants) — paste-ready hero copy, not marketing essays.
+
+Shared rules:
+- current: exact visible text only ("" if not readable).
+- subheadline.current: include the visible hero subhead AND any adjacent usage stat or social-proof line above the fold (space-separated if separate lines).
+- 3 variants per element. Each variant uses a different strategic angle — never paraphrase the same idea.
+- Ban generic SaaS filler: "intuitive", "seamless", "boost productivity", "unlock", "claim instantly", "everything you need", "designed to", "proven strategies".
+- If trial/pricing clarity is the gap, put duration or terms in subheadline — NOT in the CTA button.
+
+Headline variants:
+- variants[].label: MUST use exact strategy names from the BRAND STAGE block.
+- variants[].text: max ${COPY_VARIANT_WORD_LIMITS.headline} words. Sharp H1 — declarative, specific, memorable.
+
+CTA variants (primary button label ONLY — use the PRIMARY hero button text as current):
+- If current CTA OR visible hero copy mentions free trial, sign up, or get started free → use labels: "${trialCtaLabels}".
+  Trial explicit / Risk-free / Direct action — max ${COPY_VARIANT_WORD_LIMITS.cta} words each.
+- Otherwise (Discover, Explore, Launch, Create, Browse, Join, etc.) → use labels: "${pathCtaLabels}".
+  Path clarity: sharpen what the button does (e.g. "Explore startups").
+  Audience split: name the user path (e.g. "Launch on Pond", "Create bounties").
+  Primary action: strongest single verb + object from the page (e.g. "Discover startups").
+  NEVER suggest "Start free trial" or "Try it free" when the page has no trial/signup language.
+- max ${COPY_VARIANT_WORD_LIMITS.cta} words. Button register: no "your", no "now", no "instantly".
+
+Subheadline variants:
+- variants[].label: MUST be exactly one of: "${subheadLabels}" (one per variant).
+- variants[].text: max ${COPY_VARIANT_WORD_LIMITS.subheadline} words. One supporting sentence under the headline.`;
+}
+
 export function buildBrandStagePromptBlock(stage: BrandStage) {
   const sharedRules = `
 headline_directions: REQUIRED object for the visible hero headline (H1 or largest promise line above the fold).
@@ -135,7 +252,7 @@ headline_directions: REQUIRED object for the visible hero headline (H1 or larges
 - context: 1-2 sentences (max 32 words) explaining why these strategies fit this brand stage.
 - options: exactly 3 items. Each MUST use a different sentence structure and strategic angle — never paraphrase the same idea.
 - options[].label: MUST be the exact strategy name from the list below — never "Option A", "Option B", or "Option C".
-- options[].text: proposed headline (max 16 words).
+- options[].text: proposed headline (max ${COPY_VARIANT_WORD_LIMITS.headline} words).
 - Tone for every options[].text: punchy, confident, specific, memorable. NOT fluffy, sentimental, soft, or corporate.
 - Prefer short declarative sentences. Ban filler phrases like "actually", "everything you need", "designed to", "platform your team".
 - Be bold and sharp while staying credible. Clarity and confidence over warmth.

@@ -121,7 +121,7 @@ function normalizeSuggestion(
   if (duplicateIssue && next.why) {
     next = {
       ...next,
-      recommendation: `${next.recommendation} Focus on implementation in ${next.section || "this section"}, not repeating the diagnosis.`,
+      recommendation: next.recommendation,
     };
   }
 
@@ -165,13 +165,43 @@ function normalizeCopySections(copy: ReportCopyItem[]) {
 
 export function buildAnalysisQualityPromptBlock() {
   return `UNIQUENESS AND EVIDENCE RULES:
-- Each of the 4 issues MUST target a different visible section or user moment. Max 2 issues may focus on hero/above-the-fold.
-- At least 1 issue MUST come from Screenshot 2 (lower page: features, trust, pricing, footer, secondary CTAs).
-- issues[].bullets: 2-3 tags; when visible text exists, include one short quoted phrase from the page (3-8 words) in a bullet.
-- suggestions[]: each must reference a different section string; do NOT restate an issue title as the recommendation.
-- copy[]: use 3 different sections (hero headline, supporting line/subtext, primary CTA or closest equivalent).
-- Never repeat the same root cause across verdict, summary, key_observation, and multiple issue titles.
-- Prefer page-specific findings over generic landing-page advice. Name the element, block, or copy you see.`;
+- Run HERO INVENTORY (theme, nav, CTA count+labels, trust elements, subhead length) before writing gaps.
+- Each checklist gap (missing/weak) MUST reference a specific, visible element from that inventory.
+- copy_variants.current for each element MUST be the exact visible text — never a paraphrase or invented copy.
+- Never repeat the same root cause across verdict, summary, key_observation, and checklist items.
+- Prefer page-specific findings over generic landing-page advice. Name the element, block, or copy you see.
+- Never inject gaps to reach a quota — 0-2 real gaps beats 3 template gaps.
+
+INSIGHT DEPTH RULES:
+- Before writing each checklist item, ask: would this observation apply to 80% of SaaS
+  landing pages? If yes — go deeper or pick a different gap.
+- Good item: specific to this page, references a visible element, explains the UX consequence.
+- Bad item: could be copied to any landing page report unchanged.
+- Forbidden generic checklist items (do not use as missing/weak):
+  "headline doesn't say who it's for"
+  "trust signals are missing"
+  "CTA lacks context"
+  "visual hierarchy could be improved"
+  These may appear only as pass items, or as context-specific gaps with the exact visible element named.
+- Never output two missing gaps for the same element (headline category + hero title clarity = one gap).
+- gap_label must be 2-4 words and different from text — short badge only, never a sentence.
+- NEVER use placeholder phrases like "No content available to assess" in checklist text, copy_variants, or meta fields.
+
+SCORE CALIBRATION:
+- score MUST equal round((clarity + trust + friction + visuals) / 40, 1 decimal).
+  Example: breakdown 72/68/61/70 → score 6.8. Never pick a score independent of breakdown.
+- Vary the four breakdown values — do NOT set all four to the same number (e.g. four 65s).
+  Spread reflects real strengths: a page can have clarity 78, trust 71, friction 58, visuals 64.
+- Most real-world landing pages score between 4.5 and 8.5. Scores below 4.0 are rare.
+- Score is a float with one decimal (e.g. 6.4, 7.1, 5.8). Never an integer.
+- Anchor points (guide breakdown first, then derive score):
+  8.5-10.0: Exceptional — clear targeted headline, trust above fold, single prominent CTA.
+  7.0-8.4:  Good — one or two fixable gaps, strong first impression.
+  5.5-6.9:  At risk — multiple clarity or trust issues; gap count usually 2-4, not a fixed template.
+  4.0-5.4:  Weak — visitor likely confused within 5 seconds.
+  2.0-3.9:  Critical — no clear value prop or broken hierarchy. Very rare.
+- When in doubt between two bands, reflect it in breakdown spread, then derive score.
+- Never score below 4.0 unless there is no visible headline, no CTA, and no product description.`;
 }
 
 export function normalizeReportFindings<

@@ -28,6 +28,7 @@ import {
   ANALYZE_CARD_CLASS,
   ANALYZE_INPUT_CLASS,
   ANALYZE_PAGE_CONTAINER_CLASS,
+  ANALYZE_URL_INPUT_CLASS,
   ANALYZE_PRIMARY_BUTTON_CLASS,
   ANALYZE_TAB_BUTTON_ACTIVE_CLASS,
   ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
@@ -281,7 +282,7 @@ export function AnalyzePageView() {
                     error: showUrlError,
                     withClearButton: url.length > 0,
                     withMargin: false,
-                  })} ${ANALYZE_INPUT_CLASS}`}
+                  })} ${ANALYZE_INPUT_CLASS} ${ANALYZE_URL_INPUT_CLASS}`}
                 />
 
                 {url.length > 0 && !loading && (

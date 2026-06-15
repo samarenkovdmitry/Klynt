@@ -20,40 +20,43 @@ export function LoadingProgressPanel({
   const activeHelper = loadingStalled && stallHelperText ? stallHelperText : helperText;
 
   return (
-    <div className="pt-1">
-      <div className="flex items-center justify-between gap-4">
+    <div className="pt-0.5">
+      <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--ink-primary)]">
-            {title}
-          </p>
-          <p className="mt-0.5 flex items-center gap-2 text-[14px] text-[rgba(6,28,47,0.5)]">
-            {loadingStalled && (
+          <p className="text-[14px] font-semibold tracking-[-0.02em] text-[#111]">{title}</p>
+          <p className="mt-1 flex items-center gap-2 text-[13px] text-[#999]">
+            {loadingStalled ? (
               <RiLoader4Line
-                size={15}
-                className="shrink-0 animate-spin text-[#2563EB]"
+                size={14}
+                className="shrink-0 animate-spin text-[#999]"
                 aria-hidden
               />
-            )}
+            ) : null}
             <span>{loadingLabel}</span>
           </p>
         </div>
-        <span className="shrink-0 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-semibold tabular-nums text-[#2563EB]">
+        <span className="shrink-0 pt-0.5 text-[12px] font-medium tabular-nums text-[#999]">
           {Math.floor(progress)}%
         </span>
       </div>
 
-      <div className="mt-4 h-[6px] overflow-hidden rounded-full bg-[#E5E7EB]">
+      <div className="mt-3.5 h-1 overflow-hidden rounded-full bg-black/[0.06]">
         <div
           className={[
-            "h-full rounded-full bg-[#2563EB] transition-all duration-500 ease-out",
+            "h-full rounded-full bg-[#111] transition-all duration-500 ease-out",
             loadingStalled ? "animate-pulse" : "",
           ].join(" ")}
           style={{ width: `${progress}%` }}
+          role="progressbar"
+          aria-valuenow={Math.floor(progress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={loadingLabel}
         />
       </div>
 
       {activeHelper ? (
-        <p className="mt-3 text-[13px] text-[rgba(6,28,47,0.5)]">{activeHelper}</p>
+        <p className="mt-2.5 text-[12px] leading-[1.5] text-[#C0C0BC]">{activeHelper}</p>
       ) : null}
     </div>
   );

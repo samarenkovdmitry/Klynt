@@ -11,16 +11,12 @@ import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 const HEADER_HEIGHT_PX = 68;
 
 const navItems = [
-  {
-    href: "/landing-copy",
-    label: "Hero copy",
-    match: (p: string) => p.startsWith("/landing-copy"),
-  },
-  { href: "/analyze", label: "UX audit", match: (p: string) => p.startsWith("/analyze") },
+  { href: "/analyze", label: "Analyze", match: (p: string) => p.startsWith("/analyze") },
   {
     href: DEMO_REPORT_PATH,
     label: "Sample report",
-    match: (p: string) => p.startsWith("/report"),
+    match: (p: string) =>
+      p === DEMO_REPORT_PATH || p.startsWith(`${DEMO_REPORT_PATH}/`),
   },
   { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") },
 ];

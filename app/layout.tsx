@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${familjen.variable} antialiased bg-white`}
+      className={`${familjen.variable} ${familjen.className} antialiased bg-white`}
     >
       <body className="flex min-h-screen flex-col bg-white">
         <div className="flex flex-1 flex-col">{children}</div>
