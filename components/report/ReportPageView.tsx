@@ -1,111 +1,43 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { RiDownloadLine, RiFilePdfLine, RiLock2Line, RiRefreshLine } from "@remixicon/react";
 
 import { AppHeader } from "@/components/AppHeader";
-import { ReportActionLayout } from "@/components/report/ReportActionLayout";
-import { ReportChecklist } from "@/components/report/ReportChecklist";
-import CopyStudio from "@/components/report/CopyStudio";
-import ScorePotentialCompact from "@/components/report/ScorePotentialCompact";
-import { VisualFixes } from "@/components/report/VisualFixes";
-import { TrustMeta } from "@/components/report/TrustMeta";
-import { ExportGrid } from "@/components/report/ExportGrid";
+import { ReportCopySection } from "@/components/report/ReportCopySection";
+import { ReportCtaSection } from "@/components/report/ReportCtaSection";
+import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
+import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
+import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
+import { ReportWaitlistGate } from "@/components/report/ReportWaitlistGate";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
-import { FreemiumProModal } from "@/components/report/FreemiumProModal";
-import { FreemiumProStickyBar } from "@/components/report/FreemiumProStickyBar";
-import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
-import { useFreemiumAccess } from "@/hooks/useFreemiumAccess";
-import { isFreemiumEnabled, type ProUpgradeTrigger } from "@/lib/freemium";
-import {
-  REPORT_PAGE_CONTAINER_CLASS,
-  WORKSPACE_BG_CLASS,
-} from "@/components/report/reportStyles";
+import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import type { AuditReport } from "@/lib/audit-report";
 import { isDemoReportRouteParam } from "@/lib/report-route";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { openReportPrintExport } from "@/lib/report-export";
+import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
 import { useReportData } from "@/hooks/useReportData";
 import { useWaitlistGateInView } from "@/hooks/useWaitlistGateInView";
-import { buildCopyStudioContext } from "@/lib/copy-studio-context";
-import {
-  finalizeReportChecklist,
-} from "@/lib/normalize-report-checklist";
-import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
-import { normalizeVisualSection } from "@/lib/report-visual-fixes";
-import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 
 type ReportPageViewProps = {
   routeParam: string;
   initialData?: AuditReport | null;
 };
 
-function StickyBottomBar({
-  onExport,
-  onRerun,
-  exportLocked = false,
-}: {
-  onExport?: () => void;
-  onRerun: () => void;
-  exportLocked?: boolean;
-}) {
-  const ghostBtnClass =
-    "inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] font-medium text-[#555] transition-colors hover:bg-black/[0.08]";
-
-  return (
-    <div
-      className={`sticky bottom-0 z-40 -mx-4 mt-3 border-t border-black/[0.07] px-4 py-3 backdrop-blur-md md:-mx-8 md:px-8 ${WORKSPACE_BG_CLASS}/92`}
-    >
-      <div className="flex items-center gap-4">
-        <p className="hidden flex-1 text-[13px] text-[#888] sm:block">
-          Shipped fixes? Re-run to update your score.
-        </p>
-        <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
-          {onExport && (
-            <button type="button" onClick={onExport} className={ghostBtnClass}>
-              {exportLocked ? (
-                <RiLock2Line size={14} aria-hidden />
-              ) : (
-                <RiFilePdfLine size={14} aria-hidden />
-              )}
-              Export PDF
-            </button>
-          )}
-          <button type="button" onClick={onRerun} className={ghostBtnClass}>
-            <RiRefreshLine size={14} aria-hidden />
-            Re-run audit
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function ReportPageView({ routeParam, initialData = null }: ReportPageViewProps) {
   const router = useRouter();
   const { data, loadState } = useReportData(routeParam, initialData);
-  const isDemo = isDemoReportRouteParam(routeParam);
-  const { waitlistActive, unlock } = usePreLaunchWaitlist(isDemo);
-  const freemiumAccess = useFreemiumAccess(isDemo);
-  const gateInView = useWaitlistGateInView(waitlistActive && !freemiumAccess.active);
+  const { waitlistActive, unlock } = usePreLaunchWaitlist(
+    isDemoReportRouteParam(routeParam)
+  );
+  const gateInView = useWaitlistGateInView(waitlistActive);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
-  const [proModalOpen, setProModalOpen] = useState(false);
-  const [proModalTrigger, setProModalTrigger] = useState<ProUpgradeTrigger | undefined>();
-
-  const openProModal = useCallback((trigger?: ProUpgradeTrigger) => {
-    setProModalTrigger(trigger);
-    setProModalOpen(true);
-  }, []);
-
-  const closeProModal = useCallback(() => {
-    setProModalOpen(false);
-  }, []);
 
   async function handleCopy(text: string, index: number) {
     await navigator.clipboard.writeText(text);
@@ -119,11 +51,6 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
   }
 
   function handleExport() {
-    if (freemiumAccess.exportLocked) {
-      openProModal("export-pdf");
-      return;
-    }
-
     openReportPrintExport(routeParam);
   }
 
@@ -131,56 +58,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     router.push("/analyze");
   }
 
-  const report = useMemo(() => {
-    if (!data?.checklist?.length) {
-      return data;
-    }
-
-    const finalized = finalizeReportChecklist(
-      data.checklist,
-      data.score,
-      data.score_potential,
-      {
-        copyVariants: data.copy_variants,
-        meta: data.meta,
-        rawChecklist: data.checklist,
-      }
-    );
-    const checklist = finalized.checklist;
-    const visualSection = normalizeVisualSection(
-      data.visual_fixes,
-      data.visual_passes,
-      checklist,
-      undefined,
-      data.score,
-      data.checklist ?? undefined,
-      data.breakdown
-    );
-
-    return {
-      ...data,
-      checklist,
-      copy_variants: normalizeReportCopyVariants(data.copy_variants, data.brand_stage),
-      meta: data.meta
-        ? {
-            ...data.meta,
-            title_suggestion: sanitizeLlmVisibleText(data.meta.title_suggestion),
-            description_suggestion: sanitizeLlmVisibleText(data.meta.description_suggestion),
-            proof_suggestion: data.meta.proof_suggestion
-              ? sanitizeLlmVisibleText(data.meta.proof_suggestion)
-              : data.meta.proof_suggestion,
-            trust_notes: data.meta.trust_notes
-              ?.map((note) => sanitizeLlmVisibleText(note))
-              .filter(Boolean),
-          }
-        : data.meta,
-      score_potential: finalized.scorePotential,
-      visual_fixes: visualSection.fixes,
-      visual_passes: visualSection.passes,
-    };
-  }, [data]);
-
-  if (loadState !== "ready" || !data || !report) {
+  if (loadState !== "ready" || !data) {
     return <ReportPageStates loadState={loadState} />;
   }
 
@@ -193,17 +71,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     remainingSuggestions: Math.max(0, suggestions.length - 1),
     remainingCopy: Math.max(0, copy.length - 1),
   };
-
-  const hasNewLayout = Array.isArray(report.checklist) && report.checklist.length > 0;
-  const useFreemium = hasNewLayout && isFreemiumEnabled() && freemiumAccess.active;
-  const showLegacyWaitlist = waitlistActive && !useFreemium;
-
-  const mainPaddingBottom =
-    useFreemium || (showLegacyWaitlist && !gateInView)
-      ? "pb-24 md:pb-20"
-      : hasNewLayout
-        ? "pb-8"
-        : "pb-20";
+  const previewSrc = resolveReportPreviewSrc(routeParam, data.previewImage);
 
   return (
     <>
@@ -211,126 +79,64 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
 
       <main
         className={[
-          `min-h-[calc(100dvh-50px)] ${WORKSPACE_BG_CLASS} px-4 pt-6 text-[#111] md:px-8 md:pt-6`,
-          mainPaddingBottom,
+          "min-h-[calc(100dvh-68px)] bg-white px-4 pt-4 text-[var(--ink-primary)] md:px-6 md:pt-6",
+          waitlistActive && !gateInView ? "pb-24 md:pb-12" : "pb-12",
         ].join(" ")}
       >
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
-          {hasNewLayout ? (
-            <>
-              <ReportActionLayout
-                data={report}
-                routeParam={routeParam}
-                waitlistActive={waitlistActive}
-                copiedIndex={copiedIndex}
-                lockedSummary={lockedSummary}
-                heroOnly={true}
-                onCopy={handleCopy}
-                onShare={handleShare}
-                onExport={handleExport}
-                onRerun={handleRerun}
+          <ReportHeroSummary
+            url={data.url}
+            generatedAt={data.generatedAt}
+            score={data.score}
+            verdict={data.verdict}
+            summary={data.summary}
+            risk={data.risk}
+            breakdown={data.breakdown}
+            confidence={data.confidence}
+            keyObservation={data.key_observation}
+            previewImage={previewSrc}
+            metricObservations={data.metric_observations}
+            issues={data.issues}
+            onShare={handleShare}
+            onExport={handleExport}
+          />
+
+          <div className="space-y-0">
+            <ReportUxIssuesSection
+              issues={issues}
+              breakdown={data.breakdown}
+              waitlistActive={waitlistActive}
+            />
+
+            {waitlistActive ? (
+              <ReportWaitlistGate
+                reportId={routeParam}
+                locked={lockedSummary}
                 onUnlock={unlock}
               />
-
-              <ReportChecklist checklist={report.checklist!} />
-
-              <div className="mt-3">
-                {report.copy_variants && (
-                  <CopyStudio
-                    copyVariants={report.copy_variants}
-                    checklist={report.checklist}
-                    context={buildCopyStudioContext(report)}
-                    previewLocked={freemiumAccess.previewLocked}
-                    onRequestProUpgrade={useFreemium ? openProModal : undefined}
-                  />
-                )}
-                {report.score_potential && (
-                  <ScorePotentialCompact
-                    score={report.score}
-                    scorePotential={report.score_potential}
-                    checklist={report.checklist}
-                    chipsLocked={freemiumAccess.previewLocked}
-                    onRequestProUpgrade={useFreemium ? openProModal : undefined}
-                  />
-                )}
-              </div>
-
-              <VisualFixes
-                visualFixes={report.visual_fixes}
-                visualPasses={report.visual_passes}
-              />
-
-              {report.meta && (
-                <TrustMeta
-                  meta={report.meta}
-                  checklist={report.checklist!}
-                  metaCopyLocked={freemiumAccess.previewLocked}
-                  onRequestProUpgrade={useFreemium ? openProModal : undefined}
+            ) : (
+              <>
+                <ReportSuggestionsSection suggestions={suggestions} />
+                <ReportCopySection
+                  copy={copy}
+                  headlineDirections={data.headline_directions}
+                  brandStage={data.brand_stage}
+                  copiedIndex={copiedIndex}
+                  onCopy={handleCopy}
                 />
-              )}
+              </>
+            )}
+          </div>
 
-              {report.copy_variants && report.meta && (
-                <div className="mt-2.5 overflow-hidden rounded-[16px] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.07)]">
-                  <div className="flex items-center justify-between px-5 pb-[10px] pt-[14px]">
-                    <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.07em] text-[#999]">
-                      <RiDownloadLine size={14} aria-hidden />
-                      Export
-                      {freemiumAccess.exportLocked ? (
-                        <FreemiumProBadge className="normal-case tracking-normal" />
-                      ) : null}
-                    </span>
-                    <span className="text-[12px] text-[#C0C0BC]">take this to your team</span>
-                  </div>
-                  <ExportGrid
-                    copyVariants={report.copy_variants}
-                    meta={report.meta}
-                    checklist={report.checklist}
-                    visualFixes={report.visual_fixes}
-                    locked={freemiumAccess.exportLocked}
-                    onRequestProUpgrade={useFreemium ? openProModal : undefined}
-                  />
-                </div>
-              )}
-
-              {hasNewLayout && (
-                <StickyBottomBar
-                  onExport={handleExport}
-                  onRerun={handleRerun}
-                  exportLocked={freemiumAccess.exportLocked}
-                />
-              )}
-            </>
-          ) : (
-            <ReportActionLayout
-              data={data}
-              routeParam={routeParam}
-              waitlistActive={waitlistActive}
-              copiedIndex={copiedIndex}
-              lockedSummary={lockedSummary}
-              onCopy={handleCopy}
-              onShare={handleShare}
-              onExport={handleExport}
-              onRerun={handleRerun}
-              onUnlock={unlock}
-            />
+          {!waitlistActive && (
+            <div className="mt-12">
+              <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />
+            </div>
           )}
         </div>
       </main>
 
-      {showLegacyWaitlist && <ReportWaitlistStickyBar visible={!gateInView} />}
-      {useFreemium && (
-        <FreemiumProStickyBar onOpen={() => openProModal("sticky-bar")} />
-      )}
-
-      {useFreemium && (
-        <FreemiumProModal
-          open={proModalOpen}
-          onClose={closeProModal}
-          reportId={routeParam}
-          trigger={proModalTrigger}
-          onJoined={freemiumAccess.markWaitlistJoined}
-        />
-      )}
+      {waitlistActive && <ReportWaitlistStickyBar visible={!gateInView} />}
 
       <ShareReportDialog
         open={shareOpen}

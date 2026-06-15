@@ -8,7 +8,6 @@ import {
 import type { RemixiconComponentType } from "@remixicon/react";
 
 import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
-import { WORKSPACE_BG_CLASS } from "@/components/report/reportStyles";
 
 const legalLinks = [
   { href: "/privacy", label: "Privacy" },
@@ -54,12 +53,6 @@ const variantStyles = {
     link: "transition hover:text-[#9A9A93]",
     social: "text-[#7A7A74] transition hover:text-[#9A9A93]",
   },
-  workspace: {
-    footer: `border-t border-black/[0.06] ${WORKSPACE_BG_CLASS}`,
-    text: "text-[#999]",
-    link: "transition hover:text-[#555]",
-    social: "text-[#C0C0BC] transition hover:text-[#555]",
-  },
 } as const;
 
 type AppFooterProps = {
@@ -67,30 +60,25 @@ type AppFooterProps = {
   containerClass?: string;
   tagline?: string;
   socialLinks?: typeof defaultSocialLinks;
-  compact?: boolean;
 };
 
 export function AppFooter({
   variant = "light",
   containerClass,
-  tagline = "Landing improvement workspace",
+  tagline = "Landing improvement kit",
   socialLinks = defaultSocialLinks,
-  compact = false,
 }: AppFooterProps) {
   const styles = variantStyles[variant];
   const container = containerClass ?? LANDING_UPDATE_CONTAINER;
-  const paddingClass = compact
-    ? "px-6 py-5 md:py-6"
-    : "px-6 py-[33px] md:py-10";
 
   return (
     <footer
-      className={`app-site-footer mt-auto w-full shrink-0 ${paddingClass} ${styles.footer}`}
+      className={`app-site-footer mt-auto w-full shrink-0 px-6 py-[33px] md:py-10 ${styles.footer}`}
     >
       <div className={container}>
         <div className="flex flex-col items-center text-center md:hidden">
-          <p className={`text-[13px] font-normal ${styles.text}`}>
-            © 2026 Klynt · {tagline}
+          <p className={`text-[14px] font-normal ${styles.text}`}>
+            © 2026 Klynt — {tagline}
           </p>
 
           <div
@@ -103,7 +91,7 @@ export function AppFooter({
             ))}
           </div>
 
-          <div className={`mt-6 flex items-center justify-center gap-4 ${compact ? "mt-5" : "mt-10"}`}>
+          <div className="mt-10 flex items-center justify-center gap-4">
             {socialLinks.map((link) => {
               const Icon = link.icon;
 
@@ -125,7 +113,7 @@ export function AppFooter({
           <div
             className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] ${styles.text}`}
           >
-            <p className="font-normal">© 2026 Klynt · {tagline}</p>
+            <p className="font-normal">© 2026 Klynt — {tagline}</p>
             {legalLinks.map((link) => (
               <Link key={link.href} href={link.href} className={`font-medium ${styles.link}`}>
                 {link.label}

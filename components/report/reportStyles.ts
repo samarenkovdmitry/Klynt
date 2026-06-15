@@ -1,22 +1,6 @@
-/** Workspace canvas — header, page, footer, sticky bars. */
-export const WORKSPACE_BG_CLASS = "bg-[#EFEFED]";
+export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
 
-/** Product shell — header and footer align to this width. */
-export const APP_SHELL_CONTAINER_CLASS = "mx-auto w-full max-w-[1400px]";
-
-/** Report workspace column — slightly wider than v4 (800px), still compact. */
-export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[860px]";
-
-export const APP_HEADER_CONTAINER_CLASS =
-  "mx-auto flex h-[52px] w-full max-w-[1400px] items-center justify-between gap-4 px-6";
-export const APP_REPORT_HEADER_CONTAINER_CLASS =
-  "mx-auto flex h-[50px] w-full max-w-[1400px] items-center justify-between gap-4 px-6";
-
-/** Workspace / analyze lead paragraph */
-export const WORKSPACE_LEAD_CLASS =
-  "text-[16px] leading-[1.75] text-[#999]";
-
-export const REPORT_SECTION_SPACING_CLASS = "mt-2.5";
+export const REPORT_SECTION_SPACING_CLASS = "mt-12";
 
 export const REPORT_SECTION_TITLE_CLASS =
   "text-[24px] md:text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]";
