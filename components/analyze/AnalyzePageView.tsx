@@ -1,15 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import {
   RiArrowRightLine,
   RiCheckLine,
   RiCloseLine,
-  RiFilePdfLine,
-  RiImageLine,
-  RiLightbulbLine,
   RiLink,
-  RiPieChartLine,
+  RiShieldCheckLine,
   RiUpload2Line,
 } from "@remixicon/react";
 
@@ -25,27 +21,15 @@ import { Button } from "@/components/ui/Button";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { useLoadingStall } from "@/hooks/useLoadingStall";
-import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
-import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 import {
   ANALYZE_STALL_HELPER,
   ANALYZE_STALL_LABEL,
   getStallLoadingLabel,
 } from "@/lib/loading-progress";
 
-const OUTCOMES = [
-  { icon: RiPieChartLine, label: "UX score breakdown" },
-  { icon: RiLightbulbLine, label: "Prioritized fixes" },
-  { icon: RiFilePdfLine, label: "Shareable PDF" },
-] as const;
-
-const INPUT_TABS: {
-  id: AnalyzeInputMode;
-  label: string;
-  icon: typeof RiLink;
-}[] = [
-  { id: "url", label: "Website URL", icon: RiLink },
-  { id: "screenshot", label: "Screenshot", icon: RiImageLine },
+const INPUT_TABS: { id: AnalyzeInputMode; label: string }[] = [
+  { id: "url", label: "Website URL" },
+  { id: "screenshot", label: "Screenshot" },
 ];
 
 type AnalyzeErrorAlertProps = {
@@ -238,176 +222,141 @@ export function AnalyzePageView() {
             </p>
           </header>
 
-          <ul className="mt-6 flex flex-row flex-wrap justify-center gap-x-5 gap-y-2 sm:gap-x-6">
-            {OUTCOMES.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-2 text-[14px] text-[#8E99A2]">
-                <Icon size={16} className="shrink-0" aria-hidden />
-                {label}
-              </li>
-            ))}
-          </ul>
+          <div
+            className="mt-8 flex rounded-full bg-[#ECF0F6] p-1"
+            role="tablist"
+            aria-label="Analysis input type"
+          >
+            {INPUT_TABS.map(({ id, label }) => {
+              const isActive = inputMode === id;
 
-          <div className="mt-8 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-8">
-            <div
-              className="flex rounded-full bg-[#ECF0F6] p-1"
-              role="tablist"
-              aria-label="Analysis input type"
-            >
-              {INPUT_TABS.map(({ id, label, icon: Icon }) => {
-                const isActive = inputMode === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  disabled={loading}
+                  onClick={() => setInputMode(id)}
+                  className={[
+                    "flex flex-1 items-center justify-center rounded-full px-3 py-2.5 text-[14px] font-medium transition",
+                    isActive
+                      ? "bg-white text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+                      : "text-[#8E99A2] hover:text-[var(--ink-primary)]",
+                    loading ? "cursor-not-allowed opacity-60" : "",
+                  ].join(" ")}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
 
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    disabled={loading}
-                    onClick={() => setInputMode(id)}
-                    className={[
-                      "flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2.5 text-[14px] font-medium transition",
-                      isActive
-                        ? "bg-white text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
-                        : "text-[#8E99A2] hover:text-[var(--ink-primary)]",
-                      loading ? "cursor-not-allowed opacity-60" : "",
-                    ].join(" ")}
-                  >
-                    <Icon size={16} className="shrink-0" aria-hidden />
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="mt-5 md:mt-6">
-              {inputMode === "url" ? (
-                <div role="tabpanel" aria-label="Website URL">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={url}
-                      onChange={(event) => setUrl(event.target.value)}
-                      onKeyDown={handleUrlKeyDown}
-                      placeholder="https://stripe.com"
-                      disabled={loading}
-                      aria-label="Website URL"
-                      aria-invalid={showUrlError ? true : undefined}
-                      aria-describedby={showUrlError ? "url-error" : undefined}
-                      className={`${inputFieldClass({
-                        disabled: loading,
-                        error: showUrlError,
-                        withClearButton: url.length > 0,
-                        withMargin: false,
-                      })} h-[52px] bg-white md:h-[54px]`}
-                    />
-
-                    {url.length > 0 && !loading && (
-                      <button
-                        type="button"
-                        onClick={clearUrl}
-                        aria-label="Clear URL"
-                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
-                      >
-                        <RiCloseLine size={18} aria-hidden />
-                      </button>
-                    )}
-                  </div>
-
-                  {showUrlError && urlValidationError && (
-                    <p id="url-error" role="alert" className="mt-2 text-[13px] text-[#D14343]">
-                      {urlValidationError}
-                    </p>
-                  )}
-
-                  <AnalyzeBrandStagePanel
-                    value={brandStage}
-                    onChange={setBrandStage}
-                    disabled={loading}
+          <div className="mt-3 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-8">
+            {inputMode === "url" ? (
+              <div role="tabpanel" aria-label="Website URL">
+                <div className="relative">
+                  <RiLink
+                    size={16}
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9AA3AC]"
+                    aria-hidden
                   />
-
-                  <AnalyzeAuditContextPanel
-                    trafficSource={trafficSource}
-                    audienceType={audienceType}
-                    onTrafficSourceChange={setTrafficSource}
-                    onAudienceTypeChange={setAudienceType}
-                    disabled={loading}
-                  />
-                </div>
-              ) : (
-                <div role="tabpanel" aria-label="Screenshot upload">
-                  <button
-                    type="button"
-                    onClick={openFilePicker}
-                    disabled={loading}
-                    className={[
-                      "w-full rounded-[24px] border-2 border-dashed text-left transition",
-                      uploadedImage
-                        ? "border-[#A4F4CF] bg-[#ECFDF5]"
-                        : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
-                      loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-                    ].join(" ")}
-                  >
-                    {!uploadedImage ? (
-                      <span className="flex items-center gap-4 px-4 py-5 md:px-5">
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(37,99,235,0.08)]">
-                          <RiUpload2Line size={22} className="text-[#2563EB]" aria-hidden />
-                        </span>
-                        <span className="min-w-0 text-left">
-                          <span className="block text-[15px] font-medium text-[var(--ink-primary)]">
-                            Click to upload screenshot
-                          </span>
-                          <span className="mt-0.5 block text-[13px] text-[#8E99A2]">
-                            PNG or JPG, up to 20 MB · full-page works best
-                          </span>
-                        </span>
-                      </span>
-                    ) : (
-                      <span className="flex items-center justify-between gap-4 px-4 py-4 md:px-5">
-                        <span className="flex min-w-0 items-center gap-3">
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#10B981]">
-                            <RiCheckLine size={18} className="text-white" aria-hidden />
-                          </span>
-                          <span className="min-w-0">
-                            <span className="block truncate text-[15px] font-medium text-[var(--ink-primary)]">
-                              {imageName}
-                            </span>
-                            <span className="mt-0.5 block text-[13px] text-[#10B981]">
-                              {imageSize} · Ready for analysis
-                            </span>
-                          </span>
-                        </span>
-                        <span className="shrink-0 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-medium text-[var(--ink-primary)]">
-                          Replace
-                        </span>
-                      </span>
-                    )}
-                  </button>
-
                   <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
+                    type="text"
+                    value={url}
+                    onChange={(event) => setUrl(event.target.value)}
+                    onKeyDown={handleUrlKeyDown}
+                    placeholder="yoursite.com"
                     disabled={loading}
+                    aria-label="Website URL"
+                    aria-invalid={showUrlError ? true : undefined}
+                    aria-describedby={showUrlError ? "url-error" : undefined}
+                    className={`${inputFieldClass({
+                      disabled: loading,
+                      error: showUrlError,
+                      withClearButton: url.length > 0,
+                      withMargin: false,
+                    })} h-[52px] bg-white !pl-10 md:h-[54px]`}
                   />
 
-                  <AnalyzeBrandStagePanel
-                    value={brandStage}
-                    onChange={setBrandStage}
-                    disabled={loading}
-                  />
-
-                  <AnalyzeAuditContextPanel
-                    trafficSource={trafficSource}
-                    audienceType={audienceType}
-                    onTrafficSourceChange={setTrafficSource}
-                    onAudienceTypeChange={setAudienceType}
-                    disabled={loading}
-                  />
+                  {url.length > 0 && !loading && (
+                    <button
+                      type="button"
+                      onClick={clearUrl}
+                      aria-label="Clear URL"
+                      className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
+                    >
+                      <RiCloseLine size={18} aria-hidden />
+                    </button>
+                  )}
                 </div>
-              )}
-            </div>
+
+                {showUrlError && urlValidationError && (
+                  <p id="url-error" role="alert" className="mt-2 text-[13px] text-[#D14343]">
+                    {urlValidationError}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div role="tabpanel" aria-label="Screenshot upload">
+                <button
+                  type="button"
+                  onClick={openFilePicker}
+                  disabled={loading}
+                  className={[
+                    "w-full rounded-[24px] border-2 border-dashed text-left transition",
+                    uploadedImage
+                      ? "border-[#A4F4CF] bg-[#ECFDF5]"
+                      : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
+                    loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                  ].join(" ")}
+                >
+                  {!uploadedImage ? (
+                    <span className="flex items-center gap-4 px-4 py-5 md:px-5">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(37,99,235,0.08)]">
+                        <RiUpload2Line size={22} className="text-[#2563EB]" aria-hidden />
+                      </span>
+                      <span className="min-w-0 text-left">
+                        <span className="block text-[15px] font-medium text-[var(--ink-primary)]">
+                          Click to upload screenshot
+                        </span>
+                        <span className="mt-0.5 block text-[13px] text-[#8E99A2]">
+                          PNG or JPG, up to 20 MB · full-page works best
+                        </span>
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-between gap-4 px-4 py-4 md:px-5">
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#10B981]">
+                          <RiCheckLine size={18} className="text-white" aria-hidden />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate text-[15px] font-medium text-[var(--ink-primary)]">
+                            {imageName}
+                          </span>
+                          <span className="mt-0.5 block text-[13px] text-[#10B981]">
+                            {imageSize} · Ready for analysis
+                          </span>
+                        </span>
+                      </span>
+                      <span className="shrink-0 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-medium text-[var(--ink-primary)]">
+                        Replace
+                      </span>
+                    </span>
+                  )}
+                </button>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={loading}
+                />
+              </div>
+            )}
 
             {error && errorKind && (
               <div className="mt-4">
@@ -415,7 +364,7 @@ export function AnalyzePageView() {
               </div>
             )}
 
-            <div className="mt-5 border-t border-[rgba(6,28,47,0.06)] pt-5">
+            <div className="mt-4">
               <AnalyzeFormActions
                 loading={loading}
                 progress={progress}
@@ -426,17 +375,25 @@ export function AnalyzePageView() {
                 switchToScreenshotUpload={switchToScreenshotUpload}
               />
             </div>
+
+            <AnalyzeBrandStagePanel
+              value={brandStage}
+              onChange={setBrandStage}
+              disabled={loading}
+            />
+
+            <AnalyzeAuditContextPanel
+              trafficSource={trafficSource}
+              audienceType={audienceType}
+              onTrafficSourceChange={setTrafficSource}
+              onAudienceTypeChange={setAudienceType}
+              disabled={loading}
+            />
           </div>
 
-          <p className="mt-6 text-center text-[13px] leading-5 text-[#8E99A2]">
-            Your URLs and screenshots are processed securely and never shared.{" "}
-            <ReportPrefetchLink
-              href={DEMO_REPORT_PATH}
-              routeParam={DEMO_REPORT_SLUG}
-              className="font-medium text-[var(--ink-primary)] underline-offset-2 hover:underline"
-            >
-              View a sample report
-            </ReportPrefetchLink>
+          <p className="mt-6 flex items-center justify-center gap-2 text-center text-[13px] leading-5 text-[#8E99A2]">
+            <RiShieldCheckLine size={14} className="shrink-0" aria-hidden />
+            Your URLs and screenshots are processed securely and never shared.
           </p>
         </div>
       </main>
