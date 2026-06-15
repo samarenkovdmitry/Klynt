@@ -23,10 +23,17 @@ const AUDIENCE_COLLAPSED_LABELS: Record<AudienceType, string> = {
   both: "B2B/B2C",
 };
 
-function CollapsedPill({ children }: { children: React.ReactNode }) {
+function CollapsedPill({
+  children,
+  withChevron = false,
+}: {
+  children: React.ReactNode;
+  withChevron?: boolean;
+}) {
   return (
-    <span className="rounded-full border border-[rgba(6,28,47,0.15)] px-2.5 py-1 text-[12px] leading-none text-[var(--ink-primary)]">
+    <span className="inline-flex items-center gap-0.5 rounded-full border border-[rgba(6,28,47,0.15)] px-2.5 py-1 text-[12px] leading-none text-[var(--ink-primary)]">
       {children}
+      {withChevron ? <RiArrowDownSLine size={14} className="text-[#8E99A2]" aria-hidden /> : null}
     </span>
   );
 }
@@ -124,12 +131,12 @@ export function AnalyzePageContextPanel({
             <span className="hidden flex-1 items-center justify-end gap-1.5 sm:flex">
               <CollapsedPill>{brandLabel}</CollapsedPill>
               <CollapsedPill>{trafficLabel}</CollapsedPill>
-              <CollapsedPill>{audienceLabel}</CollapsedPill>
+              <CollapsedPill withChevron>{audienceLabel}</CollapsedPill>
             </span>
             {/* Mobile: first pill + remaining count */}
             <span className="flex flex-1 items-center justify-end gap-1.5 sm:hidden">
               <CollapsedPill>{brandLabel}</CollapsedPill>
-              <CollapsedPill>+2</CollapsedPill>
+              <CollapsedPill withChevron>+2</CollapsedPill>
             </span>
           </>
         ) : (

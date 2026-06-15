@@ -115,20 +115,17 @@ export function AppHeader() {
               alt="Klynt"
               className="h-[30px] w-[100px] shrink-0"
             />
-            {!showSubtitle ? null : (
-              <>
-                <span
-                  className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
-                  aria-hidden
-                />
-                <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
-                  UX Clarity Analyzer
-                </span>
-                <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:hidden">
-                  UX Analyzer
-                </span>
-              </>
-            )}
+        {!showSubtitle ? null : (
+          <>
+            <span
+              className="hidden h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)] sm:inline"
+              aria-hidden
+            />
+            <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
+              Landing improvement kit
+            </span>
+          </>
+        )}
           </Link>
 
           <nav

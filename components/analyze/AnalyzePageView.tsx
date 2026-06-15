@@ -24,6 +24,15 @@ import {
   ANALYZE_STALL_LABEL,
   getStallLoadingLabel,
 } from "@/lib/loading-progress";
+import {
+  ANALYZE_CARD_CLASS,
+  ANALYZE_INPUT_CLASS,
+  ANALYZE_PAGE_CONTAINER_CLASS,
+  ANALYZE_PRIMARY_BUTTON_CLASS,
+  ANALYZE_TAB_BUTTON_ACTIVE_CLASS,
+  ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
+  ANALYZE_TAB_LIST_CLASS,
+} from "@/lib/analyze-page-styles";
 
 const INPUT_TABS: { id: AnalyzeInputMode; label: string }[] = [
   { id: "url", label: "Website URL" },
@@ -129,7 +138,7 @@ function AnalyzeFormActions({
           variant="primary"
           onClick={switchToScreenshotUpload}
           icon={<RiUpload2Line size={18} aria-hidden />}
-          className="!rounded-full"
+          className={ANALYZE_PRIMARY_BUTTON_CLASS}
         >
           Upload screenshot
         </Button>
@@ -137,7 +146,7 @@ function AnalyzeFormActions({
           type="button"
           variant="secondary"
           onClick={handleAnalyze}
-          className="!rounded-full"
+          className="!rounded-2xl"
         >
           Try again
         </Button>
@@ -151,7 +160,7 @@ function AnalyzeFormActions({
         type="button"
         variant="primary"
         onClick={handleAnalyze}
-        className="!rounded-full"
+        className={ANALYZE_PRIMARY_BUTTON_CLASS}
       >
         Try again
       </Button>
@@ -164,7 +173,7 @@ function AnalyzeFormActions({
       variant="primary"
       disabled={isButtonDisabled}
       onClick={handleAnalyze}
-      className="!rounded-full"
+      className={ANALYZE_PRIMARY_BUTTON_CLASS}
     >
       Analyze UX
     </Button>
@@ -207,8 +216,8 @@ export function AnalyzePageView() {
     <>
       <AppHeader />
 
-      <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
-        <div className="mx-auto max-w-[640px]">
+      <main className="flex flex-1 flex-col bg-white px-4 pb-10 pt-6 text-[var(--ink-primary)] md:px-6 md:pb-12 md:pt-10">
+        <div className={`${ANALYZE_PAGE_CONTAINER_CLASS} flex flex-1 flex-col justify-center`}>
           <header className="text-center">
             <h1 className="text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[38px] md:leading-[1.05]">
               Check your site&apos;s UX in minutes
@@ -219,74 +228,72 @@ export function AnalyzePageView() {
             </p>
           </header>
 
-          <div
-            className="mt-8 flex rounded-full bg-[#ECF0F6] p-1"
-            role="tablist"
-            aria-label="Analysis input type"
-          >
-            {INPUT_TABS.map(({ id, label }) => {
-              const isActive = inputMode === id;
+          <div className={`${ANALYZE_CARD_CLASS} mt-8`}>
+            <div
+              className={ANALYZE_TAB_LIST_CLASS}
+              role="tablist"
+              aria-label="Analysis input type"
+            >
+              {INPUT_TABS.map(({ id, label }) => {
+                const isActive = inputMode === id;
 
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  disabled={loading}
-                  onClick={() => setInputMode(id)}
-                  className={[
-                    "flex flex-1 items-center justify-center rounded-full px-3 py-2.5 text-[14px] font-medium transition",
-                    isActive
-                      ? "bg-white text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
-                      : "text-[#8E99A2] hover:text-[var(--ink-primary)]",
-                    loading ? "cursor-not-allowed opacity-60" : "",
-                  ].join(" ")}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-3 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-8">
-            {inputMode === "url" ? (
-              <div role="tabpanel" aria-label="Website URL">
-                <div className="relative">
-                  <RiLink
-                    size={16}
-                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9AA3AC]"
-                    aria-hidden
-                  />
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(event) => setUrl(event.target.value)}
-                    onKeyDown={handleUrlKeyDown}
-                    placeholder="yoursite.com"
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
                     disabled={loading}
-                    aria-label="Website URL"
-                    aria-invalid={showUrlError ? true : undefined}
-                    aria-describedby={showUrlError ? "url-error" : undefined}
-                    className={`${inputFieldClass({
-                      disabled: loading,
-                      error: showUrlError,
-                      withClearButton: url.length > 0,
-                      withMargin: false,
-                    })} h-[52px] bg-white !pl-10 md:h-[54px]`}
-                  />
+                    onClick={() => setInputMode(id)}
+                    className={[
+                      "flex flex-1 items-center justify-center rounded-full px-3 py-2.5 text-[14px] font-medium transition",
+                      isActive
+                        ? ANALYZE_TAB_BUTTON_ACTIVE_CLASS
+                        : ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
+                      loading ? "cursor-not-allowed opacity-60" : "",
+                    ].join(" ")}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
 
-                  {url.length > 0 && !loading && (
-                    <button
-                      type="button"
-                      onClick={clearUrl}
-                      aria-label="Clear URL"
-                      className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
-                    >
-                      <RiCloseLine size={18} aria-hidden />
-                    </button>
-                  )}
-                </div>
+            {inputMode === "url" ? (
+              <div className="relative mt-4" role="tabpanel" aria-label="Website URL">
+                <RiLink
+                  size={16}
+                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#9AA3AC]"
+                  aria-hidden
+                />
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(event) => setUrl(event.target.value)}
+                  onKeyDown={handleUrlKeyDown}
+                  placeholder="yoursite.com"
+                  disabled={loading}
+                  aria-label="Website URL"
+                  aria-invalid={showUrlError ? true : undefined}
+                  aria-describedby={showUrlError ? "url-error" : undefined}
+                  className={`${inputFieldClass({
+                    disabled: loading,
+                    error: showUrlError,
+                    withClearButton: url.length > 0,
+                    withMargin: false,
+                  })} ${ANALYZE_INPUT_CLASS}`}
+                />
+
+                {url.length > 0 && !loading && (
+                  <button
+                    type="button"
+                    onClick={clearUrl}
+                    aria-label="Clear URL"
+                    className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
+                  >
+                    <RiCloseLine size={18} aria-hidden />
+                  </button>
+                )}
 
                 {showUrlError && urlValidationError && (
                   <p id="url-error" role="alert" className="mt-2 text-[13px] text-[#D14343]">
@@ -295,13 +302,13 @@ export function AnalyzePageView() {
                 )}
               </div>
             ) : (
-              <div role="tabpanel" aria-label="Screenshot upload">
+              <div className="mt-4" role="tabpanel" aria-label="Screenshot upload">
                 <button
                   type="button"
                   onClick={openFilePicker}
                   disabled={loading}
                   className={[
-                    "w-full rounded-[24px] border-2 border-dashed text-left transition",
+                    "w-full rounded-[20px] border-2 border-dashed text-left transition",
                     uploadedImage
                       ? "border-[#A4F4CF] bg-[#ECFDF5]"
                       : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
@@ -310,8 +317,8 @@ export function AnalyzePageView() {
                 >
                   {!uploadedImage ? (
                     <span className="flex items-center gap-4 px-4 py-5 md:px-5">
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(37,99,235,0.08)]">
-                        <RiUpload2Line size={22} className="text-[#2563EB]" aria-hidden />
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(6,28,47,0.05)]">
+                        <RiUpload2Line size={22} className="text-[var(--ink-primary)]" aria-hidden />
                       </span>
                       <span className="min-w-0 text-left">
                         <span className="block text-[15px] font-medium text-[var(--ink-primary)]">

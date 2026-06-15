@@ -15,7 +15,7 @@ const legalLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-const socialLinks: {
+const defaultSocialLinks: {
   href: string;
   label: string;
   icon: RemixiconComponentType;
@@ -38,6 +38,8 @@ const socialLinks: {
   },
 ];
 
+export const ANALYZE_FOOTER_SOCIAL_LINKS = defaultSocialLinks.slice(0, 2);
+
 const variantStyles = {
   light: {
     footer: "border-t border-[rgba(6,28,47,0.06)] bg-white",
@@ -56,9 +58,16 @@ const variantStyles = {
 type AppFooterProps = {
   variant?: keyof typeof variantStyles;
   containerClass?: string;
+  tagline?: string;
+  socialLinks?: typeof defaultSocialLinks;
 };
 
-export function AppFooter({ variant = "light", containerClass }: AppFooterProps) {
+export function AppFooter({
+  variant = "light",
+  containerClass,
+  tagline = "UX Clarity Analyzer",
+  socialLinks = defaultSocialLinks,
+}: AppFooterProps) {
   const styles = variantStyles[variant];
   const container = containerClass ?? LANDING_UPDATE_CONTAINER;
 
@@ -69,7 +78,7 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
       <div className={container}>
         <div className="flex flex-col items-center text-center md:hidden">
           <p className={`text-[14px] font-normal ${styles.text}`}>
-            © 2026 Klynt – UX Clarity Analyzer
+            © 2026 Klynt — {tagline}
           </p>
 
           <div
@@ -104,7 +113,7 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
           <div
             className={`flex flex-wrap items-center gap-x-7 gap-y-2 text-[14px] ${styles.text}`}
           >
-            <p className="font-normal">© 2026 Klynt – UX Clarity Analyzer</p>
+            <p className="font-normal">© 2026 Klynt — {tagline}</p>
             {legalLinks.map((link) => (
               <Link key={link.href} href={link.href} className={`font-medium ${styles.link}`}>
                 {link.label}
