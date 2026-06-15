@@ -208,7 +208,7 @@ export function useAnalyzePage() {
     void runAnalysisRef.current(prefill);
   }, [router, searchParams]);
 
-  const urlValidationError = url.trim() ? validateWebsiteUrl(url) : null;
+  const urlValidationError = url.trim() ? validateWebsiteUrl(url) : "Enter a website URL";
   const showUrlError =
     formSubmitted && inputMode === "url" && Boolean(urlValidationError);
   const isButtonDisabled =

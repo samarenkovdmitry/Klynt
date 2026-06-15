@@ -32,7 +32,6 @@ import {
   ANALYZE_PRIMARY_BUTTON_CLASS,
   ANALYZE_TAB_BUTTON_ACTIVE_CLASS,
   ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
-  ANALYZE_TAB_LIST_CLASS,
 } from "@/lib/analyze-page-styles";
 
 const INPUT_TABS: { id: AnalyzeInputMode; label: string }[] = [
@@ -100,7 +99,6 @@ function AnalyzeFormActions({
   progress,
   loadingLabel,
   errorKind,
-  isButtonDisabled,
   handleAnalyze,
   switchToScreenshotUpload,
 }: {
@@ -108,7 +106,6 @@ function AnalyzeFormActions({
   progress: number;
   loadingLabel: string;
   errorKind: AnalyzeErrorKind;
-  isButtonDisabled: boolean;
   handleAnalyze: () => void;
   switchToScreenshotUpload: () => void;
 }) {
@@ -172,7 +169,6 @@ function AnalyzeFormActions({
     <Button
       type="button"
       variant="primary"
-      disabled={isButtonDisabled}
       onClick={handleAnalyze}
       className={ANALYZE_PRIMARY_BUTTON_CLASS}
     >
@@ -198,7 +194,6 @@ export function AnalyzePageView() {
     setInputMode,
     showUrlError,
     urlValidationError,
-    isButtonDisabled,
     loadingLabel,
     handleAnalyze,
     handleImageUpload,
@@ -229,9 +224,9 @@ export function AnalyzePageView() {
             </p>
           </header>
 
-          <div className={`${ANALYZE_CARD_CLASS} mt-8`}>
+          <div className="mt-6 flex justify-center">
             <div
-              className={ANALYZE_TAB_LIST_CLASS}
+              className="inline-flex h-[40px] items-center rounded-full bg-[#ECF0F6] px-4 py-1"
               role="tablist"
               aria-label="Analysis input type"
             >
@@ -247,7 +242,7 @@ export function AnalyzePageView() {
                     disabled={loading}
                     onClick={() => setInputMode(id)}
                     className={[
-                      "flex flex-1 items-center justify-center rounded-full px-3 py-2.5 text-[14px] font-medium transition",
+                      "flex h-[32px] items-center justify-center rounded-full px-3 text-[14px] font-medium transition",
                       isActive
                         ? ANALYZE_TAB_BUTTON_ACTIVE_CLASS
                         : ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
@@ -259,11 +254,13 @@ export function AnalyzePageView() {
                 );
               })}
             </div>
+          </div>
 
+          <div className={`${ANALYZE_CARD_CLASS} mx-auto mt-4 w-full max-w-[500px]`}>
             {inputMode === "url" ? (
-              <div className="relative mt-4" role="tabpanel" aria-label="Website URL">
+              <div className="relative" role="tabpanel" aria-label="Website URL">
                 <RiLink
-                  size={16}
+                  size={18}
                   className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#9AA3AC]"
                   aria-hidden
                 />
@@ -303,7 +300,7 @@ export function AnalyzePageView() {
                 )}
               </div>
             ) : (
-              <div className="mt-4" role="tabpanel" aria-label="Screenshot upload">
+              <div className="" role="tabpanel" aria-label="Screenshot upload">
                 <button
                   type="button"
                   onClick={openFilePicker}
@@ -375,7 +372,6 @@ export function AnalyzePageView() {
                 progress={progress}
                 loadingLabel={loadingLabel}
                 errorKind={errorKind}
-                isButtonDisabled={isButtonDisabled}
                 handleAnalyze={handleAnalyze}
                 switchToScreenshotUpload={switchToScreenshotUpload}
               />

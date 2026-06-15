@@ -51,7 +51,7 @@ function navLinkClass(isActive: boolean, isLanding: boolean) {
     base,
     isActive
       ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
-      : "text-[#061C2F]/65 hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
+      : "text-[#8E99A2] hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
   ].join(" ");
 }
 
@@ -103,7 +103,7 @@ export function AppHeader() {
             : "border-b border-[rgba(6,28,47,0.10)] bg-white",
         ].join(" ")}
       >
-        <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between gap-4 px-4 md:px-6">
+        <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between gap-4 px-6">
           <Link
             href="/"
             className="flex min-w-0 items-center gap-3.5 sm:gap-4 md:gap-5"
@@ -118,14 +118,14 @@ export function AppHeader() {
             {!showSubtitle ? null : (
               <>
                 <span
-                  className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
+                  className="h-5 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
                   aria-hidden
                 />
                 <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
-                  UX Clarity Analyzer
+                  Landing improvement kit
                 </span>
                 <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:hidden">
-                  UX Analyzer
+                  Landing kit
                 </span>
               </>
             )}

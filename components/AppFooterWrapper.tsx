@@ -23,9 +23,7 @@ export function AppFooterWrapper() {
   return (
     <AppFooter
       variant={isDarkFooter ? "dark" : "light"}
-      containerClass={
-        isDarkFooter ? undefined : isAnalyze ? ANALYZE_PAGE_CONTAINER_CLASS : REPORT_PAGE_CONTAINER_CLASS
-      }
+      containerClass={isDarkFooter ? undefined : REPORT_PAGE_CONTAINER_CLASS}
       tagline={isAnalyze ? ANALYZE_FOOTER_TAGLINE : undefined}
       socialLinks={isAnalyze ? ANALYZE_FOOTER_SOCIAL_LINKS : undefined}
     />

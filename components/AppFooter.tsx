@@ -73,7 +73,7 @@ export function AppFooter({
 
   return (
     <footer
-      className={`app-site-footer mt-auto w-full shrink-0 px-6 py-[33px] md:py-10 ${styles.footer}`}
+      className={`app-site-footer mt-auto w-full shrink-0 px-6 py-6 md:flex md:h-[72px] md:items-center md:py-0 ${styles.footer}`}
     >
       <div className={container}>
         <div className="flex flex-col items-center text-center md:hidden">
@@ -111,7 +111,7 @@ export function AppFooter({
 
         <div className="hidden items-center justify-between md:flex">
           <div
-            className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] ${styles.text}`}
+            className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] ${styles.text}`}
           >
             <p className="font-normal">© 2026 Klynt — {tagline}</p>
             {legalLinks.map((link) => (

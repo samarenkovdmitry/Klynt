@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { RiArrowDownSLine, RiArrowUpSLine } from "@remixicon/react";
+import { RiArrowDownSLine, RiArrowUpSLine, RiQuestionLine } from "@remixicon/react";
 
 import { BRAND_STAGE_OPTIONS, type BrandStage } from "@/lib/brand-stage";
 import {
@@ -23,17 +23,10 @@ const AUDIENCE_COLLAPSED_LABELS: Record<AudienceType, string> = {
   both: "B2B/B2C",
 };
 
-function CollapsedPill({
-  children,
-  withChevron = false,
-}: {
-  children: React.ReactNode;
-  withChevron?: boolean;
-}) {
+function CollapsedPill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-0.5 rounded-full border border-[rgba(6,28,47,0.15)] px-2.5 py-1 text-[12px] leading-none text-[var(--ink-primary)]">
+    <span className="inline-flex h-[24px] items-center rounded-full border border-[#D6DDE4] px-2.5 text-[12px] leading-none text-[#8E99A2]">
       {children}
-      {withChevron ? <RiArrowDownSLine size={14} className="text-[#8E99A2]" aria-hidden /> : null}
     </span>
   );
 }
@@ -104,7 +97,7 @@ export function AnalyzePageContextPanel({
   const audienceLabel = AUDIENCE_COLLAPSED_LABELS[audienceType];
 
   return (
-    <div className="mt-4 border-t border-[rgba(6,28,47,0.06)] pt-4">
+    <div className="mt-4">
       <button
         type="button"
         disabled={disabled}
@@ -117,12 +110,7 @@ export function AnalyzePageContextPanel({
       >
         <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-[#8E99A2]">
           Page context
-          <span
-            className="flex h-[15px] w-[15px] items-center justify-center rounded-full border border-[rgba(6,28,47,0.25)] text-[9px] font-semibold leading-none text-[#8E99A2]"
-            aria-hidden
-          >
-            ?
-          </span>
+          <RiQuestionLine size={16} className="text-[#8E99A2]" aria-hidden />
         </span>
 
         {!expanded ? (
@@ -131,12 +119,12 @@ export function AnalyzePageContextPanel({
             <span className="hidden flex-1 items-center justify-end gap-1.5 sm:flex">
               <CollapsedPill>{brandLabel}</CollapsedPill>
               <CollapsedPill>{trafficLabel}</CollapsedPill>
-              <CollapsedPill withChevron>{audienceLabel}</CollapsedPill>
+              <CollapsedPill>{audienceLabel}</CollapsedPill>
             </span>
             {/* Mobile: first pill + remaining count */}
             <span className="flex flex-1 items-center justify-end gap-1.5 sm:hidden">
               <CollapsedPill>{brandLabel}</CollapsedPill>
-              <CollapsedPill withChevron>+2</CollapsedPill>
+              <CollapsedPill>+2</CollapsedPill>
             </span>
           </>
         ) : (
