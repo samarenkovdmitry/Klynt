@@ -18,6 +18,6 @@ export const ANALYZE_INPUT_CLASS =
   "h-[52px] bg-white !pl-11";
 
 export const ANALYZE_URL_INPUT_CLASS =
-  "!rounded-[16px] border-[#DCE0E7] bg-white shadow-none placeholder:!text-[rgba(6,28,47,0.2)] focus:!border-2 focus:!border-[rgba(6,28,47,0.4)] focus:!shadow-[0_0_0_3px_rgba(6,28,47,0.04)]";
+  "!rounded-[16px] border-[#DCE0E7] bg-white shadow-none placeholder:!text-[rgba(6,28,47,0.2)] focus:!border focus:!border-[rgba(6,28,47,0.4)] focus:!shadow-[0_0_0_3px_rgba(6,28,47,0.04)]";
 
 export const ANALYZE_FOOTER_TAGLINE = "Landing improvement kit";

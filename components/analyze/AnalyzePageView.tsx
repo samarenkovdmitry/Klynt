@@ -258,10 +258,10 @@ export function AnalyzePageView() {
 
           <div className={`${ANALYZE_CARD_CLASS} mx-auto mt-5 w-full max-w-[500px]`}>
             {inputMode === "url" ? (
-              <div className="relative" role="tabpanel" aria-label="Website URL">
+              <div className="group relative" role="tabpanel" aria-label="Website URL">
                 <RiLink
                   size={18}
-                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#646E76]"
+                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#8E99A2] transition-colors group-focus-within:text-[#646E76]"
                   aria-hidden
                 />
                 <input

@@ -47,7 +47,7 @@ function FilterGroup<T extends string>({
   return (
     <div>
       <p className="mb-2.5 text-[13px] text-[#8E99A2]">{label}</p>
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-2">
         {options.map((option) => (
           <button
             key={option.id}
@@ -55,10 +55,10 @@ function FilterGroup<T extends string>({
             disabled={disabled}
             onClick={() => onChange(option.id)}
             className={[
-              "inline-flex h-[28px] items-center rounded-full px-3 text-[13px] transition",
+              "inline-flex h-[28px] items-center rounded-full px-3 text-[13px] transition-[background-color,color]",
               value === option.id
                 ? "border border-[rgba(6,28,47,0.15)] bg-white text-[var(--ink-primary)]"
-                : "bg-[#ECF0F6] text-[#8E99A2] hover:text-[var(--ink-primary)]",
+                : "border border-transparent bg-[#ECF0F6] text-[#8E99A2] hover:text-[var(--ink-primary)]",
               disabled ? "cursor-not-allowed opacity-60" : "",
             ].join(" ")}
           >
@@ -112,7 +112,7 @@ export function AnalyzePageContextPanel({
           Page context
           <RiQuestionLine
             size={16}
-            className="translate-y-[2px] text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2]"
+            className="-translate-y-[1px] text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2]"
             aria-hidden
           />
         </span>
