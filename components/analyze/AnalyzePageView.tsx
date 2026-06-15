@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  RiArrowRightLine,
   RiCheckLine,
   RiCloseLine,
   RiLink,
@@ -14,8 +13,7 @@ import {
   type AnalyzeErrorKind,
   type AnalyzeInputMode,
 } from "@/hooks/useAnalyzePage";
-import { AnalyzeAuditContextPanel } from "@/components/analyze/AnalyzeAuditContextPanel";
-import { AnalyzeBrandStagePanel } from "@/components/analyze/AnalyzeBrandStagePanel";
+import { AnalyzePageContextPanel } from "@/components/analyze/AnalyzePageContextPanel";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
@@ -166,7 +164,6 @@ function AnalyzeFormActions({
       variant="primary"
       disabled={isButtonDisabled}
       onClick={handleAnalyze}
-      icon={<RiArrowRightLine size={18} aria-hidden />}
       className="!rounded-full"
     >
       Analyze UX
@@ -376,15 +373,11 @@ export function AnalyzePageView() {
               />
             </div>
 
-            <AnalyzeBrandStagePanel
-              value={brandStage}
-              onChange={setBrandStage}
-              disabled={loading}
-            />
-
-            <AnalyzeAuditContextPanel
+            <AnalyzePageContextPanel
+              brandStage={brandStage}
               trafficSource={trafficSource}
               audienceType={audienceType}
+              onBrandStageChange={setBrandStage}
               onTrafficSourceChange={setTrafficSource}
               onAudienceTypeChange={setAudienceType}
               disabled={loading}
