@@ -67,8 +67,18 @@ type ReportActionLayoutProps = {
   heroOnly?: boolean;
 };
 
-const CARD_CLASS =
-  "overflow-hidden rounded-[20px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.07)]";
+import {
+  REPORT_HERO_CARD_BORDER_CLASS,
+  REPORT_HERO_RADIUS_CLASS,
+  REPORT_SURFACE_SHADOW_CLASS,
+} from "@/components/report/reportStyles";
+
+const CARD_CLASS = [
+  "overflow-hidden bg-white",
+  REPORT_HERO_RADIUS_CLASS,
+  REPORT_HERO_CARD_BORDER_CLASS,
+  REPORT_SURFACE_SHADOW_CLASS,
+].join(" ");
 const BTN_CLASS =
   "inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[13px] py-1.5 text-[13px] font-medium text-[#555] transition-colors hover:bg-black/[0.08]";
 const BTN_PRIMARY_CLASS =

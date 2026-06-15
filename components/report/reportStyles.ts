@@ -11,11 +11,23 @@ export const REPORT_SECTION_HEADING_CLASS =
 
 export const REPORT_SECTION_META_CLASS = "text-[14px] leading-5 text-[#7D8C99]";
 
-export const REPORT_SURFACE_CARD_CLASS =
-  "overflow-hidden rounded-[24px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)]";
+export const REPORT_SURFACE_BORDER_CLASS = "border border-[rgba(6,28,47,0.06)]";
+
+export const REPORT_HERO_CARD_BORDER_CLASS = "border border-[rgba(6,28,47,0.09)]";
+
+export const REPORT_HERO_RADIUS_CLASS = "rounded-[20px]";
+
+export const REPORT_SURFACE_SHADOW_CLASS = "shadow-[0_10px_40px_rgba(0,0,0,0.03)]";
+
+export const REPORT_SURFACE_CARD_CLASS = [
+  "overflow-hidden bg-white",
+  REPORT_HERO_RADIUS_CLASS,
+  REPORT_HERO_CARD_BORDER_CLASS,
+  REPORT_SURFACE_SHADOW_CLASS,
+].join(" ");
 
 export const REPORT_PANEL_HEADER_CLASS =
-  "flex items-center justify-between gap-4 rounded-t-[24px] bg-[#ECF0F6] px-5 py-3 md:px-6 md:py-3.5";
+  "flex items-center justify-between gap-4 rounded-t-[20px] bg-[#ECF0F6] px-5 py-3 md:px-6 md:py-3.5";
 
 export const REPORT_PANEL_TITLE_CLASS =
   "flex min-w-0 items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]";
@@ -26,14 +38,6 @@ export const REPORT_ROW_DIVIDER_CLASS = "border-b border-[#EBEFF3]";
 
 export const REPORT_SECTION_TITLE_CLASS =
   "text-[24px] md:text-[28px] font-semibold tracking-[-0.03em] text-[#061C2F]";
-
-export const REPORT_SURFACE_BORDER_CLASS = "border border-[rgba(6,28,47,0.06)]";
-
-export const REPORT_HERO_CARD_BORDER_CLASS = "border border-[rgba(6,28,47,0.09)]";
-
-export const REPORT_SURFACE_SHADOW_CLASS = "shadow-[0_10px_40px_rgba(0,0,0,0.03)]";
-
-export const REPORT_HERO_RADIUS_CLASS = "rounded-[20px]";
 
 const REPORT_CARD_BASE_CLASS =
   "rounded-[18px] px-[21px] py-[21px] transition-all duration-200 hover:-translate-y-[1px] md:px-[33px] md:py-[25px]";

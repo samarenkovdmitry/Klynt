@@ -161,7 +161,7 @@ function ExportCard({ icon, title, sub, cardId, activeToast, onClick }: ExportCa
     <button
       type="button"
       onClick={() => onClick(cardId)}
-      className="group relative w-full cursor-pointer rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-4 text-left transition-all duration-[120ms] hover:-translate-y-px hover:border-[rgba(6,28,47,0.12)] hover:bg-white hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
+      className="group relative w-full cursor-pointer rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-4 text-left transition-all duration-[120ms] hover:border-[rgba(6,28,47,0.12)] hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
     >
       <div className="mb-2 leading-none text-[#7D8C99]">{icon}</div>
       <div className="mb-1 text-[14px] font-semibold text-[#061C2F]">{title}</div>
