@@ -25,7 +25,7 @@ const AUDIENCE_COLLAPSED_LABELS: Record<AudienceType, string> = {
 
 function CollapsedPill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex h-[24px] items-center rounded-full border border-[#D6DDE4] px-2.5 text-[12px] leading-none text-[#8E99A2]">
+    <span className="inline-flex h-[24px] items-center rounded-full border border-[#D6DDE4] bg-white px-2.5 text-[12px] leading-none text-[#8E99A2]">
       {children}
     </span>
   );
@@ -110,7 +110,7 @@ export function AnalyzePageContextPanel({
       >
         <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-[#8E99A2]">
           Page context
-          <RiQuestionLine size={16} className="text-[#8E99A2]" aria-hidden />
+          <RiQuestionLine size={16} className="text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2]" aria-hidden />
         </span>
 
         {!expanded ? (

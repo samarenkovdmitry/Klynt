@@ -224,9 +224,9 @@ export function AnalyzePageView() {
             </p>
           </header>
 
-          <div className="mt-6 flex justify-center">
+          <div className="mt-4 flex justify-center">
             <div
-              className="inline-flex h-[40px] items-center rounded-full bg-[#ECF0F6] px-4 py-1"
+              className="inline-flex h-[40px] items-center rounded-full bg-[#EFF3F6] p-1"
               role="tablist"
               aria-label="Analysis input type"
             >
@@ -242,7 +242,7 @@ export function AnalyzePageView() {
                     disabled={loading}
                     onClick={() => setInputMode(id)}
                     className={[
-                      "flex h-[32px] items-center justify-center rounded-full px-3 text-[14px] font-medium transition",
+                      "flex h-[32px] items-center justify-center rounded-full px-4 text-[14px] font-medium transition",
                       isActive
                         ? ANALYZE_TAB_BUTTON_ACTIVE_CLASS
                         : ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
@@ -256,7 +256,7 @@ export function AnalyzePageView() {
             </div>
           </div>
 
-          <div className={`${ANALYZE_CARD_CLASS} mx-auto mt-4 w-full max-w-[500px]`}>
+          <div className={`${ANALYZE_CARD_CLASS} mx-auto mt-5 w-full max-w-[500px]`}>
             {inputMode === "url" ? (
               <div className="relative" role="tabpanel" aria-label="Website URL">
                 <RiLink
@@ -389,7 +389,7 @@ export function AnalyzePageView() {
           </div>
 
           <p className="mt-6 flex items-center justify-center gap-2 text-center text-[13px] leading-5 text-[#8E99A2]">
-            <RiShieldCheckLine size={14} className="shrink-0" aria-hidden />
+            <RiShieldCheckLine size={16} className="shrink-0 text-[#8E99A2]" aria-hidden />
             Your URLs and screenshots are processed securely and never shared.
           </p>
         </div>

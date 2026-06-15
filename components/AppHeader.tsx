@@ -50,7 +50,7 @@ function navLinkClass(isActive: boolean, isLanding: boolean) {
   return [
     base,
     isActive
-      ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
+      ? "bg-[#ECF0F6] font-semibold text-[#061C2F]"
       : "text-[#8E99A2] hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
   ].join(" ");
 }
@@ -59,7 +59,7 @@ function mobileNavLinkClass(isActive: boolean) {
   return [
     "block w-full rounded-xl px-4 py-3 text-left text-[15px] font-medium transition-colors",
     isActive
-      ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
+      ? "bg-[#ECF0F6] font-semibold text-[#061C2F]"
       : "text-[#061C2F]/80 hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
   ].join(" ");
 }
@@ -121,10 +121,10 @@ export function AppHeader() {
                   className="h-5 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
                   aria-hidden
                 />
-                <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
+                <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.5)] sm:inline md:text-[14px]">
                   Landing improvement kit
                 </span>
-                <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:hidden">
+                <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.5)] sm:hidden">
                   Landing kit
                 </span>
               </>

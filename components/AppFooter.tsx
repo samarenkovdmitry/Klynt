@@ -99,10 +99,10 @@ export function AppFooter({
                 <a
                   key={link.label}
                   href={link.href}
-                  className={`inline-flex h-9 w-9 items-center justify-center ${styles.social}`}
+                  className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
                   aria-label={link.label}
                 >
-                  <Icon size={18} />
+                  <Icon size={20} />
                 </a>
               );
             })}
@@ -111,14 +111,16 @@ export function AppFooter({
 
         <div className="hidden items-center justify-between md:flex">
           <div
-            className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] ${styles.text}`}
+            className={`flex flex-wrap items-center gap-y-2 text-[14px] ${styles.text}`}
           >
-            <p className="font-normal">© 2026 Klynt — {tagline}</p>
-            {legalLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={`font-medium ${styles.link}`}>
-                {link.label}
-              </Link>
-            ))}
+            <p className="mr-8 font-normal">© 2026 Klynt — {tagline}</p>
+            <div className="flex flex-wrap items-center gap-x-6">
+              {legalLinks.map((link) => (
+                <Link key={link.href} href={link.href} className={`font-medium ${styles.link}`}>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
 
           <div className="flex shrink-0 items-center gap-1">
@@ -129,10 +131,10 @@ export function AppFooter({
                 <a
                   key={link.label}
                   href={link.href}
-                  className={`inline-flex h-9 w-9 items-center justify-center ${styles.social}`}
+                  className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
                   aria-label={link.label}
                 >
-                  <Icon size={18} />
+                  <Icon size={20} />
                 </a>
               );
             })}
