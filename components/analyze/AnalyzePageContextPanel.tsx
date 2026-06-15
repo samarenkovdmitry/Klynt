@@ -25,7 +25,7 @@ const AUDIENCE_COLLAPSED_LABELS: Record<AudienceType, string> = {
 
 function CollapsedPill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex h-[24px] items-center rounded-full border border-[#D6DDE4] bg-white px-2.5 text-[12px] leading-none text-[#8E99A2]">
+    <span className="inline-flex h-[24px] items-center rounded-full border border-[#D6DDE4] bg-white px-2.5 text-[13px] leading-none text-[#8E99A2]">
       {children}
     </span>
   );
@@ -47,7 +47,7 @@ function FilterGroup<T extends string>({
   return (
     <div>
       <p className="mb-2.5 text-[13px] text-[#8E99A2]">{label}</p>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1">
         {options.map((option) => (
           <button
             key={option.id}
@@ -55,9 +55,9 @@ function FilterGroup<T extends string>({
             disabled={disabled}
             onClick={() => onChange(option.id)}
             className={[
-              "rounded-full px-3 py-1.5 text-[13px] transition",
+              "inline-flex h-[28px] items-center rounded-full px-3 text-[13px] transition",
               value === option.id
-                ? "border border-[rgba(6,28,47,0.15)] bg-white font-medium text-[var(--ink-primary)]"
+                ? "border border-[rgba(6,28,47,0.15)] bg-white text-[var(--ink-primary)]"
                 : "bg-[#ECF0F6] text-[#8E99A2] hover:text-[var(--ink-primary)]",
               disabled ? "cursor-not-allowed opacity-60" : "",
             ].join(" ")}
@@ -104,25 +104,29 @@ export function AnalyzePageContextPanel({
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}
         className={[
-          "flex w-full items-center gap-2",
+          "flex w-full items-center gap-1",
           disabled ? "cursor-not-allowed opacity-60" : "",
         ].join(" ")}
       >
         <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-[#8E99A2]">
           Page context
-          <RiQuestionLine size={16} className="text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2]" aria-hidden />
+          <RiQuestionLine
+            size={16}
+            className="translate-y-[2px] text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2]"
+            aria-hidden
+          />
         </span>
 
         {!expanded ? (
           <>
             {/* Desktop: all 3 selected value pills */}
-            <span className="hidden flex-1 items-center justify-end gap-1.5 sm:flex">
+            <span className="hidden flex-1 items-center justify-end gap-1 sm:flex">
               <CollapsedPill>{brandLabel}</CollapsedPill>
               <CollapsedPill>{trafficLabel}</CollapsedPill>
               <CollapsedPill>{audienceLabel}</CollapsedPill>
             </span>
             {/* Mobile: first pill + remaining count */}
-            <span className="flex flex-1 items-center justify-end gap-1.5 sm:hidden">
+            <span className="flex flex-1 items-center justify-end gap-1 sm:hidden">
               <CollapsedPill>{brandLabel}</CollapsedPill>
               <CollapsedPill>+2</CollapsedPill>
             </span>
@@ -138,34 +142,41 @@ export function AnalyzePageContextPanel({
         )}
       </button>
 
-      {expanded && (
-        <div className="mt-4 flex flex-col gap-4">
-          <FilterGroup
-            label="How established is your brand?"
-            options={BRAND_STAGE_OPTIONS.map((o) => ({ id: o.id, label: o.label }))}
-            value={brandStage}
-            onChange={onBrandStageChange}
-            disabled={disabled}
-          />
-          <FilterGroup
-            label="Who visits this page?"
-            options={TRAFFIC_SOURCE_OPTIONS.map((o) => ({
-              id: o.id,
-              label: TRAFFIC_PILL_LABELS[o.id],
-            }))}
-            value={trafficSource}
-            onChange={onTrafficSourceChange}
-            disabled={disabled}
-          />
-          <FilterGroup
-            label="Who is your audience?"
-            options={AUDIENCE_TYPE_OPTIONS.map((o) => ({ id: o.id, label: o.label }))}
-            value={audienceType}
-            onChange={onAudienceTypeChange}
-            disabled={disabled}
-          />
+      <div
+        className={[
+          "grid overflow-hidden transition-all duration-200 ease-out",
+          expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+        ].join(" ")}
+      >
+        <div className="min-h-0">
+          <div className="mt-4 flex flex-col gap-4">
+            <FilterGroup
+              label="How established is your brand?"
+              options={BRAND_STAGE_OPTIONS.map((o) => ({ id: o.id, label: o.label }))}
+              value={brandStage}
+              onChange={onBrandStageChange}
+              disabled={disabled}
+            />
+            <FilterGroup
+              label="Who visits this page?"
+              options={TRAFFIC_SOURCE_OPTIONS.map((o) => ({
+                id: o.id,
+                label: TRAFFIC_PILL_LABELS[o.id],
+              }))}
+              value={trafficSource}
+              onChange={onTrafficSourceChange}
+              disabled={disabled}
+            />
+            <FilterGroup
+              label="Who is your audience?"
+              options={AUDIENCE_TYPE_OPTIONS.map((o) => ({ id: o.id, label: o.label }))}
+              value={audienceType}
+              onChange={onAudienceTypeChange}
+              disabled={disabled}
+            />
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

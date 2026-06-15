@@ -261,7 +261,7 @@ export function AnalyzePageView() {
               <div className="relative" role="tabpanel" aria-label="Website URL">
                 <RiLink
                   size={18}
-                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#9AA3AC]"
+                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#646E76]"
                   aria-hidden
                 />
                 <input
