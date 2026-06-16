@@ -1,6 +1,6 @@
 "use client";
 
-import { RiBarChart2Line, RiArrowRightLine } from "@remixicon/react";
+import { RiBarChartLine, RiArrowRightLine } from "@remixicon/react";
 import type {
   ReportScorePotential,
   ReportChecklistItem,
@@ -60,10 +60,10 @@ export default function ScorePotentialCompact({
         {/* Header row */}
         <div className="flex items-center justify-between gap-4 px-5 pb-4 pt-5">
           <div className="flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
-            <RiBarChart2Line size={20} className="text-[#7D8C99]" aria-hidden />
+            <RiBarChartLine size={20} className="text-[#7D8C99]" aria-hidden />
             Score potential
           </div>
-          <span className="shrink-0 text-[13px] text-[#8E99A2]">estimate, not a promise</span>
+          <span className="shrink-0 text-[14px] text-[#8E99A2]">estimate, not a promise</span>
         </div>
 
         {/* Content row */}
@@ -71,14 +71,14 @@ export default function ScorePotentialCompact({
           {/* Score values */}
           <div className="flex shrink-0 items-center gap-3">
             <div className="text-center">
-              <div className="text-[48px] font-semibold leading-none tracking-[-0.04em] text-[#F97316]">
+              <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-[#F97316]">
                 {formatScore(score)}
               </div>
               <div className="mt-1 text-[13px] text-[#8E99A2]">now</div>
             </div>
             <RiArrowRightLine size={20} className="text-[#C0C0C0]" aria-hidden />
             <div className="text-center">
-              <div className="text-[48px] font-semibold leading-none tracking-[-0.04em] text-[#1D9E75]">
+              <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-[#1D9E75]">
                 {formatScore(target)}
               </div>
               <div className="mt-1 text-[13px] text-[#8E99A2]">potential</div>
@@ -86,7 +86,7 @@ export default function ScorePotentialCompact({
           </div>
 
           {/* Vertical divider */}
-          <div className="mx-6 h-12 w-px shrink-0 bg-[rgba(6,28,47,0.06)]" />
+          <div className="mx-6 h-[60px] w-px shrink-0 bg-[rgba(6,28,47,0.06)]" />
 
           {/* Right: description + chips */}
           {chips.length > 0 ? (
@@ -98,12 +98,12 @@ export default function ScorePotentialCompact({
                     key={`${chip.label}-${index}`}
                     type="button"
                     onClick={() => handleChipClick(chip.label, index)}
-                    className="inline-flex h-7 items-center rounded-full border border-[#E5E5E5] bg-white px-3 text-[13px] transition-colors hover:border-[rgba(6,28,47,0.2)]"
+                    className="inline-flex h-7 items-center rounded-[8px] border border-[#E5E5E5] bg-white px-3 text-[14px] transition-colors hover:border-[rgba(6,28,47,0.2)]"
                   >
                     <span className="text-[#061C2F]">
                       {getScoreChipShortLabel(chip.label, checklist)}
                     </span>
-                    <span className="ml-1.5 font-medium text-[#1D9E75]">{chip.delta}</span>
+                    <span className="ml-[4px] text-[#1D9E75]">{chip.delta}</span>
                   </button>
                 ))}
               </div>
