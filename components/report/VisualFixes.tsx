@@ -116,14 +116,15 @@ function VisualPassRow({
   return (
     <div
       className={[
-        "flex items-start gap-3 px-5 py-4",
+        "flex items-center gap-3 px-5 py-4",
         isLast ? "" : REPORT_ROW_DIVIDER_CLASS,
       ].join(" ")}
     >
-      <Icon size={16} className="mt-0.5 shrink-0 text-[#7D8C99]" aria-hidden />
+      <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
       <div className="min-w-0 flex-1">
         <span className="text-[15px] font-medium text-[#061C2F]">{label}</span>
-        <span className="text-[15px] text-[#7D8C99]"> · {pass.note}</span>
+        <span className="mx-2 text-[#7D8C99]">·</span>
+        <span className="text-[15px] text-[#7D8C99]">{pass.note}</span>
       </div>
       <span className="shrink-0 rounded-full bg-[#ECFDF5] px-2.5 py-1 text-[13px] font-medium text-[#059669]">
         Aligned
@@ -161,7 +162,7 @@ export function VisualFixes({
           <span className="text-[14px] leading-5 text-[#7D8C99]">
             {insightCount} insight{insightCount !== 1 ? "s" : ""}
           </span>
-          {previewLocked ? (
+          {previewLocked || fixes.length > 1 ? (
             <>
               <span className="h-6 w-px bg-[#D0D5DA]" aria-hidden />
               <span className="text-[14px] leading-5 text-[#7D8C99]">Unlock all in</span>
@@ -178,7 +179,7 @@ export function VisualFixes({
       {fixes.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
           {fixes.map((fix, i) =>
-            previewLocked && i > 0 ? (
+            (previewLocked || fixes.length > 1) && i > 0 ? (
               <LockedFixCard
                 key={fix.dimension}
                 fix={fix}
@@ -194,20 +195,16 @@ export function VisualFixes({
       {/* Passes toggle */}
       {passes.length > 0 ? (
         <>
-          <button
-            type="button"
-            onClick={() => setPassVisible((v) => !v)}
-            className="mt-3 flex items-center gap-1.5 text-[13px] text-[#8E99A2] transition-colors hover:text-[#061C2F]"
-          >
-            <RiArrowDownSLine
-              size={16}
-              aria-hidden
-              className={`transition-transform duration-300 ${passVisible ? "rotate-180" : ""}`}
-            />
-            {passVisible
-              ? "Hide aligned visual checks"
-              : `Show ${passes.length} aligned visual check${passes.length !== 1 ? "s" : ""}`}
-          </button>
+          {!passVisible ? (
+            <button
+              type="button"
+              onClick={() => setPassVisible(true)}
+              className="mt-3 flex items-center gap-1.5 text-[13px] text-[#8E99A2] transition-colors hover:text-[#061C2F]"
+            >
+              <RiArrowDownSLine size={16} aria-hidden />
+              {`Show ${passes.length} aligned visual check${passes.length !== 1 ? "s" : ""}`}
+            </button>
+          ) : null}
 
           <div
             className="overflow-hidden transition-[max-height] duration-300 ease-out"
@@ -215,7 +212,7 @@ export function VisualFixes({
               maxHeight: passVisible ? `${passes.length * 64 + 8}px` : "0px",
             }}
           >
-            <div className="mt-2 overflow-hidden rounded-[16px] border border-[#E5E5E5] bg-white">
+            <div className="mt-3 overflow-hidden rounded-[16px] border border-[#E5E5E5] bg-white">
               {passes.map((pass, index) => (
                 <VisualPassRow
                   key={pass.dimension}
