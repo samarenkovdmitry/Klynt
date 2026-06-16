@@ -99,10 +99,10 @@ function VariantCard({
 
   if (locked) {
     return (
-      <div className="rounded-[10px] border border-[rgba(6,28,47,0.08)] bg-[#F5F5F3] px-3 py-[11px]">
+      <div className="rounded-[10px] border border-[#E5E5E5] bg-white px-3 py-[11px]">
         <div className="mb-2 flex items-start justify-between gap-2">
-          <span className="text-[12px] text-[#C0C0BC]">{variant.label}</span>
-          <RiLock2Line size={14} className="shrink-0 text-[#C0C0BC]" aria-hidden />
+          <span className="text-[12px] text-[#8F99A2]">{variant.label}</span>
+          <RiLock2Line size={14} className="shrink-0 text-[#8F99A2]" aria-hidden />
         </div>
         <div className="space-y-1.5">
           <div className="h-2.5 w-3/4 rounded-full bg-[#DDE5ED]" />
@@ -118,7 +118,7 @@ function VariantCard({
       className={[
         "group relative flex cursor-pointer flex-col rounded-[10px] px-3 py-[11px] transition-all duration-[120ms]",
         isSelected
-          ? "border border-[#1D9E75] bg-[#E8F7F2]"
+          ? "border border-[rgba(29,158,117,0.5)] bg-[#E8F7F2]"
           : "border border-[rgba(6,28,47,0.08)] bg-[#F5F5F3] hover:border-[rgba(6,28,47,0.15)]",
       ].join(" ")}
     >
@@ -177,7 +177,7 @@ function CopyBlock({
   const hasGap = Boolean(gapItem && gapItem.status !== "pass");
 
   return (
-    <div id={id} className={`px-5 py-5 md:px-6 ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
+    <div id={id} className={`px-5 py-5 ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
       {/* Title row */}
       <div className="mb-3 flex items-center gap-3">
         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[rgba(6,28,47,0.15)] text-[13px] font-medium text-[#7D8C99]">
@@ -196,11 +196,11 @@ function CopyBlock({
 
       {/* Strikethrough original */}
       {block.current ? (
-        <p className="mb-3 text-[14px] leading-5 text-[#C0C0BC] line-through">
+        <p className="mb-3 text-[14px] leading-5 text-[#8E99A2] line-through">
           {block.current}
         </p>
       ) : (
-        <p className="mb-3 text-[14px] italic leading-5 text-[#C0C0BC]">
+        <p className="mb-3 text-[14px] italic leading-5 text-[#8E99A2]">
           Not visible on page
         </p>
       )}
@@ -221,7 +221,7 @@ function CopyBlock({
 
       {/* Tone/Audience meta — first section only */}
       {context && (context.tone || context.audience) && id === "copy-headline" ? (
-        <div className="mt-3 text-[13px] text-[#C0C0BC]">
+        <div className="mt-3 text-[13px] text-[#8E99A2]">
           {context.tone && (
             <>
               Tone:{" "}
@@ -264,7 +264,7 @@ export default function CopyStudio({
             <>
               <span className="h-6 w-px bg-[#D0D5DA]" aria-hidden />
               <span className="text-[14px] leading-5 text-[#7D8C99]">More in</span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#061C2F] px-2.5 py-1 text-[12px] font-semibold text-white">
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold text-white [background:linear-gradient(to_top_right,#18181B,#373473,#201F32)]">
                 <RiVipCrownFill size={12} aria-hidden />
                 PRO
               </span>
