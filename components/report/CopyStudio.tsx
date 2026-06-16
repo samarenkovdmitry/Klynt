@@ -57,7 +57,7 @@ function SectionStatusBadge({
   return (
     <span
       className={[
-        "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium",
+        "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full pl-2 pr-3 text-[13px] font-medium",
         isMissing ? "bg-[#FDF3E3] text-[#7A4A0A]" : "bg-[#F5F0FB] text-[#5B3F9A]",
       ].join(" ")}
     >
@@ -105,8 +105,8 @@ function VariantCard({
           <RiLock2Line size={14} className="shrink-0 text-[#C0C0BC]" aria-hidden />
         </div>
         <div className="space-y-1.5">
-          <div className="h-2.5 w-3/4 rounded-full bg-[#E5E5E3]" />
-          <div className="h-2.5 w-1/2 rounded-full bg-[#E5E5E3]" />
+          <div className="h-2.5 w-3/4 rounded-full bg-[#DDE5ED]" />
+          <div className="h-2.5 w-1/2 rounded-full bg-[#DDE5ED]" />
         </div>
       </div>
     );
@@ -118,7 +118,7 @@ function VariantCard({
       className={[
         "group relative flex cursor-pointer flex-col rounded-[10px] px-3 py-[11px] transition-all duration-[120ms]",
         isSelected
-          ? "[border:1.5px_solid_#1D9E75] bg-[#E8F7F2]"
+          ? "border border-[#1D9E75] bg-[#E8F7F2]"
           : "border border-[rgba(6,28,47,0.08)] bg-[#F5F5F3] hover:border-[rgba(6,28,47,0.15)]",
       ].join(" ")}
     >
@@ -137,9 +137,7 @@ function VariantCard({
           title="Copy text"
           className={[
             "shrink-0 transition-all duration-[120ms]",
-            isSelected
-              ? "text-[#1D9E75]"
-              : "text-[#C0C0BC] opacity-0 group-hover:opacity-100 group-hover:text-[#1D9E75]",
+            "text-[#1D9E75] opacity-0 transition-opacity duration-150 group-hover:opacity-100",
           ].join(" ")}
         >
           {copied ? (
@@ -149,7 +147,7 @@ function VariantCard({
           )}
         </button>
       </div>
-      <span className="text-[14px] font-medium leading-snug text-[#061C2F]">
+      <span className="text-[16px] font-medium leading-snug text-[#061C2F]">
         {variant.text}
       </span>
     </div>
@@ -223,14 +221,16 @@ function CopyBlock({
 
       {/* Tone/Audience meta — first section only */}
       {context && (context.tone || context.audience) && id === "copy-headline" ? (
-        <div className="mt-3 text-[12px] text-[#C0C0BC]">
+        <div className="mt-3 text-[13px] text-[#C0C0BC]">
           {context.tone && (
             <>
               Tone:{" "}
               <strong className="font-medium text-[#999]">{context.tone}</strong>
             </>
           )}
-          {context.tone && context.audience && " · "}
+          {context.tone && context.audience && (
+            <span className="mx-[4px]">·</span>
+          )}
           {context.audience && (
             <>
               Audience:{" "}
@@ -262,9 +262,7 @@ export default function CopyStudio({
           <span className="text-[14px] leading-5 text-[#7D8C99]">3 sections</span>
           {previewLocked ? (
             <>
-              <span className="text-[#D0D5DA]" aria-hidden>
-                |
-              </span>
+              <span className="h-6 w-px bg-[#D0D5DA]" aria-hidden />
               <span className="text-[14px] leading-5 text-[#7D8C99]">More in</span>
               <span className="inline-flex items-center gap-1 rounded-full bg-[#061C2F] px-2.5 py-1 text-[12px] font-semibold text-white">
                 <RiVipCrownFill size={12} aria-hidden />
