@@ -11,8 +11,11 @@ import {
   RiFileCopyLine,
 } from "@remixicon/react";
 import type { ReportMeta, ReportChecklistItem } from "@/lib/audit-report";
-import { ReportSectionShell } from "@/components/report/ReportSectionShell";
 import type { RequestProUpgrade } from "@/lib/freemium";
+import {
+  REPORT_SECTION_SPACING_CLASS,
+  REPORT_SECTION_SCROLL_MARGIN_CLASS,
+} from "@/components/report/reportStyles";
 
 type Props = {
   meta: ReportMeta;
@@ -66,12 +69,16 @@ export function TrustMeta({
   );
 
   return (
-    <ReportSectionShell
+    <section
       id="trust"
-      icon={<RiShieldCheckLine size={20} aria-hidden />}
-      title="Trust & meta"
-      withCard={false}
+      className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
+      {/* Pill header */}
+      <div className="mb-4 flex items-center gap-2 rounded-full bg-[#EFF3F6] px-5 py-3 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F] md:px-6">
+        <RiShieldCheckLine size={20} className="text-[#7D8C99]" aria-hidden />
+        Trust &amp; meta
+      </div>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Left card — Add proof */}
         <div className="rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-white p-5">
@@ -88,11 +95,11 @@ export function TrustMeta({
                 {trustGaps.map((item) => (
                   <li
                     key={item.id}
-                    className="flex items-start gap-2 text-[14px] leading-[21px] text-[#8E99A2]"
+                    className="flex items-center gap-2 text-[14px] leading-[21px] text-[#061C2F]"
                   >
                     <RiErrorWarningLine
                       size={16}
-                      className="mt-0.5 shrink-0 text-[#BA7517]"
+                      className="shrink-0 text-[#BA7517]"
                       aria-hidden
                     />
                     <span>{item.text}</span>
@@ -101,11 +108,11 @@ export function TrustMeta({
                 {(meta.trust_notes ?? []).map((note) => (
                   <li
                     key={note}
-                    className="flex items-start gap-2 text-[14px] leading-[21px] text-[#8E99A2]"
+                    className="flex items-center gap-2 text-[14px] leading-[21px] text-[#061C2F]"
                   >
                     <RiErrorWarningLine
                       size={16}
-                      className="mt-0.5 shrink-0 text-[#BA7517]"
+                      className="shrink-0 text-[#BA7517]"
                       aria-hidden
                     />
                     <span>{note}</span>
@@ -130,35 +137,39 @@ export function TrustMeta({
             Meta
           </div>
 
-          <div className="mb-3">
+          <div className="group mb-3">
             <div className="mb-1 text-[13px] font-medium text-[#8E99A2]">Title</div>
             <div className="flex items-start justify-between gap-2">
-              <span className="text-[15px] font-semibold leading-6 text-[#061C2F]">
+              <span className="text-[16px] font-semibold leading-6 text-[#061C2F]">
                 {meta.title_suggestion}
               </span>
-              <CopyButton
-                value={meta.title_suggestion}
-                locked={metaCopyLocked}
-                onRequestProUpgrade={onRequestProUpgrade}
-              />
+              <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                <CopyButton
+                  value={meta.title_suggestion}
+                  locked={metaCopyLocked}
+                  onRequestProUpgrade={onRequestProUpgrade}
+                />
+              </span>
             </div>
           </div>
 
-          <div>
+          <div className="group">
             <div className="mb-1 text-[13px] font-medium text-[#8E99A2]">Description</div>
             <div className="flex items-start justify-between gap-2">
               <span className="text-[14px] leading-[21px] text-[#061C2F]">
                 {meta.description_suggestion}
               </span>
-              <CopyButton
-                value={meta.description_suggestion}
-                locked={metaCopyLocked}
-                onRequestProUpgrade={onRequestProUpgrade}
-              />
+              <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                <CopyButton
+                  value={meta.description_suggestion}
+                  locked={metaCopyLocked}
+                  onRequestProUpgrade={onRequestProUpgrade}
+                />
+              </span>
             </div>
           </div>
         </div>
       </div>
-    </ReportSectionShell>
+    </section>
   );
 }
