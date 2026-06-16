@@ -3,12 +3,11 @@
 import { useState } from "react";
 import {
   RiAlertFill,
+  RiArrowDownSLine,
   RiArrowRightSLine,
   RiCheckboxCircleFill,
   RiErrorWarningFill,
-  RiEyeLine,
-  RiEyeOffLine,
-  RiListCheck3,
+  RiLayoutColumnLine,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
 import { getChecklistBadgeLabel } from "@/lib/normalize-report-checklist";
@@ -86,24 +85,26 @@ function ChecklistRow({
   return (
     <div
       className={[
-        "flex items-center gap-2.5 py-3 text-[14px] leading-5",
+        "group flex items-center gap-2.5 py-4 text-[14px] leading-5",
         isLast ? "" : REPORT_ROW_DIVIDER_CLASS,
       ].join(" ")}
     >
       <Icon size={16} className={`shrink-0 ${iconColor}`} aria-hidden />
 
-      <span className="min-w-0 flex-1 text-[#061C2F]">{item.text}</span>
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <span className="text-[#061C2F]">{item.text}</span>
 
-      {linkLabel ? (
-        <button
-          type="button"
-          onClick={handleLinkClick}
-          className="inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[13px] font-medium text-[#1D9E75] transition-opacity hover:opacity-80"
-        >
-          <RiArrowRightSLine size={14} aria-hidden />
-          {linkLabel}
-        </button>
-      ) : null}
+        {linkLabel ? (
+          <button
+            type="button"
+            onClick={handleLinkClick}
+            className="inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[13px] text-[#8E99A2] opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+          >
+            <RiArrowRightSLine size={14} aria-hidden />
+            {linkLabel}
+          </button>
+        ) : null}
+      </div>
 
       <span
         className={[
@@ -140,22 +141,16 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
       <div className={REPORT_SURFACE_CARD_CLASS}>
         <div className={REPORT_PANEL_HEADER_CLASS}>
           <div className={REPORT_PANEL_TITLE_CLASS}>
-            <RiListCheck3 size={20} className="text-[#7D8C99]" aria-hidden />
+            <RiLayoutColumnLine size={20} className="text-[#7D8C99]" aria-hidden />
             What needs fixing
           </div>
           <span className={REPORT_PANEL_META_CLASS}>
-            <span className="font-medium text-[#1D9E75]">
-              {passes.length} pass
-            </span>
-            {" · "}
-            <span className="font-medium text-[#BA7517]">
-              {gaps.length} gap{gaps.length === 1 ? "" : "s"}
-            </span>
+            {gaps.length} gap{gaps.length === 1 ? "" : "s"}
           </span>
         </div>
 
         {gaps.length > 0 ? (
-          <div className="px-5 md:px-6">
+          <div className="px-5 pt-2 md:px-6">
             {gaps.map((item, index) => (
               <ChecklistRow
                 key={item.id}
@@ -176,11 +171,11 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
                 gaps.length > 0 ? `border-t ${REPORT_ROW_DIVIDER_CLASS.replace("border-b ", "")}` : "",
               ].join(" ")}
             >
-              {passVisible ? (
-                <RiEyeOffLine size={16} aria-hidden />
-              ) : (
-                <RiEyeLine size={16} aria-hidden />
-              )}
+              <RiArrowDownSLine
+                size={16}
+                aria-hidden
+                className={`transition-transform duration-300 ${passVisible ? "rotate-180" : ""}`}
+              />
               {passVisible
                 ? "Hide passing checks"
                 : `Show ${passes.length} passing check${passes.length === 1 ? "" : "s"}`}
