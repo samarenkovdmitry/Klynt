@@ -209,12 +209,12 @@ export function VisualFixes({
           ) : null}
 
           <div
-            className="overflow-hidden transition-[max-height] duration-300 ease-out"
+            className="overflow-hidden pb-0.5 transition-[max-height] duration-300 ease-out"
             style={{
-              maxHeight: passVisible ? `${passes.length * 64 + 8}px` : "0px",
+              maxHeight: passVisible ? `${passes.length * 120 + 24}px` : "0px",
             }}
           >
-            <div className="mt-3 overflow-hidden rounded-[16px] border border-[#E5E5E5] bg-white">
+            <div className="mt-3 rounded-[16px] border border-[#E5E5E5] bg-white">
               {passes.map((pass, index) => (
                 <VisualPassRow
                   key={pass.dimension}
