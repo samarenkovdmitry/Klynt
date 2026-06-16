@@ -13,6 +13,7 @@ import type { RequestProUpgrade } from "@/lib/freemium";
 import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
+  REPORT_SURFACE_CARD_CLASS,
 } from "@/components/report/reportStyles";
 
 interface ScorePotentialCompactProps {
@@ -56,7 +57,7 @@ export default function ScorePotentialCompact({
 
   return (
     <section className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
-      <div className="overflow-hidden rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white">
+      <div className={REPORT_SURFACE_CARD_CLASS}>
         {/* Header row */}
         <div className="flex items-center justify-between gap-4 px-5 pb-4 pt-5">
           <div className="flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">

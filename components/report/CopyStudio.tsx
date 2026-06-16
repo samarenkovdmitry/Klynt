@@ -23,6 +23,7 @@ import {
   REPORT_ROW_DIVIDER_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
+  REPORT_SURFACE_CARD_CLASS,
 } from "@/components/report/reportStyles";
 import { freemium, type RequestProUpgrade } from "@/lib/freemium";
 
@@ -274,7 +275,7 @@ export default function CopyStudio({
       </div>
 
       {/* Sections card */}
-      <div className="overflow-hidden rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white">
+      <div className={REPORT_SURFACE_CARD_CLASS}>
         {BLOCKS.map(({ key, label, id, linkTo }, index) => {
           const gapItem = checklist?.find((item) => item.link_to === linkTo);
           const isLast = index === BLOCKS.length - 1;

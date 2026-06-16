@@ -15,6 +15,7 @@ import {
   REPORT_ROW_DIVIDER_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
+  REPORT_SURFACE_CARD_CLASS,
 } from "@/components/report/reportStyles";
 
 const STATUS_CONFIG = {
@@ -145,8 +146,7 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
         </span>
       </div>
 
-      {/* List card — no shadow, 6% border */}
-      <div className="overflow-hidden rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white">
+      <div className={REPORT_SURFACE_CARD_CLASS}>
         {gaps.length > 0 ? (
           <div className="px-5 md:px-6">
             {gaps.map((item, index) => (

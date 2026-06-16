@@ -60,7 +60,7 @@ function StickyBottomBar({
   return (
     <div className="sticky bottom-0 z-40 -mx-4 mt-8 border-t border-[#EBEFF3] bg-white/95 px-4 py-3 backdrop-blur-sm md:-mx-6 md:px-6">
       <div className="flex items-center gap-4">
-        <p className="hidden flex-1 text-[13px] text-[#7D8C99] sm:block">
+        <p className="hidden flex-1 text-[15px] text-[#7D8C99] sm:block">
           Shipped fixes? Re-run to update your score.
         </p>
         <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
@@ -281,17 +281,19 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                       <RiDownloadLine size={20} className="text-[#7D8C99]" aria-hidden />
                       Export
                     </div>
-                    {!isDemo && (
-                      <div className="flex items-center gap-2.5">
-                        <span className="hidden text-[13px] text-[#7D8C99] sm:inline">take this to your team</span>
-                        <span className="hidden h-6 w-px bg-[#D0D5DA] sm:inline-block" aria-hidden />
-                        <span className="text-[13px] text-[#7D8C99]">Available in</span>
-                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold text-white [background:linear-gradient(to_top_right,#18181B,#373473,#201F32)]">
-                          <RiVipCrownFill size={12} aria-hidden />
-                          PRO
-                        </span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2.5">
+                      <span className="hidden text-[13px] text-[#7D8C99] sm:inline">take this to your team</span>
+                      {!isDemo && (
+                        <>
+                          <span className="hidden h-6 w-px bg-[#D0D5DA] sm:inline-block" aria-hidden />
+                          <span className="text-[13px] text-[#7D8C99]">Available in</span>
+                          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold text-white [background:linear-gradient(to_top_right,#18181B,#373473,#201F32)]">
+                            <RiVipCrownFill size={12} aria-hidden />
+                            PRO
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                   <ExportGrid
                     copyVariants={report.copy_variants}

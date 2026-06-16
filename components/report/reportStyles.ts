@@ -22,7 +22,7 @@ export const REPORT_SURFACE_SHADOW_CLASS = "shadow-[0_10px_40px_rgba(0,0,0,0.03)
 export const REPORT_SURFACE_CARD_CLASS = [
   "overflow-hidden bg-white",
   REPORT_HERO_RADIUS_CLASS,
-  REPORT_HERO_CARD_BORDER_CLASS,
+  REPORT_SURFACE_BORDER_CLASS,
   REPORT_SURFACE_SHADOW_CLASS,
 ].join(" ");
 

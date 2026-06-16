@@ -163,11 +163,8 @@ function ExportCard({ icon, title, sub, cardId, activeToast, locked, onClick }: 
     <button
       type="button"
       onClick={() => onClick(cardId)}
-      className="group relative w-full cursor-pointer rounded-[16px] bg-white p-5 text-left transition-[border-color,box-shadow] duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
-      style={{
-        border: "1px solid",
-        borderColor: copied ? "rgba(29,158,117,0.3)" : "#E5E5E5",
-      }}
+      className="group relative w-full cursor-pointer rounded-[16px] border border-[#E5E5E5] bg-white p-5 text-left transition-[border-color,transform] duration-150 hover:-translate-y-0.5 hover:border-[rgba(6,28,47,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
+      style={copied ? { borderColor: "rgba(29,158,117,0.3)", transitionDuration: "500ms" } : undefined}
     >
       <div className="flex items-start justify-between">
         <span className="text-[#8F99A2]">{icon}</span>
