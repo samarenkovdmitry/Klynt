@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RiDownloadLine, RiFilePdfLine, RiLock2Line, RiRefreshLine } from "@remixicon/react";
+import { RiDownloadLine, RiFilePdfLine, RiLock2Line, RiRefreshLine, RiVipCrownFill } from "@remixicon/react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { ReportActionLayout } from "@/components/report/ReportActionLayout";
@@ -18,17 +18,12 @@ import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
 import { FreemiumProModal } from "@/components/report/FreemiumProModal";
 import { FreemiumProStickyBar } from "@/components/report/FreemiumProStickyBar";
-import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
 import { useFreemiumAccess } from "@/hooks/useFreemiumAccess";
 import { isFreemiumEnabled, type ProUpgradeTrigger } from "@/lib/freemium";
 import {
   REPORT_PAGE_BG_CLASS,
   REPORT_PAGE_CONTAINER_CLASS,
-  REPORT_PANEL_HEADER_CLASS,
-  REPORT_PANEL_META_CLASS,
-  REPORT_PANEL_TITLE_CLASS,
-  REPORT_SURFACE_CARD_CLASS,
 } from "@/components/report/reportStyles";
 import type { AuditReport } from "@/lib/audit-report";
 import { isDemoReportRouteParam } from "@/lib/report-route";
@@ -279,32 +274,31 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               ) : null}
 
               {report.copy_variants && report.meta ? (
-                <section className="mt-12 scroll-mt-24">
-                  <div className="mb-4 flex items-center justify-between gap-4">
-                    <h2 className="flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+                <section className="mt-12 scroll-mt-24" id="export">
+                  {/* Pill header */}
+                  <div className="mb-4 flex items-center justify-between gap-4 rounded-full bg-[#EFF3F6] px-5 py-3 md:px-6">
+                    <div className="flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
                       <RiDownloadLine size={20} className="text-[#7D8C99]" aria-hidden />
                       Export
-                      {freemiumAccess.exportLocked ? <FreemiumProBadge /> : null}
-                    </h2>
-                    <span className="text-[14px] text-[#7D8C99]">take this to your team</span>
-                  </div>
-                  <div className={REPORT_SURFACE_CARD_CLASS}>
-                    <div className={REPORT_PANEL_HEADER_CLASS}>
-                      <div className={REPORT_PANEL_TITLE_CLASS}>
-                        <RiDownloadLine size={20} className="text-[#7D8C99]" aria-hidden />
-                        Shareable outputs
-                      </div>
-                      <span className={REPORT_PANEL_META_CLASS}>PDF · decks · briefs</span>
                     </div>
-                    <ExportGrid
-                      copyVariants={report.copy_variants}
-                      meta={report.meta}
-                      checklist={report.checklist}
-                      visualFixes={report.visual_fixes}
-                      locked={freemiumAccess.exportLocked}
-                      onRequestProUpgrade={useFreemium ? openProModal : undefined}
-                    />
+                    <div className="flex items-center gap-2.5">
+                      <span className="hidden text-[13px] text-[#7D8C99] sm:inline">take this to your team</span>
+                      <span className="hidden h-6 w-px bg-[#D0D5DA] sm:inline-block" aria-hidden />
+                      <span className="text-[13px] text-[#7D8C99]">Available in</span>
+                      <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold text-white [background:linear-gradient(to_top_right,#18181B,#373473,#201F32)]">
+                        <RiVipCrownFill size={12} aria-hidden />
+                        PRO
+                      </span>
+                    </div>
                   </div>
+                  <ExportGrid
+                    copyVariants={report.copy_variants}
+                    meta={report.meta}
+                    checklist={report.checklist}
+                    visualFixes={report.visual_fixes}
+                    locked={freemiumAccess.exportLocked}
+                    onRequestProUpgrade={useFreemium ? openProModal : undefined}
+                  />
                 </section>
               ) : null}
 

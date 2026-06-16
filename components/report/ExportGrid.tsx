@@ -4,8 +4,9 @@ import { useState, useCallback } from "react";
 import {
   RiFileTextLine,
   RiLayoutGridLine,
-  RiCodeSSlashLine,
-  RiNotification4Line,
+  RiCodeLine,
+  RiNotification3Line,
+  RiLock2Line,
   RiCheckLine,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ReportCopyVariants, ReportMeta, ReportVisualFix } from "@/lib/audit-report";
@@ -151,21 +152,26 @@ interface ExportCardProps {
   sub: string;
   cardId: CardId;
   activeToast: CardId | null;
+  locked: boolean;
   onClick: (id: CardId) => void;
 }
 
-function ExportCard({ icon, title, sub, cardId, activeToast, onClick }: ExportCardProps) {
+function ExportCard({ icon, title, sub, cardId, activeToast, locked, onClick }: ExportCardProps) {
   const copied = activeToast === cardId;
 
   return (
     <button
       type="button"
       onClick={() => onClick(cardId)}
-      className="group relative w-full cursor-pointer rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-4 text-left transition-all duration-[120ms] hover:border-[rgba(6,28,47,0.12)] hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
+      className="group relative w-full cursor-pointer rounded-[16px] border border-[#E5E5E5] bg-white p-5 text-left transition-all duration-[120ms] hover:border-[rgba(6,28,47,0.15)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.05)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
     >
-      <div className="mb-2 leading-none text-[#7D8C99]">{icon}</div>
-      <div className="mb-1 text-[14px] font-semibold text-[#061C2F]">{title}</div>
-      <div className="text-[13px] leading-5 text-[#7D8C99]">{sub}</div>
+      <div className="flex items-start justify-between">
+        <span className="text-[#8F99A2]">{icon}</span>
+        {locked && <RiLock2Line size={18} className="text-[#8F99A2]" aria-hidden />}
+      </div>
+
+      <div className="mt-4 text-[15px] font-semibold text-[#061C2F]">{title}</div>
+      <div className="mt-1 text-[13px] leading-5 text-[#8E99A2]">{sub}</div>
 
       {copied && (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1.5 rounded-[16px] bg-[#061C2F]/90 text-[13px] font-medium text-white">
@@ -238,32 +244,32 @@ export function ExportGrid({
   }[] = [
     {
       id: "copy-deck",
-      icon: <RiFileTextLine size={20} />,
+      icon: <RiFileTextLine size={24} />,
       title: "Copy deck",
       sub: "All variants · Markdown",
     },
     {
       id: "designer-brief",
-      icon: <RiLayoutGridLine size={20} />,
+      icon: <RiLayoutGridLine size={24} />,
       title: "Designer brief",
       sub: "Figma-ready task list",
     },
     {
       id: "dev-tasks",
-      icon: <RiCodeSSlashLine size={20} />,
+      icon: <RiCodeLine size={24} />,
       title: "Dev tasks",
       sub: "CSS values + text changes",
     },
     {
       id: "notion-slack",
-      icon: <RiNotification4Line size={20} />,
+      icon: <RiNotification3Line size={24} />,
       title: "Notion / Slack",
       sub: "Formatted for sharing",
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 p-5 md:grid-cols-4 md:p-6">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
       {CARDS.map((card) => (
         <ExportCard
           key={card.id}
@@ -272,6 +278,7 @@ export function ExportGrid({
           sub={card.sub}
           cardId={card.id}
           activeToast={activeToast}
+          locked={locked}
           onClick={copyToClipboard}
         />
       ))}
