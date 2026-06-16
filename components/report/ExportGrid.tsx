@@ -163,22 +163,36 @@ function ExportCard({ icon, title, sub, cardId, activeToast, locked, onClick }: 
     <button
       type="button"
       onClick={() => onClick(cardId)}
-      className="group relative w-full cursor-pointer rounded-[16px] border border-[#E5E5E5] bg-white p-5 text-left transition-all duration-[120ms] hover:border-[rgba(6,28,47,0.15)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.05)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
+      className="group relative w-full cursor-pointer rounded-[16px] bg-white p-5 text-left transition-[border-color,box-shadow] duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
+      style={{
+        border: "1px solid",
+        borderColor: copied ? "rgba(29,158,117,0.3)" : "#E5E5E5",
+      }}
     >
       <div className="flex items-start justify-between">
         <span className="text-[#8F99A2]">{icon}</span>
-        {locked && <RiLock2Line size={18} className="text-[#8F99A2]" aria-hidden />}
+
+        {/* Top-right: lock icon ↔ Copied indicator crossfade */}
+        <span className="relative flex h-[18px] min-w-[18px] items-center justify-end">
+          <span
+            className="absolute right-0 flex items-center gap-1 whitespace-nowrap text-[13px] font-medium text-[#1D9E75] transition-opacity duration-300"
+            style={{ opacity: copied ? 1 : 0, pointerEvents: "none" }}
+            aria-hidden={!copied}
+          >
+            <RiCheckLine size={14} />
+            Copied
+          </span>
+          <span
+            className="transition-opacity duration-300"
+            style={{ opacity: copied ? 0 : 1, pointerEvents: copied ? "none" : "auto" }}
+          >
+            {locked && <RiLock2Line size={18} className="text-[#8F99A2]" aria-hidden />}
+          </span>
+        </span>
       </div>
 
       <div className="mt-4 text-[15px] font-semibold text-[#061C2F]">{title}</div>
       <div className="mt-1 text-[13px] leading-5 text-[#8E99A2]">{sub}</div>
-
-      {copied && (
-        <span className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1.5 rounded-[16px] bg-[#061C2F]/90 text-[13px] font-medium text-white">
-          <RiCheckLine size={14} />
-          Copied!
-        </span>
-      )}
     </button>
   );
 }
@@ -231,7 +245,7 @@ export function ExportGrid({
       }
 
       setActiveToast(id);
-      setTimeout(() => setActiveToast(null), 2000);
+      setTimeout(() => setActiveToast(null), 1800);
     },
     [copyVariants, meta, checklist, visualFixes, locked, onRequestProUpgrade]
   );
