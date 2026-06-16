@@ -3,11 +3,11 @@
 import { useState } from "react";
 import {
   RiAlertLine,
-  RiAlignItemLeftLine,
   RiArrowDownSLine,
   RiArrowRightSLine,
   RiCheckboxCircleFill,
   RiErrorWarningLine,
+  RiListCheck3,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
 import { getChecklistBadgeLabel } from "@/lib/normalize-report-checklist";
@@ -94,7 +94,7 @@ function ChecklistRow({
           <button
             type="button"
             onClick={handleLinkClick}
-            className="inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[13px] text-[#8E99A2] opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+            className="inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[13px] text-[#8E99A2] opacity-0 transition-[opacity,color] duration-150 hover:text-[#646E76] group-hover:opacity-100"
           >
             <RiArrowRightSLine size={14} aria-hidden />
             {linkLabel}
@@ -104,7 +104,7 @@ function ChecklistRow({
 
       <span
         className={[
-          "shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[11px] font-medium leading-4",
+          "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-[13px] font-medium",
           badgeBg,
           badgeText,
         ].join(" ")}
@@ -135,9 +135,9 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
       {/* Floating pill header */}
-      <div className="mb-2 flex items-center justify-between gap-4 rounded-xl bg-[#EFF3F6] px-5 py-3 md:px-6">
+      <div className="mb-2 flex items-center justify-between gap-4 rounded-full bg-[#EFF3F6] px-5 py-3 md:px-6">
         <div className="flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
-          <RiAlignItemLeftLine size={20} className="text-[#7D8C99]" aria-hidden />
+          <RiListCheck3 size={20} className="text-[#7D8C99]" aria-hidden />
           What needs fixing
         </div>
         <span className="shrink-0 text-[14px] leading-5 text-[#7D8C99]">
@@ -153,7 +153,7 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
               <ChecklistRow
                 key={item.id}
                 item={item}
-                isLast={index === gaps.length - 1 && passes.length === 0}
+                isLast={index === gaps.length - 1}
               />
             ))}
           </div>
