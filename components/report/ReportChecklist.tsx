@@ -2,34 +2,30 @@
 
 import { useState } from "react";
 import {
-  RiAlertFill,
+  RiAlertLine,
+  RiAlignItemLeftLine,
   RiArrowDownSLine,
   RiArrowRightSLine,
   RiCheckboxCircleFill,
-  RiErrorWarningFill,
-  RiLayoutColumnLine,
+  RiErrorWarningLine,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
 import { getChecklistBadgeLabel } from "@/lib/normalize-report-checklist";
 import {
-  REPORT_PANEL_HEADER_CLASS,
-  REPORT_PANEL_META_CLASS,
-  REPORT_PANEL_TITLE_CLASS,
   REPORT_ROW_DIVIDER_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
-  REPORT_SURFACE_CARD_CLASS,
 } from "@/components/report/reportStyles";
 
 const STATUS_CONFIG = {
   missing: {
-    Icon: RiErrorWarningFill,
+    Icon: RiErrorWarningLine,
     iconColor: "text-[#BA7517]",
     badgeBg: "bg-[#FDF3E3]",
     badgeText: "text-[#7A4A0A]",
   },
   weak: {
-    Icon: RiAlertFill,
+    Icon: RiAlertLine,
     iconColor: "text-[#7B5EA7]",
     badgeBg: "bg-[#F5F0FB]",
     badgeText: "text-[#5B3F9A]",
@@ -85,11 +81,11 @@ function ChecklistRow({
   return (
     <div
       className={[
-        "group flex items-center gap-2.5 py-4 text-[14px] leading-5",
+        "group flex items-center gap-3 py-4 text-[15px] leading-5",
         isLast ? "" : REPORT_ROW_DIVIDER_CLASS,
       ].join(" ")}
     >
-      <Icon size={16} className={`shrink-0 ${iconColor}`} aria-hidden />
+      <Icon size={18} className={`shrink-0 ${iconColor}`} aria-hidden />
 
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <span className="text-[#061C2F]">{item.text}</span>
@@ -138,19 +134,21 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
     <section
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
-      <div className={REPORT_SURFACE_CARD_CLASS}>
-        <div className={REPORT_PANEL_HEADER_CLASS}>
-          <div className={REPORT_PANEL_TITLE_CLASS}>
-            <RiLayoutColumnLine size={20} className="text-[#7D8C99]" aria-hidden />
-            What needs fixing
-          </div>
-          <span className={REPORT_PANEL_META_CLASS}>
-            {gaps.length} gap{gaps.length === 1 ? "" : "s"}
-          </span>
+      {/* Floating pill header */}
+      <div className="mb-2 flex items-center justify-between gap-4 rounded-xl bg-[#EFF3F6] px-5 py-3 md:px-6">
+        <div className="flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+          <RiAlignItemLeftLine size={20} className="text-[#7D8C99]" aria-hidden />
+          What needs fixing
         </div>
+        <span className="shrink-0 text-[14px] leading-5 text-[#7D8C99]">
+          {gaps.length} gap{gaps.length === 1 ? "" : "s"}
+        </span>
+      </div>
 
+      {/* List card — no shadow, 6% border */}
+      <div className="overflow-hidden rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white">
         {gaps.length > 0 ? (
-          <div className="px-5 pt-2 md:px-6">
+          <div className="px-5 md:px-6">
             {gaps.map((item, index) => (
               <ChecklistRow
                 key={item.id}
@@ -184,7 +182,7 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
             <div
               className="overflow-hidden transition-[max-height] duration-300 ease-out"
               style={{
-                maxHeight: passVisible ? `${passes.length * 48 + 8}px` : "0px",
+                maxHeight: passVisible ? `${passes.length * 56 + 8}px` : "0px",
               }}
             >
               <div
