@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klynt — Contact</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --fd:'Familjen Grotesk',sans-serif;
+  --fb:'Geist',-apple-system,sans-serif;
+  --green:#1D9E75;--gl:rgba(29,158,117,.12);--gd:#0F6E56;
+  --bg:#0E0E0C;--bg2:#141412;--bg3:#1C1C19;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
+  --t1:#F2F2EF;--t2:#9A9A93;--t3:#7A7A74;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+
+/* NAV */
+nav{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(14,14,12,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.logo{font-family:var(--fd);font-size:16px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px;text-decoration:none;letter-spacing:-.3px}
+.lm{width:22px;height:22px;border-radius:7px;background:var(--t1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-c{display:flex;align-items:center;gap:2px}
+.na{font-size:13px;color:var(--t3);padding:5px 12px;border-radius:8px;text-decoration:none;transition:color .15s}
+.na:hover{color:var(--t1)}
+.na.on{color:var(--t1);background:rgba(255,255,255,.07)}
+.nav-cta{font-family:var(--fb);font-size:13px;font-weight:500;color:#0E0E0C;background:var(--t1);border:none;padding:7px 16px;border-radius:8px;cursor:pointer;text-decoration:none;transition:opacity .15s}
+.nav-cta:hover{opacity:.85}
+
+/* PAGE */
+.page{flex:1;max-width:960px;margin:0 auto;width:100%;padding:5rem 2rem 6rem;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+
+/* LEFT */
+.left-eyebrow{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.09em;margin-bottom:1.25rem;display:flex;align-items:center;gap:5px}
+.left-title{font-family:var(--fd);font-size:clamp(28px,3.5vw,42px);font-weight:700;line-height:1.1;letter-spacing:-1.5px;margin-bottom:1rem;color:var(--t1)}
+.left-sub{font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:2.5rem;max-width:360px}
+.contact-options{display:flex;flex-direction:column;gap:0}
+.co-card{display:flex;align-items:center;gap:10px;text-decoration:none;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,.06);transition:opacity .15s}
+.co-card:last-child{border-bottom:none}
+.co-card:hover{opacity:.75}
+.co-icon{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--t3);flex-shrink:0}
+.co-icon.g{background:rgba(29,158,117,.08);border-color:rgba(29,158,117,.15);color:var(--green)}
+.co-body{flex:1}
+.co-title{font-size:13px;font-weight:500;color:var(--t2);margin-bottom:1px}
+.co-sub{font-size:12px;color:var(--t3)}
+.co-arrow{font-size:14px;color:var(--t3)}
+
+/* RIGHT — FORM */
+.form-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.form-head{padding:18px 22px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.form-head-title{font-family:var(--fd);font-size:16px;font-weight:600;color:var(--t1);letter-spacing:-.2px;margin-bottom:3px}
+.form-head-sub{font-size:12px;color:var(--t3)}
+.form-body{padding:22px}
+.field{margin-bottom:16px}
+.field:last-of-type{margin-bottom:0}
+.field-label{font-size:12px;font-weight:500;color:var(--t3);margin-bottom:6px;display:block}
+.field-input{font-family:var(--fb);font-size:14px;color:var(--t1);background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;width:100%;outline:none;transition:border-color .15s}
+.field-input:focus{border-color:rgba(29,158,117,.5);box-shadow:0 0 0 3px rgba(29,158,117,.08)}
+.field-input::placeholder{color:var(--t3)}
+.field-textarea{font-family:var(--fb);font-size:14px;color:var(--t1);background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;width:100%;outline:none;transition:border-color .15s;resize:vertical;min-height:120px;line-height:1.6}
+.field-textarea:focus{border-color:rgba(29,158,117,.5);box-shadow:0 0 0 3px rgba(29,158,117,.08)}
+.field-textarea::placeholder{color:var(--t3)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.reason-pills{display:flex;gap:6px;flex-wrap:wrap}
+.rpill{font-family:var(--fb);font-size:12px;color:var(--t3);background:var(--bg3);border:1px solid var(--border);padding:5px 12px;border-radius:20px;cursor:pointer;transition:all .12s}
+.rpill:hover{color:var(--t1);border-color:var(--border2)}
+.rpill.on{background:rgba(29,158,117,.1);border-color:rgba(29,158,117,.3);color:var(--green)}
+.form-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.form-note{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:4px}
+.submit-btn{font-family:var(--fd);font-size:14px;font-weight:600;color:#0E0E0C;background:var(--t1);border:none;padding:10px 22px;border-radius:9px;cursor:pointer;letter-spacing:-.2px;transition:opacity .15s;white-space:nowrap}
+.submit-btn:hover{opacity:.88}
+
+/* SUCCESS STATE */
+.success{display:none;text-align:center;padding:3rem 2rem}
+.success-icon{font-size:36px;color:var(--green);margin-bottom:1rem}
+.success-title{font-family:var(--fd);font-size:20px;font-weight:600;color:var(--t1);margin-bottom:.5rem;letter-spacing:-.3px}
+.success-sub{font-size:14px;color:var(--t2);line-height:1.65}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;max-width:960px;margin:0 auto;width:100%}
+.foot-l{font-size:12px;color:var(--t3)}
+.foot-links{display:flex;gap:16px}
+.foot-a{font-size:12px;color:var(--t3);text-decoration:none;transition:color .15s}
+.foot-a:hover{color:var(--t2)}
+
+@media(max-width:720px){
+  .page{grid-template-columns:1fr;gap:3rem;padding:3rem 1rem 4rem}
+  .left-sub{max-width:100%}
+  nav,footer{padding-left:1rem;padding-right:1rem}
+  .field-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#">
+    <div class="lm"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 10L6 2L10 10" stroke="#0E0E0C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    Klynt
+  </a>
+  <div class="nav-c">
+    <a class="na" href="/">Analyze</a>
+    <a class="na" href="/report/sample">Sample report</a>
+    <a class="na on" href="/contact">Contact</a>
+  </div>
+  <a class="nav-cta" href="/">Analyze →</a>
+</nav>
+
+<div class="page">
+
+  <!-- LEFT -->
+  <div>
+    <div class="left-eyebrow"><i class="ri-chat-1-line"></i> Get in touch</div>
+    <h1 class="left-title">We'd love<br>to hear from you</h1>
+    <p class="left-sub">Questions about the product, feedback, partnership ideas — drop a message and we'll get back to you.</p>
+
+    <div class="contact-options">
+      <a class="co-card" href="mailto:hello@klynt.one">
+        <div class="co-icon g"><i class="ri-mail-line"></i></div>
+        <div class="co-body">
+          <div class="co-title">Email</div>
+          <div class="co-sub">hello@klynt.one</div>
+        </div>
+        <i class="ri-arrow-right-s-line co-arrow"></i>
+      </a>
+      <a class="co-card" href="https://x.com/useklynt" target="_blank">
+        <div class="co-icon"><i class="ri-twitter-x-line"></i></div>
+        <div class="co-body">
+          <div class="co-title">X / Twitter</div>
+          <div class="co-sub">@useklynt</div>
+        </div>
+        <i class="ri-arrow-right-s-line co-arrow"></i>
+      </a>
+      <a class="co-card" href="https://www.producthunt.com/products/klynt" target="_blank">
+        <div class="co-icon"><i class="ri-rocket-line"></i></div>
+        <div class="co-body">
+          <div class="co-title">Product Hunt</div>
+          <div class="co-sub">Leave a review or upvote</div>
+        </div>
+        <i class="ri-arrow-right-s-line co-arrow"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- RIGHT — FORM -->
+  <div>
+    <div class="form-card">
+      <div class="form-head">
+        <div class="form-head-title">Send a message</div>
+        <div class="form-head-sub">Usually reply within 24 hours</div>
+      </div>
+      <div class="form-body" id="formBody">
+        <div class="field">
+          <label class="field-label">What's this about?</label>
+          <div class="reason-pills">
+            <button class="rpill on" onclick="togglePill(this)">Feedback</button>
+            <button class="rpill" onclick="togglePill(this)">Bug report</button>
+            <button class="rpill" onclick="togglePill(this)">Feature request</button>
+            <button class="rpill" onclick="togglePill(this)">Partnership</button>
+            <button class="rpill" onclick="togglePill(this)">Other</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Name</label>
+            <input class="field-input" type="text" placeholder="Your name">
+          </div>
+          <div class="field">
+            <label class="field-label">Email</label>
+            <input class="field-input" type="email" placeholder="you@example.com">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Message</label>
+          <textarea class="field-textarea" placeholder="Tell us what's on your mind..."></textarea>
+        </div>
+      </div>
+      <div class="success" id="successState">
+        <div class="success-icon"><i class="ri-checkbox-circle-line"></i></div>
+        <div class="success-title">Message sent</div>
+        <div class="success-sub">Thanks for reaching out. We'll get back to you within 24 hours.</div>
+      </div>
+      <div class="form-footer" id="formFooter">
+        <div class="form-note"><i class="ri-lock-line"></i> Your info is never shared</div>
+        <button class="submit-btn" onclick="submitForm()">Send message →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span class="foot-l">© 2026 Klynt</span>
+  <div class="foot-links">
+    <a class="foot-a" href="#">Privacy</a>
+    <a class="foot-a" href="#">Terms</a>
+  </div>
+</footer>
+
+<script>
+function togglePill(el){
+  el.closest('.reason-pills').querySelectorAll('.rpill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+}
+function submitForm(){
+  document.getElementById('formBody').style.display='none';
+  document.getElementById('formFooter').style.display='none';
+  document.getElementById('successState').style.display='block';
+}
+</script>
+</body>
+</html>

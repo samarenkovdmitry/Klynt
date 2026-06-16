@@ -5,7 +5,7 @@ import {
   RiShieldCheckLine,
   RiAwardLine,
   RiErrorWarningLine,
-  RiAddLine,
+  RiArrowRightLine,
   RiSearchLine,
   RiCheckLine,
   RiFileCopyLine,
@@ -70,10 +70,12 @@ export function TrustMeta({
       id="trust"
       icon={<RiShieldCheckLine size={20} aria-hidden />}
       title="Trust & meta"
+      withCard={false}
     >
-      <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 md:p-6">
-        <div className="rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-4">
-          <div className="mb-3 flex items-center gap-2 text-[14px] font-semibold text-[#061C2F]">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {/* Left card — Add proof */}
+        <div className="rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-white p-5">
+          <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#061C2F]">
             <RiAwardLine size={16} className="text-[#7D8C99]" aria-hidden />
             Add proof
           </div>
@@ -86,7 +88,7 @@ export function TrustMeta({
                 {trustGaps.map((item) => (
                   <li
                     key={item.id}
-                    className="flex items-start gap-2 text-[14px] leading-6 text-[rgba(6,28,47,0.72)]"
+                    className="flex items-start gap-2 text-[14px] leading-[21px] text-[#8E99A2]"
                   >
                     <RiErrorWarningLine
                       size={16}
@@ -99,7 +101,7 @@ export function TrustMeta({
                 {(meta.trust_notes ?? []).map((note) => (
                   <li
                     key={note}
-                    className="flex items-start gap-2 text-[14px] leading-6 text-[rgba(6,28,47,0.72)]"
+                    className="flex items-start gap-2 text-[14px] leading-[21px] text-[#8E99A2]"
                   >
                     <RiErrorWarningLine
                       size={16}
@@ -112,8 +114,8 @@ export function TrustMeta({
               </ul>
 
               {meta.proof_suggestion ? (
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#ECFDF5] px-3 py-1.5 text-[13px] font-medium text-[#059669]">
-                  <RiAddLine size={14} aria-hidden />
+                <div className="flex items-center gap-2 rounded-[10px] bg-[#EFF3F6] px-[14px] py-3 text-[14px] text-[#061C2F]">
+                  <RiArrowRightLine size={16} className="shrink-0 text-[#0D9488]" aria-hidden />
                   {meta.proof_suggestion}
                 </div>
               ) : null}
@@ -121,16 +123,19 @@ export function TrustMeta({
           )}
         </div>
 
-        <div className="rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-4">
-          <div className="mb-3 flex items-center gap-2 text-[14px] font-semibold text-[#061C2F]">
+        {/* Right card — Meta */}
+        <div className="rounded-[16px] border border-[rgba(6,28,47,0.06)] bg-white p-5">
+          <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#061C2F]">
             <RiSearchLine size={16} className="text-[#7D8C99]" aria-hidden />
             Meta
           </div>
 
-          <div className="mb-4">
-            <div className="mb-1.5 text-[13px] font-medium text-[#7D8C99]">Title</div>
+          <div className="mb-3">
+            <div className="mb-1 text-[13px] font-medium text-[#8E99A2]">Title</div>
             <div className="flex items-start justify-between gap-2">
-              <span className="text-[14px] leading-6 text-[#061C2F]">{meta.title_suggestion}</span>
+              <span className="text-[15px] font-semibold leading-6 text-[#061C2F]">
+                {meta.title_suggestion}
+              </span>
               <CopyButton
                 value={meta.title_suggestion}
                 locked={metaCopyLocked}
@@ -140,9 +145,9 @@ export function TrustMeta({
           </div>
 
           <div>
-            <div className="mb-1.5 text-[13px] font-medium text-[#7D8C99]">Description</div>
+            <div className="mb-1 text-[13px] font-medium text-[#8E99A2]">Description</div>
             <div className="flex items-start justify-between gap-2">
-              <span className="text-[14px] leading-6 text-[#061C2F]">
+              <span className="text-[14px] leading-[21px] text-[#061C2F]">
                 {meta.description_suggestion}
               </span>
               <CopyButton
