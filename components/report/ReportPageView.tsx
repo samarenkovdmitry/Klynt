@@ -266,6 +266,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               <VisualFixes
                 visualFixes={report.visual_fixes}
                 visualPasses={report.visual_passes}
+                isDemo={isDemo}
               />
 
               {report.meta ? (

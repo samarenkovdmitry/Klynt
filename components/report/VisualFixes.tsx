@@ -31,6 +31,7 @@ type Props = {
   visualFixes?: ReportVisualFix[];
   visualPasses?: ReportVisualPass[];
   previewLocked?: boolean;
+  isDemo?: boolean;
   onRequestProUpgrade?: RequestProUpgrade;
 };
 
@@ -84,20 +85,19 @@ function LockedFixCard({
       className="cursor-pointer rounded-[16px] border border-[#E5E5E5] bg-white p-5"
       onClick={() => onRequestProUpgrade?.()}
     >
-      <div className="mb-3 flex items-center gap-2">
-        <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
-        <span className="text-[15px] font-semibold text-[#061C2F]">{label}</span>
+      {/* Title row with lock at top-right */}
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
+          <span className="text-[15px] font-semibold text-[#061C2F]">{label}</span>
+        </div>
+        <RiLock2Line size={14} className="shrink-0 text-[#8F99A2]" aria-hidden />
       </div>
-      <div className="space-y-2">
-        <div className="h-2.5 w-full rounded-full bg-[#DDE5ED]" />
-        <div className="h-2.5 w-4/5 rounded-full bg-[#DDE5ED]" />
-      </div>
-      <div className="my-4 flex justify-center">
-        <RiLock2Line size={18} className="text-[#8F99A2]" aria-hidden />
-      </div>
-      <div className="space-y-2">
-        <div className="h-2.5 w-3/4 rounded-full bg-[#DDE5ED]" />
-        <div className="h-2.5 w-1/2 rounded-full bg-[#DDE5ED]" />
+      {/* Skeleton bars mimicking real text layout */}
+      <div className="space-y-2.5">
+        <div className="h-[14px] w-[88%] rounded-[4px] bg-[#DDE5ED]" />
+        <div className="h-[14px] w-[72%] rounded-[4px] bg-[#DDE5ED]" />
+        <div className="h-[14px] w-[55%] rounded-[4px] bg-[#DDE5ED]" />
       </div>
     </div>
   );
@@ -137,6 +137,7 @@ export function VisualFixes({
   visualFixes,
   visualPasses,
   previewLocked = false,
+  isDemo = false,
   onRequestProUpgrade,
 }: Props) {
   const fixes = visualFixes ?? [];
@@ -146,6 +147,7 @@ export function VisualFixes({
   if (fixes.length === 0 && passes.length === 0) return null;
 
   const insightCount = fixes.length;
+  const shouldLock = !isDemo && (previewLocked || fixes.length > 1);
 
   return (
     <section
@@ -162,7 +164,7 @@ export function VisualFixes({
           <span className="text-[14px] leading-5 text-[#7D8C99]">
             {insightCount} insight{insightCount !== 1 ? "s" : ""}
           </span>
-          {previewLocked || fixes.length > 1 ? (
+          {shouldLock ? (
             <>
               <span className="h-6 w-px bg-[#D0D5DA]" aria-hidden />
               <span className="text-[14px] leading-5 text-[#7D8C99]">Unlock all in</span>
@@ -179,7 +181,7 @@ export function VisualFixes({
       {fixes.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
           {fixes.map((fix, i) =>
-            (previewLocked || fixes.length > 1) && i > 0 ? (
+            shouldLock && i > 0 ? (
               <LockedFixCard
                 key={fix.dimension}
                 fix={fix}
