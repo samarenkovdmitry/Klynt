@@ -1,6 +1,6 @@
 "use client";
 
-import { RiBarChartLine } from "@remixicon/react";
+import { RiBarChart2Line, RiArrowRightLine } from "@remixicon/react";
 import type {
   ReportScorePotential,
   ReportChecklistItem,
@@ -9,13 +9,10 @@ import {
   getScoreChipShortLabel,
   resolveChipChecklistItem,
 } from "@/lib/normalize-report-checklist";
-import { FreemiumProBadge } from "@/components/report/FreemiumProBadge";
 import type { RequestProUpgrade } from "@/lib/freemium";
 import {
-  REPORT_PANEL_HEADER_CLASS,
-  REPORT_PANEL_META_CLASS,
-  REPORT_PANEL_TITLE_CLASS,
-  REPORT_SURFACE_CARD_CLASS,
+  REPORT_SECTION_SCROLL_MARGIN_CLASS,
+  REPORT_SECTION_SPACING_CLASS,
 } from "@/components/report/reportStyles";
 
 interface ScorePotentialCompactProps {
@@ -48,63 +45,68 @@ export default function ScorePotentialCompact({
       onRequestProUpgrade?.("score-breakdown");
       return;
     }
-
     const item = resolveChipChecklistItem(chipLabel, index, checklist);
     if (item?.link_to) scrollTo(item.link_to);
   }
 
-  return (
-    <section className="mt-12 scroll-mt-24">
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 className="flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
-          <RiBarChartLine size={20} className="text-[#7D8C99]" aria-hidden />
-          Score potential
-        </h2>
-        <span className="text-[14px] text-[#7D8C99]">estimate · not a promise</span>
-      </div>
+  const description =
+    chips.length > 0
+      ? `Fix ${chips.length} gap${chips.length === 1 ? "" : "s"} to close most of the distance`
+      : "Ship the fixes to unlock your score potential";
 
-      <div className={REPORT_SURFACE_CARD_CLASS}>
-        <div className={REPORT_PANEL_HEADER_CLASS}>
-          <div className={REPORT_PANEL_TITLE_CLASS}>
-            <RiBarChartLine size={20} className="text-[#7D8C99]" aria-hidden />
-            If you ship the fixes
-            {chipsLocked ? <FreemiumProBadge /> : null}
+  return (
+    <section className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
+      <div className="overflow-hidden rounded-[20px] border border-[rgba(6,28,47,0.06)] bg-white">
+        {/* Header row */}
+        <div className="flex items-center justify-between gap-4 px-5 pb-4 pt-5">
+          <div className="flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+            <RiBarChart2Line size={20} className="text-[#7D8C99]" aria-hidden />
+            Score potential
           </div>
-          <span className={REPORT_PANEL_META_CLASS}>
-            {formatScore(score)} → {formatScore(target)}
-          </span>
+          <span className="shrink-0 text-[13px] text-[#8E99A2]">estimate, not a promise</span>
         </div>
 
-        <div className="flex flex-col gap-5 px-5 py-5 md:flex-row md:items-center md:px-6 md:py-6">
-          <div className="flex shrink-0 items-center gap-4">
+        {/* Content row */}
+        <div className="flex items-center gap-0 px-5 pb-5">
+          {/* Score values */}
+          <div className="flex shrink-0 items-center gap-3">
             <div className="text-center">
-              <div className="text-[32px] font-semibold leading-none tracking-[-0.04em] text-[#BA7517]">
+              <div className="text-[48px] font-semibold leading-none tracking-[-0.04em] text-[#F97316]">
                 {formatScore(score)}
               </div>
-              <div className="mt-1 text-[13px] text-[#7D8C99]">Now</div>
+              <div className="mt-1 text-[13px] text-[#8E99A2]">now</div>
             </div>
-            <span className="text-[20px] text-[#C0C0BC]">→</span>
+            <RiArrowRightLine size={20} className="text-[#C0C0C0]" aria-hidden />
             <div className="text-center">
-              <div className="text-[32px] font-semibold leading-none tracking-[-0.04em] text-[#10B981]">
+              <div className="text-[48px] font-semibold leading-none tracking-[-0.04em] text-[#1D9E75]">
                 {formatScore(target)}
               </div>
-              <div className="mt-1 text-[13px] text-[#7D8C99]">Potential</div>
+              <div className="mt-1 text-[13px] text-[#8E99A2]">potential</div>
             </div>
           </div>
 
+          {/* Vertical divider */}
+          <div className="mx-6 h-12 w-px shrink-0 bg-[rgba(6,28,47,0.06)]" />
+
+          {/* Right: description + chips */}
           {chips.length > 0 ? (
-            <div className="flex min-w-0 flex-1 flex-wrap gap-2">
-              {chips.map((chip, index) => (
-                <button
-                  key={`${chip.label}-${index}`}
-                  type="button"
-                  onClick={() => handleChipClick(chip.label, index)}
-                  className="rounded-full border border-[rgba(6,28,47,0.08)] bg-[#FAFBFC] px-3 py-1.5 text-[13px] text-[#061C2F] transition-colors hover:border-[rgba(6,28,47,0.16)]"
-                >
-                  <span className="font-medium">{getScoreChipShortLabel(chip.label)}</span>
-                  <span className="ml-1 font-semibold text-[#10B981]">{chip.delta}</span>
-                </button>
-              ))}
+            <div className="min-w-0 flex-1">
+              <p className="mb-2 text-[14px] leading-5 text-[#061C2F]">{description}</p>
+              <div className="flex flex-wrap gap-2">
+                {chips.map((chip, index) => (
+                  <button
+                    key={`${chip.label}-${index}`}
+                    type="button"
+                    onClick={() => handleChipClick(chip.label, index)}
+                    className="inline-flex h-7 items-center rounded-full border border-[#E5E5E5] bg-white px-3 text-[13px] transition-colors hover:border-[rgba(6,28,47,0.2)]"
+                  >
+                    <span className="text-[#061C2F]">
+                      {getScoreChipShortLabel(chip.label, checklist)}
+                    </span>
+                    <span className="ml-1.5 font-medium text-[#1D9E75]">{chip.delta}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : null}
         </div>
