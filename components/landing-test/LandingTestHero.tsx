@@ -35,7 +35,7 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
       <LandingTestHeader />
 
       <div className={`relative z-10 ${LANDING_CONTAINER} px-5 pb-14 pt-8 md:px-6 md:pb-20 md:pt-12`}>
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12 xl:gap-16">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:gap-12 xl:gap-16">
           <div className="mx-auto max-w-[640px] text-center lg:mx-0 lg:max-w-none lg:text-left">
             <ProductHuntFeaturedBadge />
 
