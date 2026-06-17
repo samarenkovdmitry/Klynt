@@ -61,9 +61,12 @@ export type AudienceType = "b2b" | "b2c" | "both";
 export type ReportBreakdown = {
   clarity?: number;
   trust?: number;
-  conversion?: number;
-  navigation?: number;
+  friction?: number;
   visuals?: number;
+  /** @deprecated kept for old stored reports */
+  conversion?: number;
+  /** @deprecated kept for old stored reports */
+  navigation?: number;
 };
 
 /** Consultant-style observations for summary metric cards (12–16 words each). */
@@ -73,6 +76,82 @@ export type ReportMetricObservations = {
   friction?: string;
   visuals?: string;
   overall?: string;
+};
+
+export type ChecklistItemStatus = "pass" | "missing" | "weak";
+export type ChecklistLinkTarget =
+  | "copy-headline"
+  | "copy-cta"
+  | "copy-subheadline"
+  | "trust"
+  | "visual-fixes"
+  | "structure-nav"
+  | "hero-density";
+export type ChecklistCategory = "copy" | "trust" | "visual" | "structure";
+
+export type ReportChecklistItem = {
+  id: string;
+  text: string;
+  /** Short label for Copy studio badges (3–5 words). */
+  gap_label?: string;
+  status: ChecklistItemStatus;
+  link_to: ChecklistLinkTarget | null;
+  category: ChecklistCategory;
+};
+
+export type CopyVariant = {
+  label: string;
+  text: string;
+};
+
+export type CopyVariantBlock = {
+  current: string;
+  variants: CopyVariant[];
+};
+
+export type ReportCopyVariants = {
+  headline: CopyVariantBlock;
+  cta: CopyVariantBlock;
+  subheadline: CopyVariantBlock;
+};
+
+export type ScorePotentialChip = {
+  label: string;
+  delta: string;
+};
+
+export type ReportScorePotential = {
+  target: number;
+  chips: ScorePotentialChip[];
+};
+
+export type ReportMeta = {
+  title_suggestion: string;
+  description_suggestion: string;
+  /** Actionable trust proof to add (e.g. "Add CISO quote below CTA"). */
+  proof_suggestion?: string;
+  /** Extra trust observations (logos, CTA reassurance, etc.). */
+  trust_notes?: string[];
+};
+
+export type VisualFixDimension =
+  | "border_radius"
+  | "density"
+  | "color_tone"
+  | "spacing"
+  | "cta_hierarchy"
+  | "typography"
+  | "depth";
+
+export type ReportVisualFix = {
+  dimension: VisualFixDimension;
+  observation: string;
+  recommendation: string;
+};
+
+export type ReportVisualPass = {
+  dimension: VisualFixDimension;
+  note: string;
 };
 
 export type AuditRisk = "low" | "medium" | "high";
@@ -92,8 +171,19 @@ export type AuditReport = {
   ogPreviewImage?: string;
   metric_observations?: ReportMetricObservations;
   breakdown?: ReportBreakdown;
-  issues: ReportIssue[];
+  checklist?: ReportChecklistItem[];
+  copy_variants?: ReportCopyVariants;
+  score_potential?: ReportScorePotential;
+  meta?: ReportMeta;
+  /** Context-aware visual/design recommendations from screenshot analysis. */
+  visual_fixes?: ReportVisualFix[];
+  /** Dimensions reviewed and aligned with product context. */
+  visual_passes?: ReportVisualPass[];
+  /** @deprecated use checklist + copy_variants instead */
+  issues?: ReportIssue[];
+  /** @deprecated use copy_variants instead */
   suggestions?: ReportSuggestion[];
+  /** @deprecated use copy_variants instead */
   copy?: ReportCopyItem[];
   brand_stage?: BrandStage;
   traffic_source?: TrafficSource;
@@ -110,7 +200,8 @@ export function isAuditReport(json: unknown): json is AuditReport {
   if (typeof data.error === "string" && data.error.length > 0) return false;
 
   const hasScore = Number.isFinite(Number(data.score));
+  const hasChecklist = Array.isArray(data.checklist) && data.checklist.length > 0;
   const hasIssues = Array.isArray(data.issues) && data.issues.length > 0;
 
-  return hasScore && hasIssues;
+  return hasScore && (hasChecklist || hasIssues);
 }

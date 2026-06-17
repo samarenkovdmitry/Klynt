@@ -1,6 +1,7 @@
 import type { ReportMetricObservations } from "@/lib/audit-report";
+import { REPORT_COPY_LIMITS } from "@/lib/report-copy-limits";
 
-const MAX_OBSERVATION_WORDS = 16;
+const MAX_OBSERVATION_WORDS = REPORT_COPY_LIMITS.metricObservation;
 
 export function normalizeObservation(value: unknown, maxWords = MAX_OBSERVATION_WORDS) {
   if (typeof value !== "string") return "";

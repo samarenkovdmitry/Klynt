@@ -53,7 +53,7 @@ export function ReportPagePreview({
 
       {topIssueTitle && (
         <div className="absolute bottom-0 left-1/2 z-10 w-[calc(100%-20px)] -translate-x-1/2">
-          <div className="rounded-full bg-white px-3.5 py-2 shadow-[0_4px_20px_rgba(6,28,47,0.12)]">
+          <div className="rounded-[10px] bg-white px-3 py-2 shadow-[0_4px_20px_rgba(6,28,47,0.12)]">
             <p className="truncate text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px]">
               <span className="font-medium text-[rgba(6,28,47,0.45)]">Top issue · </span>
               {topIssueTitle}

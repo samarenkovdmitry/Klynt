@@ -12,9 +12,15 @@ export function normalizeRisk(risk: string) {
   return risk;
 }
 
+function toTenScale(score: number): number {
+  // Old stored reports used 0-100; new schema uses 0-10
+  return score > 10 ? score / 10 : score;
+}
+
 export function getScoreTier(score: number): HealthTier {
-  if (score >= 70) return "healthy";
-  if (score >= 40) return "medium";
+  const s = toTenScale(score);
+  if (s >= 7) return "healthy";
+  if (s >= 4) return "medium";
   return "critical";
 }
 
@@ -39,7 +45,8 @@ export function getScoreColor(score: number): string {
 }
 
 export function deriveRiskFromScore(score: number): "low" | "medium" | "high" {
-  if (score >= 70) return "low";
-  if (score >= 40) return "medium";
+  const s = toTenScale(score);
+  if (s >= 7) return "low";
+  if (s >= 4) return "medium";
   return "high";
 }

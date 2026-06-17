@@ -1,16 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import {
-  RiArrowRightLine,
   RiCheckLine,
   RiCloseLine,
-  RiFilePdfLine,
-  RiImageLine,
-  RiLightbulbLine,
+  RiImageUploadLine,
   RiLink,
-  RiPieChartLine,
-  RiUpload2Line,
+  RiShieldCheckLine,
 } from "@remixicon/react";
 
 import {
@@ -18,34 +13,31 @@ import {
   type AnalyzeErrorKind,
   type AnalyzeInputMode,
 } from "@/hooks/useAnalyzePage";
-import { AnalyzeAuditContextPanel } from "@/components/analyze/AnalyzeAuditContextPanel";
-import { AnalyzeBrandStagePanel } from "@/components/analyze/AnalyzeBrandStagePanel";
+import { AnalyzePageContextPanel } from "@/components/analyze/AnalyzePageContextPanel";
+import { GeneratingReportLoader } from "@/components/analyze/GeneratingReportLoader";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
 import { useLoadingStall } from "@/hooks/useLoadingStall";
-import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
-import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 import {
   ANALYZE_STALL_HELPER,
   ANALYZE_STALL_LABEL,
   getStallLoadingLabel,
 } from "@/lib/loading-progress";
+import {
+  ANALYZE_CARD_CLASS,
+  ANALYZE_INPUT_CLASS,
+  ANALYZE_PAGE_CONTAINER_CLASS,
+  ANALYZE_URL_INPUT_CLASS,
+  ANALYZE_PRIMARY_BUTTON_CLASS,
+  ANALYZE_TAB_BUTTON_ACTIVE_CLASS,
+  ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
+} from "@/lib/analyze-page-styles";
 
-const OUTCOMES = [
-  { icon: RiPieChartLine, label: "UX score breakdown" },
-  { icon: RiLightbulbLine, label: "Prioritized fixes" },
-  { icon: RiFilePdfLine, label: "Shareable PDF" },
-] as const;
-
-const INPUT_TABS: {
-  id: AnalyzeInputMode;
-  label: string;
-  icon: typeof RiLink;
-}[] = [
-  { id: "url", label: "Website URL", icon: RiLink },
-  { id: "screenshot", label: "Screenshot", icon: RiImageLine },
+const INPUT_TABS: { id: AnalyzeInputMode; label: string }[] = [
+  { id: "url", label: "Website URL" },
+  { id: "screenshot", label: "Screenshot" },
 ];
 
 type AnalyzeErrorAlertProps = {
@@ -108,7 +100,6 @@ function AnalyzeFormActions({
   progress,
   loadingLabel,
   errorKind,
-  isButtonDisabled,
   handleAnalyze,
   switchToScreenshotUpload,
 }: {
@@ -116,7 +107,6 @@ function AnalyzeFormActions({
   progress: number;
   loadingLabel: string;
   errorKind: AnalyzeErrorKind;
-  isButtonDisabled: boolean;
   handleAnalyze: () => void;
   switchToScreenshotUpload: () => void;
 }) {
@@ -146,8 +136,8 @@ function AnalyzeFormActions({
           type="button"
           variant="primary"
           onClick={switchToScreenshotUpload}
-          icon={<RiUpload2Line size={18} aria-hidden />}
-          className="!rounded-full"
+          icon={<RiImageUploadLine size={18} aria-hidden />}
+          className={ANALYZE_PRIMARY_BUTTON_CLASS}
         >
           Upload screenshot
         </Button>
@@ -155,7 +145,7 @@ function AnalyzeFormActions({
           type="button"
           variant="secondary"
           onClick={handleAnalyze}
-          className="!rounded-full"
+          className="!rounded-2xl"
         >
           Try again
         </Button>
@@ -169,7 +159,7 @@ function AnalyzeFormActions({
         type="button"
         variant="primary"
         onClick={handleAnalyze}
-        className="!rounded-full"
+        className={ANALYZE_PRIMARY_BUTTON_CLASS}
       >
         Try again
       </Button>
@@ -180,10 +170,8 @@ function AnalyzeFormActions({
     <Button
       type="button"
       variant="primary"
-      disabled={isButtonDisabled}
       onClick={handleAnalyze}
-      icon={<RiArrowRightLine size={18} aria-hidden />}
-      className="!rounded-full"
+      className={ANALYZE_PRIMARY_BUTTON_CLASS}
     >
       Analyze UX
     </Button>
@@ -207,7 +195,6 @@ export function AnalyzePageView() {
     setInputMode,
     showUrlError,
     urlValidationError,
-    isButtonDisabled,
     loadingLabel,
     handleAnalyze,
     handleImageUpload,
@@ -226,8 +213,8 @@ export function AnalyzePageView() {
     <>
       <AppHeader />
 
-      <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
-        <div className="mx-auto max-w-[640px]">
+      <main className="flex flex-1 flex-col bg-white px-4 pb-10 pt-6 text-[var(--ink-primary)] md:px-6 md:pb-12 md:pt-10">
+        <div className={`${ANALYZE_PAGE_CONTAINER_CLASS} flex flex-1 flex-col justify-center`}>
           <header className="text-center">
             <h1 className="text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[38px] md:leading-[1.05]">
               Check your site&apos;s UX in minutes
@@ -238,70 +225,75 @@ export function AnalyzePageView() {
             </p>
           </header>
 
-          <ul className="mt-6 flex flex-row flex-wrap justify-center gap-x-5 gap-y-2 sm:gap-x-6">
-            {OUTCOMES.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-2 text-[14px] text-[#8E99A2]">
-                <Icon size={16} className="shrink-0" aria-hidden />
-                {label}
-              </li>
-            ))}
-          </ul>
+          {!loading && (
+            <div className="mt-4 flex justify-center">
+              <div
+                className="inline-flex h-[40px] items-center rounded-full bg-[#EFF3F6] p-1"
+                role="tablist"
+                aria-label="Analysis input type"
+              >
+                {INPUT_TABS.map(({ id, label }) => {
+                  const isActive = inputMode === id;
 
-          <div className="mt-8 rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] p-5 md:p-8">
-            <div
-              className="flex rounded-full bg-[#ECF0F6] p-1"
-              role="tablist"
-              aria-label="Analysis input type"
-            >
-              {INPUT_TABS.map(({ id, label, icon: Icon }) => {
-                const isActive = inputMode === id;
-
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    disabled={loading}
-                    onClick={() => setInputMode(id)}
-                    className={[
-                      "flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2.5 text-[14px] font-medium transition",
-                      isActive
-                        ? "bg-white text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
-                        : "text-[#8E99A2] hover:text-[var(--ink-primary)]",
-                      loading ? "cursor-not-allowed opacity-60" : "",
-                    ].join(" ")}
-                  >
-                    <Icon size={16} className="shrink-0" aria-hidden />
-                    {label}
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => setInputMode(id)}
+                      className={[
+                        "flex h-[32px] items-center justify-center rounded-full px-4 text-[14px] font-medium transition",
+                        isActive
+                          ? ANALYZE_TAB_BUTTON_ACTIVE_CLASS
+                          : ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
+                      ].join(" ")}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+          )}
 
-            <div className="mt-5 md:mt-6">
+          {loading ? (
+            <GeneratingReportLoader
+              url={url}
+              inputMode={inputMode}
+              imageName={imageName}
+              brandStage={brandStage}
+              trafficSource={trafficSource}
+              audienceType={audienceType}
+            />
+          ) : (
+            <div className={`${ANALYZE_CARD_CLASS} mx-auto mt-5 w-full max-w-[500px]`}>
               {inputMode === "url" ? (
                 <div role="tabpanel" aria-label="Website URL">
-                  <div className="relative">
+                  <div className="group relative">
+                    <RiLink
+                      size={18}
+                      className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#8E99A2] transition-colors group-focus-within:text-[#646E76]"
+                      aria-hidden
+                    />
                     <input
                       type="text"
                       value={url}
                       onChange={(event) => setUrl(event.target.value)}
                       onKeyDown={handleUrlKeyDown}
-                      placeholder="https://stripe.com"
-                      disabled={loading}
+                      placeholder="yoursite.com"
                       aria-label="Website URL"
                       aria-invalid={showUrlError ? true : undefined}
                       aria-describedby={showUrlError ? "url-error" : undefined}
                       className={`${inputFieldClass({
-                        disabled: loading,
+                        disabled: false,
                         error: showUrlError,
                         withClearButton: url.length > 0,
                         withMargin: false,
-                      })} h-[52px] bg-white md:h-[54px]`}
+                      })} ${ANALYZE_INPUT_CLASS} ${ANALYZE_URL_INPUT_CLASS}`}
                     />
 
-                    {url.length > 0 && !loading && (
+                    {url.length > 0 && (
                       <button
                         type="button"
                         onClick={clearUrl}
@@ -318,39 +310,24 @@ export function AnalyzePageView() {
                       {urlValidationError}
                     </p>
                   )}
-
-                  <AnalyzeBrandStagePanel
-                    value={brandStage}
-                    onChange={setBrandStage}
-                    disabled={loading}
-                  />
-
-                  <AnalyzeAuditContextPanel
-                    trafficSource={trafficSource}
-                    audienceType={audienceType}
-                    onTrafficSourceChange={setTrafficSource}
-                    onAudienceTypeChange={setAudienceType}
-                    disabled={loading}
-                  />
                 </div>
               ) : (
-                <div role="tabpanel" aria-label="Screenshot upload">
+                <div className="" role="tabpanel" aria-label="Screenshot upload">
                   <button
                     type="button"
                     onClick={openFilePicker}
-                    disabled={loading}
                     className={[
-                      "w-full rounded-[24px] border-2 border-dashed text-left transition",
+                      "w-full rounded-[20px] border border-dashed text-left transition",
                       uploadedImage
                         ? "border-[#A4F4CF] bg-[#ECFDF5]"
                         : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
-                      loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                      "cursor-pointer",
                     ].join(" ")}
                   >
                     {!uploadedImage ? (
                       <span className="flex items-center gap-4 px-4 py-5 md:px-5">
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(37,99,235,0.08)]">
-                          <RiUpload2Line size={22} className="text-[#2563EB]" aria-hidden />
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(6,28,47,0.05)]">
+                          <RiImageUploadLine size={22} className="text-[var(--ink-primary)]" aria-hidden />
                         </span>
                         <span className="min-w-0 text-left">
                           <span className="block text-[15px] font-medium text-[var(--ink-primary)]">
@@ -389,54 +366,42 @@ export function AnalyzePageView() {
                     className="hidden"
                     accept="image/*"
                     onChange={handleImageUpload}
-                    disabled={loading}
-                  />
-
-                  <AnalyzeBrandStagePanel
-                    value={brandStage}
-                    onChange={setBrandStage}
-                    disabled={loading}
-                  />
-
-                  <AnalyzeAuditContextPanel
-                    trafficSource={trafficSource}
-                    audienceType={audienceType}
-                    onTrafficSourceChange={setTrafficSource}
-                    onAudienceTypeChange={setAudienceType}
-                    disabled={loading}
                   />
                 </div>
               )}
-            </div>
 
-            {error && errorKind && (
+              {error && errorKind && (
+                <div className="mt-4">
+                  <AnalyzeErrorAlert errorKind={errorKind} error={error} />
+                </div>
+              )}
+
               <div className="mt-4">
-                <AnalyzeErrorAlert errorKind={errorKind} error={error} />
+                <AnalyzeFormActions
+                  loading={false}
+                  progress={progress}
+                  loadingLabel={loadingLabel}
+                  errorKind={errorKind}
+                  handleAnalyze={handleAnalyze}
+                  switchToScreenshotUpload={switchToScreenshotUpload}
+                />
               </div>
-            )}
 
-            <div className="mt-5 border-t border-[rgba(6,28,47,0.06)] pt-5">
-              <AnalyzeFormActions
-                loading={loading}
-                progress={progress}
-                loadingLabel={loadingLabel}
-                errorKind={errorKind}
-                isButtonDisabled={isButtonDisabled}
-                handleAnalyze={handleAnalyze}
-                switchToScreenshotUpload={switchToScreenshotUpload}
+              <AnalyzePageContextPanel
+                brandStage={brandStage}
+                trafficSource={trafficSource}
+                audienceType={audienceType}
+                onBrandStageChange={setBrandStage}
+                onTrafficSourceChange={setTrafficSource}
+                onAudienceTypeChange={setAudienceType}
+                disabled={false}
               />
             </div>
-          </div>
+          )}
 
-          <p className="mt-6 text-center text-[13px] leading-5 text-[#8E99A2]">
-            Your URLs and screenshots are processed securely and never shared.{" "}
-            <ReportPrefetchLink
-              href={DEMO_REPORT_PATH}
-              routeParam={DEMO_REPORT_SLUG}
-              className="font-medium text-[var(--ink-primary)] underline-offset-2 hover:underline"
-            >
-              View a sample report
-            </ReportPrefetchLink>
+          <p className="mt-6 flex items-center justify-center gap-2 text-center text-[13px] leading-5 text-[#8E99A2]">
+            <RiShieldCheckLine size={16} className="shrink-0 text-[#8E99A2]" aria-hidden />
+            Your URLs and screenshots are processed securely and never shared.
           </p>
         </div>
       </main>

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-familjen), sans-serif;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -35,6 +39,15 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+@keyframes pulse-segment {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@utility animate-pulse-segment {
+  animation: pulse-segment 1.2s ease-in-out infinite;
 }
 
 @keyframes share-backdrop-in {

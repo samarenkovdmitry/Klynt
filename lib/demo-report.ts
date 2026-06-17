@@ -1,153 +1,210 @@
 import type { AuditReport } from "@/lib/audit-report";
 import { buildReportSlug } from "@/lib/report-slug";
 
-export const DEMO_REPORT_ID = "x4pxi2jb2o";
+export const DEMO_REPORT_ID = "kjnhvbk4df";
 
-export const DEMO_REPORT_URL = "https://zapier.com";
+export const DEMO_REPORT_URL = "https://www.folk.app/";
 
 export const DEMO_REPORT_SLUG = buildReportSlug(DEMO_REPORT_ID, DEMO_REPORT_URL);
 
 export const DEMO_REPORT_PATH = `/report/${DEMO_REPORT_SLUG}`;
 
-export const DEMO_REPORT_PREVIEW_IMAGE = "/demo/zapier-preview.jpg";
+export const DEMO_REPORT_PREVIEW_IMAGE = "/demo/folk-preview.jpg";
 
 export const DEMO_REPORT = {
-  url: DEMO_REPORT_URL,
-  previewImage: DEMO_REPORT_PREVIEW_IMAGE,
-  score: 65,
-  risk: "medium",
-  summary:
-    "Visitors can't tell who the product is for or what they'll get in the first few seconds.",
-  verdict: "Headline unclear about AI automation benefits for users.",
-  key_observation:
-    "Without a named audience in the hero, new visitors struggle to judge fit before scrolling.",
-  confidence: 85,
-  generatedAt: "2026-05-31T18:14:21.738Z",
-  breakdown: {
-    clarity: 65,
-    trust: 65,
-    conversion: 55,
-    navigation: 70,
-    visuals: 60,
-  },
-  issues: [
-    {
-      category: "Clarity",
-      title:
-        "The hero headline does not specify who the AI tools are for, making it unclear if it fits the visitor's needs.",
-      bullets: ["Low clarity"],
-      why: "Visitors cannot quickly determine if the product addresses their specific problems, reducing engagement.",
-      impact_metric_1: "clarity",
-      impact_value_1: -20,
-      impact_metric_2: "",
-      impact_value_2: 0,
-    },
-    {
-      category: "Conversion",
-      title:
-        "The primary CTA 'Start free with email' lacks context about what the user will get or do next.",
-      bullets: ["Weak CTA"],
-      why: "Uncertain expectations can lead to hesitation or abandonment before signing up.",
-      impact_metric_1: "cta",
-      impact_value_1: -15,
-      impact_metric_2: "",
-      impact_value_2: 0,
-    },
-    {
-      category: "Trust",
-      title:
-        "The trust signals (agent counts, app integrations, calls) are presented without context or explanation.",
-      bullets: ["Missing trust signals"],
-      why: "Lack of context makes these signals less credible and less impactful for new visitors.",
-      impact_metric_1: "trust",
-      impact_value_1: -18,
-      impact_metric_2: "",
-      impact_value_2: 0,
-    },
-    {
-      category: "Visuals",
-      title:
-        "The icons representing AI tools are generic and do not visually communicate specific benefits or features.",
-      bullets: ["Weak hierarchy"],
-      why: "Icons do not enhance understanding or guide users toward desired actions effectively.",
-      impact_metric_1: "visuals",
-      impact_value_1: -12,
-      impact_metric_2: "",
-      impact_value_2: 0,
-    },
-  ],
-  suggestions: [
-    {
-      category: "Clarity",
-      section: "Hero headline and subtext",
-      recommendation:
-        "Specify the target user and core AI automation benefit in the headline.",
-      why: "Clear messaging immediately communicates relevance, increasing engagement.",
-      priority: "high_impact",
-    },
-    {
-      category: "Conversion",
-      section: "Primary CTA button",
-      recommendation:
-        "Add a descriptive subtext to the CTA explaining what signing up offers.",
-      why: "Clarifies user expectations, reducing hesitation and increasing sign-ups.",
-      priority: "high_impact",
-    },
-    {
-      category: "Trust",
-      section: "Trust signals area",
-      recommendation:
-        "Include brief explanations or context for agent counts and integrations.",
-      why: "Enhances credibility and reassures visitors about product reliability.",
-      priority: "medium_impact",
-    },
-  ],
-  brand_stage: "established",
-  headline_directions: {
-    before: "Your tools. Your rules. Any AI.",
-    gap: "The line sounds catchy but never says who it's for or what changes for them.",
-    context:
-      "Zapier is widely known — visitors already understand the category. Headlines can lean into bold claims and outcomes instead of re-explaining automation.",
-    options: [
-      {
-        label: "Bold / brand-led",
-        text: "Your rules. Every model. One AI workspace.",
-      },
-      {
-        label: "Outcome-led",
-        text: "Ship AI workflows faster — without the tool chaos.",
-      },
-      {
-        label: "Positioning-led",
-        text: "Stop duct-taping models across a dozen disconnected tools.",
-      },
+  "url": "https://www.folk.app/",
+  "copy": [] as AuditReport["copy"],
+  "meta": {
+    "trust_notes": [
+      "Include testimonials to enhance credibility.",
+      "Clarify the trial period to reduce perceived risk."
     ],
+    "proof_suggestion": "Add customer logos below CTA",
+    "title_suggestion": "Folk CRM: Simple CRM for Teams",
+    "description_suggestion": "Folk is a simple CRM designed for teams to manage relationships effortlessly."
   },
-  copy: [
+  "risk": "medium",
+  "score": 6.5,
+  "issues": [] as AuditReport["issues"],
+  "summary": "A visitor may feel uncertain about the product's specific benefits and who it serves. The messaging lacks clarity for new users unfamiliar…",
+  "verdict": "Ambiguous audience targeting in headline",
+  "breakdown": {
+    "trust": 50,
+    "clarity": 70,
+    "visuals": 80,
+    "friction": 60
+  },
+  "checklist": [
     {
-      section: "Hero headline",
-      before: "Your tools. Your rules. Any AI.",
-      after: "AI automation tools designed for marketing teams to streamline workflows.",
-      why: "Specifies the target audience and core benefit, improving clarity.",
-      priority: "high_impact",
+      "id": "headline-category",
+      "text": "The headline doesn't specify who the product is for.",
+      "status": "missing",
+      "link_to": "copy-headline",
+      "category": "copy",
+      "gap_label": "Audience unclear"
     },
     {
-      section: "Subtext",
-      before:
-        "Zapier gives teams one place to set guardrails, manage model access, and see everything — so everyone can build AI confidently, on any model, without waiting for permission.",
-      after:
-        "Manage AI workflows and permissions easily, empowering your team to build with confidence.",
-      why: "Simplifies and clarifies the value proposition for target users.",
-      priority: "medium_impact",
+      "id": "cta-trial",
+      "text": "The CTA does not clearly convey the trial's duration or benefits.",
+      "status": "missing",
+      "link_to": "copy-cta",
+      "category": "copy",
+      "gap_label": "Trial unclear"
     },
     {
-      section: "CTA button",
-      before: "Start free with email",
-      after: "Get started with a free AI automation trial",
-      why: "Provides clarity on what the user will receive and the action's benefit.",
-      priority: "quick_win",
+      "id": "trust",
+      "text": "No customer testimonials or logos to build credibility.",
+      "status": "missing",
+      "link_to": "trust",
+      "category": "trust",
+      "gap_label": "Trust missing above fold"
     },
+    {
+      "id": "subheadline-clarity",
+      "text": "Subheadline typography too light to scan quickly",
+      "status": "weak",
+      "link_to": "visual-fixes",
+      "category": "visual",
+      "gap_label": "Weak typography"
+    },
+    {
+      "id": "features-clarity",
+      "text": "Feature descriptions lack specific benefits for users.",
+      "status": "pass",
+      "link_to": null,
+      "category": "copy",
+      "gap_label": "Features vague"
+    },
+    {
+      "id": "footer-structure",
+      "text": "Footer contains clear navigation links for further exploration.",
+      "status": "pass",
+      "link_to": null,
+      "category": "structure",
+      "gap_label": "Footer links clear"
+    },
+    {
+      "id": "visuals-clarity",
+      "text": "Visual layout effectively highlights key elements above the fold.",
+      "status": "pass",
+      "link_to": null,
+      "category": "visual",
+      "gap_label": "Visual hierarchy strong"
+    },
+    {
+      "id": "cta-visibility",
+      "text": "Single CTA button is clearly visible and actionable.",
+      "status": "pass",
+      "link_to": null,
+      "category": "structure",
+      "gap_label": "CTA prominent"
+    }
   ],
+  "confidence": 85,
+  "brand_stage": "just_launched",
+  "generatedAt": "2026-06-11T16:14:32.880Z",
+  "suggestions": [] as AuditReport["suggestions"],
+  "audience_type": "both",
+  "copy_variants": {
+    "cta": {
+      "current": "Start for free",
+      "variants": [
+        {
+          "text": "Start free trial",
+          "label": "Trial explicit"
+        },
+        {
+          "text": "Try it free",
+          "label": "Risk-free"
+        },
+        {
+          "text": "Get started free",
+          "label": "Direct action"
+        }
+      ]
+    },
+    "headline": {
+      "current": "The CRM that works for your team",
+      "variants": [
+        {
+          "text": "CRM for teams that want simplicity and efficiency.",
+          "label": "Category + audience"
+        },
+        {
+          "text": "Tired of complex CRMs? Simplify your workflow with folk.",
+          "label": "Problem + solution"
+        },
+        {
+          "text": "Simple CRM for teams who outgrew spreadsheets.",
+          "label": "Outcome + audience"
+        }
+      ]
+    },
+    "subheadline": {
+      "current": "folk CRM captures the full context of your relationships in one beautifully simple CRM.",
+      "variants": [
+        {
+          "text": "Manage every relationship in one simple CRM — free 14-day trial.",
+          "label": "Value proposition"
+        },
+        {
+          "text": "Full relationship context in one place, built for growing teams.",
+          "label": "Specificity"
+        },
+        {
+          "text": "Less busywork, more time on the relationships that matter.",
+          "label": "Outcome"
+        }
+      ]
+    }
+  },
+  "traffic_source": "mixed",
+  "key_observation": "Audience split — works for warm or cold traffic only",
+  "score_potential": {
+    "chips": [
+      {
+        "delta": "+0.5",
+        "label": "Audience unclear"
+      },
+      {
+        "delta": "+0.5",
+        "label": "Trial unclear"
+      },
+      {
+        "delta": "+0.5",
+        "label": "Trust signals missing"
+      }
+    ],
+    "target": 8
+  },
+  "visual_fixes": [
+    {
+      "dimension": "typography",
+      "observation": "Subheadline weight is light — reads as caption, not value prop",
+      "recommendation": "Increase subheadline to 18px / weight 500 for faster scan"
+    },
+    {
+      "dimension": "border_radius",
+      "observation": "Large rounded cards signal consumer-playful, not team CRM",
+      "recommendation": "Tighten card and button radius to 6–8px for B2B credibility"
+    },
+    {
+      "dimension": "depth",
+      "observation": "Flat white hero — page feels unfinished, low premium signal",
+      "recommendation": "Add subtle #F8F8F6 section tint or light gradient behind hero"
+    }
+  ],
+  "visual_passes": [
+    {
+      "dimension": "cta_hierarchy",
+      "note": "Single primary CTA dominates — clear next step above fold"
+    },
+    {
+      "dimension": "spacing",
+      "note": "Hero breathing room supports scan for mixed traffic"
+    }
+  ],
+  "previewImage": "/demo/folk-preview.jpg"
 } satisfies AuditReport;
 
 export function getDemoReportJson(): string {

@@ -4,6 +4,7 @@ import {
   RiEdit2Line,
   RiLightbulbFlashLine,
 } from "@remixicon/react";
+import type { RemixiconComponentType } from "@remixicon/react";
 import type { ReportSectionKind } from "@/lib/report-sections";
 import { REPORT_SECTION_META } from "@/lib/report-sections";
 
@@ -78,6 +79,31 @@ export function ReportSectionHeader({
 
         {trailing ? <div className="shrink-0">{trailing}</div> : null}
       </div>
+    </div>
+  );
+}
+
+type SectionHeaderProps = {
+  icon: RemixiconComponentType;
+  title: string;
+  trailing?: ReactNode;
+};
+
+export function SectionHeader({ icon: Icon, title, trailing }: SectionHeaderProps) {
+  return (
+    <div className="mb-4 flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div
+          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#E0E6EB]"
+          aria-hidden
+        >
+          <Icon size={18} className="text-[#5B6378]" />
+        </div>
+        <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+          {title}
+        </span>
+      </div>
+      {trailing ?? null}
     </div>
   );
 }
