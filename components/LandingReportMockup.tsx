@@ -153,7 +153,7 @@ export function LandingReportMockup() {
                       [
                         ["Clarity", data.breakdown.clarity],
                         ["Trust", data.breakdown.trust],
-                        ["Conversion", data.breakdown.conversion],
+                        ["Visuals", data.breakdown.visuals],
                       ] as const
                     ).map(([label, value]) => {
                       const barScore = Math.max(

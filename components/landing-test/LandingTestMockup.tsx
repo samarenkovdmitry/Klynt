@@ -67,14 +67,14 @@ export function LandingTestMockup() {
   const trust = Math.max(0, Math.min(100, Number(data.breakdown?.trust)));
   const clarity = Math.max(0, Math.min(100, Number(data.breakdown?.clarity)));
   const friction = Math.max(0, Math.min(100, getFrictionScore(data.breakdown)));
-  const topIssue = data.issues[0];
+  const topIssue = data.issues?.[0];
   const overallScore = formatOverallScore(score);
   const tierLabel = getTierLabel(theme.tier);
-  const issueCount = data.issues.length;
+  const issueCount = data.issues?.length ?? 0;
   const deliverableBullets = [
     `${issueCount} issues ranked by impact`,
-    `${data.suggestions.length} suggested improvements`,
-    `${data.copy.length} copy refinements`,
+    `${data.suggestions?.length ?? 0} suggested improvements`,
+    `${data.copy?.length ?? 0} copy refinements`,
   ] as const;
 
   return (
