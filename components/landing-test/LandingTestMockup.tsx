@@ -1,10 +1,11 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   RiArrowRightLine,
+  RiArrowRightSLine,
   RiBrainLine,
-  RiErrorWarningFill,
   RiFilePdf2Line,
   RiFocus3Line,
   RiLayoutGridLine,
@@ -33,32 +34,8 @@ const SCORE_COLORS: Record<string, string> = {
 
 const RIGHT_COL_DOT = "rgba(0,0,0,0.10)";
 
-const METRIC_SHORT_DESC: Record<string, Record<string, string>> = {
-  Trust: {
-    Good: "Social proof builds confidence",
-    Medium: "Some trust signals present",
-    Weak: "Trust cues feel incomplete",
-    Low: "No credibility signals found",
-  },
-  Clarity: {
-    Good: "Value is immediately obvious",
-    Medium: "Benefit mostly comes through",
-    Weak: "Core message needs sharpening",
-    Low: "Value proposition not clear",
-  },
-  Friction: {
-    Good: "User flow feels effortless",
-    Medium: "Minor obstacles slow users down",
-    Weak: "Several friction points present",
-    Low: "Heavy friction blocks conversion",
-  },
-  Hierarchy: {
-    Good: "Attention lands in right place",
-    Medium: "Visual order mostly works",
-    Weak: "Hierarchy needs clearer structure",
-    Low: "No clear visual focal point",
-  },
-};
+const SECTION_LINK_CLASS =
+  "inline-flex shrink-0 items-center gap-0 text-[13px] font-medium whitespace-nowrap";
 
 function getMetricStatus(value: number): { label: string; color: string } {
   if (value >= 70) return { label: "Good", color: "#639922" };
@@ -67,7 +44,7 @@ function getMetricStatus(value: number): { label: string; color: string } {
   return { label: "Low", color: "#E24B4A" };
 }
 
-function MockCompactMetric({
+function MockMetricBar({
   icon: Icon,
   name,
   value,
@@ -77,10 +54,9 @@ function MockCompactMetric({
   value: number;
 }) {
   const { label, color } = getMetricStatus(value);
-  const shortDesc = METRIC_SHORT_DESC[name]?.[label] ?? label;
 
   return (
-    <div className="flex flex-col gap-1">
+    <div>
       <div className="flex items-center justify-between gap-1">
         <span className="flex items-center gap-1.5 text-[12px] font-semibold text-[#061C2F] md:gap-2 md:text-[13px]">
           <Icon size={13} className="shrink-0 text-[#8E99A2]" aria-hidden />
@@ -90,22 +66,39 @@ function MockCompactMetric({
           {label}
         </span>
       </div>
-      <div className="h-[3px] overflow-hidden rounded-full bg-[rgba(6,28,47,0.08)]">
+      <div className="mt-1.5 h-[3px] overflow-hidden rounded-full bg-[rgba(6,28,47,0.08)] md:mt-2">
         <div
           className="h-full rounded-full"
           style={{ width: `${value}%`, backgroundColor: color }}
         />
       </div>
-      <span className="text-[11px] leading-[15px] text-[rgba(6,28,47,0.45)] md:text-[12px] md:leading-[16px]">
-        {shortDesc}
-      </span>
     </div>
+  );
+}
+
+function SectionLink({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <span className={[SECTION_LINK_CLASS, className].filter(Boolean).join(" ")}>
+      {children}
+      <RiArrowRightSLine size={16} className="text-current" aria-hidden />
+    </span>
   );
 }
 
 function countCriticalGaps(checklist: typeof DEMO_REPORT.checklist) {
   return checklist.filter((item) => item.status === "missing" || item.status === "weak")
     .length;
+}
+
+function truncateTeaser(text: string, maxLength = 22) {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength - 1).trim()}…`;
 }
 
 export function LandingTestMockup() {
@@ -120,10 +113,16 @@ export function LandingTestMockup() {
   const hierarchy = Math.max(0, Math.min(100, Number(data.breakdown?.visuals ?? 0)));
   const signalsCount = Math.max(0, Math.min(100, Number(data.confidence ?? 0)));
   const criticalGaps = countCriticalGaps(data.checklist ?? []);
+  const visualInsightCount = Math.min(data.visual_fixes?.length ?? 0, 2);
   const displayScore = formatOverallScore(score);
   const potentialScore = formatOverallScore(
     data.score_potential?.target ?? Math.min(10, Number(score) + 1.5)
   );
+  const headlineVariant =
+    data.copy_variants?.headline?.variants?.find(
+      (variant) => variant.label === "Outcome + audience"
+    ) ?? data.copy_variants?.headline?.variants?.[2];
+  const trustTeaser = truncateTeaser(data.meta?.proof_suggestion ?? "Add customer logos below CTA");
 
   const dotStyle = {
     backgroundImage: `radial-gradient(circle, ${RIGHT_COL_DOT} 1px, transparent 1px)`,
@@ -181,9 +180,8 @@ export function LandingTestMockup() {
             </div>
           </div>
 
-          {/* 2-col body */}
-          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_190px] md:grid-cols-[minmax(0,1fr)_210px]">
-            {/* Left column */}
+          {/* Hero summary */}
+          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_200px] md:grid-cols-[minmax(0,1fr)_220px]">
             <div className="flex flex-col p-4 md:p-5">
               <div className="flex items-baseline gap-1">
                 <span
@@ -201,11 +199,11 @@ export function LandingTestMockup() {
 
               <hr className="-mx-4 mt-4 border-none border-t border-[rgba(6,28,47,0.06)] md:-mx-5" />
 
-              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 md:gap-x-5 md:gap-y-3">
-                <MockCompactMetric icon={RiShieldCheckLine} name="Trust" value={trust} />
-                <MockCompactMetric icon={RiFocus3Line} name="Clarity" value={clarity} />
-                <MockCompactMetric icon={RiBrainLine} name="Friction" value={friction} />
-                <MockCompactMetric icon={RiLayoutGridLine} name="Hierarchy" value={hierarchy} />
+              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 md:gap-x-5 md:gap-y-3.5">
+                <MockMetricBar icon={RiShieldCheckLine} name="Trust" value={trust} />
+                <MockMetricBar icon={RiFocus3Line} name="Clarity" value={clarity} />
+                <MockMetricBar icon={RiBrainLine} name="Friction" value={friction} />
+                <MockMetricBar icon={RiLayoutGridLine} name="Hierarchy" value={hierarchy} />
               </div>
 
               {signalsCount > 0 ? (
@@ -222,58 +220,97 @@ export function LandingTestMockup() {
               ) : null}
             </div>
 
-            {/* Right column */}
             <div
-              className="flex flex-col items-center justify-center border-t border-[rgba(6,28,47,0.06)] px-3 py-3 sm:border-l sm:border-t-0"
+              className="flex flex-col items-center justify-center border-t border-[rgba(6,28,47,0.06)] px-3 py-4 sm:border-l sm:border-t-0"
               style={dotStyle}
             >
-              <div className="relative z-[1] w-full max-w-[180px]">
-                <div className="overflow-hidden rounded-lg border border-black/[0.08] bg-[#F8FAFC] shadow-[0_8px_28px_rgba(0,0,0,0.05)]">
-                  <div className="flex items-center gap-1 border-b border-black/[0.06] bg-white px-2 py-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#FF5F57]" aria-hidden />
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#FFBD2E]" aria-hidden />
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#28CA41]" aria-hidden />
-                    <span className="ml-0.5 truncate text-[8px] text-[rgba(6,28,47,0.45)]">
-                      {domain}
-                    </span>
-                  </div>
-                  {data.previewImage ? (
-                    <img
-                      src={data.previewImage}
-                      alt=""
-                      width={REPORT_PREVIEW_WIDTH}
-                      height={REPORT_PREVIEW_HEIGHT}
-                      className="block aspect-[620/380] w-full object-cover object-top"
-                      draggable={false}
-                    />
-                  ) : (
-                    <div className="aspect-[620/380] w-full bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7]" />
-                  )}
+              <div className="w-full max-w-[180px] overflow-hidden rounded-lg border border-black/[0.08] bg-[#F8FAFC] shadow-[0_8px_28px_rgba(0,0,0,0.05)]">
+                <div className="flex items-center gap-1 border-b border-black/[0.06] bg-white px-2 py-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF5F57]" aria-hidden />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FFBD2E]" aria-hidden />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#28CA41]" aria-hidden />
+                  <span className="ml-0.5 truncate text-[8px] text-[rgba(6,28,47,0.45)]">
+                    {domain}
+                  </span>
                 </div>
+                {data.previewImage ? (
+                  <img
+                    src={data.previewImage}
+                    alt=""
+                    width={REPORT_PREVIEW_WIDTH}
+                    height={REPORT_PREVIEW_HEIGHT}
+                    className="block aspect-[620/380] w-full object-cover object-top"
+                    draggable={false}
+                  />
+                ) : (
+                  <div className="aspect-[620/380] w-full bg-[#F7F5FF]" />
+                )}
               </div>
 
-              <div className="relative z-[1] mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
-                {criticalGaps > 0 ? (
-                  <div className="inline-flex h-6 items-center gap-1 rounded-full border border-[rgba(185,117,37,0.20)] bg-[#FEF3E2] pl-1 pr-2 text-[11px] font-medium text-[#7A3E00]">
-                    <RiErrorWarningFill size={14} className="shrink-0 text-[#BA7517]" aria-hidden />
-                    {criticalGaps} critical gap{criticalGaps !== 1 ? "s" : ""}
+              {Number(displayScore) > 0 ? (
+                <div className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#65982D] px-2.5 py-[5px]">
+                  <span className="text-[11px] font-bold leading-none text-white md:text-[12px]">
+                    {displayScore}
+                  </span>
+                  <RiArrowRightLine size={10} className="shrink-0 text-white" aria-hidden />
+                  <span className="text-[11px] font-bold leading-none text-white md:text-[12px]">
+                    {potentialScore}
+                  </span>
+                  <span className="mx-0.5 h-3.5 w-px shrink-0 bg-white/15" aria-hidden />
+                  <span className="text-[10px] font-normal leading-none text-white md:text-[11px]">
+                    after fixes
+                  </span>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          {/* Report sections preview */}
+          <div className="border-t border-[rgba(6,28,47,0.06)]">
+            <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-5 md:py-3.5">
+              <span className="text-[14px] font-semibold text-[#061C2F]">What needs fixing</span>
+              {criticalGaps > 0 ? (
+                <SectionLink className="text-[#BA7517]">
+                  {criticalGaps} critical gap{criticalGaps !== 1 ? "s" : ""}
+                </SectionLink>
+              ) : null}
+            </div>
+
+            <div className="border-t border-[rgba(6,28,47,0.06)] px-4 py-3 md:px-5 md:py-3.5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[14px] font-semibold text-[#061C2F]">Copy studio</span>
+                <SectionLink className="text-[rgba(6,28,47,0.45)]">More variants</SectionLink>
+              </div>
+              {headlineVariant ? (
+                <div className="mt-2.5 rounded-[10px] border border-[rgba(32,52,94,0.08)] bg-[#F8FAFC] px-3 py-2.5 md:mt-3 md:px-3.5 md:py-3">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-[rgba(6,28,47,0.45)] md:text-[12px]">
+                    <span>Headline</span>
+                    <span className="text-[rgba(6,28,47,0.20)]">|</span>
+                    <span>{headlineVariant.label}</span>
                   </div>
+                  <p className="mt-1.5 line-clamp-2 text-[13px] leading-[1.45] text-[#061C2F] md:text-[14px] md:leading-5">
+                    {headlineVariant.text}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="grid grid-cols-1 border-t border-[rgba(6,28,47,0.06)] sm:grid-cols-2">
+              <div className="flex items-center justify-between gap-3 px-4 py-3 sm:border-r sm:border-[rgba(6,28,47,0.06)] md:px-5 md:py-3.5">
+                <span className="text-[14px] font-semibold text-[#061C2F]">Visual fixes</span>
+                {visualInsightCount > 0 ? (
+                  <SectionLink className="text-[#639922]">
+                    {visualInsightCount} insight{visualInsightCount !== 1 ? "s" : ""}
+                  </SectionLink>
                 ) : null}
-                {Number(displayScore) > 0 ? (
-                  <div className="inline-flex items-center gap-1 rounded-full bg-[#65982D] px-2 py-1">
-                    <span className="text-[11px] font-bold leading-none text-white">
-                      {displayScore}
-                    </span>
-                    <RiArrowRightLine size={10} className="shrink-0 text-white" aria-hidden />
-                    <span className="text-[11px] font-bold leading-none text-white">
-                      {potentialScore}
-                    </span>
-                    <span className="mx-0.5 h-3 w-px shrink-0 bg-white/15" aria-hidden />
-                    <span className="text-[10px] font-normal leading-none text-white">
-                      after fixes
-                    </span>
-                  </div>
-                ) : null}
+              </div>
+              <div className="flex min-w-0 items-center justify-between gap-3 border-t border-[rgba(6,28,47,0.06)] px-4 py-3 sm:border-t-0 md:px-5 md:py-3.5">
+                <span className="shrink-0 text-[14px] font-semibold text-[#061C2F]">
+                  Trust &amp; meta
+                </span>
+                <span className="truncate text-[13px] text-[rgba(6,28,47,0.45)]">
+                  {trustTeaser}
+                </span>
               </div>
             </div>
           </div>
