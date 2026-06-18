@@ -206,6 +206,10 @@ export function ReportHeroSummary({
               <span className="font-medium text-[#1a1a1a]">{domain}</span>
             )}
           </div>
+          <span
+            aria-hidden
+            className="mx-[4px] hidden h-[16px] w-[1px] shrink-0 bg-[rgba(6,28,47,0.10)] md:inline-block"
+          />
           <span className="font-normal text-[rgba(6,28,47,0.4)]">
             {formatAnalyzedDate(generatedAt)}
           </span>

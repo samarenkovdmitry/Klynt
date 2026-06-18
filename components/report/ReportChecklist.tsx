@@ -10,6 +10,7 @@ import {
   RiListCheck3,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
+import { getChecklistBadgeLabel } from "@/lib/normalize-report-checklist";
 import {
   REPORT_ROW_DIVIDER_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
@@ -66,7 +67,8 @@ function ChecklistRow({
   item: ReportChecklistItem;
   isLast: boolean;
 }) {
-  const { Icon, iconColor } = STATUS_CONFIG[item.status];
+  const { Icon, iconColor, badgeBg, badgeText } = STATUS_CONFIG[item.status];
+  const badgeLabel = getChecklistBadgeLabel(item);
   const linkLabel =
     item.link_to && item.status !== "pass" ? LINK_BUTTON_LABEL[item.link_to] : null;
 
@@ -88,7 +90,7 @@ function ChecklistRow({
       <Icon size={18} className={`shrink-0 ${iconColor}`} aria-hidden />
 
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <span className="flex-1 text-[#061C2F]">{item.text}</span>
+        <span className="text-[#061C2F]">{item.text}</span>
 
         {linkLabel ? (
           <button
@@ -101,6 +103,16 @@ function ChecklistRow({
           </button>
         ) : null}
       </div>
+
+      <span
+        className={[
+          "hidden h-6 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-[13px] font-medium md:inline-flex",
+          badgeBg,
+          badgeText,
+        ].join(" ")}
+      >
+        {badgeLabel}
+      </span>
     </div>
   );
 }
@@ -168,10 +180,9 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
             </button>
 
             <div
-              className="transition-[max-height] duration-300 ease-out"
+              className="overflow-hidden transition-[max-height] duration-300 ease-out"
               style={{
-                maxHeight: passVisible ? `${passes.length * 200}px` : "0px",
-                overflow: passVisible ? "visible" : "hidden",
+                maxHeight: passVisible ? `${passes.length * 80 + 32}px` : "0px",
               }}
             >
               <div

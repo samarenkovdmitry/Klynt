@@ -67,9 +67,9 @@ export default function ScorePotentialCompact({
       />
 
       <div className={REPORT_SURFACE_CARD_CLASS}>
-        <div className="flex flex-col px-5 py-5">
-          {/* Score values row */}
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col px-5 py-5 md:flex-row md:items-center">
+          {/* Score values */}
+          <div className="flex shrink-0 items-center gap-3">
             <div className="text-center">
               <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-status-weak">
                 {formatScore(score)}
@@ -85,9 +85,12 @@ export default function ScorePotentialCompact({
             </div>
           </div>
 
+          {/* Vertical divider — desktop only */}
+          <div className="mx-6 hidden h-[60px] w-px shrink-0 bg-[rgba(6,28,47,0.06)] md:block" />
+
           {/* Description + chips */}
           {chips.length > 0 ? (
-            <div className="mt-4">
+            <div className="mt-4 min-w-0 flex-1 md:mt-0">
               <p className="mb-2 text-[14px] leading-5 text-[#061C2F]">{description}</p>
               <div className="flex flex-wrap gap-2">
                 {chips.map((chip, index) => (

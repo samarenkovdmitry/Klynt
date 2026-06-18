@@ -187,7 +187,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
 
       <main
         className={[
-          `min-h-[calc(100dvh-68px)] ${REPORT_PAGE_BG_CLASS} px-4 pt-[20px] text-[var(--ink-primary)] md:px-6 md:pt-[20px]`,
+          `min-h-[calc(100dvh-68px)] ${REPORT_PAGE_BG_CLASS} px-4 pt-[20px] text-[var(--ink-primary)] md:px-6 md:pt-[44px]`,
           mainPaddingBottom,
         ].join(" ")}
       >
@@ -253,7 +253,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               ) : null}
 
               {report.copy_variants && report.meta ? (
-                <section className="mt-8 scroll-mt-24" id="export">
+                <section className="mt-8 scroll-mt-24 md:mt-12" id="export">
                   <SectionHeader
                     icon={RiDownloadLine}
                     title="Export"
