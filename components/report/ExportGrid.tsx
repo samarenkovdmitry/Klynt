@@ -172,7 +172,7 @@ function ExportCard({ icon, title, sub, cardId, activeToast, locked, onClick }: 
         {/* Top-right: lock icon ↔ Copied indicator crossfade */}
         <span className="relative flex h-[18px] min-w-[18px] items-center justify-end">
           <span
-            className="absolute right-0 flex items-center gap-1 whitespace-nowrap text-[13px] font-medium text-[#1D9E75] transition-opacity duration-300"
+            className="absolute right-0 flex items-center gap-1 whitespace-nowrap text-[13px] font-medium text-status-good transition-opacity duration-300"
             style={{ opacity: copied ? 1 : 0, pointerEvents: "none" }}
             aria-hidden={!copied}
           >

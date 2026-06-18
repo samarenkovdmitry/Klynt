@@ -61,7 +61,7 @@ function VisualFixCard({ fix }: { fix: ReportVisualFix }) {
         <p className="flex items-start gap-2 text-[14px] leading-5 text-[#061C2F]">
           <RiArrowRightLine
             size={15}
-            className="mt-0.5 shrink-0 text-[#1D9E75]"
+            className="mt-0.5 shrink-0 text-status-good"
             aria-hidden
           />
           {fix.recommendation}
@@ -127,7 +127,7 @@ function VisualPassRow({
         <span className="mx-2 text-[#7D8C99]">·</span>
         <span className="text-[15px] text-[#7D8C99]">{pass.note}</span>
       </div>
-      <span className="shrink-0 rounded-full bg-[#ECFDF5] px-2.5 py-1 text-[13px] font-medium text-[#059669]">
+      <span className="shrink-0 rounded-full bg-status-good/10 px-2.5 py-1 text-[13px] font-medium text-status-good">
         Aligned
       </span>
     </div>

@@ -122,7 +122,7 @@ export function AppHeader() {
                   aria-hidden
                 />
                 <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
-                  UX Clarity Analyzer
+                  Landing improvement kit
                 </span>
                 <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:hidden">
                   UX Analyzer

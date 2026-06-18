@@ -128,7 +128,7 @@ function VariantCard({
         <span
           className={[
             "text-[12px] font-medium leading-4",
-            isSelected ? "text-[#1D9E75]" : "text-[#8F99A2]",
+            isSelected ? "text-status-good" : "text-[#8F99A2]",
           ].join(" ")}
         >
           {variant.label}
@@ -139,7 +139,7 @@ function VariantCard({
           title="Copy text"
           className={[
             "shrink-0 transition-all duration-[120ms]",
-            "text-[#1D9E75] opacity-0 transition-opacity duration-150 group-hover:opacity-100",
+            "text-status-good opacity-0 transition-opacity duration-150 group-hover:opacity-100",
           ].join(" ")}
         >
           {copied ? (

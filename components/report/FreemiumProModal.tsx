@@ -230,7 +230,7 @@ export function FreemiumProModal({
                   disabled={submitting}
                   aria-invalid={error ? true : undefined}
                   className={[
-                    "h-[52px] w-full rounded-[12px] border bg-white/[0.09] pl-11 pr-4 text-[15px] text-white outline-none transition-[border-color] placeholder:text-white/35 focus:border-white/20 disabled:cursor-not-allowed disabled:opacity-60",
+                    "h-[52px] w-full rounded-[12px] border bg-white/[0.09] pl-11 pr-4 text-[16px] text-white outline-none transition-[border-color] placeholder:text-white/35 focus:border-white/20 disabled:cursor-not-allowed disabled:opacity-60",
                     error ? "border-[#F87171]/60" : "border-white/[0.09]",
                   ].join(" ")}
                 />

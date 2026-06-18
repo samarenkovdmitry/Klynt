@@ -46,6 +46,7 @@ import {
   getReportHeroTheme,
   getTierLabel,
 } from "@/lib/report-hero-theme";
+import { STATUS_COLORS } from "@/lib/status-colors";
 
 type ReportActionLayoutProps = {
   data: AuditReport;
@@ -113,9 +114,9 @@ function getMetricObservation(metric: string, value: number): string {
 }
 
 function getReportScoreColor(tier: ReturnType<typeof getReportHeroTheme>["tier"]) {
-  if (tier === "healthy") return "#1D9E75";
+  if (tier === "healthy") return STATUS_COLORS.good;
   if (tier === "critical") return "#8B2020";
-  return "#BA7517";
+  return STATUS_COLORS.weak;
 }
 
 function formatPriorityTag(priority?: ReportCopyItem["priority"]) {
@@ -206,7 +207,7 @@ function HeroCard({
 
   const siteBadge = (
     <div className="inline-flex items-center gap-1.5 rounded-[8px] bg-black/[0.05] px-[11px] py-1 text-[13px] font-medium text-[#555]">
-      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#1D9E75]" aria-hidden />
+      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-status-good" aria-hidden />
       {reportHref ? (
         <a href={reportHref} target="_blank" rel="noopener noreferrer" className="truncate hover:opacity-70">
           {domain}
@@ -605,8 +606,7 @@ function ScorePotentialCard({
 
         <div className="text-center">
           <p
-            className="text-[40px] font-semibold leading-none tracking-[-0.06em] md:text-[52px]"
-            style={{ color: "#1D9E75" }}
+            className="text-[40px] font-semibold leading-none tracking-[-0.06em] text-status-good md:text-[52px]"
           >
             {formatOverallScore(potential.potentialScore)}
           </p>
@@ -636,7 +636,7 @@ function ScorePotentialCard({
                 {item.label}
               </p>
               <p className="text-[13px] leading-[1.45] text-[#111]">{item.text}</p>
-              <p className="mt-2 text-[16px] font-medium text-[#1D9E75]">{item.points}</p>
+              <p className="mt-2 text-[16px] font-medium text-status-good">{item.points}</p>
             </div>
           ))}
         </div>
@@ -657,9 +657,9 @@ function WhatsNextRow({
       <button
         type="button"
         onClick={onRerun}
-        className="rounded-2xl border border-[#1D9E75]/35 bg-white px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
+        className="rounded-2xl border border-status-good/35 bg-white px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
       >
-        <RiRefreshLine size={18} className="mb-2 text-[#1D9E75]" aria-hidden />
+        <RiRefreshLine size={18} className="mb-2 text-status-good" aria-hidden />
         <p className="text-[14px] font-medium tracking-[-0.02em] text-[#111]">
           Re-run after fixing
         </p>

@@ -25,7 +25,7 @@ const VARIANT_STYLES: Record<
   copy: {
     icon: RiEdit2Line,
     iconWrap: "bg-[#ECFDF5] border-[#A7F3D0]",
-    iconColor: "text-[#059669]",
+    iconColor: "text-status-good",
   },
 };
 

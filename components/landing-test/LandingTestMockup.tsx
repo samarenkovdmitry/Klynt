@@ -15,6 +15,7 @@ import {
 import type { RemixiconComponentType } from "@remixicon/react";
 
 import { DEMO_REPORT, DEMO_REPORT_PATH } from "@/lib/demo-report";
+import { STATUS_COLORS } from "@/lib/status-colors";
 import {
   formatAnalyzedDate,
   formatOverallScore,
@@ -27,9 +28,9 @@ import {
 } from "@/lib/report-preview-size";
 
 const SCORE_COLORS: Record<string, string> = {
-  healthy: "#059669",
-  medium: "#BA7517",
-  critical: "#E24B4A",
+  healthy:  STATUS_COLORS.good,
+  medium:   STATUS_COLORS.weak,
+  critical: STATUS_COLORS.low,
 };
 
 const RIGHT_COL_DOT = "rgba(0,0,0,0.10)";
@@ -38,10 +39,10 @@ const SECTION_LINK_CLASS =
   "inline-flex shrink-0 items-center gap-0 text-[13px] font-medium whitespace-nowrap";
 
 function getMetricStatus(value: number): { label: string; color: string } {
-  if (value >= 70) return { label: "Good", color: "#639922" };
-  if (value >= 55) return { label: "Medium", color: "#BA7517" };
-  if (value >= 35) return { label: "Weak", color: "#BA7517" };
-  return { label: "Low", color: "#E24B4A" };
+  if (value >= 70) return { label: "Good",   color: STATUS_COLORS.good };
+  if (value >= 55) return { label: "Medium", color: STATUS_COLORS.medium };
+  if (value >= 35) return { label: "Weak",   color: STATUS_COLORS.weak };
+  return            { label: "Low",    color: STATUS_COLORS.low };
 }
 
 function MockMetricBar({
@@ -185,7 +186,7 @@ export function LandingTestMockup() {
             <div className="flex flex-col p-4 md:p-5">
               <div className="flex items-baseline gap-1">
                 <span
-                  className="text-[34px] font-semibold leading-none tracking-[-0.05em] md:text-[40px]"
+                  className="text-[34px] font-semibold leading-none tracking-[-0.05em]"
                   style={{ color: scoreColor }}
                 >
                   {displayScore}
@@ -208,11 +209,11 @@ export function LandingTestMockup() {
 
               {signalsCount > 0 ? (
                 <div className="mt-4 border-t border-[rgba(6,28,47,0.08)] pt-3">
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <span className="inline-flex shrink-0 items-center rounded-md border border-[rgba(6,28,47,0.10)] bg-[rgba(6,28,47,0.04)] px-2 py-0.5 text-[11px] font-medium text-[rgba(6,28,47,0.55)] md:text-[12px]">
                       {signalsCount} signals analysed
                     </span>
-                    <span className="hidden text-[11px] text-[rgba(6,28,47,0.45)] sm:inline md:text-[12px]">
+                    <span className="text-[11px] text-[rgba(6,28,47,0.45)] md:text-[12px]">
                       UI structure, messaging and conversion signals
                     </span>
                   </div>
@@ -248,7 +249,7 @@ export function LandingTestMockup() {
               </div>
 
               {Number(displayScore) > 0 ? (
-                <div className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#65982D] px-2.5 py-[5px]">
+                <div className="mt-3 inline-flex items-center gap-1 rounded-full bg-status-good px-2.5 py-[5px]">
                   <span className="text-[11px] font-bold leading-none text-white md:text-[12px]">
                     {displayScore}
                   </span>
@@ -270,7 +271,7 @@ export function LandingTestMockup() {
             <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-5 md:py-3.5">
               <span className="text-[14px] font-semibold text-[#061C2F]">What needs fixing</span>
               {criticalGaps > 0 ? (
-                <SectionLink className="text-[#BA7517]">
+                <SectionLink className="text-status-weak">
                   {criticalGaps} critical gap{criticalGaps !== 1 ? "s" : ""}
                 </SectionLink>
               ) : null}
@@ -299,7 +300,7 @@ export function LandingTestMockup() {
               <div className="flex items-center justify-between gap-3 px-4 py-3 sm:border-r sm:border-[rgba(6,28,47,0.06)] md:px-5 md:py-3.5">
                 <span className="text-[14px] font-semibold text-[#061C2F]">Visual fixes</span>
                 {visualInsightCount > 0 ? (
-                  <SectionLink className="text-[#639922]">
+                  <SectionLink className="text-status-good">
                     {visualInsightCount} insight{visualInsightCount !== 1 ? "s" : ""}
                   </SectionLink>
                 ) : null}

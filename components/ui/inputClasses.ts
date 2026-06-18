@@ -13,7 +13,7 @@ export function inputFieldClass({
 }: InputFieldOptions = {}) {
   return [
     withMargin && "mt-3",
-    "w-full rounded-2xl border bg-[#FCFDFD] text-[15px] text-[#061C2F] shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-[border-width,border-color] duration-200 placeholder:text-[#9AA3AC] focus:outline-none md:text-[16px]",
+    "w-full rounded-2xl border bg-[#FCFDFD] text-[16px] text-[#061C2F] shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-[border-width,border-color] duration-200 placeholder:text-[#9AA3AC] focus:outline-none",
     withClearButton ? "pl-5 pr-12" : "px-5",
     error ? "border-[#F0A8A5]" : "border-[#D8E0E7]",
     disabled

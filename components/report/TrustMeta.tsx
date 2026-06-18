@@ -85,7 +85,7 @@ export function TrustMeta({
           </div>
 
           {trustGaps.length === 0 && !(meta.trust_notes?.length ?? 0) ? (
-            <p className="text-[14px] leading-6 text-[#059669]">Trust signals look good</p>
+            <p className="text-[14px] leading-6 text-status-good">Trust signals look good</p>
           ) : (
             <>
               <ul className="mb-3 space-y-2">
@@ -96,7 +96,7 @@ export function TrustMeta({
                   >
                     <RiErrorWarningLine
                       size={16}
-                      className="shrink-0 text-[#BA7517]"
+                      className="shrink-0 text-status-weak"
                       aria-hidden
                     />
                     <span>{item.text}</span>
@@ -109,7 +109,7 @@ export function TrustMeta({
                   >
                     <RiErrorWarningLine
                       size={16}
-                      className="shrink-0 text-[#BA7517]"
+                      className="shrink-0 text-status-weak"
                       aria-hidden
                     />
                     <span>{note}</span>
