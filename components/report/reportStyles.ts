@@ -2,7 +2,7 @@ export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
 
 export const REPORT_PAGE_BG_CLASS = "bg-[#EFF3F6]";
 
-export const REPORT_SECTION_SPACING_CLASS = "mt-12";
+export const REPORT_SECTION_SPACING_CLASS = "mt-8";
 
 export const REPORT_SECTION_SCROLL_MARGIN_CLASS = "scroll-mt-24";
 

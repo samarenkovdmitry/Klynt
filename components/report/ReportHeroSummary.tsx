@@ -31,6 +31,7 @@ import {
   getFrictionScore,
   getReportHeroTheme,
 } from "@/lib/report-hero-theme";
+import { STATUS_COLORS } from "@/lib/status-colors";
 
 type ReportHeroSummaryProps = {
   url?: string;
@@ -61,9 +62,9 @@ const HERO_ACTION_BUTTON_CLASS =
   "inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-[#E5E5E5] bg-white px-3.5 text-[14px] font-medium text-[#061C2F] transition-[background-color,box-shadow] hover:bg-[#F8F9FA] hover:shadow-[0_1px_4px_rgba(6,28,47,0.08)]";
 
 const SCORE_COLORS: Record<string, string> = {
-  healthy: "#059669",
-  medium: "#BA7517",
-  critical: "#E24B4A",
+  healthy:  STATUS_COLORS.good,
+  medium:   STATUS_COLORS.weak,
+  critical: STATUS_COLORS.low,
 };
 
 const RIGHT_COL_DOT = "rgba(0,0,0,0.10)";
@@ -96,10 +97,10 @@ const METRIC_SHORT_DESC: Record<string, Record<string, string>> = {
 };
 
 function getMetricStatus(value: number): { label: string; color: string } {
-  if (value >= 70) return { label: "Good", color: "#639922" };
-  if (value >= 55) return { label: "Medium", color: "#BA7517" };
-  if (value >= 35) return { label: "Weak", color: "#BA7517" };
-  return { label: "Low", color: "#E24B4A" };
+  if (value >= 70) return { label: "Good",   color: STATUS_COLORS.good };
+  if (value >= 55) return { label: "Medium", color: STATUS_COLORS.medium };
+  if (value >= 35) return { label: "Weak",   color: STATUS_COLORS.weak };
+  return            { label: "Low",    color: STATUS_COLORS.low };
 }
 
 function CompactMetric({
@@ -205,10 +206,6 @@ export function ReportHeroSummary({
               <span className="font-medium text-[#1a1a1a]">{domain}</span>
             )}
           </div>
-          <span
-            aria-hidden
-            className="mx-[4px] inline-block h-[16px] w-[1px] shrink-0 bg-[rgba(6,28,47,0.10)]"
-          />
           <span className="font-normal text-[rgba(6,28,47,0.4)]">
             {formatAnalyzedDate(generatedAt)}
           </span>
@@ -301,14 +298,14 @@ export function ReportHeroSummary({
           <div className="relative z-[1] mt-[10px] flex flex-wrap items-center justify-center gap-2">
             {criticalGaps > 0 && (
               <div className="inline-flex h-6 items-center gap-1 rounded-full border border-[rgba(185,117,37,0.20)] bg-[#FEF3E2] pl-1 pr-2 text-[13px] font-medium text-[#7A3E00]">
-                <RiErrorWarningFill size={16} className="shrink-0 text-[#BA7517]" aria-hidden />
+                <RiErrorWarningFill size={16} className="shrink-0 text-status-weak" aria-hidden />
                 <span style={{ position: "relative", top: -1 }}>
                   {criticalGaps} critical gap{criticalGaps !== 1 ? "s" : ""}
                 </span>
               </div>
             )}
             {displayScore > 0 && (
-              <div className="inline-flex items-center gap-1 rounded-full bg-[#65982D] px-2 py-[5px]">
+              <div className="inline-flex items-center gap-1 rounded-full bg-status-good px-2 py-[5px]">
                 <span className="text-[13px] font-bold leading-none text-white">
                   {formatOverallScore(score)}
                 </span>

@@ -67,31 +67,27 @@ export default function ScorePotentialCompact({
       />
 
       <div className={REPORT_SURFACE_CARD_CLASS}>
-        {/* Content row */}
-        <div className="flex items-center gap-0 px-5 py-5">
-          {/* Score values */}
-          <div className="flex shrink-0 items-center gap-3">
+        <div className="flex flex-col px-5 py-5">
+          {/* Score values row */}
+          <div className="flex items-center gap-3">
             <div className="text-center">
-              <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-[#BA7517]">
+              <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-status-weak">
                 {formatScore(score)}
               </div>
               <div className="mt-1 text-[13px] text-[#8E99A2]">now</div>
             </div>
             <RiArrowRightLine size={20} className="text-[#C0C0C0]" aria-hidden />
             <div className="text-center">
-              <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-[#1D9E75]">
+              <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-status-good">
                 {formatScore(target)}
               </div>
               <div className="mt-1 text-[13px] text-[#8E99A2]">potential</div>
             </div>
           </div>
 
-          {/* Vertical divider */}
-          <div className="mx-6 h-[60px] w-px shrink-0 bg-[rgba(6,28,47,0.06)]" />
-
-          {/* Right: description + chips */}
+          {/* Description + chips */}
           {chips.length > 0 ? (
-            <div className="min-w-0 flex-1">
+            <div className="mt-4">
               <p className="mb-2 text-[14px] leading-5 text-[#061C2F]">{description}</p>
               <div className="flex flex-wrap gap-2">
                 {chips.map((chip, index) => (
@@ -104,7 +100,7 @@ export default function ScorePotentialCompact({
                     <span className="text-[#061C2F]">
                       {getScoreChipShortLabel(chip.label, checklist)}
                     </span>
-                    <span className="ml-[4px] text-[#1D9E75]">{chip.delta}</span>
+                    <span className="ml-[4px] text-status-good">{chip.delta}</span>
                   </button>
                 ))}
               </div>

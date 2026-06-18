@@ -18,6 +18,7 @@ import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ReportWaitlistStickyBar } from "@/components/report/ReportWaitlistStickyBar";
+import { ReportRerunBanner } from "@/components/report/ReportRerunBanner";
 import { FreemiumProModal } from "@/components/report/FreemiumProModal";
 import { FreemiumProStickyBar } from "@/components/report/FreemiumProStickyBar";
 import { usePreLaunchWaitlist } from "@/components/pre-launch/usePreLaunchWaitlist";
@@ -176,6 +177,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
   const mainPaddingBottom =
     useFreemium || (showLegacyWaitlist && !gateInView)
       ? "pb-[152px] md:pb-[148px]"
+      : hasNewLayout
+      ? "pb-8 md:pb-10"
       : "pb-[112px]";
 
   return (
@@ -184,7 +187,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
 
       <main
         className={[
-          `min-h-[calc(100dvh-68px)] ${REPORT_PAGE_BG_CLASS} px-4 pt-[36px] text-[var(--ink-primary)] md:px-6 md:pt-[44px]`,
+          `min-h-[calc(100dvh-68px)] ${REPORT_PAGE_BG_CLASS} px-4 pt-[20px] text-[var(--ink-primary)] md:px-6 md:pt-[20px]`,
           mainPaddingBottom,
         ].join(" ")}
       >
@@ -250,7 +253,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               ) : null}
 
               {report.copy_variants && report.meta ? (
-                <section className="mt-12 scroll-mt-24" id="export">
+                <section className="mt-8 scroll-mt-24" id="export">
                   <SectionHeader
                     icon={RiDownloadLine}
                     title="Export"
@@ -298,6 +301,14 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
           )}
         </div>
       </main>
+
+      {hasNewLayout && (
+        <div className={`${REPORT_PAGE_BG_CLASS} px-4 pb-20 md:px-6`}>
+          <div className={REPORT_PAGE_CONTAINER_CLASS}>
+            <ReportRerunBanner onRerun={handleRerun} onShare={handleShare} />
+          </div>
+        </div>
+      )}
 
       {showLegacyWaitlist && <ReportWaitlistStickyBar visible={!gateInView} />}
       {useFreemium && (

@@ -10,7 +10,6 @@ import {
   RiListCheck3,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
-import { getChecklistBadgeLabel } from "@/lib/normalize-report-checklist";
 import {
   REPORT_ROW_DIVIDER_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
@@ -22,19 +21,19 @@ import { SectionHeader } from "@/components/report/ReportSectionHeader";
 const STATUS_CONFIG = {
   missing: {
     Icon: RiErrorWarningLine,
-    iconColor: "text-[#BA7517]",
+    iconColor: "text-status-weak",
     badgeBg: "bg-[#FDF3E3]",
     badgeText: "text-[#7A4A0A]",
   },
   weak: {
     Icon: RiAlertLine,
-    iconColor: "text-[#7B5EA7]",
+    iconColor: "text-status-weak-alt",
     badgeBg: "bg-[#F5F0FB]",
     badgeText: "text-[#5B3F9A]",
   },
   pass: {
     Icon: RiCheckboxCircleFill,
-    iconColor: "text-[#1D9E75]",
+    iconColor: "text-status-good",
     badgeBg: "bg-[#E8F7F2]",
     badgeText: "text-[#0F6E56]",
   },
@@ -67,8 +66,7 @@ function ChecklistRow({
   item: ReportChecklistItem;
   isLast: boolean;
 }) {
-  const { Icon, iconColor, badgeBg, badgeText } = STATUS_CONFIG[item.status];
-  const badgeLabel = getChecklistBadgeLabel(item);
+  const { Icon, iconColor } = STATUS_CONFIG[item.status];
   const linkLabel =
     item.link_to && item.status !== "pass" ? LINK_BUTTON_LABEL[item.link_to] : null;
 
@@ -90,7 +88,7 @@ function ChecklistRow({
       <Icon size={18} className={`shrink-0 ${iconColor}`} aria-hidden />
 
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <span className="text-[#061C2F]">{item.text}</span>
+        <span className="flex-1 text-[#061C2F]">{item.text}</span>
 
         {linkLabel ? (
           <button
@@ -103,16 +101,6 @@ function ChecklistRow({
           </button>
         ) : null}
       </div>
-
-      <span
-        className={[
-          "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-[13px] font-medium",
-          badgeBg,
-          badgeText,
-        ].join(" ")}
-      >
-        {badgeLabel}
-      </span>
     </div>
   );
 }
@@ -180,9 +168,10 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
             </button>
 
             <div
-              className="overflow-hidden transition-[max-height] duration-300 ease-out"
+              className="transition-[max-height] duration-300 ease-out"
               style={{
-                maxHeight: passVisible ? `${passes.length * 56 + 8}px` : "0px",
+                maxHeight: passVisible ? `${passes.length * 200}px` : "0px",
+                overflow: passVisible ? "visible" : "hidden",
               }}
             >
               <div
