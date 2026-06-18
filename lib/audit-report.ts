@@ -1,3 +1,5 @@
+import type { HeroStyleSignals } from "@/lib/hero-style-signals";
+
 export type ReportCategory =
   | "Clarity"
   | "Navigation"
@@ -177,6 +179,8 @@ export type AuditReport = {
   meta?: ReportMeta;
   /** Context-aware visual/design recommendations from screenshot analysis. */
   visual_fixes?: ReportVisualFix[];
+  /** Computed DOM signals used to ground visual_fixes (URL captures only). */
+  hero_style_signals?: HeroStyleSignals;
   /** Dimensions reviewed and aligned with product context. */
   visual_passes?: ReportVisualPass[];
   /** @deprecated use checklist + copy_variants instead */

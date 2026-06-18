@@ -10,8 +10,17 @@ import {
   markSharedBrowserPageOpened,
   resetSharedBrowserPool,
 } from "@/lib/puppeteer-browser-pool";
+import {
+  extractHeroStyleSignalsInPage,
+  type HeroStyleSignals,
+} from "@/lib/hero-style-signals";
 import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/lib/page-screenshot";
 import { retryAsync } from "@/lib/retry-async";
+
+export type WebsiteCaptureResult = {
+  screenshots: string[];
+  heroStyleSignals: HeroStyleSignals | null;
+};
 
 async function jumpTo(page: Page, y: number) {
   await page.evaluate((scrollY: number) => {
@@ -21,7 +30,7 @@ async function jumpTo(page: Page, y: number) {
   await new Promise((resolve) => setTimeout(resolve, 80));
 }
 
-async function captureWebsiteScreenshotsOnce(url: string): Promise<string[]> {
+async function captureWebsiteScreenshotsOnce(url: string): Promise<WebsiteCaptureResult> {
   let browser: Browser | null = null;
   let page: Page | null = null;
 
@@ -67,16 +76,27 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<string[]> {
     };
 
     await jumpTo(page, heroY);
+
+    let heroStyleSignals: HeroStyleSignals | null = null;
+    try {
+      heroStyleSignals = await page.evaluate(extractHeroStyleSignalsInPage);
+    } catch (signalError) {
+      console.warn("[capture] Failed to extract hero style signals:", signalError);
+    }
+
     const hero = await page.screenshot(heroShotOptions);
 
     await jumpTo(page, lowerY);
     await preparePageForLowerScreenshot(page);
     const lower = await page.screenshot(lowerShotOptions);
 
-    return [
-      Buffer.from(hero as Buffer).toString("base64"),
-      Buffer.from(lower as Buffer).toString("base64"),
-    ];
+    return {
+      screenshots: [
+        Buffer.from(hero as Buffer).toString("base64"),
+        Buffer.from(lower as Buffer).toString("base64"),
+      ],
+      heroStyleSignals,
+    };
   } catch (error) {
     resetSharedBrowserPool();
     throw error;
@@ -86,7 +106,7 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<string[]> {
   }
 }
 
-export async function captureWebsiteScreenshots(url: string): Promise<string[]> {
+export async function captureWebsiteScreenshots(url: string): Promise<WebsiteCaptureResult> {
   return retryAsync(() => captureWebsiteScreenshotsOnce(url), {
     attempts: 2,
     delayMs: 900,

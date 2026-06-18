@@ -50,6 +50,7 @@ import {
   normalizeReportCopyLengths,
 } from "@/lib/report-copy-limits";
 import { validateAuditUrl } from "@/lib/validate-audit-url";
+import type { HeroStyleSignals } from "@/lib/hero-style-signals";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -312,6 +313,7 @@ export async function POST(req: Request) {
     const url = normalizeUrl(rawUrl);
 
     let screenshotsBase64: string[] = [];
+    let heroStyleSignals: HeroStyleSignals | null = null;
 
     // PRIORITY #1 — uploaded screenshot
     if (uploadedScreenshot) {
@@ -326,9 +328,11 @@ export async function POST(req: Request) {
     // PRIORITY #2 — auto capture from URL
     else if (url) {
       captureMode = "url";
-      screenshotsBase64 = await timing.measure("capture_ms", () =>
+      const capture = await timing.measure("capture_ms", () =>
         captureWebsiteScreenshots(url)
       );
+      screenshotsBase64 = capture.screenshots;
+      heroStyleSignals = capture.heroStyleSignals;
     }
 
     if (screenshotsBase64.length === 0) {
@@ -361,6 +365,7 @@ export async function POST(req: Request) {
         basePrompt,
         url,
         screenshotsBase64,
+        heroStyleSignals,
       })
     );
 
@@ -551,6 +556,7 @@ export async function POST(req: Request) {
       breakdown: json.breakdown,
       visual_fixes: json.visual_fixes ?? [],
       visual_passes: json.visual_passes ?? [],
+      ...(heroStyleSignals ? { hero_style_signals: heroStyleSignals } : {}),
       generatedAt: new Date().toISOString(),
     };
 

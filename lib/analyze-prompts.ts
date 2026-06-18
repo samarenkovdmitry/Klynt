@@ -267,8 +267,14 @@ Skip dimensions with no visible issue. Never repeat checklist gap text verbatim.
 
 Each item MUST cite what you see on this page:
 - dimension: one enum value above
-- observation: max 14 words. Name visible UI (button labels, dark/light treatment, radius, spacing between named blocks). No invented WCAG ratios unless clearly readable.
+- observation: max 14 words. Name visible UI (button labels, dark/light treatment, radius, spacing between named blocks). When HERO STYLE SIGNALS are provided, cite exact hex values, contrast ratios, font weights, CTA fill/outline, or density count from those signals.
 - recommendation: max 18 words. Concrete change for THIS page and theme (e.g. "On dark hero, brighten gray subhead — not bold weight").
+
+When HERO STYLE SIGNALS block is present:
+- Use contrast samples for color_tone or typography with exact fg/bg hex and AA/AAA pass/fail.
+- Use CTA signals for cta_hierarchy — name both button labels and whether they compete visually.
+- Use typography family/weight gap for typography dimension.
+- Use density count for density dimension — cite the number; >6 elements is a friction signal.
 
 BANNED templates (instant failure — never output these or close paraphrases):
 - "Subheadline weight feels too light for emphasis" / "Increase subheadline weight for better readability"

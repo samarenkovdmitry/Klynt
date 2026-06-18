@@ -1,6 +1,8 @@
 import OpenAI from "openai";
 
 import { isAuditReport } from "@/lib/audit-report";
+import type { HeroStyleSignals } from "@/lib/hero-style-signals";
+import { formatHeroStyleSignalsForPrompt } from "@/lib/hero-style-signals";
 import { retryAsync } from "@/lib/retry-async";
 
 let openaiClient: OpenAI | null = null;
@@ -77,8 +79,18 @@ async function requestAuditAnalysisOnce(params: {
   basePrompt: string;
   url: string;
   screenshotsBase64: string[];
+  heroStyleSignals?: HeroStyleSignals | null;
 }): Promise<Record<string, unknown>> {
   const screenshotContent = buildScreenshotContent(params.screenshotsBase64);
+  const signalContent =
+    params.heroStyleSignals != null
+      ? [
+          {
+            type: "input_text" as const,
+            text: formatHeroStyleSignalsForPrompt(params.heroStyleSignals),
+          },
+        ]
+      : [];
 
   const response = await getOpenAIClient().responses.create({
     model: "gpt-4o-mini",
@@ -96,6 +108,7 @@ async function requestAuditAnalysisOnce(params: {
             type: "input_text",
             text: `Website URL: ${params.url}`,
           },
+          ...signalContent,
           ...screenshotContent,
         ],
       },
@@ -121,6 +134,7 @@ export async function requestAuditAnalysis(params: {
   basePrompt: string;
   url: string;
   screenshotsBase64: string[];
+  heroStyleSignals?: HeroStyleSignals | null;
 }): Promise<Record<string, unknown>> {
   return retryAsync(() => requestAuditAnalysisOnce(params), {
     attempts: 2,
