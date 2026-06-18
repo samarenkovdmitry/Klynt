@@ -473,18 +473,6 @@ export async function POST(req: Request) {
       json.score
     );
 
-    const visualSection = normalizeVisualSection(
-      json.visual_fixes,
-      json.visual_passes,
-      json.checklist,
-      undefined,
-      json.score,
-      rawChecklist,
-      normalizedBreakdown
-    );
-    json.visual_fixes = visualSection.fixes;
-    json.visual_passes = visualSection.passes;
-
     if (json.copy_variants && typeof json.copy_variants === "object") {
       json.copy_variants = normalizeReportCopyVariants(
         json.copy_variants as import("@/lib/audit-report").ReportCopyVariants,
@@ -514,6 +502,23 @@ export async function POST(req: Request) {
           .slice(0, 2);
       }
     }
+
+    const visualSection = normalizeVisualSection(
+      json.visual_fixes,
+      json.visual_passes,
+      json.checklist,
+      undefined,
+      json.score,
+      rawChecklist,
+      normalizedBreakdown,
+      {
+        copyVariants: json.copy_variants as import("@/lib/audit-report").ReportCopyVariants | undefined,
+        meta: json.meta as import("@/lib/audit-report").ReportMeta | undefined,
+        checklist: json.checklist,
+      }
+    );
+    json.visual_fixes = visualSection.fixes;
+    json.visual_passes = visualSection.passes;
 
     json.risk = deriveRiskFromScore(json.score);
     });

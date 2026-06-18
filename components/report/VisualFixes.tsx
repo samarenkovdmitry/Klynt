@@ -143,11 +143,12 @@ export function VisualFixes({
 }: Props) {
   const fixes = visualFixes ?? [];
   const passes = visualPasses ?? [];
-  const [passVisible, setPassVisible] = useState(false);
+  const [passVisible, setPassVisible] = useState(fixes.length < 2);
 
   if (fixes.length === 0 && passes.length === 0) return null;
 
   const insightCount = fixes.length;
+  const checkCount = passes.length;
   const shouldLock = !isDemo && (previewLocked || fixes.length > 1);
 
   return (
@@ -161,7 +162,10 @@ export function VisualFixes({
         trailing={
           <div className="flex items-center gap-2.5">
             <span className="text-[14px] leading-5 text-[#8E99A2]">
-              {insightCount} insight{insightCount !== 1 ? "s" : ""}
+              {insightCount} fix{insightCount !== 1 ? "es" : ""}
+              {checkCount > 0
+                ? ` · ${checkCount} aligned check${checkCount !== 1 ? "s" : ""}`
+                : ""}
             </span>
             {shouldLock ? (
               <>

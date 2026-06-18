@@ -1,6 +1,8 @@
 import type {
   ReportBreakdown,
   ReportChecklistItem,
+  ReportCopyVariants,
+  ReportMeta,
   ReportVisualFix,
   ReportVisualPass,
   VisualFixDimension,
@@ -32,6 +34,252 @@ export type NormalizedVisualSection = {
   fixes: ReportVisualFix[];
   passes: ReportVisualPass[];
 };
+
+export type VisualSectionContext = {
+  checklist?: ReportChecklistItem[];
+  copyVariants?: ReportCopyVariants;
+  meta?: ReportMeta;
+};
+
+const MIN_VISUAL_FIXES = 2;
+const VAGUE_CTA_PATTERN =
+  /^(get\s+started|started|learn\s+more|click\s+here|sign\s+up|submit|continue|explore|discover|try\s+now|register|join)$/i;
+
+function truncateLabel(label: string, max = 28): string {
+  const trimmed = label.trim();
+  if (trimmed.length <= max) {
+    return trimmed;
+  }
+
+  return `${trimmed.slice(0, max - 1)}…`;
+}
+
+function isAllCapsCta(label: string): boolean {
+  const letters = label.replace(/[^a-zA-Z]/g, "");
+  return letters.length >= 4 && letters === letters.toUpperCase();
+}
+
+function isVagueCtaLabel(label: string): boolean {
+  const normalized = label.replace(/[^\w\s]/g, "").trim();
+  return VAGUE_CTA_PATTERN.test(normalized);
+}
+
+function deriveCtaAuditFix(ctaLabel: string): ReportVisualFix | null {
+  const label = ctaLabel.trim();
+  if (!label) {
+    return null;
+  }
+
+  const allCaps = isAllCapsCta(label);
+  const vague = isVagueCtaLabel(label);
+
+  if (!allCaps && !vague) {
+    return null;
+  }
+
+  const issues: string[] = [];
+  if (allCaps) {
+    issues.push("all caps");
+  }
+  if (vague) {
+    issues.push("vague — no product or outcome");
+  }
+
+  return {
+    dimension: "cta_hierarchy",
+    observation: `"${truncateLabel(label)}" — ${issues.join(", ")}`,
+    recommendation:
+      allCaps && vague
+        ? "Use sentence case + outcome — e.g. Start your free website"
+        : allCaps
+          ? "Switch primary CTA to sentence case — less shouty on hero"
+          : "Name the outcome in the button — not a generic action",
+  };
+}
+
+function deriveCtaAuditPass(ctaLabel: string): ReportVisualPass | null {
+  const label = ctaLabel.trim();
+  if (!label || isAllCapsCta(label) || isVagueCtaLabel(label)) {
+    return null;
+  }
+
+  if (label.split(/\s+/).length < 2) {
+    return null;
+  }
+
+  return {
+    dimension: "cta_hierarchy",
+    note: `"${truncateLabel(label, 22)}" — specific verb and outcome on button`,
+  };
+}
+
+function deriveFixFromChecklistGap(
+  item: ReportChecklistItem,
+  copyVariants?: ReportCopyVariants
+): ReportVisualFix | null {
+  const gapLabel = item.gap_label?.trim() ?? "";
+  const ctaLabel = copyVariants?.cta?.current?.trim() ?? "Primary hero CTA";
+
+  if (item.link_to === "copy-cta" || gapLabel === "Trial unclear") {
+    return {
+      dimension: "cta_hierarchy",
+      observation: `"${truncateLabel(ctaLabel)}" — no trial or risk-free hint on button`,
+      recommendation: "Add trial length to CTA — e.g. Start 14-day free trial",
+    };
+  }
+
+  if (item.link_to === "visual-fixes" && item.status === "weak") {
+    return {
+      dimension: "typography",
+      observation: clampWords(item.text, 14, true),
+      recommendation: "Darken subhead one step and bump weight for hero scan",
+    };
+  }
+
+  if (item.category === "trust" && item.status !== "pass") {
+    return {
+      dimension: "depth",
+      observation: "Trust proof weak or missing near hero CTA above fold",
+      recommendation: "Place logos or one stat directly under primary hero button",
+    };
+  }
+
+  if (/cta|hierarchy|competing/i.test(`${gapLabel} ${item.text}`)) {
+    return {
+      dimension: "cta_hierarchy",
+      observation: clampWords(item.text, 14, true),
+      recommendation: "Make one hero CTA filled — demote secondary to text link",
+    };
+  }
+
+  if (item.link_to === "hero-density" || gapLabel === "Spacing issue") {
+    return {
+      dimension: "density",
+      observation: clampWords(item.text, 14, true),
+      recommendation: "Trim hero to headline, subhead, and one primary CTA",
+    };
+  }
+
+  return null;
+}
+
+function derivePassFromChecklistItem(item: ReportChecklistItem): ReportVisualPass | null {
+  if (item.status !== "pass") {
+    return null;
+  }
+
+  const dimension = resolveVisualDimensionFromPass(item);
+  if (!dimension) {
+    return null;
+  }
+
+  const note = clampWords(item.text, 12, true);
+  if (!note || isProblemPassText(note)) {
+    return null;
+  }
+
+  return { dimension, note };
+}
+
+function appendDerivedFix(
+  fixes: ReportVisualFix[],
+  fixDims: Set<VisualFixDimension>,
+  fix: ReportVisualFix | null
+): void {
+  if (!fix || fixDims.has(fix.dimension) || !isActionableVisualFix(fix)) {
+    return;
+  }
+
+  fixes.push(fix);
+  fixDims.add(fix.dimension);
+}
+
+function appendDerivedPass(
+  passes: ReportVisualPass[],
+  passDims: Set<VisualFixDimension>,
+  fixDims: Set<VisualFixDimension>,
+  pass: ReportVisualPass | null
+): void {
+  if (
+    !pass ||
+    fixDims.has(pass.dimension) ||
+    passDims.has(pass.dimension) ||
+    !isActionableVisualPass(pass)
+  ) {
+    return;
+  }
+
+  passes.push(pass);
+  passDims.add(pass.dimension);
+}
+
+export function supplementVisualSection(
+  fixes: ReportVisualFix[],
+  passes: ReportVisualPass[],
+  context: VisualSectionContext = {}
+): NormalizedVisualSection {
+  const resultFixes = [...fixes];
+  const resultPasses = [...passes];
+  const fixDims = new Set(resultFixes.map((fix) => fix.dimension));
+  const passDims = new Set(resultPasses.map((pass) => pass.dimension));
+  const checklist = context.checklist ?? [];
+
+  if (!fixDims.has("cta_hierarchy") && !passDims.has("cta_hierarchy")) {
+    const ctaLabel = context.copyVariants?.cta?.current?.trim() ?? "";
+    const ctaFix = ctaLabel ? deriveCtaAuditFix(ctaLabel) : null;
+    const ctaPass = ctaLabel ? deriveCtaAuditPass(ctaLabel) : null;
+
+    if (ctaFix) {
+      appendDerivedFix(resultFixes, fixDims, ctaFix);
+    } else {
+      appendDerivedPass(resultPasses, passDims, fixDims, ctaPass);
+    }
+  }
+
+  if (resultFixes.length < MIN_VISUAL_FIXES) {
+    for (const item of checklist) {
+      if (item.status === "pass") {
+        continue;
+      }
+
+      appendDerivedFix(resultFixes, fixDims, deriveFixFromChecklistGap(item, context.copyVariants));
+      if (resultFixes.length >= MIN_VISUAL_FIXES) {
+        break;
+      }
+    }
+  }
+
+  if (
+    resultFixes.length < MIN_VISUAL_FIXES &&
+    context.meta?.proof_suggestion &&
+    !fixDims.has("depth")
+  ) {
+    appendDerivedFix(resultFixes, fixDims, {
+      dimension: "depth",
+      observation: "Trust proof placement can reinforce hero CTA",
+      recommendation: clampWords(context.meta.proof_suggestion, 18, true),
+    });
+  }
+
+  if (resultFixes.length + resultPasses.length < MIN_VISUAL_FIXES + 1) {
+    for (const item of checklist) {
+      appendDerivedPass(
+        resultPasses,
+        passDims,
+        fixDims,
+        derivePassFromChecklistItem(item)
+      );
+      if (resultFixes.length + resultPasses.length >= MIN_VISUAL_FIXES + 1) {
+        break;
+      }
+    }
+  }
+
+  return {
+    fixes: resultFixes.slice(0, 4),
+    passes: resultPasses.slice(0, 4),
+  };
+}
 
 export function getVisualFixDimensionLabel(dimension: VisualFixDimension): string {
   return DIMENSION_LABELS[dimension];
@@ -433,7 +681,8 @@ export function normalizeVisualSection(
   existingFixes?: ReportVisualFix[],
   _score?: number,
   _rawChecklist?: ReportChecklistItem[],
-  _breakdown?: ReportBreakdown
+  _breakdown?: ReportBreakdown,
+  context?: VisualSectionContext
 ): NormalizedVisualSection {
   const checklistSource = _rawChecklist ?? checklist;
 
@@ -454,7 +703,11 @@ export function normalizeVisualSection(
 
   const passes = filterActionableVisualPasses(parsedPasses, fixDimensions);
 
-  return { fixes, passes };
+  return supplementVisualSection(fixes, passes, {
+    checklist: checklistSource,
+    copyVariants: context?.copyVariants,
+    meta: context?.meta,
+  });
 }
 
 export function buildVisualFixesMarkdown(fixes: ReportVisualFix[]): string {
