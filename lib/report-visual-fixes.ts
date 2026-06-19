@@ -133,10 +133,10 @@ function deriveCtaAuditFix(ctaLabel: string, ctx?: CtaContext): ReportVisualFix 
     observation: `"${truncateLabel(label)}" — ${issues.join(", ")}`,
     recommendation:
       allCaps && vague
-        ? "Use sentence case + outcome — e.g. Start your free website"
+        ? "Switch to sentence case and add a specific outcome — mention what happens after click"
         : allCaps
           ? "Switch primary CTA to sentence case — less shouty on hero"
-          : "Name the outcome in the button — not a generic action",
+          : "Add specificity and remove friction signal — mention what happens after click",
   };
 }
 
@@ -168,7 +168,7 @@ function deriveFixFromChecklistGap(
     return {
       dimension: "cta_hierarchy",
       observation: `"${truncateLabel(ctaLabel)}" — no trial or risk-free hint on button`,
-      recommendation: "Add trial length to CTA — e.g. Start 14-day free trial",
+      recommendation: "Surface trial length in the CTA to reduce friction at click",
     };
   }
 
@@ -297,7 +297,7 @@ function deriveHeadlineAudit(
     return {
       dimension: "headline_formula",
       observation: "Headline missing — hero has no product category or audience signal",
-      recommendation: "Lead with who it's for — e.g. 'X for Y teams that Z'",
+      recommendation: "Add an audience qualifier or use case in the first line of the hero headline",
     };
   }
 
@@ -307,19 +307,19 @@ function deriveHeadlineAudit(
   const configs: Record<HeadlineFormula, { obs: string; rec: string }> = {
     generic: {
       obs: `Headline "${truncated}" — no category or audience signal for cold visitors`,
-      rec: "State who it's for and what they get — e.g. 'X for Y teams that Z'",
+      rec: "Add an audience qualifier or use case in the first line of the hero headline",
     },
     feature: {
-      obs: `Headline "${truncated}" — names the product type, not the visitor outcome`,
-      rec: "Lead with the outcome visitors get — move product name after the benefit",
+      obs: `Headline "${truncated}" — product type named but no audience qualifier above fold`,
+      rec: "Add an audience qualifier or use case in the first line of the hero headline",
     },
     benefit: {
-      obs: `Headline "${truncated}" — benefit clear but audience or context missing`,
-      rec: "Name who gets this benefit — add role or company type to the headline",
+      obs: `Headline "${truncated}" — benefit clear but audience qualifier missing above fold`,
+      rec: "Add an audience qualifier or use case in the first line of the hero headline",
     },
     audience: {
-      obs: `Headline "${truncated}" — audience named but outcome too vague for cold traffic`,
-      rec: "Complete with a concrete result — 'X for Y that [specific outcome]'",
+      obs: `Headline "${truncated}" — audience named but use case not visible in first line`,
+      rec: "Add an audience qualifier or use case in the first line of the hero headline",
     },
   };
 

@@ -275,7 +275,7 @@ Always include cta_hierarchy (CTA text audit or visual weight). Use navigation w
 Each item MUST cite what you see on this page:
 - dimension: one enum value above
 - observation: max 14 words. Name visible UI (exact button labels, dark/light treatment, radius, spacing, fold placement). For typography/color on light heroes, cite approximate hex when visible (e.g. "#9CA3AF subhead on white").
-- recommendation: max 18 words. Concrete change for THIS page (e.g. "Rename GET STARTED → Start your free trial" or "Darken subhead #9CA3AF → #4B5563").
+- recommendation: max 18 words. Concrete change for THIS page (e.g. "Switch GET STARTED to sentence case — add a product-specific outcome" or "Darken subhead #9CA3AF → #4B5563").
 
 BANNED templates (instant failure — never output these or close paraphrases):
 - "Subheadline weight feels too light for emphasis" / "Increase subheadline weight for better readability"
@@ -286,14 +286,16 @@ BANNED templates (instant failure — never output these or close paraphrases):
 - Fixes without naming a visible element on this screenshot
 
 Good examples:
-- cta_hierarchy (text): "GET STARTED — all caps, no product or trial hint" → "Use Start your free website — active verb + outcome"
-- cta_hierarchy (text): "'Start Free' — no product or outcome on button" → "Name the outcome — e.g. Start your free audit or Start 14-day trial"
+- cta_hierarchy (text): "GET STARTED — all caps, no product or trial hint" → "Switch to sentence case and add a specific outcome — say what happens after click"
+- cta_hierarchy (text): "'Start Free' — no product or outcome on button" → "Add a specific outcome — mention what happens after click"
 - cta_hierarchy (weight): "Start for free and Download share equal pill weight on dark hero" → "Fill primary CTA, outline secondary Download for cold traffic"
 - typography (light hero only): "Gray #9CA3AF subhead on white hero matches body copy" → "Darken subhead to #4B5563 and 18px for scan"
 - navigation: "8 nav links in header — Features, Pricing, Blog, Docs, About, Contact, Login, Sign Up" → "Collapse to 4 core links + sticky CTA button for cold traffic focus"
 - social_proof: "3 customer logos below fold — cold visitors scroll past before deciding" → "Move logos above fold directly under hero CTA"
 - social_proof: "No logos, stats, or testimonials above fold" → "Add 3 logos or one usage stat directly under primary hero button"
 - border_radius: "24px pill CTAs read consumer-playful for enterprise CRM" → "Tighten CTA radius to 8px for B2B tone"
+- depth (light hero): "Flat white hero — no visual separation from page body" → "Add #F8F8F6 background tint to hero section"
+- depth (dark hero): "Flat hero container — no depth cue separating card from background" → "Add 4px card shadow to hero container to increase perceived depth"
 
 visual_passes: 1-4 items. REQUIRED when score >= 7.5 OR when fewer than 2 visual_fixes exist.
 Dimensions you evaluated and found aligned with BRAND STAGE + AUDIENCE + hero theme.
