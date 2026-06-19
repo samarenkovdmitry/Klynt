@@ -241,19 +241,22 @@ function deriveNavAudit(
   computedValues?: PageComputedValues | null
 ): ReportVisualFix | null {
   if (computedValues != null) {
-    const { nav_link_count } = computedValues;
-    const navMissing = nav_link_count === 0;
-    const tooManyLinks = nav_link_count >= 6;
+    const { nav_link_count, nav_link_labels } = computedValues;
 
-    if (!navMissing && !tooManyLinks) return null;
+    if (nav_link_count > 6) {
+      const labelSnippet = nav_link_labels.slice(0, 5).join(", ");
+      return {
+        dimension: "navigation",
+        observation: labelSnippet
+          ? `${nav_link_count} nav links — ${labelSnippet}`
+          : `${nav_link_count} nav links in header — too many for cold visitor focus`,
+        recommendation: "Collapse to 4 core links + sticky CTA button for cold traffic focus",
+      };
+    }
 
-    return {
-      dimension: "navigation",
-      observation: navMissing
-        ? "No header nav links above fold — visitors lose orientation on scroll"
-        : `${nav_link_count} links in header nav — too many for cold visitor focus`,
-      recommendation: "Add sticky nav with primary CTA button visible at all scroll depths",
-    };
+    // 4–6 links: LLM evaluates with nav_link_labels from PAGE COMPUTED VALUES.
+    // ≤ 4 links: acceptable nav, no derive card.
+    return null;
   }
 
   const navGap = checklist.find(

@@ -176,6 +176,7 @@ export type PageComputedValues = {
   cta_border_radius: string | null;
   cta_font_weight: string | null;
   nav_link_count: number;
+  nav_link_labels: string[];
   nav_has_sticky: boolean;
   social_proof_found: boolean;
   social_proof_above_fold: boolean;

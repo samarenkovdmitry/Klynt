@@ -63,7 +63,23 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
         const ctaStyle = style(cta);
 
         const nav = get("nav, header nav");
-        const navLinks = nav ? nav.querySelectorAll("a") : [];
+        const navLinks = nav
+          ? Array.from(nav.querySelectorAll("a")).filter((a) => {
+              const s = getComputedStyle(a);
+              const rect = a.getBoundingClientRect();
+              return (
+                s.display !== "none" &&
+                s.visibility !== "hidden" &&
+                s.opacity !== "0" &&
+                rect.width > 0 &&
+                rect.height > 0 &&
+                rect.top < window.innerHeight * 0.2
+              );
+            })
+          : [];
+        const uniqueNavLinks = [
+          ...new Map(navLinks.map((a) => [a.href, a] as [string, HTMLAnchorElement])).values(),
+        ];
 
         const proof = get(
           '[class*="logo"], [class*="trust"], [class*="social"], ' +
@@ -89,12 +105,14 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
           cta_color: ctaStyle?.color ?? null,
           cta_border_radius: ctaStyle?.borderRadius ?? null,
           cta_font_weight: ctaStyle?.fontWeight ?? null,
-          nav_link_count: navLinks.length,
-          nav_has_sticky:
-            nav
-              ? getComputedStyle(nav).position === "sticky" ||
-                getComputedStyle(nav).position === "fixed"
-              : false,
+          nav_link_count: uniqueNavLinks.length,
+          nav_link_labels: uniqueNavLinks
+            .map((a) => a.innerText.trim())
+            .filter(Boolean)
+            .slice(0, 10),
+          nav_has_sticky: nav
+            ? ["sticky", "fixed"].includes(getComputedStyle(nav).position)
+            : false,
           social_proof_found: !!proof,
           social_proof_above_fold: proofRect ? proofRect.top < viewportHeight : false,
           card_border_radius: (() => {
