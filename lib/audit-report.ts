@@ -58,6 +58,8 @@ export type TrafficSource = "cold" | "warm" | "mixed";
 
 export type AudienceType = "b2b" | "b2c" | "both";
 
+export type PageContext = "b2b" | "creative" | "consumer" | "enterprise";
+
 export type ReportBreakdown = {
   clarity?: number;
   trust?: number;

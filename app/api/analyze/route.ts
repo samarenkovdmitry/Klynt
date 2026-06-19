@@ -358,9 +358,13 @@ export async function POST(req: Request) {
       optimizeScreenshots(screenshotsBase64)
     );
 
+    // Derive page context from audienceType for CTA trigger softening.
+    const pageContext: import("@/lib/audit-report").PageContext | undefined =
+      audienceType === "b2b" ? "b2b" : audienceType === "b2c" ? "consumer" : undefined;
+
     // Skip CTA audit in LLM prompt when derive can pre-determine the result from DOM data.
     const skipCtaAudit = computedValues?.cta_text
-      ? willDeriveCtaFix(computedValues.cta_text, { audienceType, trafficSource })
+      ? willDeriveCtaFix(computedValues.cta_text, { audienceType, trafficSource, pageContext })
       : false;
 
     const basePrompt = buildFullAuditPrompt(brandStage, trafficSource, audienceType, { skipCtaAudit });
@@ -528,6 +532,7 @@ export async function POST(req: Request) {
         audienceType,
         trafficSource,
         computedValues,
+        pageContext,
       }
     );
     json.visual_fixes = visualSection.fixes;

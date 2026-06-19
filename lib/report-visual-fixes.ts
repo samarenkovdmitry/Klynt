@@ -2,6 +2,7 @@ import type {
   AudienceType,
   ChecklistLinkTarget,
   PageComputedValues,
+  PageContext,
   ReportBreakdown,
   ReportChecklistItem,
   ReportCopyVariants,
@@ -64,6 +65,7 @@ export type VisualSectionContext = {
   audienceType?: AudienceType;
   trafficSource?: TrafficSource;
   computedValues?: PageComputedValues | null;
+  pageContext?: PageContext;
 };
 
 const MIN_VISUAL_FIXES = 2;
@@ -108,11 +110,22 @@ function isAllCapsCta(label: string): boolean {
 // B2B + warm/mixed traffic: these generic CTAs are acceptable in a known-brand context.
 const VAGUE_CTA_SOFTENED_B2B_WARM = /^(get\s+started|started|learn\s+more|start\s+free)$/i;
 
-type CtaContext = Pick<VisualSectionContext, "audienceType" | "trafficSource">;
+// Creative and consumer contexts: action-oriented but short CTAs are standard and acceptable.
+const VAGUE_CTA_SOFTENED_CONSUMER_CREATIVE = /^(get\s+started|start\s+free|try\s+free)$/i;
+
+type CtaContext = Pick<VisualSectionContext, "audienceType" | "trafficSource" | "pageContext">;
 
 function isVagueCtaLabel(label: string, ctx?: CtaContext): boolean {
   const normalized = label.replace(/[^\w\s]/g, "").trim();
   if (!VAGUE_CTA_PATTERN.test(normalized)) return false;
+
+  // Relax check for creative and consumer — action-oriented short CTAs are category-standard.
+  if (
+    (ctx?.pageContext === "creative" || ctx?.pageContext === "consumer") &&
+    VAGUE_CTA_SOFTENED_CONSUMER_CREATIVE.test(normalized)
+  ) {
+    return false;
+  }
 
   // Relax check for B2B + warm/mixed — established brand context makes generic CTAs acceptable.
   if (
@@ -511,7 +524,7 @@ export function supplementVisualSection(
   const fixDims = new Set(resultFixes.map((fix) => fix.dimension));
   const passDims = new Set(resultPasses.map((pass) => pass.dimension));
   const checklist = context.checklist ?? [];
-  const ctaCtx: CtaContext = { audienceType: context.audienceType, trafficSource: context.trafficSource };
+  const ctaCtx: CtaContext = { audienceType: context.audienceType, trafficSource: context.trafficSource, pageContext: context.pageContext };
   const computedValues = context.computedValues ?? null;
 
   // Collect all derive candidates first, then sort by DERIVE_PRIORITY_ORDER and apply.
