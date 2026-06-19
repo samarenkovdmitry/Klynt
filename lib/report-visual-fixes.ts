@@ -18,6 +18,8 @@ export const VISUAL_FIX_DIMENSIONS: VisualFixDimension[] = [
   "cta_hierarchy",
   "typography",
   "depth",
+  "navigation",
+  "social_proof",
 ];
 
 const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
@@ -28,6 +30,8 @@ const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
   cta_hierarchy: "CTA hierarchy",
   typography: "Typography",
   depth: "Background & depth",
+  navigation: "Navigation complexity",
+  social_proof: "Social proof",
 };
 
 export type NormalizedVisualSection = {
@@ -43,7 +47,7 @@ export type VisualSectionContext = {
 
 const MIN_VISUAL_FIXES = 2;
 const VAGUE_CTA_PATTERN =
-  /^(get\s+started|started|learn\s+more|click\s+here|sign\s+up|submit|continue|explore|discover|try\s+now|register|join)$/i;
+  /^(get\s+started|started|learn\s+more|click\s+here|sign\s+up(\s+free)?|submit|continue|explore|discover|try\s+now|try\s+free|try\s+it(\s+free)?|try\s+today|register|join(\s+now)?|join\s+free|start\s+free|start\s+now|get\s+free|get\s+access|access\s+now|begin(\s+now)?|proceed|watch\s+now|see\s+demo|book\s+demo)$/i;
 
 function truncateLabel(label: string, max = 28): string {
   const trimmed = label.trim();
@@ -64,8 +68,12 @@ function isVagueCtaLabel(label: string): boolean {
   return VAGUE_CTA_PATTERN.test(normalized);
 }
 
+function normalizeCtaInput(raw: string): string {
+  return raw.replace(/\s+/g, " ").trim();
+}
+
 function deriveCtaAuditFix(ctaLabel: string): ReportVisualFix | null {
-  const label = ctaLabel.trim();
+  const label = normalizeCtaInput(ctaLabel);
   if (!label) {
     return null;
   }
@@ -98,11 +106,12 @@ function deriveCtaAuditFix(ctaLabel: string): ReportVisualFix | null {
 }
 
 function deriveCtaAuditPass(ctaLabel: string): ReportVisualPass | null {
-  const label = ctaLabel.trim();
+  const label = normalizeCtaInput(ctaLabel);
   if (!label || isAllCapsCta(label) || isVagueCtaLabel(label)) {
     return null;
   }
 
+  // Single-word CTAs are too ambiguous to mark as aligned
   if (label.split(/\s+/).length < 2) {
     return null;
   }
@@ -161,6 +170,52 @@ function deriveFixFromChecklistGap(
   }
 
   return null;
+}
+
+function deriveNavAudit(checklist: ReportChecklistItem[]): ReportVisualFix | null {
+  const navGap = checklist.find(
+    (item) => item.link_to === "structure-nav" && item.status !== "pass"
+  );
+  if (!navGap) {
+    return null;
+  }
+
+  const observation = navGap.status === "missing"
+    ? "No header nav links above fold — visitors lose orientation on scroll"
+    : clampWords(navGap.text, 14, true);
+
+  return {
+    dimension: "navigation",
+    observation,
+    recommendation: "Add sticky nav with primary CTA button visible at all scroll depths",
+  };
+}
+
+function deriveSocialProofAudit(
+  checklist: ReportChecklistItem[],
+  meta?: ReportMeta
+): ReportVisualFix | null {
+  if (!meta?.proof_suggestion) {
+    return null;
+  }
+
+  const trustGap = checklist.find(
+    (item) => item.category === "trust" && item.status !== "pass"
+  );
+  if (!trustGap) {
+    return null;
+  }
+
+  const observation =
+    trustGap.status === "missing"
+      ? "No logos, stats, or ratings above fold — trust proof absent for cold visitors"
+      : "Social proof exists but positioned below fold or too subtle near hero CTA";
+
+  return {
+    dimension: "social_proof",
+    observation,
+    recommendation: clampWords(meta.proof_suggestion, 18, true),
+  };
 }
 
 function derivePassFromChecklistItem(item: ReportChecklistItem): ReportVisualPass | null {
@@ -224,16 +279,38 @@ export function supplementVisualSection(
   const passDims = new Set(resultPasses.map((pass) => pass.dimension));
   const checklist = context.checklist ?? [];
 
+  // CTA hierarchy — derive from copy_variants or checklist fallback
   if (!fixDims.has("cta_hierarchy") && !passDims.has("cta_hierarchy")) {
-    const ctaLabel = context.copyVariants?.cta?.current?.trim() ?? "";
-    const ctaFix = ctaLabel ? deriveCtaAuditFix(ctaLabel) : null;
-    const ctaPass = ctaLabel ? deriveCtaAuditPass(ctaLabel) : null;
+    const ctaLabel = normalizeCtaInput(context.copyVariants?.cta?.current ?? "");
 
-    if (ctaFix) {
-      appendDerivedFix(resultFixes, fixDims, ctaFix);
+    if (!ctaLabel) {
+      // CTA not captured — use checklist Trial unclear or copy-cta gap as fallback
+      const trialGap = checklist.find(
+        (item) => item.link_to === "copy-cta" || item.gap_label?.trim() === "Trial unclear"
+      );
+      if (trialGap) {
+        appendDerivedFix(resultFixes, fixDims, deriveFixFromChecklistGap(trialGap, context.copyVariants));
+      }
     } else {
-      appendDerivedPass(resultPasses, passDims, fixDims, ctaPass);
+      const ctaFix = deriveCtaAuditFix(ctaLabel);
+      const ctaPass = deriveCtaAuditPass(ctaLabel);
+
+      if (ctaFix) {
+        appendDerivedFix(resultFixes, fixDims, ctaFix);
+      } else {
+        appendDerivedPass(resultPasses, passDims, fixDims, ctaPass);
+      }
     }
+  }
+
+  // Navigation complexity — derive from structure-nav checklist gap
+  if (!fixDims.has("navigation") && !passDims.has("navigation")) {
+    appendDerivedFix(resultFixes, fixDims, deriveNavAudit(checklist));
+  }
+
+  // Social proof — specific card when trust gap + meta.proof_suggestion present
+  if (!fixDims.has("social_proof") && !fixDims.has("depth") && !passDims.has("social_proof")) {
+    appendDerivedFix(resultFixes, fixDims, deriveSocialProofAudit(checklist, context.meta));
   }
 
   if (resultFixes.length < MIN_VISUAL_FIXES) {
@@ -247,18 +324,6 @@ export function supplementVisualSection(
         break;
       }
     }
-  }
-
-  if (
-    resultFixes.length < MIN_VISUAL_FIXES &&
-    context.meta?.proof_suggestion &&
-    !fixDims.has("depth")
-  ) {
-    appendDerivedFix(resultFixes, fixDims, {
-      dimension: "depth",
-      observation: "Trust proof placement can reinforce hero CTA",
-      recommendation: clampWords(context.meta.proof_suggestion, 18, true),
-    });
   }
 
   if (resultFixes.length + resultPasses.length < MIN_VISUAL_FIXES + 1) {
@@ -337,6 +402,13 @@ const DIMENSION_ALIASES: Record<string, VisualFixDimension> = {
   type: "typography",
   depth: "depth",
   background_depth: "depth",
+  navigation: "navigation",
+  nav: "navigation",
+  nav_complexity: "navigation",
+  social_proof: "social_proof",
+  socialproof: "social_proof",
+  trust_proof: "social_proof",
+  proof: "social_proof",
 };
 
 export function normalizeVisualDimension(raw: string | undefined | null): VisualFixDimension | null {
@@ -363,6 +435,10 @@ function resolveVisualDimensionFromGapLabel(gapLabel: string): VisualFixDimensio
       return "color_tone";
     case "CTA hierarchy":
       return "cta_hierarchy";
+    case "Navigation complexity":
+      return "navigation";
+    case "Social proof gap":
+      return "social_proof";
     default:
       return null;
   }
@@ -456,7 +532,7 @@ export function isBannedGenericVisualText(text: string): boolean {
 }
 
 export function hasVisibleVisualEvidence(text: string): boolean {
-  return /\b(dark|light|black|white|gray|grey|muted|hero|headline|subhead|subheadline|cta|button|pill|card|mockup|nav|logo|fold|accent|primary|secondary|radius|rounded|padding|gap|shadow|gradient|tint|#[0-9a-f]{3,6}|\d+\s*px|\d+\s*rem|download|trial|free|sign up|get started|start for free)\b/i.test(
+  return /\b(dark|light|black|white|gray|grey|muted|hero|headline|subhead|subheadline|cta|button|pill|card|mockup|nav|logo|fold|accent|primary|secondary|radius|rounded|padding|gap|shadow|gradient|tint|#[0-9a-f]{3,6}|\d+\s*px|\d+\s*rem|download|trial|free|sign up|get started|start for free|proof|stat|badge|rating|testimonial|review|logos|counter)\b/i.test(
     text
   );
 }
@@ -629,6 +705,14 @@ function resolveVisualDimensionFromPass(item: ReportChecklistItem): VisualFixDim
 
   if (/depth|flat|background|gradient/.test(haystack)) {
     return "depth";
+  }
+
+  if (/navigation|nav\s+link|menu\s+item|sticky\s+cta|header\s+nav/.test(haystack)) {
+    return "navigation";
+  }
+
+  if (/social\s+proof|trust\s+proof|logo|testimonial|customer\s+quote|proof\s+above/.test(haystack)) {
+    return "social_proof";
   }
 
   return null;

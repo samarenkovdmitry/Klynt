@@ -6,7 +6,9 @@ import {
   RiArrowDownSLine,
   RiArrowRightLine,
   RiCursorLine,
+  RiGroupLine,
   RiLayoutGridLine,
+  RiNavigationLine,
   RiPaletteLine,
   RiRoundedCorner,
   RiStackLine,
@@ -43,6 +45,8 @@ const DIMENSION_ICONS: Record<VisualFixDimension, typeof RiPaletteLine> = {
   cta_hierarchy: RiCursorLine,
   typography: RiText,
   depth: RiStackLine,
+  navigation: RiNavigationLine,
+  social_proof: RiGroupLine,
 };
 
 function VisualFixCard({ fix }: { fix: ReportVisualFix }) {

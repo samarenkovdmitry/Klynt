@@ -148,14 +148,14 @@ Return ONLY valid JSON (no markdown):
   },
   "visual_fixes": [
     {
-      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth",
+      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth"|"navigation"|"social_proof",
       "observation": "string",
       "recommendation": "string"
     }
   ],
   "visual_passes": [
     {
-      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth",
+      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth"|"navigation"|"social_proof",
       "note": "string"
     }
   ]
@@ -256,8 +256,9 @@ visual_fixes: 0-4 items. Surface/conversion design guidance — how CTAs, hierar
 SURFACE AUDIT MINIMUM (mandatory — do not skip):
 - Always evaluate CTA TEXT AUDIT under cta_hierarchy using exact hero button labels from HERO INVENTORY.
 - Deliver at least 2 total insights across visual_fixes + visual_passes combined (fixes preferred when a real issue exists).
-- CTA TEXT AUDIT criteria for each hero button label: (1) specificity — "GET STARTED" is weak vs "Start your free website"; (2) active verb + outcome; (3) caps/all-caps tone; (4) urgency fit when trial or limited offer is implied elsewhere on page.
-- TRUST PLACEMENT: if logos, stats, or ratings exist, note above or below fold in a depth or spacing fix/pass — not just "trust exists".
+- CTA TEXT AUDIT criteria for each hero button label: (1) specificity — "GET STARTED", "Start Free", "Try Free" are weak (no product or outcome); "Start your free website" is specific; (2) active verb + concrete outcome; (3) all-caps tone ("GET STARTED", "TRY FREE FOR 30 DAYS" — all caps → sentence case fix); (4) urgency fit when trial or limited offer is implied elsewhere on page.
+- NAV COMPLEXITY: count visible nav links in the header. If 6+ links OR nav has no primary CTA button → output a "navigation" dimension fix. observation: name the exact link count or missing element. recommendation: max 18 words, specific to this page.
+- SOCIAL PROOF FORMAT: if trust signals exist, identify format (logos | stats/numbers | testimonial quotes) and position (above fold | below fold). If strong social proof is above fold → social_proof pass. If missing or below fold → social_proof fix with format and position in recommendation. Never use "social_proof" dimension AND "depth" for the same observation.
 - If the page is polished (score >= 7.5), still output concrete passes — never leave visual_fixes and visual_passes both empty.
 
 STEP 0 — HERO THEME (use HERO INVENTORY theme):
@@ -268,8 +269,8 @@ STEP 0 — HERO THEME (use HERO INVENTORY theme):
 
 STEP 1: Use BRAND STAGE + AUDIENCE + TRAFFIC context to infer who this product is for.
 STEP 2: Pick dimensions with visible evidence on THIS screenshot:
-  border_radius | density | color_tone | spacing | cta_hierarchy | typography | depth
-Always include cta_hierarchy (CTA text audit or visual weight). Skip other dimensions with no visible signal. Never repeat checklist gap text verbatim.
+  border_radius | density | color_tone | spacing | cta_hierarchy | typography | depth | navigation | social_proof
+Always include cta_hierarchy (CTA text audit or visual weight). Use navigation when nav link count or sticky CTA is an issue. Use social_proof for trust format and placement (not depth). Skip dimensions with no visible signal. Never repeat checklist gap text verbatim.
 
 Each item MUST cite what you see on this page:
 - dimension: one enum value above
@@ -286,9 +287,12 @@ BANNED templates (instant failure — never output these or close paraphrases):
 
 Good examples:
 - cta_hierarchy (text): "GET STARTED — all caps, no product or trial hint" → "Use Start your free website — active verb + outcome"
+- cta_hierarchy (text): "'Start Free' — no product or outcome on button" → "Name the outcome — e.g. Start your free audit or Start 14-day trial"
 - cta_hierarchy (weight): "Start for free and Download share equal pill weight on dark hero" → "Fill primary CTA, outline secondary Download for cold traffic"
 - typography (light hero only): "Gray #9CA3AF subhead on white hero matches body copy" → "Darken subhead to #4B5563 and 18px for scan"
-- depth: "Client logos sit below fold — cold visitors miss social proof" → "Move 3–4 logos directly under hero CTA"
+- navigation: "8 nav links in header — Features, Pricing, Blog, Docs, About, Contact, Login, Sign Up" → "Collapse to 4 core links + sticky CTA button for cold traffic focus"
+- social_proof: "3 customer logos below fold — cold visitors scroll past before deciding" → "Move logos above fold directly under hero CTA"
+- social_proof: "No logos, stats, or testimonials above fold" → "Add 3 logos or one usage stat directly under primary hero button"
 - border_radius: "24px pill CTAs read consumer-playful for enterprise CRM" → "Tighten CTA radius to 8px for B2B tone"
 
 visual_passes: 1-4 items. REQUIRED when score >= 7.5 OR when fewer than 2 visual_fixes exist.

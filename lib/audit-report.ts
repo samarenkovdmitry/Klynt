@@ -141,7 +141,9 @@ export type VisualFixDimension =
   | "spacing"
   | "cta_hierarchy"
   | "typography"
-  | "depth";
+  | "depth"
+  | "navigation"
+  | "social_proof";
 
 export type ReportVisualFix = {
   dimension: VisualFixDimension;
