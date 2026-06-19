@@ -263,7 +263,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                   {/* Header band */}
                   <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
                     <div
-                      className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#E0E6EB]"
+                      className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#eef1f6]"
                       aria-hidden
                     >
                       <RiDownloadLine size={18} className="text-[#5B6378]" />

@@ -12,12 +12,9 @@ import {
 import type { ReportChecklistItem, ChecklistLinkTarget } from "@/lib/audit-report";
 import { getChecklistBadgeLabel } from "@/lib/normalize-report-checklist";
 import {
-  REPORT_ROW_DIVIDER_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
-  REPORT_SURFACE_CARD_CLASS,
 } from "@/components/report/reportStyles";
-import { SectionHeader } from "@/components/report/ReportSectionHeader";
 
 const STATUS_CONFIG = {
   missing: {
@@ -83,8 +80,8 @@ function ChecklistRow({
   return (
     <div
       className={[
-        "group flex items-center gap-3 py-4 text-[15px] leading-5",
-        isLast ? "" : REPORT_ROW_DIVIDER_CLASS,
+        "group flex items-center gap-3 px-6 py-4 text-[15px] leading-5",
+        isLast ? "" : "border-b border-[#eef1f5]",
       ].join(" ")}
     >
       <Icon size={18} className={`shrink-0 ${iconColor}`} aria-hidden />
@@ -136,27 +133,32 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
     <section
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
-      <SectionHeader
-        icon={RiListCheck3}
-        title="What needs fixing"
-        trailing={
-          <span className="text-[14px] leading-5 text-[#8E99A2]">
+      <div className="overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white">
+        <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
+          <div
+            className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#eef1f6]"
+            aria-hidden
+          >
+            <RiListCheck3 size={18} className="text-[#5B6378]" />
+          </div>
+          <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+            What needs fixing
+          </span>
+          <span className="ml-auto text-[14px] leading-5 text-[#8E99A2]">
             {gaps.length} gap{gaps.length === 1 ? "" : "s"}
           </span>
-        }
-      />
+        </div>
 
-      <div className={REPORT_SURFACE_CARD_CLASS}>
         {gaps.length > 0 ? (
-          <div className="px-5 md:px-6">
+          <>
             {gaps.map((item, index) => (
               <ChecklistRow
                 key={item.id}
                 item={item}
-                isLast={index === gaps.length - 1}
+                isLast={index === gaps.length - 1 && passes.length === 0}
               />
             ))}
-          </div>
+          </>
         ) : null}
 
         {passes.length > 0 ? (
@@ -165,8 +167,8 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
               type="button"
               onClick={() => setPassVisible((value) => !value)}
               className={[
-                "flex w-full items-center gap-1.5 px-5 py-3.5 text-[13px] text-[#7D8C99] transition-colors hover:text-[#061C2F] md:px-6",
-                gaps.length > 0 ? `border-t ${REPORT_ROW_DIVIDER_CLASS.replace("border-b ", "")}` : "",
+                "flex w-full items-center gap-1.5 px-6 py-3.5 text-[13px] text-[#7D8C99] transition-colors hover:text-[#061C2F]",
+                gaps.length > 0 ? "border-t border-[#eef1f5]" : "",
               ].join(" ")}
             >
               <RiArrowDownSLine
@@ -185,14 +187,7 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
                 maxHeight: passVisible ? `${passes.length * 80 + 32}px` : "0px",
               }}
             >
-              <div
-                className={[
-                  "px-5 md:px-6",
-                  gaps.length > 0 || passVisible
-                    ? `border-t ${REPORT_ROW_DIVIDER_CLASS.replace("border-b ", "")}`
-                    : "",
-                ].join(" ")}
-              >
+              <div className={gaps.length > 0 || passVisible ? "border-t border-[#eef1f5]" : ""}>
                 {passes.map((item, index) => (
                   <ChecklistRow
                     key={item.id}

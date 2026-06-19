@@ -10,7 +10,6 @@ import {
   RiLock2Line,
   RiVipCrownFill,
 } from "@remixicon/react";
-import { SectionHeader } from "@/components/report/ReportSectionHeader";
 import type {
   ReportCopyVariants,
   CopyVariantBlock,
@@ -21,10 +20,8 @@ import type {
 } from "@/lib/audit-report";
 import { deriveChecklistGapLabel } from "@/lib/normalize-report-checklist";
 import {
-  REPORT_ROW_DIVIDER_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
-  REPORT_SURFACE_CARD_CLASS,
 } from "@/components/report/reportStyles";
 import { freemium, type RequestProUpgrade } from "@/lib/freemium";
 
@@ -179,7 +176,7 @@ function CopyBlock({
   const hasGap = Boolean(gapItem && gapItem.status !== "pass");
 
   return (
-    <div id={id} className={`px-5 py-5 ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
+    <div id={id} className={`px-6 py-6 ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
       {/* Title row */}
       <div className="mb-3 flex items-center gap-3">
         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[rgba(6,28,47,0.15)] text-[13px] font-medium text-[#7D8C99]">
@@ -254,11 +251,18 @@ export default function CopyStudio({
 }: CopyStudioProps) {
   return (
     <section className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
-      <SectionHeader
-        icon={RiPencilLine}
-        title="Copy studio"
-        trailing={
-          <div className="flex items-center gap-2.5">
+      <div className="overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white">
+        <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
+          <div
+            className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#eef1f6]"
+            aria-hidden
+          >
+            <RiPencilLine size={18} className="text-[#5B6378]" />
+          </div>
+          <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+            Copy studio
+          </span>
+          <div className="ml-auto flex items-center gap-2.5">
             <span className="text-[14px] leading-5 text-[#8E99A2]">3 sections</span>
             {previewLocked ? (
               <>
@@ -271,16 +275,15 @@ export default function CopyStudio({
               </>
             ) : null}
           </div>
-        }
-      />
+        </div>
 
-      {/* Sections card */}
-      <div className={REPORT_SURFACE_CARD_CLASS}>
         {BLOCKS.map(({ key, label, id, linkTo }, index) => {
           const gapItem = checklist?.find((item) => item.link_to === linkTo);
-          const isLast = index === BLOCKS.length - 1;
           return (
-            <div key={key} className={isLast ? "" : REPORT_ROW_DIVIDER_CLASS}>
+            <div
+              key={key}
+              className={index > 0 ? "border-t border-[#eef1f5]" : ""}
+            >
               <CopyBlock
                 index={index}
                 id={id}

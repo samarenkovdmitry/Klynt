@@ -94,7 +94,7 @@ export function SectionHeader({ icon: Icon, title, trailing }: SectionHeaderProp
     <div className="mb-4 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         <div
-          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#E0E6EB]"
+          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#eef1f6]"
           aria-hidden
         >
           <Icon size={18} className="text-[#5B6378]" />
