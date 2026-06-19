@@ -153,11 +153,41 @@ interface ExportCardProps {
   cardId: CardId;
   activeToast: CardId | null;
   locked: boolean;
-  hasBorderRight: boolean;
+  index: number;
   onClick: (id: CardId) => void;
 }
 
-function ExportCard({ icon, title, sub, cardId, activeToast, locked, hasBorderRight, onClick }: ExportCardProps) {
+function getExportCardBorderClass(index: number, total: number) {
+  const classes: string[] = [];
+
+  if (index % 2 === 0) {
+    classes.push("border-r border-[#eef1f5]");
+  }
+  if (index < 2) {
+    classes.push("border-b border-[#eef1f5]");
+  }
+
+  classes.push("md:border-b-0");
+  if (index < total - 1) {
+    classes.push("md:border-r md:border-[#eef1f5]");
+  } else {
+    classes.push("md:border-r-0");
+  }
+
+  return classes.join(" ");
+}
+
+function ExportCard({
+  icon,
+  title,
+  sub,
+  cardId,
+  activeToast,
+  locked,
+  index,
+  total,
+  onClick,
+}: ExportCardProps & { total: number }) {
   const copied = activeToast === cardId;
 
   return (
@@ -166,8 +196,8 @@ function ExportCard({ icon, title, sub, cardId, activeToast, locked, hasBorderRi
       onClick={() => onClick(cardId)}
       className={[
         "group relative w-full cursor-pointer p-6 text-left transition-colors hover:bg-[#f8f9fa] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#061C2F]/15",
-        hasBorderRight ? "border-r border-[#eef1f5]" : "",
-      ].filter(Boolean).join(" ")}
+        getExportCardBorderClass(index, total),
+      ].join(" ")}
     >
       <div className="flex items-start justify-between">
         <span className="text-[#8F99A2]">{icon}</span>
@@ -283,7 +313,7 @@ export function ExportGrid({
   ];
 
   return (
-    <div className="grid grid-cols-4">
+    <div className="grid grid-cols-2 md:grid-cols-4">
       {CARDS.map((card, index) => (
         <ExportCard
           key={card.id}
@@ -293,7 +323,8 @@ export function ExportGrid({
           cardId={card.id}
           activeToast={activeToast}
           locked={locked}
-          hasBorderRight={index < CARDS.length - 1}
+          index={index}
+          total={CARDS.length}
           onClick={copyToClipboard}
         />
       ))}

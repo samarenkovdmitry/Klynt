@@ -88,9 +88,9 @@ export function TrustMeta({
         </div>
 
         {/* 2-column grid */}
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Left column — Add proof */}
-          <div className="border-r border-[#eef1f5] p-6">
+          <div className="border-b border-[#eef1f5] p-6 md:border-b-0 md:border-r md:border-[#eef1f5]">
             <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#061C2F]">
               <RiAwardLine size={16} className="text-[#7D8C99]" aria-hidden />
               Add proof

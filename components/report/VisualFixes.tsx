@@ -86,12 +86,10 @@ function highlightVisualText(text: string): React.ReactNode {
 
 function VisualFixColumn({
   fix,
-  hasBorderRight,
-  hasBorderTop,
+  index,
 }: {
   fix: ReportVisualFix;
-  hasBorderRight: boolean;
-  hasBorderTop: boolean;
+  index: number;
 }) {
   const Icon = DIMENSION_ICONS[fix.dimension];
   const label = getVisualFixDimensionLabel(fix.dimension);
@@ -100,8 +98,9 @@ function VisualFixColumn({
     <div
       className={[
         "p-6",
-        hasBorderRight ? "border-r border-[#eef1f5]" : "",
-        hasBorderTop ? "border-t border-[#eef1f5]" : "",
+        index >= 1 ? "border-t border-[#eef1f5]" : "",
+        index === 1 ? "md:border-t-0" : "",
+        index % 2 === 0 ? "md:border-r md:border-[#eef1f5]" : "",
       ].filter(Boolean).join(" ")}
     >
       <div className="mb-2.5 flex items-center gap-2">
@@ -190,14 +189,9 @@ export function VisualFixes({
             </span>
           </div>
           {/* 2-column content grid */}
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-1 md:grid-cols-2">
             {fixes.map((fix, index) => (
-              <VisualFixColumn
-                key={fix.dimension}
-                fix={fix}
-                hasBorderRight={index % 2 === 0}
-                hasBorderTop={index >= 2}
-              />
+              <VisualFixColumn key={fix.dimension} fix={fix} index={index} />
             ))}
           </div>
 
