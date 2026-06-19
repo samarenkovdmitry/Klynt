@@ -166,7 +166,7 @@ export function VisualFixes({
     >
       {/* Outer card */}
       {fixes.length > 0 ? (
-        <div className="overflow-hidden rounded-[14px] border border-[#e6e9ef]">
+        <div className="overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white">
           {/* Header band */}
           <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
             <div
