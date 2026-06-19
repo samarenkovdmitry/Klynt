@@ -372,6 +372,7 @@ export async function POST(req: Request) {
       skipCtaAudit,
       computedValues: computedValues
         ? {
+            h1_text: computedValues.h1_text,
             social_proof_above_fold: computedValues.social_proof_above_fold,
             cta_text: computedValues.cta_text,
             nav_link_count: computedValues.nav_link_count,

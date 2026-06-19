@@ -68,41 +68,65 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
 
 type ChecklistComputedValues = Pick<
   PageComputedValues,
-  "social_proof_above_fold" | "cta_text" | "nav_link_labels" | "nav_link_count"
+  "social_proof_above_fold" | "cta_text" | "nav_link_labels" | "nav_link_count" | "h1_text"
 >;
 
-function buildChecklistComputedContextBlock(cv: ChecklistComputedValues | null | undefined): string {
-  if (!cv) {
-    return `CHECKLIST COMPUTED CONTEXT (DOM-extracted):
-- social_proof_above_fold: unknown (check screenshot)
-- cta_text: unknown (check screenshot)
-- nav_link_count: unknown (check screenshot)
-- nav_link_labels: unknown (check screenshot)`;
-  }
+const VAGUE_CTA_PATTERN = [
+  "Get Started", "Start Now", "Learn More", "Click Here", "Get Access",
+  "Go", "Submit", "Register", "Continue", "Open", "Next",
+];
 
-  const labelsStr =
-    cv.nav_link_labels.length > 0
+function buildChecklistEvaluationBlock(cv: ChecklistComputedValues | null | undefined): string {
+  const headline = cv?.h1_text ? `"${cv.h1_text}"` : "unknown (read from screenshot)";
+  const cta = cv?.cta_text ? `"${cv.cta_text}"` : "unknown (read from screenshot)";
+  const proof = cv ? String(cv.social_proof_above_fold) : "unknown (check screenshot)";
+  const navStr =
+    cv && cv.nav_link_labels.length > 0
       ? `[${cv.nav_link_labels.map((l) => `"${l}"`).join(", ")}]`
-      : "[]";
+      : cv
+        ? "[] (no nav links detected)"
+        : "unknown (check screenshot)";
 
-  return `CHECKLIST COMPUTED CONTEXT (DOM-extracted — use these values to avoid false gap flags):
-- social_proof_above_fold: ${cv.social_proof_above_fold}
-- cta_text: ${cv.cta_text ? `"${cv.cta_text}"` : "null"}
-- nav_link_count: ${cv.nav_link_count}
-- nav_link_labels: ${labelsStr}`;
+  const ctaIsVague = cv?.cta_text
+    ? VAGUE_CTA_PATTERN.some(
+        (p) => cv.cta_text!.trim().toLowerCase() === p.toLowerCase()
+      )
+    : null;
+
+  const ctaHint =
+    ctaIsVague === true
+      ? " ← in VAGUE_CTA_PATTERN — eligible for CTA gap if outcome is unclear"
+      : ctaIsVague === false
+        ? " ← NOT in VAGUE_CTA_PATTERN — must be pass or weak, NOT missing"
+        : "";
+
+  return `BEFORE FLAGGING ANY CHECKLIST GAP — read the actual page data first:
+  HEADLINE: ${headline}
+  CTA: ${cta}${ctaHint}
+  SOCIAL_PROOF_ABOVE_FOLD: ${proof}
+  NAV_LINKS: ${navStr}
+
+EVALUATION PROTOCOL — for every checklist item, follow this sequence:
+  Step 1 — Quote the element exactly as it appears above (or from the screenshot if unknown).
+  Step 2 — Given the product type, AUDIENCE, and TRAFFIC context, evaluate:
+    → Element is present and sufficient → status "pass", evidence = exact quote of what you see
+    → Element is present but partially fails → status "weak", evidence = what it says + the specific gap
+    → Element is absent or clearly fails for this page_context → status "missing", evidence = what is absent and why
+
+  NEVER jump to "missing" without first reading what IS there.
+  NEVER flag a gap you inferred from silence — only flag what you can see is wrong.
+
+HARD CONSTRAINTS (violations auto-filtered server-side):
+- SOCIAL_PROOF_ABOVE_FOLD is true → trust MUST be "pass". Evidence: quote the visible signal. Do NOT flag trust as missing.
+- CTA not in VAGUE_CTA_PATTERN → CTA MUST be "pass" or "weak", never "missing". Evidence: exact CTA label.
+  VAGUE_CTA_PATTERN = ${JSON.stringify(VAGUE_CTA_PATTERN)}
+  A CTA with "free", "trial", a product name, or a specific outcome is NOT vague.
+- NAV_LINKS non-empty → structure-nav MUST be "pass", not "missing". Evidence: list the nav labels.
+- A gallery, portfolio, or product showcase counts as social proof — do not flag as missing trust.
+- Every gap (missing/weak) MUST include an evidence field: exact quote or element name, min 15 chars. Items without evidence are discarded.
+- Every pass MUST include an evidence field naming the specific visible element. Passes without evidence are discarded.
+- Maximum 1 generic gap per report. All others must cite a specific visible element.`;
 }
-
-const CHECKLIST_EVIDENCE_RULES = `RULES FOR CHECKLIST GAPS (mandatory — violations will be filtered server-side):
-- Every gap (missing/weak) MUST include an evidence field: exact quote or specific element name from THIS page, minimum 15 characters. Gaps without evidence will be discarded.
-- Every pass MUST include an evidence field: name the specific visible element that passes (e.g., "Product Hunt badge visible below CTA" or exact button label). Passes without evidence will be discarded.
-- DO NOT flag "no trust signals" or "trust missing" if social_proof_above_fold is true — the page already has above-fold social proof.
-- DO NOT flag "headline lacks audience clarity" if audienceType is B2B and the headline contains any role, industry, or use-case signal (even implicit).
-- DO NOT flag "CTA unclear" if cta_text is NOT in VAGUE_CTA_PATTERN.
-  VAGUE_CTA_PATTERN = ["Get Started", "Start Now", "Learn More", "Click Here", "Get Access", "Go", "Submit", "Register", "Continue", "Open", "Next"]
-  If cta_text contains "free", "trial", a product name, or a specific outcome — it is NOT vague; do not flag.
-- DO NOT flag "no navigation" or "nav missing" if nav_link_count > 0 or nav_link_labels is non-empty.
-- A gallery of real product examples, a portfolio, or a work showcase counts as social proof — do not flag as "missing trust signals".
-- Maximum 1 generic gap per report. All other gaps must reference a specific visible element from this page with evidence.`;
 
 export function buildFullAuditPrompt(
   brandStage: BrandStage,
@@ -114,7 +138,7 @@ export function buildFullAuditPrompt(
   }
 ) {
   const skipCta = options?.skipCtaAudit ?? false;
-  const checklistComputedContext = buildChecklistComputedContextBlock(options?.computedValues);
+  const checklistEvalBlock = buildChecklistEvaluationBlock(options?.computedValues);
   const auditContextPrompt = buildAuditContextPromptBlock(trafficSource, audienceType);
   const brandStagePrompt = buildBrandStagePromptBlock(brandStage);
   const copyStudioPrompt = buildCopyStudioPromptBlock();
@@ -207,9 +231,7 @@ Return ONLY valid JSON (no markdown):
   ]
 }
 
-${checklistComputedContext}
-
-${CHECKLIST_EVIDENCE_RULES}
+${checklistEvalBlock}
 
 checklist: 6-8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass. Fewer real gaps is OK — never invent gaps to fill slots.
 
