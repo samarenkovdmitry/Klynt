@@ -143,7 +143,8 @@ export type VisualFixDimension =
   | "typography"
   | "depth"
   | "navigation"
-  | "social_proof";
+  | "social_proof"
+  | "headline_formula";
 
 export type ReportVisualFix = {
   dimension: VisualFixDimension;

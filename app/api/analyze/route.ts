@@ -515,6 +515,8 @@ export async function POST(req: Request) {
         copyVariants: json.copy_variants as import("@/lib/audit-report").ReportCopyVariants | undefined,
         meta: json.meta as import("@/lib/audit-report").ReportMeta | undefined,
         checklist: json.checklist,
+        audienceType,
+        trafficSource,
       }
     );
     json.visual_fixes = visualSection.fixes;

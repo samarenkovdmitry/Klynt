@@ -1,10 +1,13 @@
 import type {
+  AudienceType,
+  ChecklistLinkTarget,
   ReportBreakdown,
   ReportChecklistItem,
   ReportCopyVariants,
   ReportMeta,
   ReportVisualFix,
   ReportVisualPass,
+  TrafficSource,
   VisualFixDimension,
 } from "@/lib/audit-report";
 import { clampWords } from "@/lib/report-copy-limits";
@@ -20,6 +23,7 @@ export const VISUAL_FIX_DIMENSIONS: VisualFixDimension[] = [
   "depth",
   "navigation",
   "social_proof",
+  "headline_formula",
 ];
 
 const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
@@ -32,6 +36,17 @@ const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
   depth: "Background & depth",
   navigation: "Navigation complexity",
   social_proof: "Social proof",
+  headline_formula: "Headline formula",
+};
+
+// Maps dimensions to the checklist link targets they correspond to — used for severity scoring.
+const DIMENSION_CHECKLIST_LINKS: Partial<Record<VisualFixDimension, ChecklistLinkTarget[]>> = {
+  cta_hierarchy: ["copy-cta"],
+  typography: ["visual-fixes"],
+  navigation: ["structure-nav"],
+  social_proof: ["trust"],
+  depth: ["trust"],
+  headline_formula: ["copy-headline"],
 };
 
 export type NormalizedVisualSection = {
@@ -43,6 +58,8 @@ export type VisualSectionContext = {
   checklist?: ReportChecklistItem[];
   copyVariants?: ReportCopyVariants;
   meta?: ReportMeta;
+  audienceType?: AudienceType;
+  trafficSource?: TrafficSource;
 };
 
 const MIN_VISUAL_FIXES = 2;
@@ -63,23 +80,39 @@ function isAllCapsCta(label: string): boolean {
   return letters.length >= 4 && letters === letters.toUpperCase();
 }
 
-function isVagueCtaLabel(label: string): boolean {
+// B2B + warm/mixed traffic: these generic CTAs are acceptable in a known-brand context.
+const VAGUE_CTA_SOFTENED_B2B_WARM = /^(get\s+started|started|learn\s+more|start\s+free)$/i;
+
+type CtaContext = Pick<VisualSectionContext, "audienceType" | "trafficSource">;
+
+function isVagueCtaLabel(label: string, ctx?: CtaContext): boolean {
   const normalized = label.replace(/[^\w\s]/g, "").trim();
-  return VAGUE_CTA_PATTERN.test(normalized);
+  if (!VAGUE_CTA_PATTERN.test(normalized)) return false;
+
+  // Relax check for B2B + warm/mixed — established brand context makes generic CTAs acceptable.
+  if (
+    ctx?.audienceType === "b2b" &&
+    ctx?.trafficSource !== "cold" &&
+    VAGUE_CTA_SOFTENED_B2B_WARM.test(normalized)
+  ) {
+    return false;
+  }
+
+  return true;
 }
 
 function normalizeCtaInput(raw: string): string {
   return raw.replace(/\s+/g, " ").trim();
 }
 
-function deriveCtaAuditFix(ctaLabel: string): ReportVisualFix | null {
+function deriveCtaAuditFix(ctaLabel: string, ctx?: CtaContext): ReportVisualFix | null {
   const label = normalizeCtaInput(ctaLabel);
   if (!label) {
     return null;
   }
 
   const allCaps = isAllCapsCta(label);
-  const vague = isVagueCtaLabel(label);
+  const vague = isVagueCtaLabel(label, ctx);
 
   if (!allCaps && !vague) {
     return null;
@@ -105,9 +138,9 @@ function deriveCtaAuditFix(ctaLabel: string): ReportVisualFix | null {
   };
 }
 
-function deriveCtaAuditPass(ctaLabel: string): ReportVisualPass | null {
+function deriveCtaAuditPass(ctaLabel: string, ctx?: CtaContext): ReportVisualPass | null {
   const label = normalizeCtaInput(ctaLabel);
-  if (!label || isAllCapsCta(label) || isVagueCtaLabel(label)) {
+  if (!label || isAllCapsCta(label) || isVagueCtaLabel(label, ctx)) {
     return null;
   }
 
@@ -195,10 +228,6 @@ function deriveSocialProofAudit(
   checklist: ReportChecklistItem[],
   meta?: ReportMeta
 ): ReportVisualFix | null {
-  if (!meta?.proof_suggestion) {
-    return null;
-  }
-
   const trustGap = checklist.find(
     (item) => item.category === "trust" && item.status !== "pass"
   );
@@ -211,11 +240,89 @@ function deriveSocialProofAudit(
       ? "No logos, stats, or ratings above fold — trust proof absent for cold visitors"
       : "Social proof exists but positioned below fold or too subtle near hero CTA";
 
-  return {
-    dimension: "social_proof",
-    observation,
-    recommendation: clampWords(meta.proof_suggestion, 18, true),
+  // Use specific proof_suggestion if available; fallback to generic format+position recommendation.
+  const recommendation = meta?.proof_suggestion
+    ? clampWords(meta.proof_suggestion, 18, true)
+    : "Add 3–5 customer logos or a stat (e.g. '10,000+ teams') directly below the hero CTA";
+
+  return { dimension: "social_proof", observation, recommendation };
+}
+
+type HeadlineFormula = "generic" | "benefit" | "feature" | "audience";
+
+function classifyHeadlineFormula(headline: string): HeadlineFormula {
+  const h = headline.toLowerCase();
+
+  if (
+    /\b(for|designed for|built for|made for)\b.*\b(team|startup|agency|freelancer|developer|engineer|manager|marketer|founder|cto|ceo|ops)\b/i.test(
+      headline
+    ) ||
+    /\b(your team|your business|your company)\b/i.test(headline)
+  ) {
+    return "audience";
+  }
+
+  if (
+    /\b(grow|save|reduce|increase|boost|improve|double|eliminate|automate|ship faster|close more|convert|stop|never again|get more|win more|cut)\b/.test(
+      h
+    )
+  ) {
+    return "benefit";
+  }
+
+  if (
+    /\b(platform|tool|software|app|solution|system|dashboard|service|api|suite)\b/.test(h) &&
+    !/\b(grow|save|reduce|increase|boost|double|eliminate|automate|ship|close|convert)\b/.test(h)
+  ) {
+    return "feature";
+  }
+
+  return "generic";
+}
+
+function deriveHeadlineAudit(
+  checklist: ReportChecklistItem[],
+  copyVariants?: ReportCopyVariants
+): ReportVisualFix | null {
+  const headlineGap = checklist.find(
+    (item) => item.link_to === "copy-headline" && item.status !== "pass"
+  );
+  if (!headlineGap) return null;
+
+  const headline = copyVariants?.headline?.current?.trim() ?? "";
+
+  if (!headline) {
+    return {
+      dimension: "headline_formula",
+      observation: "Headline missing — hero has no product category or audience signal",
+      recommendation: "Lead with who it's for — e.g. 'X for Y teams that Z'",
+    };
+  }
+
+  const formula = classifyHeadlineFormula(headline);
+  const truncated = truncateLabel(headline, 22);
+
+  const configs: Record<HeadlineFormula, { obs: string; rec: string }> = {
+    generic: {
+      obs: `Headline "${truncated}" — no category or audience signal for cold visitors`,
+      rec: "State who it's for and what they get — e.g. 'X for Y teams that Z'",
+    },
+    feature: {
+      obs: `Headline "${truncated}" — names the product type, not the visitor outcome`,
+      rec: "Lead with the outcome visitors get — move product name after the benefit",
+    },
+    benefit: {
+      obs: `Headline "${truncated}" — benefit clear but audience or context missing`,
+      rec: "Name who gets this benefit — add role or company type to the headline",
+    },
+    audience: {
+      obs: `Headline "${truncated}" — audience named but outcome too vague for cold traffic`,
+      rec: "Complete with a concrete result — 'X for Y that [specific outcome]'",
+    },
   };
+
+  const { obs, rec } = configs[formula];
+  return { dimension: "headline_formula", observation: obs, recommendation: rec };
 }
 
 function derivePassFromChecklistItem(item: ReportChecklistItem): ReportVisualPass | null {
@@ -234,6 +341,35 @@ function derivePassFromChecklistItem(item: ReportChecklistItem): ReportVisualPas
   }
 
   return { dimension, note };
+}
+
+function significantWords(text: string): string[] {
+  return text.toLowerCase().match(/\b[a-z]{4,}\b/g) ?? [];
+}
+
+// Returns the fraction of checklist item words that appear in the fix text — used to detect
+// fallback cards that just restate what the user already sees in the checklist.
+function checklistTextOverlapScore(fixText: string, gapText: string): number {
+  const gapWords = significantWords(gapText);
+  if (gapWords.length === 0) return 0;
+  const fixWordSet = new Set(significantWords(fixText));
+  const matches = gapWords.filter((w) => fixWordSet.has(w)).length;
+  return matches / gapWords.length;
+}
+
+function computeFixSeverityScore(
+  fix: ReportVisualFix,
+  checklist: ReportChecklistItem[]
+): number {
+  const linked = DIMENSION_CHECKLIST_LINKS[fix.dimension];
+  if (!linked || !checklist.length) return 1;
+
+  for (const item of checklist) {
+    if (item.status === "pass" || !item.link_to) continue;
+    if (!linked.includes(item.link_to)) continue;
+    return item.status === "missing" ? 3 : 2;
+  }
+  return 1;
 }
 
 function appendDerivedFix(
@@ -278,8 +414,10 @@ export function supplementVisualSection(
   const fixDims = new Set(resultFixes.map((fix) => fix.dimension));
   const passDims = new Set(resultPasses.map((pass) => pass.dimension));
   const checklist = context.checklist ?? [];
+  const ctaCtx: CtaContext = { audienceType: context.audienceType, trafficSource: context.trafficSource };
 
-  // CTA hierarchy — derive from copy_variants or checklist fallback
+  // CTA hierarchy — derive from copy_variants or checklist fallback.
+  // LLM already takes priority: if it returned a navigation fix it's in fixDims and this block is skipped.
   if (!fixDims.has("cta_hierarchy") && !passDims.has("cta_hierarchy")) {
     const ctaLabel = normalizeCtaInput(context.copyVariants?.cta?.current ?? "");
 
@@ -292,8 +430,8 @@ export function supplementVisualSection(
         appendDerivedFix(resultFixes, fixDims, deriveFixFromChecklistGap(trialGap, context.copyVariants));
       }
     } else {
-      const ctaFix = deriveCtaAuditFix(ctaLabel);
-      const ctaPass = deriveCtaAuditPass(ctaLabel);
+      const ctaFix = deriveCtaAuditFix(ctaLabel, ctaCtx);
+      const ctaPass = deriveCtaAuditPass(ctaLabel, ctaCtx);
 
       if (ctaFix) {
         appendDerivedFix(resultFixes, fixDims, ctaFix);
@@ -303,12 +441,19 @@ export function supplementVisualSection(
     }
   }
 
-  // Navigation complexity — derive from structure-nav checklist gap
+  // Headline formula — derive from copy-headline gap + headline text.
+  if (!fixDims.has("headline_formula") && !passDims.has("headline_formula")) {
+    appendDerivedFix(resultFixes, fixDims, deriveHeadlineAudit(checklist, context.copyVariants));
+  }
+
+  // Navigation complexity — LLM takes priority (already in fixDims if it output a navigation fix);
+  // deriveNavAudit only runs as fallback when LLM did not return the dimension.
   if (!fixDims.has("navigation") && !passDims.has("navigation")) {
     appendDerivedFix(resultFixes, fixDims, deriveNavAudit(checklist));
   }
 
-  // Social proof — specific card when trust gap + meta.proof_suggestion present
+  // Social proof — specific card when trust gap present.
+  // Skipped if LLM already output a depth fix (depth and social_proof address the same concern).
   if (!fixDims.has("social_proof") && !fixDims.has("depth") && !passDims.has("social_proof")) {
     appendDerivedFix(resultFixes, fixDims, deriveSocialProofAudit(checklist, context.meta));
   }
@@ -319,7 +464,14 @@ export function supplementVisualSection(
         continue;
       }
 
-      appendDerivedFix(resultFixes, fixDims, deriveFixFromChecklistGap(item, context.copyVariants));
+      const fix = deriveFixFromChecklistGap(item, context.copyVariants);
+      if (!fix) continue;
+
+      // Skip fallback cards whose observation mostly restates the checklist text — the user already
+      // sees it in "What needs fixing". Threshold 0.75 of checklist words present in the observation.
+      if (checklistTextOverlapScore(fix.observation, item.text) > 0.75) continue;
+
+      appendDerivedFix(resultFixes, fixDims, fix);
       if (resultFixes.length >= MIN_VISUAL_FIXES) {
         break;
       }
@@ -409,6 +561,9 @@ const DIMENSION_ALIASES: Record<string, VisualFixDimension> = {
   socialproof: "social_proof",
   trust_proof: "social_proof",
   proof: "social_proof",
+  headline_formula: "headline_formula",
+  headline: "headline_formula",
+  heading_formula: "headline_formula",
 };
 
 export function normalizeVisualDimension(raw: string | undefined | null): VisualFixDimension | null {
@@ -439,6 +594,8 @@ function resolveVisualDimensionFromGapLabel(gapLabel: string): VisualFixDimensio
       return "navigation";
     case "Social proof gap":
       return "social_proof";
+    case "Headline formula":
+      return "headline_formula";
     default:
       return null;
   }
@@ -624,24 +781,28 @@ export function filterActionableVisualFixes(
   fixes: ReportVisualFix[],
   checklist?: ReportChecklistItem[]
 ): ReportVisualFix[] {
+  const cl = checklist ?? [];
+
+  // 1. Remove invalid and checklist-overlapping fixes.
+  const valid = fixes.filter(
+    (fix) => isActionableVisualFix(fix) && !overlapsChecklistGapText(fix, checklist)
+  );
+
+  // 2. Score by how closely the dimension maps to a critical checklist gap, then sort.
+  //    This ensures critical gaps (missing > weak > no link) surface before cosmetic fixes
+  //    when the LLM returns more than 4 candidates.
+  const scored = valid.map((fix) => ({ fix, score: computeFixSeverityScore(fix, cl) }));
+  scored.sort((a, b) => b.score - a.score);
+
+  // 3. Dedup by dimension (highest-scored fix per dimension wins) and cap at 4.
   const seen = new Set<VisualFixDimension>();
   const filtered: ReportVisualFix[] = [];
 
-  for (const fix of fixes) {
-    if (
-      seen.has(fix.dimension) ||
-      !isActionableVisualFix(fix) ||
-      overlapsChecklistGapText(fix, checklist)
-    ) {
-      continue;
-    }
-
+  for (const { fix } of scored) {
+    if (seen.has(fix.dimension)) continue;
     seen.add(fix.dimension);
     filtered.push(fix);
-
-    if (filtered.length >= 4) {
-      break;
-    }
+    if (filtered.length >= 4) break;
   }
 
   return filtered;
@@ -713,6 +874,10 @@ function resolveVisualDimensionFromPass(item: ReportChecklistItem): VisualFixDim
 
   if (/social\s+proof|trust\s+proof|logo|testimonial|customer\s+quote|proof\s+above/.test(haystack)) {
     return "social_proof";
+  }
+
+  if (/headline|hero\s+title|product\s+category|audience\s+signal|heading\s+formula/.test(haystack)) {
+    return "headline_formula";
   }
 
   return null;
