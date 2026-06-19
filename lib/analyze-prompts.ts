@@ -9,6 +9,7 @@ import {
   type BrandStage,
 } from "@/lib/brand-stage";
 import { buildAnalysisQualityPromptBlock } from "@/lib/report-findings-quality";
+import type { PageComputedValues } from "@/lib/audit-report";
 
 export function buildHeroAuditPrompt(
   brandStage: BrandStage,
@@ -65,13 +66,86 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
   Bad: "The hero headline lacks a clear audience focus"`;
 }
 
+type ChecklistComputedValues = Pick<
+  PageComputedValues,
+  "social_proof_above_fold" | "cta_text" | "nav_link_labels" | "nav_link_count" | "h1_text"
+>;
+
+const VAGUE_CTA_PATTERN = [
+  "Get Started", "Start Now", "Learn More", "Click Here", "Get Access",
+  "Go", "Submit", "Register", "Continue", "Open", "Next",
+];
+
+function buildChecklistEvaluationBlock(cv: ChecklistComputedValues | null | undefined): string {
+  const headline = cv?.h1_text ? `"${cv.h1_text}"` : "unknown (read from screenshot)";
+  const cta = cv?.cta_text ? `"${cv.cta_text}"` : "unknown (read from screenshot)";
+  const proof = cv ? String(cv.social_proof_above_fold) : "unknown (check screenshot)";
+  const navStr =
+    cv && cv.nav_link_labels.length > 0
+      ? `[${cv.nav_link_labels.map((l) => `"${l}"`).join(", ")}]`
+      : cv
+        ? "[] (no nav links detected)"
+        : "unknown (check screenshot)";
+
+  const ctaIsVague = cv?.cta_text
+    ? VAGUE_CTA_PATTERN.some(
+        (p) => cv.cta_text!.trim().toLowerCase() === p.toLowerCase()
+      )
+    : null;
+
+  const ctaHint =
+    ctaIsVague === true
+      ? " ← in VAGUE_CTA_PATTERN — eligible for CTA gap if outcome is unclear"
+      : ctaIsVague === false
+        ? " ← NOT in VAGUE_CTA_PATTERN — must be pass or weak, NOT missing"
+        : "";
+
+  return `BEFORE FLAGGING ANY CHECKLIST GAP — read the actual page data first:
+  HEADLINE: ${headline}
+  CTA: ${cta}${ctaHint}
+  SOCIAL_PROOF_ABOVE_FOLD: ${proof}
+  NAV_LINKS: ${navStr}
+
+EVALUATION PROTOCOL — for every checklist item, follow this sequence:
+  Step 1 — Quote the element exactly as it appears above (or from the screenshot if unknown).
+  Step 2 — Given the product type, AUDIENCE, and TRAFFIC context, evaluate:
+    → Element is present and sufficient → status "pass", evidence = exact quote of what you see
+    → Element is present but partially fails → status "weak", evidence = what it says + the specific gap
+    → Element is absent or clearly fails for this page_context → status "missing", evidence = what is absent and why
+
+  NEVER jump to "missing" without first reading what IS there.
+  NEVER flag a gap you inferred from silence — only flag what you can see is wrong.
+
+HARD CONSTRAINTS (violations auto-filtered server-side):
+- SOCIAL_PROOF_ABOVE_FOLD is true → trust MUST be "pass". Evidence: quote the visible signal. Do NOT flag trust as missing.
+- CTA not in VAGUE_CTA_PATTERN → CTA MUST be "pass" or "weak", never "missing". Evidence: exact CTA label.
+  VAGUE_CTA_PATTERN = ${JSON.stringify(VAGUE_CTA_PATTERN)}
+  A CTA with "free", "trial", a product name, or a specific outcome is NOT vague.
+- NAV_LINKS non-empty → structure-nav MUST be "pass", not "missing". Evidence: list the nav labels.
+- A gallery, portfolio, or product showcase counts as social proof — do not flag as missing trust.
+- Every gap (missing/weak) MUST include an evidence field: exact quote or element name, min 15 chars. Items without evidence are discarded.
+- Every pass MUST include an evidence field naming the specific visible element. Passes without evidence are discarded.
+- Maximum 1 generic gap per report. All others must cite a specific visible element.`;
+}
+
+const HEADLINE_EVALUATION_RULES = `HEADLINE EVALUATION RULES (apply during EVALUATION PROTOCOL Step 2 for headline):
+- Brand-name-as-category: if the brand name itself is a category signal (e.g. "Figma", "Notion", "Cursor", "Linear", "Stripe", "Loom") — audience is implied by brand awareness. Do NOT flag as Missing; at most flag as Weak if page_context is cold traffic AND the subheadline also lacks audience signal.
+- Action-verb + outcome: if headline contains an action verb combined with an outcome or transformation ("make you extraordinarily productive", "ship faster", "grow revenue", "close more deals") — audience is implied for the detected page_context. Flag as Weak at most, never Missing.
+- Partial compensation: if the headline is vague but the subheadline (or first sentence below) contains a clear role, industry, or use-case signal — the gap is at most Weak, not Missing.
+- Only flag as Missing if ALL three are true: (1) headline is purely abstract with zero category or audience signal, (2) subheadline also provides no audience signal, AND (3) traffic_source is cold.
+- When in doubt between Missing and Weak — always choose Weak.`;
+
 export function buildFullAuditPrompt(
   brandStage: BrandStage,
   trafficSource: TrafficSource,
   audienceType: AudienceType,
-  options?: { skipCtaAudit?: boolean }
+  options?: {
+    skipCtaAudit?: boolean;
+    computedValues?: ChecklistComputedValues | null;
+  }
 ) {
   const skipCta = options?.skipCtaAudit ?? false;
+  const checklistEvalBlock = buildChecklistEvaluationBlock(options?.computedValues);
   const auditContextPrompt = buildAuditContextPromptBlock(trafficSource, audienceType);
   const brandStagePrompt = buildBrandStagePromptBlock(brandStage);
   const copyStudioPrompt = buildCopyStudioPromptBlock();
@@ -104,6 +178,7 @@ Return ONLY valid JSON (no markdown):
       "id": "string",
       "gap_label": "string",
       "text": "string",
+      "evidence": "string — exact quote or specific visible element from the page (required, min 15 chars)",
       "status": "pass"|"missing"|"weak",
       "link_to": "copy-headline"|"copy-cta"|"copy-subheadline"|"trust"|"visual-fixes"|"structure-nav"|"hero-density"|null,
       "category": "copy"|"trust"|"visual"|"structure"
@@ -162,6 +237,10 @@ Return ONLY valid JSON (no markdown):
     }
   ]
 }
+
+${checklistEvalBlock}
+
+${HEADLINE_EVALUATION_RULES}
 
 checklist: 6-8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass. Fewer real gaps is OK — never invent gaps to fill slots.
 

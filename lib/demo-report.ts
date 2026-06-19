@@ -37,7 +37,8 @@ export const DEMO_REPORT = {
   "checklist": [
     {
       "id": "headline-category",
-      "text": "The headline doesn't specify who the product is for.",
+      "text": "Headline doesn't name a role, industry, or use-case.",
+      "evidence": "'The CRM that works for your team' — no audience signal beyond 'team'; cold visitors can't self-qualify",
       "status": "missing",
       "link_to": "copy-headline",
       "category": "copy",
@@ -45,7 +46,8 @@ export const DEMO_REPORT = {
     },
     {
       "id": "cta-trial",
-      "text": "The CTA does not clearly convey the trial's duration or benefits.",
+      "text": "CTA doesn't clarify what 'free' means — trial or freemium.",
+      "evidence": "'Start for free' button has no duration, no plan mention, no outcome after click",
       "status": "missing",
       "link_to": "copy-cta",
       "category": "copy",
@@ -53,7 +55,8 @@ export const DEMO_REPORT = {
     },
     {
       "id": "trust",
-      "text": "No customer testimonials or logos to build credibility.",
+      "text": "No logos, stats, or testimonials visible above the fold.",
+      "evidence": "Hero section shows headline, subheadline, and CTA only — zero credibility signals above fold",
       "status": "missing",
       "link_to": "trust",
       "category": "trust",
@@ -61,23 +64,26 @@ export const DEMO_REPORT = {
     },
     {
       "id": "subheadline-clarity",
-      "text": "Subheadline typography too light to scan quickly",
+      "text": "Subheadline typography too light to scan quickly.",
+      "evidence": "'folk CRM captures the full context of your relationships...' rendered in light gray weight — reads as caption",
       "status": "weak",
       "link_to": "visual-fixes",
       "category": "visual",
       "gap_label": "Weak typography"
     },
     {
-      "id": "features-clarity",
-      "text": "Feature descriptions lack specific benefits for users.",
+      "id": "nav-structure",
+      "text": "Header nav shows Product, Features, Pricing, Blog, Login.",
+      "evidence": "Five top-level nav links visible in header — clear structure for warm traffic exploration",
       "status": "pass",
       "link_to": null,
-      "category": "copy",
-      "gap_label": "Features vague"
+      "category": "structure",
+      "gap_label": "Nav clear"
     },
     {
       "id": "footer-structure",
-      "text": "Footer contains clear navigation links for further exploration.",
+      "text": "Footer contains Product, Company, and Resources columns.",
+      "evidence": "Three-column footer with labelled link groups — supports deeper exploration and SEO",
       "status": "pass",
       "link_to": null,
       "category": "structure",
@@ -85,19 +91,21 @@ export const DEMO_REPORT = {
     },
     {
       "id": "visuals-clarity",
-      "text": "Visual layout effectively highlights key elements above the fold.",
+      "text": "Single primary CTA above fold — no competing hero buttons.",
+      "evidence": "'Start for free' orange pill is the only hero CTA; no secondary button creates decision friction",
       "status": "pass",
       "link_to": null,
       "category": "visual",
-      "gap_label": "Visual hierarchy strong"
+      "gap_label": "CTA hierarchy clean"
     },
     {
       "id": "cta-visibility",
-      "text": "Single CTA button is clearly visible and actionable.",
+      "text": "Hero headline is large and immediately readable.",
+      "evidence": "'The CRM that works for your team' in ~48px weight-700 — dominant above fold, no contrast issues",
       "status": "pass",
       "link_to": null,
       "category": "structure",
-      "gap_label": "CTA prominent"
+      "gap_label": "H1 prominent"
     }
   ],
   "confidence": 85,

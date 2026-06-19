@@ -119,6 +119,34 @@ export async function findReportIdBySlugInDb(
   return matches[0].id;
 }
 
+export async function fetchRecentGapGroups(limit = 10): Promise<string[][]> {
+  if (!isSupabaseConfigured()) {
+    return [];
+  }
+
+  const supabase = createServerSupabase();
+
+  const { data, error } = await supabase
+    .from("reports")
+    .select("payload")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data
+    .map((row) => {
+      const report = row.payload as AuditReport;
+      return (report.checklist ?? [])
+        .filter((item) => item.status !== "pass")
+        .map((item) => item.text)
+        .filter(Boolean);
+    })
+    .filter((gaps) => gaps.length > 0);
+}
+
 export async function getAuditedPagesCount(): Promise<number | null> {
   if (!isSupabaseConfigured()) {
     return null;

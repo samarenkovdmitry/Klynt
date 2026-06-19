@@ -45,6 +45,7 @@ import {
 import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
 import { normalizeVisualSection, willDeriveCtaFix } from "@/lib/report-visual-fixes";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
+import { logRepeatingGapPatterns } from "@/lib/report-gap-patterns";
 import {
   formatIssueTitleDisplay,
   normalizeReportCopyLengths,
@@ -367,7 +368,18 @@ export async function POST(req: Request) {
       ? willDeriveCtaFix(computedValues.cta_text, { audienceType, trafficSource, pageContext })
       : false;
 
-    const basePrompt = buildFullAuditPrompt(brandStage, trafficSource, audienceType, { skipCtaAudit });
+    const basePrompt = buildFullAuditPrompt(brandStage, trafficSource, audienceType, {
+      skipCtaAudit,
+      computedValues: computedValues
+        ? {
+            h1_text: computedValues.h1_text,
+            social_proof_above_fold: computedValues.social_proof_above_fold,
+            cta_text: computedValues.cta_text,
+            nav_link_count: computedValues.nav_link_count,
+            nav_link_labels: computedValues.nav_link_labels,
+          }
+        : null,
+    });
 
     const json: Record<string, any> = await timing.measure("openai_ms", () =>
       requestAuditAnalysis({
@@ -540,6 +552,17 @@ export async function POST(req: Request) {
 
     json.risk = deriveRiskFromScore(json.score);
     });
+
+    const currentGapTexts = ((json.checklist as import("@/lib/audit-report").ReportChecklistItem[]) ?? [])
+      .filter((item) => item.status !== "pass")
+      .map((item) => item.text)
+      .filter(Boolean);
+
+    if (currentGapTexts.length > 0) {
+      logRepeatingGapPatterns(currentGapTexts).catch((patternErr) => {
+        console.error("[analyze] Gap pattern check failed:", patternErr);
+      });
+    }
 
     const reportId = generateReportId();
     const auditedUrl =

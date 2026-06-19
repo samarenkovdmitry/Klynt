@@ -147,6 +147,12 @@ export function getChecklistBadgeLabel(item: ReportChecklistItem): string {
   return "Weak";
 }
 
+const EVIDENCE_MIN_LENGTH = 15;
+
+function isEvidenceSufficient(evidence: string): boolean {
+  return evidence.trim().length >= EVIDENCE_MIN_LENGTH;
+}
+
 function parseChecklistItem(raw: unknown): ReportChecklistItem | null {
   if (!raw || typeof raw !== "object") {
     return null;
@@ -163,6 +169,12 @@ function parseChecklistItem(raw: unknown): ReportChecklistItem | null {
     item.status === "missing" || item.status === "weak" || item.status === "pass"
       ? item.status
       : "pass";
+
+  // Validate evidence field: required for all items, minimum 15 characters
+  const evidence = typeof item.evidence === "string" ? item.evidence.trim() : "";
+  if (!isEvidenceSufficient(evidence)) {
+    return null;
+  }
 
   const linkRaw = item.link_to;
   const link_to =
@@ -196,6 +208,7 @@ function parseChecklistItem(raw: unknown): ReportChecklistItem | null {
   const parsed: ReportChecklistItem = {
     id,
     text,
+    evidence,
     status,
     link_to: status === "pass" ? null : link_to,
     category,
@@ -582,20 +595,51 @@ function reconcileChecklistWithScorePotential(
   });
 }
 
+function applyCooldownToTemplateGaps(gaps: ReportChecklistItem[]): ReportChecklistItem[] {
+  const missingLinks = new Set(
+    gaps.filter((item) => item.status === "missing").map((item) => item.link_to)
+  );
+
+  // All three core gaps simultaneously is a template pattern — downgrade trust to weak
+  const isTripleTemplate =
+    missingLinks.has("copy-headline") &&
+    missingLinks.has("copy-cta") &&
+    missingLinks.has("trust");
+
+  if (!isTripleTemplate) {
+    return gaps;
+  }
+
+  let downgraded = false;
+  return gaps.map((item) => {
+    if (!downgraded && item.link_to === "trust" && item.status === "missing") {
+      downgraded = true;
+      return {
+        ...item,
+        status: "weak" as const,
+        gap_label: item.gap_label?.replace(/missing/i, "weak") ?? "Trust signals weak",
+      };
+    }
+    return item;
+  });
+}
+
 function finalizeChecklistGaps(
   gaps: ReportChecklistItem[],
   evidenceTexts: string[] = [],
   allItems: ReportChecklistItem[] = [],
   ctaText = ""
 ): ReportChecklistItem[] {
-  const result = gaps.filter(
+  const filtered = gaps.filter(
     (item) =>
       !isServerFallbackGapItem(item) &&
       !isContradictoryChecklistGap(item, evidenceTexts, allItems, ctaText)
   );
 
-  const missing = result.filter((item) => item.status === "missing").slice(0, 3);
-  const weak = result.filter((item) => item.status === "weak").slice(0, 1);
+  const cooledDown = applyCooldownToTemplateGaps(filtered);
+
+  const missing = cooledDown.filter((item) => item.status === "missing").slice(0, 3);
+  const weak = cooledDown.filter((item) => item.status === "weak").slice(0, 1);
 
   return ensureVisualWeakItem([...missing, ...weak]);
 }
