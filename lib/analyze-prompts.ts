@@ -68,8 +68,10 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
 export function buildFullAuditPrompt(
   brandStage: BrandStage,
   trafficSource: TrafficSource,
-  audienceType: AudienceType
+  audienceType: AudienceType,
+  options?: { skipCtaAudit?: boolean }
 ) {
+  const skipCta = options?.skipCtaAudit ?? false;
   const auditContextPrompt = buildAuditContextPromptBlock(trafficSource, audienceType);
   const brandStagePrompt = buildBrandStagePromptBlock(brandStage);
   const copyStudioPrompt = buildCopyStudioPromptBlock();
@@ -254,9 +256,9 @@ meta.trust_notes: 1-2 items, max 14 words each. Observations about missing proof
 visual_fixes: 0-4 items. Surface/conversion design guidance — how CTAs, hierarchy, contrast, and trust placement read on screen. Headline rewrites belong in copy_variants, not here.
 
 SURFACE AUDIT MINIMUM (mandatory — do not skip):
-- Always evaluate CTA TEXT AUDIT under cta_hierarchy using exact hero button labels from HERO INVENTORY.
+- ${skipCta ? "Skip cta_hierarchy — CTA has been pre-evaluated by the derive layer; do not emit a cta_hierarchy fix or pass." : "Always evaluate CTA TEXT AUDIT under cta_hierarchy using exact hero button labels from HERO INVENTORY."}
 - Deliver at least 2 total insights across visual_fixes + visual_passes combined (fixes preferred when a real issue exists).
-- CTA TEXT AUDIT criteria for each hero button label: (1) specificity — "GET STARTED", "Start Free", "Try Free" are weak (no product or outcome); "Start your free website" is specific; (2) active verb + concrete outcome; (3) all-caps tone ("GET STARTED", "TRY FREE FOR 30 DAYS" — all caps → sentence case fix); (4) urgency fit when trial or limited offer is implied elsewhere on page.
+${skipCta ? "" : `- CTA TEXT AUDIT criteria for each hero button label: (1) specificity — "GET STARTED", "Start Free", "Try Free" are weak (no product or outcome); "Start your free website" is specific; (2) active verb + concrete outcome; (3) all-caps tone ("GET STARTED", "TRY FREE FOR 30 DAYS" — all caps → sentence case fix); (4) urgency fit when trial or limited offer is implied elsewhere on page.`}
 - NAV COMPLEXITY: count visible nav links in the header. If 6+ links OR nav has no primary CTA button → output a "navigation" dimension fix. observation: name the exact link count or missing element. recommendation: max 18 words, specific to this page.
 - SOCIAL PROOF FORMAT: if trust signals exist, identify format (logos | stats/numbers | testimonial quotes) and position (above fold | below fold). If strong social proof is above fold → social_proof pass. If missing or below fold → social_proof fix with format and position in recommendation. Never use "social_proof" dimension AND "depth" for the same observation.
 - If the page is polished (score >= 7.5), still output concrete passes — never leave visual_fixes and visual_passes both empty.
@@ -269,8 +271,8 @@ STEP 0 — HERO THEME (use HERO INVENTORY theme):
 
 STEP 1: Use BRAND STAGE + AUDIENCE + TRAFFIC context to infer who this product is for.
 STEP 2: Pick dimensions with visible evidence on THIS screenshot:
-  border_radius | density | color_tone | spacing | cta_hierarchy | typography | depth | navigation | social_proof
-Always include cta_hierarchy (CTA text audit or visual weight). Use navigation when nav link count or sticky CTA is an issue. Use social_proof for trust format and placement (not depth). Skip dimensions with no visible signal. Never repeat checklist gap text verbatim.
+  border_radius | density | color_tone | spacing | ${skipCta ? "" : "cta_hierarchy | "}typography | depth | navigation | social_proof
+${skipCta ? "" : "Always include cta_hierarchy (CTA text audit or visual weight). "}Use navigation when nav link count or sticky CTA is an issue. Use social_proof for trust format and placement (not depth). Skip dimensions with no visible signal. Never repeat checklist gap text verbatim.
 
 Each item MUST cite what you see on this page:
 - dimension: one enum value above
@@ -286,10 +288,10 @@ BANNED templates (instant failure — never output these or close paraphrases):
 - Fixes without naming a visible element on this screenshot
 
 Good examples:
-- cta_hierarchy (text): "GET STARTED — all caps, no product or trial hint" → "Switch to sentence case and add a specific outcome — say what happens after click"
+${skipCta ? "" : `- cta_hierarchy (text): "GET STARTED — all caps, no product or trial hint" → "Switch to sentence case and add a specific outcome — say what happens after click"
 - cta_hierarchy (text): "'Start Free' — no product or outcome on button" → "Add a specific outcome — mention what happens after click"
 - cta_hierarchy (weight): "Start for free and Download share equal pill weight on dark hero" → "Fill primary CTA, outline secondary Download for cold traffic"
-- typography (light hero only): "Gray #9CA3AF subhead on white hero matches body copy" → "Darken subhead to #4B5563 and 18px for scan"
+`}- typography (light hero only): "Gray #9CA3AF subhead on white hero matches body copy" → "Darken subhead to #4B5563 and 18px for scan"
 - navigation: "8 nav links in header — Features, Pricing, Blog, Docs, About, Contact, Login, Sign Up" → "Collapse to 4 core links + sticky CTA button for cold traffic focus"
 - social_proof: "3 customer logos below fold — cold visitors scroll past before deciding" → "Move logos above fold directly under hero CTA"
 - social_proof: "No logos, stats, or testimonials above fold" → "Add 3 logos or one usage stat directly under primary hero button"

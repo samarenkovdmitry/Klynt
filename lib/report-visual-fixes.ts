@@ -65,6 +65,27 @@ export type VisualSectionContext = {
 };
 
 const MIN_VISUAL_FIXES = 2;
+
+// Explicit priority order for derive-supplement: when multiple derive candidates compete for the
+// remaining fix slots, higher-priority dimensions surface first.
+const DERIVE_PRIORITY_ORDER: VisualFixDimension[] = [
+  "color_contrast",
+  "cta_hierarchy",
+  "social_proof",
+  "navigation",
+  "headline_formula",
+  "typography",
+  "depth",
+  "spacing",
+  "density",
+  "border_radius",
+  "color_tone",
+];
+
+// Used by the spacing/density concreteness guard in isActionableVisualFix.
+const CONCRETE_PAGE_ELEMENT_PATTERN =
+  /\b(hero|header|footer|nav|button|cta|card|section|fold|above[- ]?fold|modal|sidebar|feature|pricing|testimonial|form|grid|banner|headline|subhead|logo|badge)\b/i;
+
 const VAGUE_CTA_PATTERN =
   /^(get\s+started|started|learn\s+more|click\s+here|sign\s+up(\s+free)?|submit|continue|explore|discover|try\s+now|try\s+free|try\s+it(\s+free)?|try\s+today|register|join(\s+now)?|join\s+free|start\s+free|start\s+now|get\s+free|get\s+access|access\s+now|begin(\s+now)?|proceed|watch\s+now|see\s+demo|book\s+demo)$/i;
 
@@ -183,8 +204,8 @@ function deriveFixFromChecklistGap(
   if (item.category === "trust" && item.status !== "pass") {
     return {
       dimension: "depth",
-      observation: "Trust proof weak or missing near hero CTA above fold",
-      recommendation: "Place logos or one stat directly under primary hero button",
+      observation: "Hero section background flat — no depth cue above fold",
+      recommendation: "Add background tint or card shadow to hero section for visual depth",
     };
   }
 
@@ -418,46 +439,59 @@ export function supplementVisualSection(
   const checklist = context.checklist ?? [];
   const ctaCtx: CtaContext = { audienceType: context.audienceType, trafficSource: context.trafficSource };
 
+  // Collect all derive candidates first, then sort by DERIVE_PRIORITY_ORDER and apply.
+  // This ensures that when LLM fills some slots, the most critical derived dimensions
+  // occupy the remaining slots rather than whichever derive fn happened to run first.
+  const derivedCandidates: ReportVisualFix[] = [];
+
   // CTA hierarchy — derive from copy_variants or checklist fallback.
-  // LLM already takes priority: if it returned a navigation fix it's in fixDims and this block is skipped.
   if (!fixDims.has("cta_hierarchy") && !passDims.has("cta_hierarchy")) {
     const ctaLabel = normalizeCtaInput(context.copyVariants?.cta?.current ?? "");
 
     if (!ctaLabel) {
-      // CTA not captured — use checklist Trial unclear or copy-cta gap as fallback
       const trialGap = checklist.find(
         (item) => item.link_to === "copy-cta" || item.gap_label?.trim() === "Trial unclear"
       );
       if (trialGap) {
-        appendDerivedFix(resultFixes, fixDims, deriveFixFromChecklistGap(trialGap, context.copyVariants));
+        const fix = deriveFixFromChecklistGap(trialGap, context.copyVariants);
+        if (fix) derivedCandidates.push(fix);
       }
     } else {
       const ctaFix = deriveCtaAuditFix(ctaLabel, ctaCtx);
-      const ctaPass = deriveCtaAuditPass(ctaLabel, ctaCtx);
-
       if (ctaFix) {
-        appendDerivedFix(resultFixes, fixDims, ctaFix);
+        derivedCandidates.push(ctaFix);
       } else {
-        appendDerivedPass(resultPasses, passDims, fixDims, ctaPass);
+        appendDerivedPass(resultPasses, passDims, fixDims, deriveCtaAuditPass(ctaLabel, ctaCtx));
       }
     }
   }
 
   // Headline formula — derive from copy-headline gap + headline text.
   if (!fixDims.has("headline_formula") && !passDims.has("headline_formula")) {
-    appendDerivedFix(resultFixes, fixDims, deriveHeadlineAudit(checklist, context.copyVariants));
+    const fix = deriveHeadlineAudit(checklist, context.copyVariants);
+    if (fix) derivedCandidates.push(fix);
   }
 
-  // Navigation complexity — LLM takes priority (already in fixDims if it output a navigation fix);
-  // deriveNavAudit only runs as fallback when LLM did not return the dimension.
+  // Navigation complexity — LLM takes priority; derive only when LLM did not return the dimension.
   if (!fixDims.has("navigation") && !passDims.has("navigation")) {
-    appendDerivedFix(resultFixes, fixDims, deriveNavAudit(checklist));
+    const fix = deriveNavAudit(checklist);
+    if (fix) derivedCandidates.push(fix);
   }
 
-  // Social proof — specific card when trust gap present.
-  // Skipped if LLM already output a depth fix (depth and social_proof address the same concern).
+  // Social proof — skipped when LLM already output a depth fix.
   if (!fixDims.has("social_proof") && !fixDims.has("depth") && !passDims.has("social_proof")) {
-    appendDerivedFix(resultFixes, fixDims, deriveSocialProofAudit(checklist, context.meta));
+    const fix = deriveSocialProofAudit(checklist, context.meta);
+    if (fix) derivedCandidates.push(fix);
+  }
+
+  derivedCandidates.sort(
+    (a, b) =>
+      DERIVE_PRIORITY_ORDER.indexOf(a.dimension) -
+      DERIVE_PRIORITY_ORDER.indexOf(b.dimension)
+  );
+
+  for (const fix of derivedCandidates) {
+    appendDerivedFix(resultFixes, fixDims, fix);
   }
 
   if (resultFixes.length < MIN_VISUAL_FIXES) {
@@ -711,6 +745,13 @@ export function isActionableVisualFix(fix: ReportVisualFix): boolean {
   if (
     fix.dimension === "spacing" &&
     isHeroDensityProblemText(`${fix.observation} ${fix.recommendation}`)
+  ) {
+    return false;
+  }
+
+  if (
+    (fix.dimension === "spacing" || fix.dimension === "density") &&
+    !CONCRETE_PAGE_ELEMENT_PATTERN.test(fix.observation)
   ) {
     return false;
   }
