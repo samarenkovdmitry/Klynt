@@ -466,6 +466,41 @@ function appendDerivedPass(
   passDims.add(pass.dimension);
 }
 
+function deriveSpacingAudit(computedValues?: PageComputedValues | null): ReportVisualFix | null {
+  if (computedValues == null) return null;
+
+  const { hero_h1_to_sub_gap, hero_sub_to_cta_gap } = computedValues;
+
+  const ctaTight = hero_sub_to_cta_gap !== null && hero_sub_to_cta_gap < 16;
+  const h1Tight = hero_h1_to_sub_gap !== null && hero_h1_to_sub_gap < 8;
+
+  if (ctaTight && h1Tight) {
+    return {
+      dimension: "spacing",
+      observation: `${hero_h1_to_sub_gap}px h1-sub and ${hero_sub_to_cta_gap}px sub-CTA gap — both too tight in hero`,
+      recommendation: "Increase headline-to-sub gap to 16px and sub-to-CTA gap to 24px",
+    };
+  }
+
+  if (ctaTight) {
+    return {
+      dimension: "spacing",
+      observation: `${hero_sub_to_cta_gap}px between subheadline and CTA — increase to 24px minimum`,
+      recommendation: "Increase spacing between hero subheadline and primary CTA to 24px",
+    };
+  }
+
+  if (h1Tight) {
+    return {
+      dimension: "spacing",
+      observation: `${hero_h1_to_sub_gap}px headline-to-subheadline gap above fold — increase to 16px`,
+      recommendation: "Increase gap between hero headline and subheadline to 16px minimum",
+    };
+  }
+
+  return null;
+}
+
 export function supplementVisualSection(
   fixes: ReportVisualFix[],
   passes: ReportVisualPass[],
@@ -524,6 +559,12 @@ export function supplementVisualSection(
   // Social proof — skipped when LLM already output a depth fix.
   if (!fixDims.has("social_proof") && !fixDims.has("depth") && !passDims.has("social_proof")) {
     const fix = deriveSocialProofAudit(checklist, context.meta, computedValues);
+    if (fix) derivedCandidates.push(fix);
+  }
+
+  // Spacing — derive from pixel gaps between hero elements.
+  if (!fixDims.has("spacing") && !passDims.has("spacing")) {
+    const fix = deriveSpacingAudit(computedValues);
     if (fix) derivedCandidates.push(fix);
   }
 
@@ -792,11 +833,13 @@ export function isActionableVisualFix(fix: ReportVisualFix): boolean {
     return false;
   }
 
-  if (
-    (fix.dimension === "spacing" || fix.dimension === "density") &&
-    !CONCRETE_PAGE_ELEMENT_PATTERN.test(fix.observation)
-  ) {
+  if (fix.dimension === "density" && !CONCRETE_PAGE_ELEMENT_PATTERN.test(fix.observation)) {
     return false;
+  }
+
+  if (fix.dimension === "spacing") {
+    if (!CONCRETE_PAGE_ELEMENT_PATTERN.test(fix.observation)) return false;
+    if (!/\d+\s*px/i.test(fix.observation)) return false;
   }
 
   if (!hasVisibleVisualEvidence(fix.observation)) {

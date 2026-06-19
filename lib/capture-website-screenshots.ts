@@ -44,6 +44,12 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
       computedValues = await page.evaluate(() => {
         const get = (selector: string) => document.querySelector(selector);
         const style = (el: Element | null) => el ? getComputedStyle(el) : null;
+        const gap = (a: Element | null, b: Element | null): number | null => {
+          if (!a || !b) return null;
+          const rectA = a.getBoundingClientRect();
+          const rectB = b.getBoundingClientRect();
+          return Math.round(rectB.top - rectA.bottom);
+        };
 
         const hero = get('section:first-of-type, [class*="hero"], main > div:first-child, header + div');
         const heroStyle = style(hero);
@@ -91,7 +97,9 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
 
         return {
           hero_bg: heroStyle?.backgroundColor ?? null,
-          hero_padding_top: heroStyle?.paddingTop ?? null,
+          hero_padding_top: heroStyle ? (parseInt(heroStyle.paddingTop) || null) : null,
+          hero_h1_to_sub_gap: gap(h1, sub),
+          hero_sub_to_cta_gap: gap(sub, cta),
           h1_text: (h1 as HTMLElement | null)?.innerText?.trim().slice(0, 120) ?? null,
           h1_font_size: h1Style?.fontSize ?? null,
           h1_font_weight: h1Style?.fontWeight ?? null,

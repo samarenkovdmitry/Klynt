@@ -161,7 +161,9 @@ export type ReportVisualPass = {
 /** DOM-extracted page metrics collected by Puppeteer before screenshots. */
 export type PageComputedValues = {
   hero_bg: string | null;
-  hero_padding_top: string | null;
+  hero_padding_top: number | null;
+  hero_h1_to_sub_gap: number | null;
+  hero_sub_to_cta_gap: number | null;
   h1_text: string | null;
   h1_font_size: string | null;
   h1_font_weight: string | null;
