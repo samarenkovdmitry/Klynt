@@ -5,6 +5,7 @@ import {
   RiAlignVertically,
   RiArrowDownSLine,
   RiArrowRightLine,
+  RiContrastLine,
   RiCursorLine,
   RiGroupLine,
   RiH1,
@@ -49,6 +50,7 @@ const DIMENSION_ICONS: Record<VisualFixDimension, typeof RiPaletteLine> = {
   navigation: RiNavigationLine,
   social_proof: RiGroupLine,
   headline_formula: RiH1,
+  color_contrast: RiContrastLine,
 };
 
 function VisualFixCard({ fix }: { fix: ReportVisualFix }) {

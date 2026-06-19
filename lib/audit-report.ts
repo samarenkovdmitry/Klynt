@@ -144,7 +144,8 @@ export type VisualFixDimension =
   | "depth"
   | "navigation"
   | "social_proof"
-  | "headline_formula";
+  | "headline_formula"
+  | "color_contrast";
 
 export type ReportVisualFix = {
   dimension: VisualFixDimension;

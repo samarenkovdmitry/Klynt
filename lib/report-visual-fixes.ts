@@ -24,6 +24,7 @@ export const VISUAL_FIX_DIMENSIONS: VisualFixDimension[] = [
   "navigation",
   "social_proof",
   "headline_formula",
+  "color_contrast",
 ];
 
 const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
@@ -37,6 +38,7 @@ const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
   navigation: "Navigation complexity",
   social_proof: "Social proof",
   headline_formula: "Headline formula",
+  color_contrast: "Color contrast",
 };
 
 // Maps dimensions to the checklist link targets they correspond to — used for severity scoring.
@@ -564,6 +566,10 @@ const DIMENSION_ALIASES: Record<string, VisualFixDimension> = {
   headline_formula: "headline_formula",
   headline: "headline_formula",
   heading_formula: "headline_formula",
+  color_contrast: "color_contrast",
+  colorcontrast: "color_contrast",
+  contrast: "color_contrast",
+  aa_contrast: "color_contrast",
 };
 
 export function normalizeVisualDimension(raw: string | undefined | null): VisualFixDimension | null {
