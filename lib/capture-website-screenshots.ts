@@ -68,23 +68,50 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
         );
         const ctaStyle = style(cta);
 
-        const nav = get("nav, header nav");
-        const navLinks = nav
-          ? Array.from(nav.querySelectorAll("a")).filter((a) => {
-              const s = getComputedStyle(a);
-              const rect = a.getBoundingClientRect();
-              return (
-                s.display !== "none" &&
-                s.visibility !== "hidden" &&
-                s.opacity !== "0" &&
-                rect.width > 0 &&
-                rect.height > 0 &&
-                rect.top < window.innerHeight * 0.2
-              );
-            })
+        const nav = get(
+          'nav, header nav, [role="navigation"], ' +
+          'header ul, header > div > ul, ' +
+          '[class*="nav"]:not([class*="icon"]):not([class*="arrow"]), ' +
+          '[class*="menu"]:not([class*="hamburger"]):not([class*="mobile"])'
+        );
+
+        const isVisibleNavLink = (a: Element, maxTop: number) => {
+          const s = getComputedStyle(a);
+          const rect = a.getBoundingClientRect();
+          return (
+            s.display !== "none" &&
+            s.visibility !== "hidden" &&
+            s.opacity !== "0" &&
+            rect.width > 0 &&
+            rect.height > 0 &&
+            rect.top >= 0 &&
+            rect.top < maxTop
+          );
+        };
+
+        let rawNavLinks: HTMLAnchorElement[] = nav
+          ? Array.from(nav.querySelectorAll("a")).filter(
+              (a) => isVisibleNavLink(a, window.innerHeight * 0.3)
+            )
           : [];
+
+        // Fallback: header with 3+ visible above-fold links (e.g. readymag-style sites)
+        if (rawNavLinks.length < 3) {
+          const header = document.querySelector("header");
+          if (header) {
+            const headerLinks = Array.from(header.querySelectorAll("a")).filter(
+              (a) => isVisibleNavLink(a, window.innerHeight)
+            );
+            if (headerLinks.length >= 3) {
+              rawNavLinks = headerLinks as HTMLAnchorElement[];
+            }
+          }
+        }
+
         const uniqueNavLinks = [
-          ...new Map(navLinks.map((a) => [a.href, a] as [string, HTMLAnchorElement])).values(),
+          ...new Map(
+            rawNavLinks.map((a) => [a.href, a] as [string, HTMLAnchorElement])
+          ).values(),
         ];
 
         const proof = get(
@@ -118,9 +145,12 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
             .map((a) => a.innerText.trim())
             .filter(Boolean)
             .slice(0, 10),
-          nav_has_sticky: nav
-            ? ["sticky", "fixed"].includes(getComputedStyle(nav).position)
-            : false,
+          nav_has_sticky: (() => {
+            const stickyEl = nav ?? document.querySelector("header");
+            return stickyEl
+              ? ["sticky", "fixed"].includes(getComputedStyle(stickyEl).position)
+              : false;
+          })(),
           social_proof_found: !!proof,
           social_proof_above_fold: proofRect ? proofRect.top < viewportHeight : false,
           card_border_radius: (() => {

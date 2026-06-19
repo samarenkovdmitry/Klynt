@@ -128,6 +128,13 @@ HARD CONSTRAINTS (violations auto-filtered server-side):
 - Maximum 1 generic gap per report. All others must cite a specific visible element.`;
 }
 
+const HEADLINE_EVALUATION_RULES = `HEADLINE EVALUATION RULES (apply during EVALUATION PROTOCOL Step 2 for headline):
+- Brand-name-as-category: if the brand name itself is a category signal (e.g. "Figma", "Notion", "Cursor", "Linear", "Stripe", "Loom") — audience is implied by brand awareness. Do NOT flag as Missing; at most flag as Weak if page_context is cold traffic AND the subheadline also lacks audience signal.
+- Action-verb + outcome: if headline contains an action verb combined with an outcome or transformation ("make you extraordinarily productive", "ship faster", "grow revenue", "close more deals") — audience is implied for the detected page_context. Flag as Weak at most, never Missing.
+- Partial compensation: if the headline is vague but the subheadline (or first sentence below) contains a clear role, industry, or use-case signal — the gap is at most Weak, not Missing.
+- Only flag as Missing if ALL three are true: (1) headline is purely abstract with zero category or audience signal, (2) subheadline also provides no audience signal, AND (3) traffic_source is cold.
+- When in doubt between Missing and Weak — always choose Weak.`;
+
 export function buildFullAuditPrompt(
   brandStage: BrandStage,
   trafficSource: TrafficSource,
@@ -232,6 +239,8 @@ Return ONLY valid JSON (no markdown):
 }
 
 ${checklistEvalBlock}
+
+${HEADLINE_EVALUATION_RULES}
 
 checklist: 6-8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass. Fewer real gaps is OK — never invent gaps to fill slots.
 
