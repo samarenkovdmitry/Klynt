@@ -88,15 +88,23 @@ function highlightVisualText(text: string): React.ReactNode {
 function VisualFixColumn({
   fix,
   hasBorderRight,
+  hasBorderTop,
 }: {
   fix: ReportVisualFix;
   hasBorderRight: boolean;
+  hasBorderTop: boolean;
 }) {
   const Icon = DIMENSION_ICONS[fix.dimension];
   const label = getVisualFixDimensionLabel(fix.dimension);
 
   return (
-    <div className={`p-6${hasBorderRight ? " border-r border-[#eef1f5]" : ""}`}>
+    <div
+      className={[
+        "p-6",
+        hasBorderRight ? "border-r border-[#eef1f5]" : "",
+        hasBorderTop ? "border-t border-[#eef1f5]" : "",
+      ].filter(Boolean).join(" ")}
+    >
       <div className="mb-2.5 flex items-center gap-2">
         <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
         <span className="text-[15px] font-semibold text-[#061C2F]">{label}</span>
@@ -189,43 +197,41 @@ export function VisualFixes({
                 key={fix.dimension}
                 fix={fix}
                 hasBorderRight={index % 2 === 0}
+                hasBorderTop={index >= 2}
               />
             ))}
+            {passes.length > 0 && !passVisible ? (
+              <button
+                type="button"
+                onClick={() => setPassVisible(true)}
+                className="col-span-2 flex items-center gap-1.5 border-t border-[#eef1f5] p-6 text-[13px] text-[#8E99A2] transition-colors hover:text-[#061C2F]"
+              >
+                <RiArrowDownSLine size={16} aria-hidden />
+                {`Show ${passes.length} aligned visual check${passes.length !== 1 ? "s" : ""}`}
+              </button>
+            ) : null}
           </div>
         </div>
       ) : null}
 
-      {/* Passes toggle */}
+      {/* Passes list */}
       {passes.length > 0 ? (
-        <>
-          {!passVisible ? (
-            <button
-              type="button"
-              onClick={() => setPassVisible(true)}
-              className="mt-3 flex items-center gap-1.5 text-[13px] text-[#8E99A2] transition-colors hover:text-[#061C2F]"
-            >
-              <RiArrowDownSLine size={16} aria-hidden />
-              {`Show ${passes.length} aligned visual check${passes.length !== 1 ? "s" : ""}`}
-            </button>
-          ) : null}
-
-          <div
-            className="overflow-hidden pb-0.5 transition-[max-height] duration-300 ease-out"
-            style={{
-              maxHeight: passVisible ? `${passes.length * 120 + 24}px` : "0px",
-            }}
-          >
-            <div className="mt-3 rounded-[16px] bg-white shadow-[0_0_0_1px_rgba(6,28,47,0.08)]">
-              {passes.map((pass, index) => (
-                <VisualPassRow
-                  key={pass.dimension}
-                  pass={pass}
-                  isLast={index === passes.length - 1}
-                />
-              ))}
-            </div>
+        <div
+          className="overflow-hidden pb-0.5 transition-[max-height] duration-300 ease-out"
+          style={{
+            maxHeight: passVisible ? `${passes.length * 120 + 24}px` : "0px",
+          }}
+        >
+          <div className="mt-3 rounded-[16px] bg-white shadow-[0_0_0_1px_rgba(6,28,47,0.08)]">
+            {passes.map((pass, index) => (
+              <VisualPassRow
+                key={pass.dimension}
+                pass={pass}
+                isLast={index === passes.length - 1}
+              />
+            ))}
           </div>
-        </>
+        </div>
       ) : null}
     </section>
   );
