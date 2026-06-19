@@ -43,7 +43,7 @@ import {
   deriveScoreFromBreakdown,
 } from "@/lib/normalize-report-score";
 import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
-import { normalizeVisualSection } from "@/lib/report-visual-fixes";
+import { normalizeVisualSection, willDeriveCtaFix } from "@/lib/report-visual-fixes";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 import {
   formatIssueTitleDisplay,
@@ -312,6 +312,7 @@ export async function POST(req: Request) {
     const url = normalizeUrl(rawUrl);
 
     let screenshotsBase64: string[] = [];
+    let computedValues: import("@/lib/audit-report").PageComputedValues | null = null;
 
     // PRIORITY #1 — uploaded screenshot
     if (uploadedScreenshot) {
@@ -326,9 +327,11 @@ export async function POST(req: Request) {
     // PRIORITY #2 — auto capture from URL
     else if (url) {
       captureMode = "url";
-      screenshotsBase64 = await timing.measure("capture_ms", () =>
+      const captureResult = await timing.measure("capture_ms", () =>
         captureWebsiteScreenshots(url)
       );
+      screenshotsBase64 = captureResult.screenshots;
+      computedValues = captureResult.computedValues;
     }
 
     if (screenshotsBase64.length === 0) {
@@ -354,13 +357,24 @@ export async function POST(req: Request) {
     screenshotsBase64 = await timing.measure("optimize_ms", () =>
       optimizeScreenshots(screenshotsBase64)
     );
-    const basePrompt = buildFullAuditPrompt(brandStage, trafficSource, audienceType);
+
+    // Derive page context from audienceType for CTA trigger softening.
+    const pageContext: import("@/lib/audit-report").PageContext | undefined =
+      audienceType === "b2b" ? "b2b" : audienceType === "b2c" ? "consumer" : undefined;
+
+    // Skip CTA audit in LLM prompt when derive can pre-determine the result from DOM data.
+    const skipCtaAudit = computedValues?.cta_text
+      ? willDeriveCtaFix(computedValues.cta_text, { audienceType, trafficSource, pageContext })
+      : false;
+
+    const basePrompt = buildFullAuditPrompt(brandStage, trafficSource, audienceType, { skipCtaAudit });
 
     const json: Record<string, any> = await timing.measure("openai_ms", () =>
       requestAuditAnalysis({
         basePrompt,
         url,
         screenshotsBase64,
+        computedValues,
       })
     );
 
@@ -473,18 +487,6 @@ export async function POST(req: Request) {
       json.score
     );
 
-    const visualSection = normalizeVisualSection(
-      json.visual_fixes,
-      json.visual_passes,
-      json.checklist,
-      undefined,
-      json.score,
-      rawChecklist,
-      normalizedBreakdown
-    );
-    json.visual_fixes = visualSection.fixes;
-    json.visual_passes = visualSection.passes;
-
     if (json.copy_variants && typeof json.copy_variants === "object") {
       json.copy_variants = normalizeReportCopyVariants(
         json.copy_variants as import("@/lib/audit-report").ReportCopyVariants,
@@ -514,6 +516,27 @@ export async function POST(req: Request) {
           .slice(0, 2);
       }
     }
+
+    const visualSection = normalizeVisualSection(
+      json.visual_fixes,
+      json.visual_passes,
+      json.checklist,
+      undefined,
+      json.score,
+      rawChecklist,
+      normalizedBreakdown,
+      {
+        copyVariants: json.copy_variants as import("@/lib/audit-report").ReportCopyVariants | undefined,
+        meta: json.meta as import("@/lib/audit-report").ReportMeta | undefined,
+        checklist: json.checklist,
+        audienceType,
+        trafficSource,
+        computedValues,
+        pageContext,
+      }
+    );
+    json.visual_fixes = visualSection.fixes;
+    json.visual_passes = visualSection.passes;
 
     json.risk = deriveRiskFromScore(json.score);
     });

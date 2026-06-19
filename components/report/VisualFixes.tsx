@@ -5,14 +5,16 @@ import {
   RiAlignVertically,
   RiArrowDownSLine,
   RiArrowRightLine,
+  RiContrastLine,
   RiCursorLine,
+  RiGroupLine,
+  RiH1,
   RiLayoutGridLine,
-  RiLock2Line,
+  RiNavigationLine,
   RiPaletteLine,
   RiRoundedCorner,
   RiStackLine,
   RiText,
-  RiVipCrownFill,
 } from "@remixicon/react";
 import type {
   ReportVisualFix,
@@ -25,15 +27,16 @@ import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
 } from "@/components/report/reportStyles";
-import type { RequestProUpgrade } from "@/lib/freemium";
 import { SectionHeader } from "@/components/report/ReportSectionHeader";
 
 type Props = {
   visualFixes?: ReportVisualFix[];
   visualPasses?: ReportVisualPass[];
+  /** @deprecated Visual fixes are fully unlocked for now */
   previewLocked?: boolean;
   isDemo?: boolean;
-  onRequestProUpgrade?: RequestProUpgrade;
+  /** @deprecated Visual fixes are fully unlocked for now */
+  onRequestProUpgrade?: () => void;
 };
 
 const DIMENSION_ICONS: Record<VisualFixDimension, typeof RiPaletteLine> = {
@@ -44,7 +47,44 @@ const DIMENSION_ICONS: Record<VisualFixDimension, typeof RiPaletteLine> = {
   cta_hierarchy: RiCursorLine,
   typography: RiText,
   depth: RiStackLine,
+  navigation: RiNavigationLine,
+  social_proof: RiGroupLine,
+  headline_formula: RiH1,
+  color_contrast: RiContrastLine,
 };
+
+function highlightVisualText(text: string): React.ReactNode {
+  const PATTERN = /(#[0-9a-fA-F]{3,6}\b|\b\d+(?:\.\d+)?(?:px|rem|em|%)\b)/gi;
+  const parts = text.split(PATTERN);
+  if (parts.length === 1) return text;
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (/^#[0-9a-fA-F]{3,6}$/i.test(part)) {
+          return (
+            <span key={i} className="inline-flex items-center gap-1">
+              <span
+                className="inline-block h-3 w-3 shrink-0 rounded-full border border-black/10 align-middle"
+                style={{ backgroundColor: part }}
+                aria-hidden
+              />
+              <span className="font-mono text-[12px]">{part}</span>
+            </span>
+          );
+        }
+        if (/^\d+(?:\.\d+)?(?:px|rem|em|%)$/i.test(part)) {
+          return (
+            <code key={i} className="rounded bg-[#ECF0F6] px-[5px] py-px font-mono text-[12px] text-[#4a5568]">
+              {part}
+            </code>
+          );
+        }
+        return part || null;
+      })}
+    </>
+  );
+}
 
 function VisualFixCard({ fix }: { fix: ReportVisualFix }) {
   const Icon = DIMENSION_ICONS[fix.dimension];
@@ -56,7 +96,7 @@ function VisualFixCard({ fix }: { fix: ReportVisualFix }) {
         <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
         <span className="text-[15px] font-semibold text-[#061C2F]">{label}</span>
       </div>
-      <p className="mb-3 text-[14px] leading-5 text-[#8E99A2]">{fix.observation}</p>
+      <p className="mb-3 text-[14px] leading-5 text-[#8E99A2]">{highlightVisualText(fix.observation)}</p>
       <div className="rounded-[10px] bg-[#EFF3F6] px-[14px] py-3">
         <p className="flex items-start gap-2 text-[14px] leading-5 text-[#061C2F]">
           <RiArrowRightLine
@@ -64,41 +104,8 @@ function VisualFixCard({ fix }: { fix: ReportVisualFix }) {
             className="mt-0.5 shrink-0 text-status-good"
             aria-hidden
           />
-          {fix.recommendation}
+          {highlightVisualText(fix.recommendation)}
         </p>
-      </div>
-    </div>
-  );
-}
-
-function LockedFixCard({
-  fix,
-  onRequestProUpgrade,
-}: {
-  fix: ReportVisualFix;
-  onRequestProUpgrade?: RequestProUpgrade;
-}) {
-  const Icon = DIMENSION_ICONS[fix.dimension];
-  const label = getVisualFixDimensionLabel(fix.dimension);
-
-  return (
-    <div
-      className="cursor-pointer rounded-[16px] bg-white p-5 shadow-[0_0_0_1px_rgba(6,28,47,0.08)]"
-      onClick={() => onRequestProUpgrade?.()}
-    >
-      {/* Title row with lock at top-right */}
-      <div className="mb-4 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
-          <span className="text-[15px] font-semibold text-[#061C2F]">{label}</span>
-        </div>
-        <RiLock2Line size={14} className="shrink-0 text-[#8F99A2]" aria-hidden />
-      </div>
-      {/* Skeleton bars mimicking real text layout */}
-      <div className="space-y-2.5">
-        <div className="h-[14px] w-[88%] rounded-[4px] bg-[#DDE5ED]" />
-        <div className="h-[14px] w-[72%] rounded-[4px] bg-[#DDE5ED]" />
-        <div className="h-[14px] w-[55%] rounded-[4px] bg-[#DDE5ED]" />
       </div>
     </div>
   );
@@ -137,18 +144,15 @@ function VisualPassRow({
 export function VisualFixes({
   visualFixes,
   visualPasses,
-  previewLocked = false,
-  isDemo = false,
-  onRequestProUpgrade,
 }: Props) {
   const fixes = visualFixes ?? [];
   const passes = visualPasses ?? [];
-  const [passVisible, setPassVisible] = useState(false);
+  const [passVisible, setPassVisible] = useState(fixes.length < 2);
 
   if (fixes.length === 0 && passes.length === 0) return null;
 
   const insightCount = fixes.length;
-  const shouldLock = !isDemo && (previewLocked || fixes.length > 1);
+  const checkCount = passes.length;
 
   return (
     <section
@@ -161,18 +165,11 @@ export function VisualFixes({
         trailing={
           <div className="flex items-center gap-2.5">
             <span className="text-[14px] leading-5 text-[#8E99A2]">
-              {insightCount} insight{insightCount !== 1 ? "s" : ""}
+              {insightCount} fix{insightCount !== 1 ? "es" : ""}
+              {checkCount > 0
+                ? ` · ${checkCount} aligned check${checkCount !== 1 ? "s" : ""}`
+                : ""}
             </span>
-            {shouldLock ? (
-              <>
-                <span className="h-6 w-px bg-[#D0D5DA]" aria-hidden />
-                <span className="text-[14px] leading-5 text-[#8E99A2]">Unlock all in</span>
-                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold text-white [background:linear-gradient(to_top_right,#18181B,#373473,#201F32)]">
-                  <RiVipCrownFill size={12} aria-hidden />
-                  PRO
-                </span>
-              </>
-            ) : null}
           </div>
         }
       />
@@ -180,17 +177,9 @@ export function VisualFixes({
       {/* Cards grid */}
       {fixes.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {fixes.map((fix, i) =>
-            shouldLock && i > 0 ? (
-              <LockedFixCard
-                key={fix.dimension}
-                fix={fix}
-                onRequestProUpgrade={onRequestProUpgrade}
-              />
-            ) : (
-              <VisualFixCard key={fix.dimension} fix={fix} />
-            )
-          )}
+          {fixes.map((fix) => (
+            <VisualFixCard key={fix.dimension} fix={fix} />
+          ))}
         </div>
       ) : null}
 

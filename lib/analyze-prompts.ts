@@ -68,8 +68,10 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
 export function buildFullAuditPrompt(
   brandStage: BrandStage,
   trafficSource: TrafficSource,
-  audienceType: AudienceType
+  audienceType: AudienceType,
+  options?: { skipCtaAudit?: boolean }
 ) {
+  const skipCta = options?.skipCtaAudit ?? false;
   const auditContextPrompt = buildAuditContextPromptBlock(trafficSource, audienceType);
   const brandStagePrompt = buildBrandStagePromptBlock(brandStage);
   const copyStudioPrompt = buildCopyStudioPromptBlock();
@@ -148,14 +150,14 @@ Return ONLY valid JSON (no markdown):
   },
   "visual_fixes": [
     {
-      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth",
+      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth"|"navigation"|"social_proof",
       "observation": "string",
       "recommendation": "string"
     }
   ],
   "visual_passes": [
     {
-      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth",
+      "dimension": "border_radius"|"density"|"color_tone"|"spacing"|"cta_hierarchy"|"typography"|"depth"|"navigation"|"social_proof",
       "note": "string"
     }
   ]
@@ -251,8 +253,15 @@ meta.description_suggestion: max 25 words. First-time visitor perspective. What 
 meta.proof_suggestion: max 12 words. One specific trust element to add on THIS page (e.g. "Add customer logos below CTA").
 meta.trust_notes: 1-2 items, max 14 words each. Observations about missing proof or CTA reassurance — e.g. when CTA says "Try X" without free/trial clarity, note that it suggests risk without reassurance. Do not duplicate checklist trust gap text verbatim.
 
-visual_fixes: 0-4 items. Context-aware visual/design guidance ONLY — not copy positioning or trust proof (those belong in checklist/meta).
-Include a dimension ONLY when the screenshot shows a visible mismatch. Empty visual_fixes is valid when design aligns.
+visual_fixes: 0-4 items. Surface/conversion design guidance — how CTAs, hierarchy, contrast, and trust placement read on screen. Headline rewrites belong in copy_variants, not here.
+
+SURFACE AUDIT MINIMUM (mandatory — do not skip):
+- ${skipCta ? "Skip cta_hierarchy — CTA has been pre-evaluated by the derive layer; do not emit a cta_hierarchy fix or pass." : "Always evaluate CTA TEXT AUDIT under cta_hierarchy using exact hero button labels from HERO INVENTORY."}
+- Deliver at least 2 total insights across visual_fixes + visual_passes combined (fixes preferred when a real issue exists).
+${skipCta ? "" : `- CTA TEXT AUDIT criteria for each hero button label: (1) specificity — "GET STARTED", "Start Free", "Try Free" are weak (no product or outcome); "Start your free website" is specific; (2) active verb + concrete outcome; (3) all-caps tone ("GET STARTED", "TRY FREE FOR 30 DAYS" — all caps → sentence case fix); (4) urgency fit when trial or limited offer is implied elsewhere on page.`}
+- NAV COMPLEXITY: count visible nav links in the header. If 6+ links OR nav has no primary CTA button → output a "navigation" dimension fix. observation: name the exact link count or missing element. recommendation: max 18 words, specific to this page.
+- SOCIAL PROOF FORMAT: if trust signals exist, identify format (logos | stats/numbers | testimonial quotes) and position (above fold | below fold). If strong social proof is above fold → social_proof pass. If missing or below fold → social_proof fix with format and position in recommendation. Never use "social_proof" dimension AND "depth" for the same observation.
+- If the page is polished (score >= 7.5), still output concrete passes — never leave visual_fixes and visual_passes both empty.
 
 STEP 0 — HERO THEME (use HERO INVENTORY theme):
   Classify hero background: dark | light | mixed.
@@ -261,14 +270,14 @@ STEP 0 — HERO THEME (use HERO INVENTORY theme):
   mixed: split layout or photo overlay — judge contrast relative to the local background behind each text block.
 
 STEP 1: Use BRAND STAGE + AUDIENCE + TRAFFIC context to infer who this product is for.
-STEP 2: Pick dimensions ONLY with visible evidence on THIS screenshot:
-  border_radius | density | color_tone | spacing | cta_hierarchy | typography | depth
-Skip dimensions with no visible issue. Never repeat checklist gap text verbatim.
+STEP 2: Pick dimensions with visible evidence on THIS screenshot:
+  border_radius | density | color_tone | spacing | ${skipCta ? "" : "cta_hierarchy | "}typography | depth | navigation | social_proof
+${skipCta ? "" : "Always include cta_hierarchy (CTA text audit or visual weight). "}Use navigation when nav link count or sticky CTA is an issue. Use social_proof for trust format and placement (not depth). Skip dimensions with no visible signal. Never repeat checklist gap text verbatim.
 
 Each item MUST cite what you see on this page:
 - dimension: one enum value above
-- observation: max 14 words. Name visible UI (button labels, dark/light treatment, radius, spacing between named blocks). No invented WCAG ratios unless clearly readable.
-- recommendation: max 18 words. Concrete change for THIS page and theme (e.g. "On dark hero, brighten gray subhead — not bold weight").
+- observation: max 14 words. Name visible UI (exact button labels, dark/light treatment, radius, spacing, fold placement). When PAGE COMPUTED VALUES are provided, cite exact hex/px from those fields; otherwise estimate from the screenshot.
+- recommendation: max 18 words. Concrete change for THIS page (e.g. "Switch GET STARTED to sentence case — add a product-specific outcome" or "Darken subhead #9CA3AF → #4B5563").
 
 BANNED templates (instant failure — never output these or close paraphrases):
 - "Subheadline weight feels too light for emphasis" / "Increase subheadline weight for better readability"
@@ -279,15 +288,24 @@ BANNED templates (instant failure — never output these or close paraphrases):
 - Fixes without naming a visible element on this screenshot
 
 Good examples:
-- cta_hierarchy: "Start for free and Download share equal pill weight on dark hero" → "Fill primary CTA, outline secondary Download for cold traffic"
-- typography (light hero only): "Gray subhead on white hero matches body copy weight" → "Darken subhead to #555 and bump to 18px for scan"
-- depth (dark hero): "Pure black hero merges with page body" → "Add subtle #111/#0A0A0A section break below hero mockup"
+${skipCta ? "" : `- cta_hierarchy (text): "GET STARTED — all caps, no product or trial hint" → "Switch to sentence case and add a specific outcome — say what happens after click"
+- cta_hierarchy (text): "'Start Free' — no product or outcome on button" → "Add a specific outcome — mention what happens after click"
+- cta_hierarchy (weight): "Start for free and Download share equal pill weight on dark hero" → "Fill primary CTA, outline secondary Download for cold traffic"
+`}- typography (light hero only): "Gray #9CA3AF subhead on white hero matches body copy" → "Darken subhead to #4B5563 and 18px for scan"
+- navigation: "8 nav links in header — Features, Pricing, Blog, Docs, About, Contact, Login, Sign Up" → "Collapse to 4 core links + sticky CTA button for cold traffic focus"
+- social_proof: "3 customer logos below fold — cold visitors scroll past before deciding" → "Move logos above fold directly under hero CTA"
+- social_proof: "No logos, stats, or testimonials above fold" → "Add 3 logos or one usage stat directly under primary hero button"
 - border_radius: "24px pill CTAs read consumer-playful for enterprise CRM" → "Tighten CTA radius to 8px for B2B tone"
+- depth (light hero): "Flat white hero — no visual separation from page body" → "Add #F8F8F6 background tint to hero section"
+- depth (dark hero): "Flat hero container — no depth cue separating card from background" → "Add 4px card shadow to hero container to increase perceived depth"
 
-visual_passes: 1-4 items. REQUIRED when score >= 7.5 OR when fewer than 2 real visual_fixes exist.
+visual_passes: 1-4 items. REQUIRED when score >= 7.5 OR when fewer than 2 visual_fixes exist.
 Dimensions you evaluated and found aligned with BRAND STAGE + AUDIENCE + hero theme.
 - Use only dimensions NOT already in visual_fixes (no overlap).
-- note: max 12 words. Reference visible evidence (button labels, radius, spacing, dark/light treatment).
-- Do NOT repeat checklist pass items (CTA visibility, footer links, etc.) — design language only.
-- Never invent praise; skip a dimension rather than writing a generic compliment.`;
+- note: max 12 words. Concrete evidence — not compliments. Name button labels, counts, or placement.
+  Good: "Single primary CTA above fold — no competing hero buttons"
+  Good: "Start your free trial — specific verb and outcome on primary button"
+  Bad: "Hero section has clear CTAs and well-structured content"
+- Do NOT repeat checklist pass items (footer links, nav labels) unless noting visual hierarchy.
+- Never write vague praise; each pass must state one observable fact.`;
 }

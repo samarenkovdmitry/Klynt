@@ -111,6 +111,20 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       }
     );
     const checklist = finalized.checklist;
+    const copyVariants = normalizeReportCopyVariants(data.copy_variants, data.brand_stage);
+    const meta = data.meta
+      ? {
+          ...data.meta,
+          title_suggestion: sanitizeLlmVisibleText(data.meta.title_suggestion),
+          description_suggestion: sanitizeLlmVisibleText(data.meta.description_suggestion),
+          proof_suggestion: data.meta.proof_suggestion
+            ? sanitizeLlmVisibleText(data.meta.proof_suggestion)
+            : data.meta.proof_suggestion,
+          trust_notes: data.meta.trust_notes
+            ?.map((note) => sanitizeLlmVisibleText(note))
+            .filter(Boolean),
+        }
+      : data.meta;
     const visualSection = normalizeVisualSection(
       data.visual_fixes,
       data.visual_passes,
@@ -118,26 +132,19 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
       undefined,
       data.score,
       data.checklist ?? undefined,
-      data.breakdown
+      data.breakdown,
+      {
+        copyVariants,
+        meta,
+        checklist,
+      }
     );
 
     return {
       ...data,
       checklist,
-      copy_variants: normalizeReportCopyVariants(data.copy_variants, data.brand_stage),
-      meta: data.meta
-        ? {
-            ...data.meta,
-            title_suggestion: sanitizeLlmVisibleText(data.meta.title_suggestion),
-            description_suggestion: sanitizeLlmVisibleText(data.meta.description_suggestion),
-            proof_suggestion: data.meta.proof_suggestion
-              ? sanitizeLlmVisibleText(data.meta.proof_suggestion)
-              : data.meta.proof_suggestion,
-            trust_notes: data.meta.trust_notes
-              ?.map((note) => sanitizeLlmVisibleText(note))
-              .filter(Boolean),
-          }
-        : data.meta,
+      copy_variants: copyVariants,
+      meta,
       score_potential: finalized.scorePotential,
       visual_fixes: visualSection.fixes,
       visual_passes: visualSection.passes,

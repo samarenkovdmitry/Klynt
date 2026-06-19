@@ -58,6 +58,8 @@ export type TrafficSource = "cold" | "warm" | "mixed";
 
 export type AudienceType = "b2b" | "b2c" | "both";
 
+export type PageContext = "b2b" | "creative" | "consumer" | "enterprise";
+
 export type ReportBreakdown = {
   clarity?: number;
   trust?: number;
@@ -141,7 +143,11 @@ export type VisualFixDimension =
   | "spacing"
   | "cta_hierarchy"
   | "typography"
-  | "depth";
+  | "depth"
+  | "navigation"
+  | "social_proof"
+  | "headline_formula"
+  | "color_contrast";
 
 export type ReportVisualFix = {
   dimension: VisualFixDimension;
@@ -152,6 +158,35 @@ export type ReportVisualFix = {
 export type ReportVisualPass = {
   dimension: VisualFixDimension;
   note: string;
+};
+
+/** DOM-extracted page metrics collected by Puppeteer before screenshots. */
+export type PageComputedValues = {
+  hero_bg: string | null;
+  hero_padding_top: number | null;
+  hero_h1_to_sub_gap: number | null;
+  hero_sub_to_cta_gap: number | null;
+  h1_text: string | null;
+  h1_font_size: string | null;
+  h1_font_weight: string | null;
+  h1_color: string | null;
+  sub_text: string | null;
+  sub_font_size: string | null;
+  sub_font_weight: string | null;
+  sub_color: string | null;
+  cta_text: string | null;
+  cta_bg: string | null;
+  cta_color: string | null;
+  cta_border_radius: string | null;
+  cta_font_weight: string | null;
+  nav_link_count: number;
+  nav_link_labels: string[];
+  nav_has_sticky: boolean;
+  social_proof_found: boolean;
+  social_proof_above_fold: boolean;
+  card_border_radius: string | null;
+  viewport_width: number;
+  viewport_height: number;
 };
 
 export type AuditRisk = "low" | "medium" | "high";
