@@ -52,7 +52,8 @@ const DIMENSION_ICONS: Record<VisualFixDimension, typeof RiPaletteLine> = {
 };
 
 function highlightVisualText(text: string): React.ReactNode {
-  const PATTERN = /(#[0-9a-fA-F]{3,6}\b|\b\d+(?:\.\d+)?(?:px|rem|em|%)\b)/gi;
+  const PATTERN =
+    /(#[0-9a-fA-F]{3,6}\b|\b\d+(?:\.\d+)?(?:[–-]\d+(?:\.\d+)?)?(?:px|rem|em|%)\b)/gi;
   const parts = text.split(PATTERN);
   if (parts.length === 1) return text;
 
@@ -61,19 +62,22 @@ function highlightVisualText(text: string): React.ReactNode {
       {parts.map((part, i) => {
         if (/^#[0-9a-fA-F]{3,6}$/i.test(part)) {
           return (
-            <span key={i} className="inline-flex items-center gap-1">
+            <span key={i} className="inline whitespace-nowrap align-middle">
               <span
-                className="inline-block h-3 w-3 shrink-0 rounded-full border border-black/10 align-middle"
+                className="mr-1 inline-block h-3 w-3 shrink-0 rounded-full border border-black/10 align-middle"
                 style={{ backgroundColor: part }}
                 aria-hidden
               />
-              <span className="font-mono text-[12px]">{part}</span>
+              <span className="font-mono text-[12px] align-middle">{part}</span>
             </span>
           );
         }
-        if (/^\d+(?:\.\d+)?(?:px|rem|em|%)$/i.test(part)) {
+        if (/^\d+(?:\.\d+)?(?:[–-]\d+(?:\.\d+)?)?(?:px|rem|em|%)$/i.test(part)) {
           return (
-            <code key={i} className="rounded bg-[#ECF0F6] px-[5px] py-px font-mono text-[12px] text-[#4a5568]">
+            <code
+              key={i}
+              className="whitespace-nowrap rounded bg-[#ECF0F6] px-[5px] py-px font-mono text-[12px] text-[#4a5568] align-middle"
+            >
               {part}
             </code>
           );
@@ -107,16 +111,20 @@ function VisualFixColumn({
         <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
         <span className="text-[15px] font-semibold text-[#061C2F]">{label}</span>
       </div>
-      <p className="mb-3 text-[14px] leading-5 text-[#8E99A2]">{highlightVisualText(fix.observation)}</p>
+      <p className="mb-3 text-[14px] leading-5 text-[#8E99A2] break-words">
+        {highlightVisualText(fix.observation)}
+      </p>
       <div className="rounded-[10px] bg-[#EFF3F6] px-[14px] py-3">
-        <p className="flex items-start gap-2 text-[14px] leading-5 text-[#061C2F]">
+        <div className="flex items-start gap-2">
           <RiArrowRightLine
             size={15}
             className="mt-0.5 shrink-0 text-status-good"
             aria-hidden
           />
-          {highlightVisualText(fix.recommendation)}
-        </p>
+          <p className="min-w-0 flex-1 text-[14px] leading-5 text-[#061C2F] break-words">
+            {highlightVisualText(fix.recommendation)}
+          </p>
+        </div>
       </div>
     </div>
   );
