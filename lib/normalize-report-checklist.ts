@@ -147,6 +147,12 @@ export function getChecklistBadgeLabel(item: ReportChecklistItem): string {
   return "Weak";
 }
 
+const EVIDENCE_MIN_LENGTH = 15;
+
+function isEvidenceSufficient(evidence: string): boolean {
+  return evidence.trim().length >= EVIDENCE_MIN_LENGTH;
+}
+
 function parseChecklistItem(raw: unknown): ReportChecklistItem | null {
   if (!raw || typeof raw !== "object") {
     return null;
@@ -163,6 +169,12 @@ function parseChecklistItem(raw: unknown): ReportChecklistItem | null {
     item.status === "missing" || item.status === "weak" || item.status === "pass"
       ? item.status
       : "pass";
+
+  // Validate evidence field: required for all items, minimum 15 characters
+  const evidence = typeof item.evidence === "string" ? item.evidence.trim() : "";
+  if (!isEvidenceSufficient(evidence)) {
+    return null;
+  }
 
   const linkRaw = item.link_to;
   const link_to =
@@ -196,6 +208,7 @@ function parseChecklistItem(raw: unknown): ReportChecklistItem | null {
   const parsed: ReportChecklistItem = {
     id,
     text,
+    evidence,
     status,
     link_to: status === "pass" ? null : link_to,
     category,

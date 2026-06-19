@@ -9,6 +9,7 @@ import {
   type BrandStage,
 } from "@/lib/brand-stage";
 import { buildAnalysisQualityPromptBlock } from "@/lib/report-findings-quality";
+import type { PageComputedValues } from "@/lib/audit-report";
 
 export function buildHeroAuditPrompt(
   brandStage: BrandStage,
@@ -65,13 +66,55 @@ key_observation: max 12 words. One phrase only. Must pick ONE angle from this li
   Bad: "The hero headline lacks a clear audience focus"`;
 }
 
+type ChecklistComputedValues = Pick<
+  PageComputedValues,
+  "social_proof_above_fold" | "cta_text" | "nav_link_labels" | "nav_link_count"
+>;
+
+function buildChecklistComputedContextBlock(cv: ChecklistComputedValues | null | undefined): string {
+  if (!cv) {
+    return `CHECKLIST COMPUTED CONTEXT (DOM-extracted):
+- social_proof_above_fold: unknown (check screenshot)
+- cta_text: unknown (check screenshot)
+- nav_link_count: unknown (check screenshot)
+- nav_link_labels: unknown (check screenshot)`;
+  }
+
+  const labelsStr =
+    cv.nav_link_labels.length > 0
+      ? `[${cv.nav_link_labels.map((l) => `"${l}"`).join(", ")}]`
+      : "[]";
+
+  return `CHECKLIST COMPUTED CONTEXT (DOM-extracted — use these values to avoid false gap flags):
+- social_proof_above_fold: ${cv.social_proof_above_fold}
+- cta_text: ${cv.cta_text ? `"${cv.cta_text}"` : "null"}
+- nav_link_count: ${cv.nav_link_count}
+- nav_link_labels: ${labelsStr}`;
+}
+
+const CHECKLIST_EVIDENCE_RULES = `RULES FOR CHECKLIST GAPS (mandatory — violations will be filtered server-side):
+- Every gap (missing/weak) MUST include an evidence field: exact quote or specific element name from THIS page, minimum 15 characters. Gaps without evidence will be discarded.
+- Every pass MUST include an evidence field: name the specific visible element that passes (e.g., "Product Hunt badge visible below CTA" or exact button label). Passes without evidence will be discarded.
+- DO NOT flag "no trust signals" or "trust missing" if social_proof_above_fold is true — the page already has above-fold social proof.
+- DO NOT flag "headline lacks audience clarity" if audienceType is B2B and the headline contains any role, industry, or use-case signal (even implicit).
+- DO NOT flag "CTA unclear" if cta_text is NOT in VAGUE_CTA_PATTERN.
+  VAGUE_CTA_PATTERN = ["Get Started", "Start Now", "Learn More", "Click Here", "Get Access", "Go", "Submit", "Register", "Continue", "Open", "Next"]
+  If cta_text contains "free", "trial", a product name, or a specific outcome — it is NOT vague; do not flag.
+- DO NOT flag "no navigation" or "nav missing" if nav_link_count > 0 or nav_link_labels is non-empty.
+- A gallery of real product examples, a portfolio, or a work showcase counts as social proof — do not flag as "missing trust signals".
+- Maximum 1 generic gap per report. All other gaps must reference a specific visible element from this page with evidence.`;
+
 export function buildFullAuditPrompt(
   brandStage: BrandStage,
   trafficSource: TrafficSource,
   audienceType: AudienceType,
-  options?: { skipCtaAudit?: boolean }
+  options?: {
+    skipCtaAudit?: boolean;
+    computedValues?: ChecklistComputedValues | null;
+  }
 ) {
   const skipCta = options?.skipCtaAudit ?? false;
+  const checklistComputedContext = buildChecklistComputedContextBlock(options?.computedValues);
   const auditContextPrompt = buildAuditContextPromptBlock(trafficSource, audienceType);
   const brandStagePrompt = buildBrandStagePromptBlock(brandStage);
   const copyStudioPrompt = buildCopyStudioPromptBlock();
@@ -104,6 +147,7 @@ Return ONLY valid JSON (no markdown):
       "id": "string",
       "gap_label": "string",
       "text": "string",
+      "evidence": "string — exact quote or specific visible element from the page (required, min 15 chars)",
       "status": "pass"|"missing"|"weak",
       "link_to": "copy-headline"|"copy-cta"|"copy-subheadline"|"trust"|"visual-fixes"|"structure-nav"|"hero-density"|null,
       "category": "copy"|"trust"|"visual"|"structure"
@@ -162,6 +206,10 @@ Return ONLY valid JSON (no markdown):
     }
   ]
 }
+
+${checklistComputedContext}
+
+${CHECKLIST_EVIDENCE_RULES}
 
 checklist: 6-8 items. Gaps (missing/weak) first, pass items last. Max 3 missing + 1 weak, rest pass. Fewer real gaps is OK — never invent gaps to fill slots.
 

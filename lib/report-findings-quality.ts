@@ -166,7 +166,8 @@ function normalizeCopySections(copy: ReportCopyItem[]) {
 export function buildAnalysisQualityPromptBlock() {
   return `UNIQUENESS AND EVIDENCE RULES:
 - Run HERO INVENTORY (theme, nav, CTA count+labels, trust elements, subhead length) before writing gaps.
-- Each checklist gap (missing/weak) MUST reference a specific, visible element from that inventory.
+- Each checklist gap (missing/weak) MUST include an evidence field with an exact quote or element name from the page (minimum 15 characters). Gaps without sufficient evidence will be discarded server-side.
+- Each checklist pass MUST include an evidence field naming the specific visible element that passes (e.g., exact CTA label, badge name, nav label count). Passes without sufficient evidence will be discarded server-side.
 - copy_variants.current for each element MUST be the exact visible text — never a paraphrase or invented copy.
 - Never repeat the same root cause across verdict, summary, key_observation, and checklist items.
 - Prefer page-specific findings over generic landing-page advice. Name the element, block, or copy you see.
@@ -175,14 +176,16 @@ export function buildAnalysisQualityPromptBlock() {
 INSIGHT DEPTH RULES:
 - Before writing each checklist item, ask: would this observation apply to 80% of SaaS
   landing pages? If yes — go deeper or pick a different gap.
-- Good item: specific to this page, references a visible element, explains the UX consequence.
-- Bad item: could be copied to any landing page report unchanged.
+- Good gap: specific to this page, references a visible element with evidence quote, explains the UX consequence.
+- Bad gap: could be copied to any landing page report unchanged.
+- Good pass: names a specific element — e.g., "Single orange 'Start for free' CTA above fold, no competing buttons".
+- Bad pass: "Visual layout effectively highlights key elements" (generic, no evidence).
 - Forbidden generic checklist items (do not use as missing/weak):
   "headline doesn't say who it's for"
   "trust signals are missing"
   "CTA lacks context"
   "visual hierarchy could be improved"
-  These may appear only as pass items, or as context-specific gaps with the exact visible element named.
+  These may appear only as pass items (with evidence), or as context-specific gaps with the exact visible element named.
 - Never output two missing gaps for the same element (headline category + hero title clarity = one gap).
 - gap_label must be 2-4 words and different from text — short badge only, never a sentence.
 - NEVER use placeholder phrases like "No content available to assess" in checklist text, copy_variants, or meta fields.

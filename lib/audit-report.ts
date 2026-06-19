@@ -96,6 +96,8 @@ export type ReportChecklistItem = {
   text: string;
   /** Short label for Copy studio badges (3–5 words). */
   gap_label?: string;
+  /** Exact quote or specific visible element from the page — required for quality validation. */
+  evidence?: string;
   status: ChecklistItemStatus;
   link_to: ChecklistLinkTarget | null;
   category: ChecklistCategory;
