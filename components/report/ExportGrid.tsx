@@ -153,18 +153,21 @@ interface ExportCardProps {
   cardId: CardId;
   activeToast: CardId | null;
   locked: boolean;
+  hasBorderRight: boolean;
   onClick: (id: CardId) => void;
 }
 
-function ExportCard({ icon, title, sub, cardId, activeToast, locked, onClick }: ExportCardProps) {
+function ExportCard({ icon, title, sub, cardId, activeToast, locked, hasBorderRight, onClick }: ExportCardProps) {
   const copied = activeToast === cardId;
 
   return (
     <button
       type="button"
       onClick={() => onClick(cardId)}
-      className="group relative w-full cursor-pointer rounded-[16px] bg-white p-5 text-left shadow-[0_0_0_1px_rgba(6,28,47,0.08)] transition-[box-shadow,transform] duration-150 hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(6,28,47,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061C2F]/15"
-      style={copied ? { boxShadow: "0 0 0 1px rgba(29,158,117,0.3)", transitionDuration: "500ms" } : undefined}
+      className={[
+        "group relative w-full cursor-pointer p-6 text-left transition-colors hover:bg-[#f8f9fa] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#061C2F]/15",
+        hasBorderRight ? "border-r border-[#eef1f5]" : "",
+      ].filter(Boolean).join(" ")}
     >
       <div className="flex items-start justify-between">
         <span className="text-[#8F99A2]">{icon}</span>
@@ -280,8 +283,8 @@ export function ExportGrid({
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-      {CARDS.map((card) => (
+    <div className="grid grid-cols-4">
+      {CARDS.map((card, index) => (
         <ExportCard
           key={card.id}
           icon={card.icon}
@@ -290,6 +293,7 @@ export function ExportGrid({
           cardId={card.id}
           activeToast={activeToast}
           locked={locked}
+          hasBorderRight={index < CARDS.length - 1}
           onClick={copyToClipboard}
         />
       ))}

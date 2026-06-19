@@ -13,9 +13,7 @@ import type { RequestProUpgrade } from "@/lib/freemium";
 import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
-  REPORT_SURFACE_CARD_CLASS,
 } from "@/components/report/reportStyles";
-import { SectionHeader } from "@/components/report/ReportSectionHeader";
 
 interface ScorePotentialCompactProps {
   score: number;
@@ -58,15 +56,21 @@ export default function ScorePotentialCompact({
 
   return (
     <section className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
-      <SectionHeader
-        icon={RiBarChartLine}
-        title="Score potential"
-        trailing={
-          <span className="text-[14px] font-normal text-[#8E99A2]">estimate, not a promise</span>
-        }
-      />
+      <div className="overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white">
+        {/* Header band */}
+        <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
+          <div
+            className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#E0E6EB]"
+            aria-hidden
+          >
+            <RiBarChartLine size={18} className="text-[#5B6378]" />
+          </div>
+          <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+            Score potential
+          </span>
+          <span className="ml-auto text-[14px] font-normal text-[#8E99A2]">estimate, not a promise</span>
+        </div>
 
-      <div className={REPORT_SURFACE_CARD_CLASS}>
         <div className="flex flex-col px-5 py-5 md:flex-row md:items-center">
           {/* Score values */}
           <div className="flex shrink-0 items-center gap-3">

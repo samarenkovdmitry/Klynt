@@ -6,7 +6,6 @@ import { RiDownloadLine, RiVipCrownFill } from "@remixicon/react";
 
 
 import { AppHeader } from "@/components/AppHeader";
-import { SectionHeader } from "@/components/report/ReportSectionHeader";
 import { ReportActionLayout } from "@/components/report/ReportActionLayout";
 import { ReportChecklist } from "@/components/report/ReportChecklist";
 import CopyStudio from "@/components/report/CopyStudio";
@@ -260,26 +259,32 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
               ) : null}
 
               {report.copy_variants && report.meta ? (
-                <section className="mt-8 scroll-mt-24 md:mt-12" id="export">
-                  <SectionHeader
-                    icon={RiDownloadLine}
-                    title="Export"
-                    trailing={
-                      <div className="flex items-center gap-2.5">
-                        <span className="hidden text-[14px] text-[#8E99A2] sm:inline">take this to your team</span>
-                        {!isDemo && (
-                          <>
-                            <span className="hidden h-6 w-px bg-[#D0D5DA] sm:inline-block" aria-hidden />
-                            <span className="text-[14px] text-[#8E99A2]">Available in</span>
-                            <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold text-white [background:linear-gradient(to_top_right,#18181B,#373473,#201F32)]">
-                              <RiVipCrownFill size={12} aria-hidden />
-                              PRO
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    }
-                  />
+                <section className="mt-8 scroll-mt-24 md:mt-12 overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white" id="export">
+                  {/* Header band */}
+                  <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
+                    <div
+                      className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#E0E6EB]"
+                      aria-hidden
+                    >
+                      <RiDownloadLine size={18} className="text-[#5B6378]" />
+                    </div>
+                    <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+                      Export
+                    </span>
+                    <div className="ml-auto flex items-center gap-2.5">
+                      <span className="hidden text-[14px] text-[#8E99A2] sm:inline">take this to your team</span>
+                      {!isDemo && (
+                        <>
+                          <span className="hidden h-6 w-px bg-[#D0D5DA] sm:inline-block" aria-hidden />
+                          <span className="text-[14px] text-[#8E99A2]">Available in</span>
+                          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold text-white [background:linear-gradient(to_top_right,#18181B,#373473,#201F32)]">
+                            <RiVipCrownFill size={12} aria-hidden />
+                            PRO
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                   <ExportGrid
                     copyVariants={report.copy_variants}
                     meta={report.meta}

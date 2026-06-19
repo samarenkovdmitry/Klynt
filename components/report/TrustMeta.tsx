@@ -16,7 +16,6 @@ import {
   REPORT_SECTION_SPACING_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
 } from "@/components/report/reportStyles";
-import { SectionHeader } from "@/components/report/ReportSectionHeader";
 
 type Props = {
   meta: ReportMeta;
@@ -74,95 +73,109 @@ export function TrustMeta({
       id="trust"
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
-      <SectionHeader icon={RiShieldCheckLine} title="Trust & meta" />
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Left card — Add proof */}
-        <div className="rounded-[16px] bg-white p-5 shadow-[0_0_0_1px_rgba(6,28,47,0.08)]">
-          <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#061C2F]">
-            <RiAwardLine size={16} className="text-[#7D8C99]" aria-hidden />
-            Add proof
+      <div className="overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white">
+        {/* Header band */}
+        <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
+          <div
+            className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#E0E6EB]"
+            aria-hidden
+          >
+            <RiShieldCheckLine size={18} className="text-[#5B6378]" />
           </div>
-
-          {trustGaps.length === 0 && !(meta.trust_notes?.length ?? 0) ? (
-            <p className="text-[14px] leading-6 text-status-good">Trust signals look good</p>
-          ) : (
-            <>
-              <ul className="mb-3 space-y-2">
-                {trustGaps.map((item) => (
-                  <li
-                    key={item.id}
-                    className="flex items-center gap-2 text-[14px] leading-[21px] text-[#061C2F]"
-                  >
-                    <RiErrorWarningLine
-                      size={16}
-                      className="shrink-0 text-status-weak"
-                      aria-hidden
-                    />
-                    <span>{item.text}</span>
-                  </li>
-                ))}
-                {(meta.trust_notes ?? []).map((note) => (
-                  <li
-                    key={note}
-                    className="flex items-center gap-2 text-[14px] leading-[21px] text-[#061C2F]"
-                  >
-                    <RiErrorWarningLine
-                      size={16}
-                      className="shrink-0 text-status-weak"
-                      aria-hidden
-                    />
-                    <span>{note}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {meta.proof_suggestion ? (
-                <div className="flex items-center gap-2 rounded-[10px] bg-[#EFF3F6] px-[14px] py-3 text-[14px] text-[#061C2F]">
-                  <RiArrowRightLine size={16} className="shrink-0 text-[#0D9488]" aria-hidden />
-                  {meta.proof_suggestion}
-                </div>
-              ) : null}
-            </>
-          )}
+          <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+            Trust & meta
+          </span>
         </div>
 
-        {/* Right card — Meta */}
-        <div className="rounded-[16px] bg-white p-5 shadow-[0_0_0_1px_rgba(6,28,47,0.08)]">
-          <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#061C2F]">
-            <RiSearchLine size={16} className="text-[#7D8C99]" aria-hidden />
-            Meta
-          </div>
-
-          <div className="group mb-3">
-            <div className="mb-1 text-[13px] font-medium text-[#8E99A2]">Title</div>
-            <div className="flex items-start justify-between gap-2">
-              <span className="text-[16px] font-semibold leading-6 text-[#061C2F]">
-                {meta.title_suggestion}
-              </span>
-              <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                <CopyButton
-                  value={meta.title_suggestion}
-                  locked={metaCopyLocked}
-                  onRequestProUpgrade={onRequestProUpgrade}
-                />
-              </span>
+        {/* 2-column grid */}
+        <div className="grid grid-cols-2">
+          {/* Left column — Add proof */}
+          <div className="border-r border-[#eef1f5] p-6">
+            <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#061C2F]">
+              <RiAwardLine size={16} className="text-[#7D8C99]" aria-hidden />
+              Add proof
             </div>
+
+            {trustGaps.length === 0 && !(meta.trust_notes?.length ?? 0) ? (
+              <p className="text-[14px] leading-6 text-status-good">Trust signals look good</p>
+            ) : (
+              <>
+                <ul className="mb-3 space-y-2">
+                  {trustGaps.map((item) => (
+                    <li
+                      key={item.id}
+                      className="flex items-center gap-2 text-[14px] leading-[21px] text-[#061C2F]"
+                    >
+                      <RiErrorWarningLine
+                        size={16}
+                        className="shrink-0 text-status-weak"
+                        aria-hidden
+                      />
+                      <span>{item.text}</span>
+                    </li>
+                  ))}
+                  {(meta.trust_notes ?? []).map((note) => (
+                    <li
+                      key={note}
+                      className="flex items-center gap-2 text-[14px] leading-[21px] text-[#061C2F]"
+                    >
+                      <RiErrorWarningLine
+                        size={16}
+                        className="shrink-0 text-status-weak"
+                        aria-hidden
+                      />
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {meta.proof_suggestion ? (
+                  <div className="flex items-center gap-2 rounded-[10px] bg-[#EFF3F6] px-[14px] py-3 text-[14px] text-[#061C2F]">
+                    <RiArrowRightLine size={16} className="shrink-0 text-[#0D9488]" aria-hidden />
+                    {meta.proof_suggestion}
+                  </div>
+                ) : null}
+              </>
+            )}
           </div>
 
-          <div className="group">
-            <div className="mb-1 text-[13px] font-medium text-[#8E99A2]">Description</div>
-            <div className="flex items-start justify-between gap-2">
-              <span className="text-[14px] leading-[21px] text-[#061C2F]">
-                {meta.description_suggestion}
-              </span>
-              <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                <CopyButton
-                  value={meta.description_suggestion}
-                  locked={metaCopyLocked}
-                  onRequestProUpgrade={onRequestProUpgrade}
-                />
-              </span>
+          {/* Right column — Meta */}
+          <div className="p-6">
+            <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#061C2F]">
+              <RiSearchLine size={16} className="text-[#7D8C99]" aria-hidden />
+              Meta
+            </div>
+
+            <div className="group mb-3">
+              <div className="mb-1 text-[13px] font-medium text-[#8E99A2]">Title</div>
+              <div className="flex items-start justify-between gap-2">
+                <span className="text-[16px] font-semibold leading-6 text-[#061C2F]">
+                  {meta.title_suggestion}
+                </span>
+                <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                  <CopyButton
+                    value={meta.title_suggestion}
+                    locked={metaCopyLocked}
+                    onRequestProUpgrade={onRequestProUpgrade}
+                  />
+                </span>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="mb-1 text-[13px] font-medium text-[#8E99A2]">Description</div>
+              <div className="flex items-start justify-between gap-2">
+                <span className="text-[14px] leading-[21px] text-[#061C2F]">
+                  {meta.description_suggestion}
+                </span>
+                <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                  <CopyButton
+                    value={meta.description_suggestion}
+                    locked={metaCopyLocked}
+                    onRequestProUpgrade={onRequestProUpgrade}
+                  />
+                </span>
+              </div>
             </div>
           </div>
         </div>
