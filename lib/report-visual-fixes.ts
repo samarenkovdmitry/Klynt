@@ -1,6 +1,7 @@
 import type {
   AudienceType,
   ChecklistLinkTarget,
+  PageComputedValues,
   ReportBreakdown,
   ReportChecklistItem,
   ReportCopyVariants,
@@ -62,6 +63,7 @@ export type VisualSectionContext = {
   meta?: ReportMeta;
   audienceType?: AudienceType;
   trafficSource?: TrafficSource;
+  computedValues?: PageComputedValues | null;
 };
 
 const MIN_VISUAL_FIXES = 2;
@@ -178,6 +180,12 @@ function deriveCtaAuditPass(ctaLabel: string, ctx?: CtaContext): ReportVisualPas
   };
 }
 
+/** Returns true when deriveCtaAuditFix would produce a fix for this label — used to skip CTA in LLM prompt. */
+export function willDeriveCtaFix(ctaLabel: string, ctx?: CtaContext): boolean {
+  const label = normalizeCtaInput(ctaLabel);
+  return !!(label && (isAllCapsCta(label) || isVagueCtaLabel(label, ctx)));
+}
+
 function deriveFixFromChecklistGap(
   item: ReportChecklistItem,
   copyVariants?: ReportCopyVariants
@@ -228,47 +236,75 @@ function deriveFixFromChecklistGap(
   return null;
 }
 
-function deriveNavAudit(checklist: ReportChecklistItem[]): ReportVisualFix | null {
+function deriveNavAudit(
+  checklist: ReportChecklistItem[],
+  computedValues?: PageComputedValues | null
+): ReportVisualFix | null {
+  if (computedValues != null) {
+    const { nav_link_count } = computedValues;
+    const navMissing = nav_link_count === 0;
+    const tooManyLinks = nav_link_count >= 6;
+
+    if (!navMissing && !tooManyLinks) return null;
+
+    return {
+      dimension: "navigation",
+      observation: navMissing
+        ? "No header nav links above fold — visitors lose orientation on scroll"
+        : `${nav_link_count} links in header nav — too many for cold visitor focus`,
+      recommendation: "Add sticky nav with primary CTA button visible at all scroll depths",
+    };
+  }
+
   const navGap = checklist.find(
     (item) => item.link_to === "structure-nav" && item.status !== "pass"
   );
-  if (!navGap) {
-    return null;
-  }
-
-  const observation = navGap.status === "missing"
-    ? "No header nav links above fold — visitors lose orientation on scroll"
-    : clampWords(navGap.text, 14, true);
+  if (!navGap) return null;
 
   return {
     dimension: "navigation",
-    observation,
+    observation: navGap.status === "missing"
+      ? "No header nav links above fold — visitors lose orientation on scroll"
+      : clampWords(navGap.text, 14, true),
     recommendation: "Add sticky nav with primary CTA button visible at all scroll depths",
   };
 }
 
 function deriveSocialProofAudit(
   checklist: ReportChecklistItem[],
-  meta?: ReportMeta
+  meta?: ReportMeta,
+  computedValues?: PageComputedValues | null
 ): ReportVisualFix | null {
-  const trustGap = checklist.find(
-    (item) => item.category === "trust" && item.status !== "pass"
-  );
-  if (!trustGap) {
-    return null;
-  }
-
-  const observation =
-    trustGap.status === "missing"
-      ? "No logos, stats, or ratings above fold — trust proof absent for cold visitors"
-      : "Social proof exists but positioned below fold or too subtle near hero CTA";
-
-  // Use specific proof_suggestion if available; fallback to generic format+position recommendation.
   const recommendation = meta?.proof_suggestion
     ? clampWords(meta.proof_suggestion, 18, true)
     : "Add 3–5 customer logos or a stat (e.g. '10,000+ teams') directly below the hero CTA";
 
-  return { dimension: "social_proof", observation, recommendation };
+  if (computedValues != null) {
+    if (computedValues.social_proof_found && computedValues.social_proof_above_fold) {
+      return null; // Proof confirmed above fold — no fix needed
+    }
+    if (computedValues.social_proof_found && !computedValues.social_proof_above_fold) {
+      return {
+        dimension: "social_proof",
+        observation: "Social proof exists but positioned below fold — cold visitors scroll past before deciding",
+        recommendation,
+      };
+    }
+    // social_proof_found === false: selector may have missed elements — fall through to checklist
+  }
+
+  const trustGap = checklist.find(
+    (item) => item.category === "trust" && item.status !== "pass"
+  );
+  if (!trustGap) return null;
+
+  return {
+    dimension: "social_proof",
+    observation: trustGap.status === "missing"
+      ? "No logos, stats, or ratings above fold — trust proof absent for cold visitors"
+      : "Social proof exists but positioned below fold or too subtle near hero CTA",
+    recommendation,
+  };
 }
 
 type HeadlineFormula = "generic" | "benefit" | "feature" | "audience";
@@ -438,6 +474,7 @@ export function supplementVisualSection(
   const passDims = new Set(resultPasses.map((pass) => pass.dimension));
   const checklist = context.checklist ?? [];
   const ctaCtx: CtaContext = { audienceType: context.audienceType, trafficSource: context.trafficSource };
+  const computedValues = context.computedValues ?? null;
 
   // Collect all derive candidates first, then sort by DERIVE_PRIORITY_ORDER and apply.
   // This ensures that when LLM fills some slots, the most critical derived dimensions
@@ -446,7 +483,10 @@ export function supplementVisualSection(
 
   // CTA hierarchy — derive from copy_variants or checklist fallback.
   if (!fixDims.has("cta_hierarchy") && !passDims.has("cta_hierarchy")) {
-    const ctaLabel = normalizeCtaInput(context.copyVariants?.cta?.current ?? "");
+    // Prefer DOM-extracted CTA text (more reliable than LLM-extracted value)
+    const ctaLabel = normalizeCtaInput(
+      computedValues?.cta_text ?? context.copyVariants?.cta?.current ?? ""
+    );
 
     if (!ctaLabel) {
       const trialGap = checklist.find(
@@ -474,13 +514,13 @@ export function supplementVisualSection(
 
   // Navigation complexity — LLM takes priority; derive only when LLM did not return the dimension.
   if (!fixDims.has("navigation") && !passDims.has("navigation")) {
-    const fix = deriveNavAudit(checklist);
+    const fix = deriveNavAudit(checklist, computedValues);
     if (fix) derivedCandidates.push(fix);
   }
 
   // Social proof — skipped when LLM already output a depth fix.
   if (!fixDims.has("social_proof") && !fixDims.has("depth") && !passDims.has("social_proof")) {
-    const fix = deriveSocialProofAudit(checklist, context.meta);
+    const fix = deriveSocialProofAudit(checklist, context.meta, computedValues);
     if (fix) derivedCandidates.push(fix);
   }
 

@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-import { isAuditReport } from "@/lib/audit-report";
+import { isAuditReport, type PageComputedValues } from "@/lib/audit-report";
 import { retryAsync } from "@/lib/retry-async";
 
 let openaiClient: OpenAI | null = null;
@@ -77,8 +77,18 @@ async function requestAuditAnalysisOnce(params: {
   basePrompt: string;
   url: string;
   screenshotsBase64: string[];
+  computedValues?: PageComputedValues | null;
 }): Promise<Record<string, unknown>> {
   const screenshotContent = buildScreenshotContent(params.screenshotsBase64);
+
+  const computedValuesContent: Array<Record<string, string>> = params.computedValues
+    ? [
+        {
+          type: "input_text",
+          text: `Page computed values (DOM-extracted — cite exact values in visual_fixes observations):\n${JSON.stringify(params.computedValues, null, 2)}`,
+        },
+      ]
+    : [];
 
   const response = await getOpenAIClient().responses.create({
     model: "gpt-4o-mini",
@@ -96,6 +106,7 @@ async function requestAuditAnalysisOnce(params: {
             type: "input_text",
             text: `Website URL: ${params.url}`,
           },
+          ...computedValuesContent,
           ...screenshotContent,
         ],
       },
@@ -121,6 +132,7 @@ export async function requestAuditAnalysis(params: {
   basePrompt: string;
   url: string;
   screenshotsBase64: string[];
+  computedValues?: PageComputedValues | null;
 }): Promise<Record<string, unknown>> {
   return retryAsync(() => requestAuditAnalysisOnce(params), {
     attempts: 2,

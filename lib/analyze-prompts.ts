@@ -276,7 +276,7 @@ ${skipCta ? "" : "Always include cta_hierarchy (CTA text audit or visual weight)
 
 Each item MUST cite what you see on this page:
 - dimension: one enum value above
-- observation: max 14 words. Name visible UI (exact button labels, dark/light treatment, radius, spacing, fold placement). For typography/color on light heroes, cite approximate hex when visible (e.g. "#9CA3AF subhead on white").
+- observation: max 14 words. Name visible UI (exact button labels, dark/light treatment, radius, spacing, fold placement). When PAGE COMPUTED VALUES are provided, cite exact hex/px from those fields; otherwise estimate from the screenshot.
 - recommendation: max 18 words. Concrete change for THIS page (e.g. "Switch GET STARTED to sentence case — add a product-specific outcome" or "Darken subhead #9CA3AF → #4B5563").
 
 BANNED templates (instant failure — never output these or close paraphrases):

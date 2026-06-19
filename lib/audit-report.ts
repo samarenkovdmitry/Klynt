@@ -158,6 +158,32 @@ export type ReportVisualPass = {
   note: string;
 };
 
+/** DOM-extracted page metrics collected by Puppeteer before screenshots. */
+export type PageComputedValues = {
+  hero_bg: string | null;
+  hero_padding_top: string | null;
+  h1_text: string | null;
+  h1_font_size: string | null;
+  h1_font_weight: string | null;
+  h1_color: string | null;
+  sub_text: string | null;
+  sub_font_size: string | null;
+  sub_font_weight: string | null;
+  sub_color: string | null;
+  cta_text: string | null;
+  cta_bg: string | null;
+  cta_color: string | null;
+  cta_border_radius: string | null;
+  cta_font_weight: string | null;
+  nav_link_count: number;
+  nav_has_sticky: boolean;
+  social_proof_found: boolean;
+  social_proof_above_fold: boolean;
+  card_border_radius: string | null;
+  viewport_width: number;
+  viewport_height: number;
+};
+
 export type AuditRisk = "low" | "medium" | "high";
 
 export type AuditReport = {
