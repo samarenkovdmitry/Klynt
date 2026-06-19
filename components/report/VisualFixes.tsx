@@ -23,7 +23,6 @@ import type {
 } from "@/lib/audit-report";
 import { getVisualFixDimensionLabel } from "@/lib/report-visual-fixes";
 import {
-  REPORT_ROW_DIVIDER_CLASS,
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
 } from "@/components/report/reportStyles";
@@ -137,8 +136,8 @@ function VisualPassRow({
   return (
     <div
       className={[
-        "flex items-center gap-3 px-5 py-4",
-        isLast ? "" : REPORT_ROW_DIVIDER_CLASS,
+        "flex items-center gap-3 px-6 py-4",
+        isLast ? "" : "border-b border-[#eef1f5]",
       ].join(" ")}
     >
       <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
@@ -200,37 +199,41 @@ export function VisualFixes({
                 hasBorderTop={index >= 2}
               />
             ))}
-            {passes.length > 0 && !passVisible ? (
+          </div>
+
+          {passes.length > 0 ? (
+            <>
               <button
                 type="button"
-                onClick={() => setPassVisible(true)}
-                className="col-span-2 flex items-center gap-1.5 border-t border-[#eef1f5] p-6 text-[13px] text-[#8E99A2] transition-colors hover:text-[#061C2F]"
+                onClick={() => setPassVisible((value) => !value)}
+                className="flex w-full items-center gap-1.5 border-t border-[#eef1f5] px-6 pb-6 pt-[22px] text-[13px] text-[#8E99A2] transition-colors hover:text-[#061C2F]"
               >
-                <RiArrowDownSLine size={16} aria-hidden />
-                {`Show ${passes.length} aligned visual check${passes.length !== 1 ? "s" : ""}`}
+                <RiArrowDownSLine
+                  size={16}
+                  aria-hidden
+                  className={`transition-transform duration-300 ${passVisible ? "rotate-180" : ""}`}
+                />
+                {passVisible
+                  ? "Hide aligned visual checks"
+                  : `Show ${passes.length} aligned visual check${passes.length !== 1 ? "s" : ""}`}
               </button>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
 
-      {/* Passes list */}
-      {passes.length > 0 ? (
-        <div
-          className="overflow-hidden pb-0.5 transition-[max-height] duration-300 ease-out"
-          style={{
-            maxHeight: passVisible ? `${passes.length * 120 + 24}px` : "0px",
-          }}
-        >
-          <div className="mt-3 rounded-[16px] bg-white shadow-[0_0_0_1px_rgba(6,28,47,0.08)]">
-            {passes.map((pass, index) => (
-              <VisualPassRow
-                key={pass.dimension}
-                pass={pass}
-                isLast={index === passes.length - 1}
-              />
-            ))}
-          </div>
+              <div
+                className="overflow-hidden transition-[max-height] duration-300 ease-out"
+                style={{
+                  maxHeight: passVisible ? `${passes.length * 80 + 32}px` : "0px",
+                }}
+              >
+                {passes.map((pass, index) => (
+                  <VisualPassRow
+                    key={pass.dimension}
+                    pass={pass}
+                    isLast={index === passes.length - 1}
+                  />
+                ))}
+              </div>
+            </>
+          ) : null}
         </div>
       ) : null}
     </section>

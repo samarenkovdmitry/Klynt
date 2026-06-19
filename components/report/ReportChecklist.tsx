@@ -155,7 +155,7 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
               <ChecklistRow
                 key={item.id}
                 item={item}
-                isLast={index === gaps.length - 1 && passes.length === 0}
+                isLast={index === gaps.length - 1}
               />
             ))}
           </>
@@ -167,8 +167,8 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
               type="button"
               onClick={() => setPassVisible((value) => !value)}
               className={[
-                "flex w-full items-center gap-1.5 px-6 py-3.5 text-[13px] text-[#7D8C99] transition-colors hover:text-[#061C2F]",
-                gaps.length > 0 ? "border-t border-[#eef1f5]" : "",
+                "flex w-full items-center gap-1.5 border-t border-[#eef1f5] px-6 pb-6 pt-[22px] text-[13px] text-[#8E99A2] transition-colors hover:text-[#061C2F]",
+                gaps.length === 0 ? "border-t-0" : "",
               ].join(" ")}
             >
               <RiArrowDownSLine
@@ -187,15 +187,13 @@ export function ReportChecklist({ checklist }: ReportChecklistProps) {
                 maxHeight: passVisible ? `${passes.length * 80 + 32}px` : "0px",
               }}
             >
-              <div className={gaps.length > 0 || passVisible ? "border-t border-[#eef1f5]" : ""}>
-                {passes.map((item, index) => (
-                  <ChecklistRow
-                    key={item.id}
-                    item={item}
-                    isLast={index === passes.length - 1}
-                  />
-                ))}
-              </div>
+              {passes.map((item, index) => (
+                <ChecklistRow
+                  key={item.id}
+                  item={item}
+                  isLast={index === passes.length - 1}
+                />
+              ))}
             </div>
           </>
         ) : null}
