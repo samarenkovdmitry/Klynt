@@ -27,7 +27,6 @@ import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
 } from "@/components/report/reportStyles";
-import { SectionHeader } from "@/components/report/ReportSectionHeader";
 
 type Props = {
   visualFixes?: ReportVisualFix[];
@@ -86,12 +85,18 @@ function highlightVisualText(text: string): React.ReactNode {
   );
 }
 
-function VisualFixCard({ fix }: { fix: ReportVisualFix }) {
+function VisualFixColumn({
+  fix,
+  hasBorderRight,
+}: {
+  fix: ReportVisualFix;
+  hasBorderRight: boolean;
+}) {
   const Icon = DIMENSION_ICONS[fix.dimension];
   const label = getVisualFixDimensionLabel(fix.dimension);
 
   return (
-    <div className="rounded-[16px] bg-white p-5 shadow-[0_0_0_1px_rgba(6,28,47,0.08)]">
+    <div className={`p-6${hasBorderRight ? " border-r border-[#eef1f5]" : ""}`}>
       <div className="mb-2.5 flex items-center gap-2">
         <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
         <span className="text-[15px] font-semibold text-[#061C2F]">{label}</span>
@@ -159,27 +164,34 @@ export function VisualFixes({
       id="visual-fixes"
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
-      <SectionHeader
-        icon={RiPaletteLine}
-        title="Visual fixes"
-        trailing={
-          <div className="flex items-center gap-2.5">
-            <span className="text-[14px] leading-5 text-[#8E99A2]">
-              {insightCount} fix{insightCount !== 1 ? "es" : ""}
-              {checkCount > 0
-                ? ` · ${checkCount} aligned check${checkCount !== 1 ? "s" : ""}`
-                : ""}
+      {/* Outer card */}
+      {fixes.length > 0 ? (
+        <div className="overflow-hidden rounded-[14px] border border-[#e6e9ef]">
+          {/* Header band */}
+          <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
+            <div
+              className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#E0E6EB]"
+              aria-hidden
+            >
+              <RiPaletteLine size={18} className="text-[#5B6378]" />
+            </div>
+            <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
+              Visual fixes
+            </span>
+            <span className="ml-auto text-[14px] leading-5 text-[#8E99A2]">
+              {insightCount} insight{insightCount !== 1 ? "s" : ""}
             </span>
           </div>
-        }
-      />
-
-      {/* Cards grid */}
-      {fixes.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {fixes.map((fix) => (
-            <VisualFixCard key={fix.dimension} fix={fix} />
-          ))}
+          {/* 2-column content grid */}
+          <div className="grid grid-cols-2">
+            {fixes.map((fix, index) => (
+              <VisualFixColumn
+                key={fix.dimension}
+                fix={fix}
+                hasBorderRight={index % 2 === 0}
+              />
+            ))}
+          </div>
         </div>
       ) : null}
 
