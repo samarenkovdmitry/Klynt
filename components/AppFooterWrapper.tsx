@@ -8,7 +8,10 @@ import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 export function AppFooterWrapper() {
   const pathname = usePathname();
   const isDarkFooter =
-    pathname === "/" || pathname === "/landing-copy" || pathname?.startsWith("/landing-copy/");
+    pathname === "/" ||
+    pathname === "/landing-copy" ||
+    pathname?.startsWith("/landing-copy/") ||
+    pathname?.startsWith("/report/");
   const isPrintRoute = pathname?.includes("/print");
 
   if (isPrintRoute) {
