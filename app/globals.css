@@ -36,6 +36,20 @@
   --color-v2-pass-surface:   #EEF8F1;
   --color-v2-potential:      #46C988;
   --color-v2-potential-dark: #5FCB8C;
+
+  /* Hero-slot specific tokens */
+  --color-v2-stat-suffix:    #E89490;
+  --color-v2-quote-icon:     #E6C3BA;
+  --color-v2-before-text:    #9A9588;
+  --color-v2-after-text:     #143322;
+  --color-v2-arrow:          #CBC6B9;
+  --color-v2-absent:         #C3BEB1;
+  --color-v2-absent-border:  #D8D1BF;
+  --color-v2-opp-score:      #2E9E6B;
+  --color-v2-opp-suffix:     #8FBFA6;
+  --color-v2-opp-surface:    #F4FBF7;
+  --color-v2-opp-divider:    #E4F0E8;
+  --color-v2-opp-border:     #BFE0CC;
 }
 
 :root {

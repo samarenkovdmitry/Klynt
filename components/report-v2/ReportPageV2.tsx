@@ -14,7 +14,7 @@ import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
 import { openReportPrintExport } from "@/lib/report-export";
 import type { AuditReport } from "@/lib/audit-report";
 import { ReportSourceRow } from "./ReportSourceRow";
-import { ReportHeroFinding } from "./ReportHeroFinding";
+import { ReportHero } from "./ReportHero";
 import { ReportScorePanel } from "./ReportScorePanel";
 import { ReportPriorityQueue } from "./ReportPriorityQueue";
 import { ReportCopyStudioV2 } from "./ReportCopyStudioV2";
@@ -115,12 +115,11 @@ export function ReportPageV2({ routeParam, initialData = null }: Props) {
             onExport={handleExport}
           />
 
-          {hasNewLayout && (
-            <ReportHeroFinding
-              checklist={report.checklist!}
-              copyVariants={report.copy_variants}
-            />
-          )}
+          <ReportHero
+            slot={report.hero_slot ?? null}
+            report={report}
+            domain={domain}
+          />
 
           <ReportScorePanel
             score={report.score}

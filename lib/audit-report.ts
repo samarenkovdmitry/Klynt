@@ -226,6 +226,8 @@ export type AuditReport = {
   traffic_source?: TrafficSource;
   audience_type?: AudienceType;
   headline_directions?: HeadlineDirections;
+  /** Dynamic hero slot — server-assigned, drives ReportHero format selection. */
+  hero_slot?: import("@/components/report-v2/ReportHero").HeroSlot | null;
   error?: string;
 };
 
