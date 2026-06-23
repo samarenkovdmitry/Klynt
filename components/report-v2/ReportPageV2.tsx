@@ -22,6 +22,7 @@ import { ReportVisualFixesGrid } from "./ReportVisualFixesGrid";
 import { ReportTrustMetaPanel } from "./ReportTrustMetaPanel";
 import { ReportMethodologyPanel } from "./ReportMethodologyPanel";
 import { ReportExportV2 } from "./ReportExportV2";
+import { ReportCtaBanner } from "./ReportCtaBanner";
 
 type Props = {
   routeParam: string;
@@ -152,6 +153,8 @@ export function ReportPageV2({ routeParam, initialData = null }: Props) {
           {report.copy_variants && report.meta && (
             <ReportExportV2 onExport={handleExport} />
           )}
+
+          <ReportCtaBanner />
         </div>
       </main>
 
