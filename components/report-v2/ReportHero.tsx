@@ -314,22 +314,25 @@ function FormatC({ slot }: { slot: TrustCountSlot }) {
 function FormatD({ slot }: { slot: HeadlineTextualSlot }) {
   return (
     <div className="overflow-hidden rounded-[16px] border border-v2-card-border bg-v2-card shadow-[0_1px_3px_rgba(27,26,23,0.05)]">
-      <div className="px-6 pb-7 pt-8 md:px-8">
+      {/* Upper area — 28px × 32px padding */}
+      <div className="px-8 py-7">
         <Badge />
-        <div className="flex flex-wrap items-start gap-6">
+        <div className="flex flex-wrap items-start gap-5">
+          {/* Quote icon: ~52px, muted pink */}
           <RiDoubleQuotesL
-            size={62}
-            className="shrink-0 text-v2-quote-icon"
-            style={{ lineHeight: 0.8 }}
+            size={52}
+            className="shrink-0"
+            style={{ color: "#F4A7A7", lineHeight: 0.8 }}
           />
           <div className="min-w-[280px] flex-1">
             <h2 className="mb-3 text-[25px] font-semibold leading-[1.2] tracking-[-0.022em] text-v2-ink">
               {slot.issue_title}
             </h2>
-            <p className="text-[15.5px] leading-[1.55] text-v2-ink-secondary">
+            {/* Explanation: 15px, #6B7280; quoted part bold + darker */}
+            <p className="text-[15px] leading-[1.6] text-[#6B7280]">
               {slot.quote && (
                 <>
-                  <b className="font-semibold text-v2-ink">&ldquo;{slot.quote}&rdquo;</b>{" "}
+                  <b className="font-semibold text-[#374151]">&ldquo;{slot.quote}&rdquo;</b>{" "}
                 </>
               )}
               {slot.explanation}
@@ -338,29 +341,41 @@ function FormatD({ slot }: { slot: HeadlineTextualSlot }) {
         </div>
       </div>
 
-      <BottomStrip label={slot.section_label}>
-        <div className="mt-3.5 grid grid-cols-1 items-stretch sm:grid-cols-[1fr_44px_1fr]">
-          <div className="rounded-t-[12px] border border-[#E8E5DB] bg-v2-card px-5 py-[18px] sm:rounded-l-[12px] sm:rounded-tr-none">
-            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-v2-ink-hairline">
+      {/* Lower section — 20px × 24px padding, #F7F6F3 tint */}
+      <div className="border-t border-v2-card-divider bg-[#F7F6F3] px-6 py-5">
+        {/* Section label: mono, #9CA3AF, 11px, wide tracking */}
+        <span className="font-mono mb-3 block text-[11px] tracking-[0.08em] text-[#9CA3AF]">
+          {slot.section_label}
+        </span>
+
+        <div className="grid grid-cols-1 items-stretch sm:grid-cols-[1fr_36px_1fr]">
+          {/* Before card: warm-gray bg, low-opacity border, muted text */}
+          <div className="rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F5F3EF] px-5 py-[18px]">
+            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-[#9CA3AF]">
               BEFORE
             </p>
-            <p className="text-[18px] font-semibold leading-[1.3] text-v2-before-text">
+            <p className="text-[17px] font-semibold leading-[1.3] text-[#9CA3AF]">
               {slot.before_text}
             </p>
           </div>
-          <div className="flex items-center justify-center border-x-0 border-y border-[#E8E5DB] bg-v2-card-inner py-2 sm:border-x sm:border-y-0 sm:bg-transparent sm:py-0">
-            <RiArrowRightLine size={20} className="rotate-90 text-v2-arrow sm:rotate-0" />
+
+          {/* Plain arrow — no bg, no border */}
+          <div className="flex items-center justify-center">
+            <span className="text-[18px] text-[#9CA3AF] sm:inline hidden">→</span>
+            <span className="text-[18px] text-[#9CA3AF] sm:hidden py-2">↓</span>
           </div>
-          <div className="rounded-b-[12px] border-[1.5px] border-[#A9D8BC] bg-v2-pass-surface px-5 py-[18px] sm:rounded-r-[12px] sm:rounded-bl-none">
-            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-v2-pass">
+
+          {/* After card: light green bg + border, dark green text */}
+          <div className="rounded-lg border-[1.5px] border-[#86EFAC] bg-[#F0FAF4] px-5 py-[18px]">
+            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-[#166534]">
               AFTER
             </p>
-            <p className="text-[18px] font-bold leading-[1.3] text-v2-after-text">
+            <p className="text-[17px] font-bold leading-[1.3] text-[#14532D]">
               {slot.after_text}
             </p>
           </div>
         </div>
-      </BottomStrip>
+      </div>
     </div>
   );
 }
