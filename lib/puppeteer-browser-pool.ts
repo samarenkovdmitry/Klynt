@@ -13,7 +13,7 @@ async function launchBrowser(): Promise<Browser> {
     args: chromium.args,
     defaultViewport: {
       width: 1280,
-      height: 900,
+      height: 1080,
       deviceScaleFactor: 1,
     },
     executablePath: await chromium.executablePath(),

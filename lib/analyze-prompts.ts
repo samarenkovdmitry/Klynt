@@ -100,10 +100,15 @@ function buildChecklistEvaluationBlock(cv: ChecklistComputedValues | null | unde
         ? " ← NOT in VAGUE_CTA_PATTERN — must be pass or weak, NOT missing"
         : "";
 
+  const proofHint =
+    cv?.social_proof_above_fold === true
+      ? " ← HARD CONSTRAINT: trust checklist item MUST be \"pass\" — NEVER output trust as missing or weak"
+      : "";
+
   return `BEFORE FLAGGING ANY CHECKLIST GAP — read the actual page data first:
   HEADLINE: ${headline}
   CTA: ${cta}${ctaHint}
-  SOCIAL_PROOF_ABOVE_FOLD: ${proof}
+  SOCIAL_PROOF_ABOVE_FOLD: ${proof}${proofHint}
   NAV_LINKS: ${navStr}
 
 EVALUATION PROTOCOL — for every checklist item, follow this sequence:
