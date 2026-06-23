@@ -146,13 +146,10 @@ export function Hero() {
           backgroundPosition: "center",
         }}
       >
-        {/* Subtle darkening overlay for card contrast */}
-        <div className="absolute inset-0 bg-black/15" />
-
         {/* Cards container */}
-        <div className="relative z-10 flex w-full max-w-[400px] flex-col gap-0 px-8">
+        <div className="relative z-10 flex w-full max-w-[440px] flex-col gap-0 px-8">
           {/* White card — live finding */}
-          <div className="rounded-2xl border border-[#E3E0D6] bg-white/97 p-5 shadow-2xl">
+          <div className="rounded-[24px] border border-[#E3E0D6] bg-white p-[26px] shadow-2xl">
             {/* Card header row */}
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
