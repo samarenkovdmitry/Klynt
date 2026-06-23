@@ -20,6 +20,7 @@ import { ReportPriorityQueue } from "./ReportPriorityQueue";
 import { ReportCopyStudioV2 } from "./ReportCopyStudioV2";
 import { ReportVisualFixesGrid } from "./ReportVisualFixesGrid";
 import { ReportTrustMetaPanel } from "./ReportTrustMetaPanel";
+import { ReportMethodologyPanel } from "./ReportMethodologyPanel";
 import { ReportExportV2 } from "./ReportExportV2";
 
 type Props = {
@@ -145,6 +146,8 @@ export function ReportPageV2({ routeParam, initialData = null }: Props) {
           {report.meta && (
             <ReportTrustMetaPanel meta={report.meta} />
           )}
+
+          <ReportMethodologyPanel />
 
           {report.copy_variants && report.meta && (
             <ReportExportV2 onExport={handleExport} />
