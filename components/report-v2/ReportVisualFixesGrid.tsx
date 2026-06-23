@@ -107,9 +107,14 @@ export function ReportVisualFixesGrid({ fixes, passes }: Props) {
             <div
               key={fix.dimension}
               className={[
-                i % 2 === 0 && i + 1 < topFixes.length ? "sm:border-r sm:border-v2-card-divider" : "",
+                // right border on left-column cells — always, as long as layout is ≥2 cols
+                i % 2 === 0 && topFixes.length > 1 ? "sm:border-r sm:border-v2-card-divider" : "",
+                // top border for second-row cells
                 i >= 2 ? "border-t border-v2-card-divider" : "",
-                i === 1 ? "border-t sm:border-t-0 border-v2-card-divider" : "",
+                // mobile stacking border for second item
+                i === 1 ? "border-t border-v2-card-divider sm:border-t-0" : "",
+                // bottom border on top-right cell when the row below it is incomplete (odd count)
+                i === 1 && topFixes.length % 2 === 1 ? "sm:border-b sm:border-v2-card-divider" : "",
               ].filter(Boolean).join(" ")}
             >
               <FixCell fix={fix} />
