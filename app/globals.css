@@ -8,6 +8,18 @@
   --color-status-weak-alt: #7B5EA7;
   --color-status-medium:   #D97706;
   --color-status-low:      #DC2626;
+
+  /* v2 design system */
+  --color-v2-surface:      #ECEAE2;
+  --color-v2-card:         #FFFFFF;
+  --color-v2-card-border:  #E3E0D6;
+  --color-v2-dark:         #1B1A17;
+  --color-v2-accent:       #2348FF;
+  --color-v2-ink:          #1B1A17;
+  --color-v2-ink-secondary:#57544C;
+  --color-v2-ink-muted:    #8C887D;
+  --color-v2-pass:         #1E8A4F;
+  --color-lv2-border:      #DCD8CD;
 }
 
 :root {
