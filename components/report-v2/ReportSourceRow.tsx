@@ -1,6 +1,6 @@
 "use client";
 
-import { RiShareLine, RiFileDownloadLine } from "@remixicon/react";
+import { RiShare2Line, RiFileDownloadLine, RiLockFill } from "@remixicon/react";
 
 type Props = {
   url?: string;
@@ -61,7 +61,7 @@ export function ReportSourceRow({
           onClick={onShare}
           className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-card-border bg-v2-card px-[15px] py-[9px] text-[13px] font-semibold text-v2-ink-secondary transition-colors hover:bg-v2-card-inner"
         >
-          <RiShareLine size={15} />
+          <RiShare2Line size={15} />
           Share
         </button>
         <button
@@ -70,6 +70,9 @@ export function ReportSourceRow({
         >
           <RiFileDownloadLine size={15} />
           Export
+          <span className="absolute -right-[11px] -top-[11px] flex h-[22px] w-[22px] items-center justify-center rounded-full bg-v2-accent shadow-[0_0_0_2px_var(--color-v2-surface)]">
+            <RiLockFill size={11} className="text-white" />
+          </span>
         </button>
       </div>
     </div>
