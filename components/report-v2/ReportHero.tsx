@@ -14,6 +14,7 @@ import {
   type RemixiconComponentType,
 } from "@remixicon/react";
 import type { AuditReport } from "@/lib/audit-report";
+import { deriveHeroSlot } from "@/lib/report-hero-slot";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -430,32 +431,10 @@ function FormatE({ slot }: { slot: OpportunitySlot }) {
   );
 }
 
-// ─── Fallback builder ─────────────────────────────────────────────────────────
-
-function buildFallback(report: AuditReport): HeadlineTextualSlot {
-  const headlineItem =
-    report.checklist?.find((i) => i.link_to === "copy-headline" && i.status !== "pass") ??
-    report.checklist?.find((i) => i.status !== "pass");
-
-  const headline = report.copy_variants?.headline;
-
-  return {
-    type: "headline_textual",
-    issue_title: headlineItem?.text ?? "Your headline could be more specific",
-    quote: headline?.current ?? "",
-    explanation:
-      headlineItem?.evidence ??
-      "A headline that names its audience converts the visitors who self-identify.",
-    before_text: headline?.current ?? "",
-    after_text: headline?.variants?.[0]?.text ?? "",
-    section_label: "HEADLINE, BEFORE & AFTER",
-  };
-}
-
 // ─── Main export ──────────────────────────────────────────────────────────────
 
 export function ReportHero({ slot, report, domain }: Props) {
-  const resolved = slot ?? buildFallback(report);
+  const resolved = slot ?? deriveHeroSlot(report);
 
   switch (resolved.type) {
     case "contrast_numeric":
