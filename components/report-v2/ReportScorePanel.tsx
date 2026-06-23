@@ -116,11 +116,8 @@ export function ReportScorePanel({ score, scorePotential, checklist }: Props) {
             {fixRows.map((fix, i) => (
               <div key={i} className="flex items-center gap-2.5 text-[14px] text-[rgba(245,242,234,0.85)]">
                 <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-v2-potential" />
-                <span className="shrink-0 flex-1 min-w-0 truncate">{fix.label}</span>
-                <span
-                  className="shrink-0 flex-1 border-b border-dotted border-[rgba(245,242,234,0.22)]"
-                  style={{ margin: "0 2px 3px" }}
-                />
+                <span className="shrink-0">{fix.label}</span>
+                <span className="flex-1 self-end mb-[3px] mx-1.5 border-b border-dotted border-[rgba(245,242,234,0.28)]" />
                 {fix.delta && (
                   <span className="font-mono shrink-0 text-[13px] text-v2-potential-dark">
                     {fix.delta}
