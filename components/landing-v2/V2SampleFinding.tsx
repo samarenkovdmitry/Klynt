@@ -24,7 +24,7 @@ export function V2SampleFinding() {
         </div>
 
         {/* Finding card */}
-        <div className="max-w-[920px] rounded-[24px] bg-lv2-card px-[34px] pb-[28px] pt-[30px] text-v2-dark shadow-[0_40px_80px_-28px_rgba(0,0,0,.55)]">
+        <div className="max-w-[920px] rounded-[24px] border border-lv2-card-border bg-lv2-card px-[34px] pb-[28px] pt-[30px] text-v2-dark shadow-[0_40px_80px_-28px_rgba(0,0,0,.55)]">
           <div className="mb-[22px] flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-[7px] rounded-full bg-lv2-amber-bg px-[11px] py-[6px] font-mono text-[10.5px] font-semibold tracking-[.06em] text-lv2-amber">
@@ -43,8 +43,8 @@ export function V2SampleFinding() {
 
           {/* Before / After */}
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="overflow-hidden rounded-[16px] border border-[#EEE9DD]">
-              <div className="flex items-center justify-between border-b border-[#EEE9DD] bg-[#F4F0E7] px-4 py-[10px]">
+            <div className="overflow-hidden rounded-[16px] border border-lv2-card-border">
+              <div className="flex items-center justify-between border-b border-lv2-card-border bg-[#F4F0E7] px-4 py-[10px]">
                 <span className="font-mono text-[10.5px] font-semibold tracking-[.07em] text-[#B0A99A]">BEFORE</span>
                 <span className="font-mono text-[10.5px] font-semibold tracking-[.04em] text-lv2-amber">FAIL · 2.8:1</span>
               </div>
@@ -55,7 +55,7 @@ export function V2SampleFinding() {
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-[16px] border border-[#EEE9DD]">
+            <div className="overflow-hidden rounded-[16px] border border-lv2-card-border">
               <div className="flex items-center justify-between border-b border-[#DCEBDF] bg-[#EAF3EC] px-4 py-[10px]">
                 <span className="font-mono text-[10.5px] font-semibold tracking-[.07em] text-lv2-green">AFTER</span>
                 <span className="font-mono text-[10.5px] font-semibold tracking-[.04em] text-lv2-green">PASS · 7.1:1</span>
