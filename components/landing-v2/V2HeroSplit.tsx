@@ -82,12 +82,7 @@ export function V2HeroSplit() {
 
       {/* RIGHT — sky bg + cards */}
       <div
-        className="relative flex min-h-[520px] items-center justify-center overflow-hidden px-[28px] py-[56px] md:px-[64px]"
-        style={{
-          backgroundImage: "url('/bg.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        className="relative flex min-h-[520px] items-center justify-center overflow-hidden bg-[url('/bg.png')] bg-cover bg-center px-[28px] py-[56px] md:px-[64px]"
       >
         <div className="relative w-full max-w-[440px]">
           <FindingCardStack />

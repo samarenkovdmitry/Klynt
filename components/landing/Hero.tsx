@@ -139,12 +139,7 @@ export function Hero() {
 
       {/* ── RIGHT: image panel with floating cards ── */}
       <div
-        className="relative hidden lg:flex lg:w-1/2 lg:items-center lg:justify-center"
-        style={{
-          backgroundImage: "url('/bg.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        className="relative hidden bg-[url('/bg.png')] bg-cover bg-center lg:flex lg:w-1/2 lg:items-center lg:justify-center"
       >
         {/* Cards container */}
         <div className="relative z-10 flex w-full max-w-[440px] flex-col gap-0 px-8">
