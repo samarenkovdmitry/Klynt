@@ -4,7 +4,7 @@ import {
   RiFocus3Line,
   RiMessage2Line,
   RiShieldCheckLine,
-  RiBrowserLine,
+  RiLayout2Line,
   RiFlashlightLine,
   RiQuillPenLine,
   RiCodeSSlashLine,
@@ -24,7 +24,7 @@ const CATEGORIES = [
     tags: "PROOF, LOGOS",
   },
   {
-    icon: RiBrowserLine,
+    icon: RiLayout2Line,
     label: "Visual hierarchy",
     signals: 7,
     tags: "FOCUS, CONTRAST",
