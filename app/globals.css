@@ -37,6 +37,18 @@
   --color-v2-potential:      #46C988;
   --color-v2-potential-dark: #5FCB8C;
 
+  /* Landing v2 page tokens */
+  --color-lv2-cream:        #F0EDE6;
+  --color-lv2-green:        #2E8B3A;
+  --color-lv2-green-bright: #2ECC71;
+  --color-lv2-border:       #DCD8CD;
+  --color-lv2-card:         #FBFAF6;
+  --color-lv2-step-num:     #ECE8DE;
+  --color-lv2-list-bg:      #FAF8F3;
+  --color-lv2-list-border:  #E8E4DA;
+  --color-lv2-amber:        #BA7517;
+  --color-lv2-amber-bg:     #F5EAD6;
+
   /* Hero-slot specific tokens */
   --color-v2-stat-suffix:    #E89490;
   --color-v2-quote-icon:     #E6C3BA;
@@ -87,6 +99,12 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+@keyframes kpulse {
+  0%   { box-shadow: 0 0 0 0 rgba(46,139,58,.45); }
+  70%  { box-shadow: 0 0 0 6px rgba(46,139,58,0); }
+  100% { box-shadow: 0 0 0 0 rgba(46,139,58,0); }
 }
 
 @keyframes pulse-segment {
