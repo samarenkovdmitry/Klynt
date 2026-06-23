@@ -13,6 +13,7 @@ type CopyRow = {
   block: CopyVariantBlock;
   badge?: string;
   isCTA?: boolean;
+  textSize?: string;
 };
 
 function CopyBeforeAfter({ row }: { row: CopyRow }) {
@@ -30,7 +31,7 @@ function CopyBeforeAfter({ row }: { row: CopyRow }) {
               <span className="text-[15px] font-semibold text-white">{row.block.current}</span>
             </div>
           ) : (
-            <p className="text-[16px] leading-[1.55] text-[#9A9588]">{row.block.current}</p>
+            <p className={`${row.textSize ?? "text-[16px]"} leading-[1.55] text-[#9A9588]`}>{row.block.current}</p>
           )}
         </div>
 
@@ -47,7 +48,7 @@ function CopyBeforeAfter({ row }: { row: CopyRow }) {
               <span className="text-[15px] font-semibold text-white">{after?.text}</span>
             </div>
           ) : (
-            <p className="text-[16px] font-bold leading-[1.55] text-[#143322]">{after?.text}</p>
+            <p className={`${row.textSize ?? "text-[16px]"} font-bold leading-[1.55] text-[#143322]`}>{after?.text}</p>
           )}
         </div>
       </div>
@@ -57,8 +58,8 @@ function CopyBeforeAfter({ row }: { row: CopyRow }) {
 
 export function ReportCopyStudioV2({ copyVariants }: Props) {
   const rows: CopyRow[] = [
-    { index: 1, label: "Hero headline", block: copyVariants.headline, badge: "AUDIENCE UNCLEAR" },
-    { index: 2, label: "Subheadline", block: copyVariants.subheadline, badge: "LOW CONTRAST · VAGUE" },
+    { index: 1, label: "Hero headline", block: copyVariants.headline, badge: "AUDIENCE UNCLEAR", textSize: "text-[18px]" },
+    { index: 2, label: "Subheadline", block: copyVariants.subheadline, badge: "LOW CONTRAST · VAGUE", textSize: "text-[16px]" },
     { index: 3, label: "Primary CTA", block: copyVariants.cta, badge: "NO OFFER STATED", isCTA: true },
   ].filter((r) => r.block?.current || r.block?.variants?.[0]?.text);
 
@@ -100,9 +101,14 @@ export function ReportCopyStudioV2({ copyVariants }: Props) {
           Specific CTAs convert{" "}
           <b className="font-semibold text-v2-ink-secondary">202% better</b>{" "}
           than generic ones —{" "}
-          <span className="underline decoration-dotted underline-offset-2">
+          <a
+            href="https://blog.hubspot.com/marketing/personalized-calls-to-action-convert-better-data"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-dotted underline-offset-2 hover:text-v2-ink-secondary transition-colors"
+          >
             HubSpot, 330k CTAs analysed
-          </span>
+          </a>
           .
         </p>
       </div>
