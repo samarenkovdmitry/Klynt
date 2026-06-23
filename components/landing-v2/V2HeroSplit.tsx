@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiArrowRightLine, RiCheckLine, RiLink } from "@remixicon/react";
@@ -82,9 +83,16 @@ export function V2HeroSplit() {
 
       {/* RIGHT — sky bg + cards */}
       <div
-        className="relative flex min-h-[520px] items-center justify-center overflow-hidden bg-[url('/bg.png')] bg-cover bg-center px-[28px] py-[56px] md:px-[64px]"
+        className="relative flex min-h-[520px] items-center justify-center overflow-hidden px-[28px] py-[56px] md:px-[64px]"
       >
-        <div className="relative w-full max-w-[440px]">
+        <Image
+          src="/bg.png"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="relative z-10 w-full max-w-[440px]">
           <FindingCardStack />
 
           {/* Dark score card */}

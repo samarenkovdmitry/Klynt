@@ -138,9 +138,14 @@ export function Hero() {
       </div>
 
       {/* ── RIGHT: image panel with floating cards ── */}
-      <div
-        className="relative hidden bg-[url('/bg.png')] bg-cover bg-center lg:flex lg:w-1/2 lg:items-center lg:justify-center"
-      >
+      <div className="relative hidden lg:flex lg:w-1/2 lg:items-center lg:justify-center">
+        <Image
+          src="/bg.png"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+        />
         {/* Cards container */}
         <div className="relative z-10 flex w-full max-w-[440px] flex-col gap-0 px-8">
           {/* White card — live finding */}
