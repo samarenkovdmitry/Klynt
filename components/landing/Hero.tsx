@@ -47,26 +47,28 @@ export function Hero() {
       {/* ── LEFT: cream panel ── */}
       <div className="flex w-full flex-col bg-[#F0EDE6] px-10 py-8 lg:w-1/2 lg:px-14 xl:px-20">
         {/* Nav */}
-        <nav className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3" aria-label="Klynt — home">
-            <Image
-              src="/klynt-logo-dark.svg"
-              alt="Klynt"
-              width={92}
-              height={28}
-              priority
-            />
-            <span className="hidden font-mono text-[10px] uppercase tracking-widest text-[#1A1814]/40 lg:inline">
+        <nav className="flex items-center justify-between gap-6">
+          <div className="flex shrink-0 items-center gap-3">
+            <Link href="/" aria-label="Klynt — home">
+              <Image
+                src="/klynt-logo-dark.svg"
+                alt="Klynt"
+                width={92}
+                height={28}
+                priority
+              />
+            </Link>
+            <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-[#1A1814]/35">
               Landing Improvement Kit
             </span>
-          </Link>
+          </div>
 
-          <ul className="hidden items-center gap-6 md:flex">
+          <ul className="flex items-center gap-6">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="font-mono text-[11px] uppercase tracking-widest text-[#1A1814]/50 transition-colors hover:text-[#1A1814]"
+                  className="whitespace-nowrap font-mono text-[11px] uppercase tracking-widest text-[#1A1814]/50 transition-colors hover:text-[#1A1814]"
                 >
                   {link.label}
                 </Link>
@@ -142,7 +144,6 @@ export function Hero() {
           backgroundImage: "url('/bg.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          backgroundColor: "#2C3E50",
         }}
       >
         {/* Subtle darkening overlay for card contrast */}
@@ -165,9 +166,14 @@ export function Hero() {
               </span>
             </div>
 
-            {/* Issue badge */}
-            <div className="mb-4 inline-flex items-center rounded-full bg-amber-100 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-amber-700">
-              Issue · Contrast
+            {/* Issue badge + domain */}
+            <div className="mb-4 flex items-center justify-between">
+              <div className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-amber-700">
+                Issue · Contrast
+              </div>
+              <span className="font-mono text-[10px] text-[#B4AFA4]">
+                · linear.app
+              </span>
             </div>
 
             {/* Big metric */}
@@ -185,23 +191,24 @@ export function Hero() {
             </p>
 
             {/* Color fix row */}
-            <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-[#F8F7F4] px-3 py-2">
+            <div className="mt-3 flex items-center gap-1.5 overflow-hidden rounded-xl bg-[#F8F7F4] px-3 py-2">
               <span
                 className="h-3.5 w-3.5 shrink-0 rounded-sm"
                 style={{ backgroundColor: "#9CA3AF" }}
               />
-              <span className="font-mono text-[11px] text-[#6B7280]">
-                #9CA3AF on white
+              <span className="whitespace-nowrap font-mono text-[11px] text-[#6B7280]">
+                <span className="line-through">#9CA3AF</span>
+                {" on white"}
               </span>
               <span className="font-mono text-[11px] text-[#C3BCAD]">→</span>
               <span
-                className="h-3.5 w-3.5 shrink-0 rounded-sm"
+                className="h-3.5 w-3.5 shrink-0 rounded-full"
                 style={{ backgroundColor: "#4B5563" }}
               />
-              <span className="font-mono text-[11px] text-[#4B5563]">
+              <span className="whitespace-nowrap font-mono text-[11px] text-[#4B5563]">
                 #4B5563
               </span>
-              <span className="font-mono text-[11px] font-medium text-[#22C55E]">
+              <span className="whitespace-nowrap font-mono text-[11px] font-medium text-[#22C55E]">
                 · passes AA
               </span>
             </div>
@@ -220,55 +227,33 @@ export function Hero() {
               Score Potential
             </p>
 
-            {/* Progress bar with labels */}
-            <div className="mb-2 flex items-center gap-3">
-              <span className="w-8 font-mono text-[13px] font-semibold text-white">
-                6.5
-              </span>
+            {/* Progress bar — NOW · bar · TARGET on one line */}
+            <div className="flex items-center gap-2">
+              <div className="flex shrink-0 flex-col items-start">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-white/30">Now</span>
+                <span className="font-mono text-[14px] font-semibold text-white">6.5</span>
+              </div>
               <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/10">
-                {/* Filled portion: 6.5/10 = 65% */}
                 <div
                   className="absolute left-0 top-0 h-full rounded-full bg-[#22C55E]"
                   style={{ width: "65%" }}
                 />
               </div>
-              {/* Target marker at 80% */}
-              <div className="relative flex flex-col items-center">
-                <span className="font-mono text-[13px] font-semibold text-white/50">
-                  8.0
-                </span>
+              <div className="flex shrink-0 flex-col items-end">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-white/30">Target</span>
+                <span className="font-mono text-[14px] font-semibold text-white/50">8.0</span>
               </div>
             </div>
 
-            <div className="mb-1 flex items-center justify-between px-0.5">
-              <span className="font-mono text-[9px] uppercase tracking-widest text-white/30">
-                Now
-              </span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-white/30">
-                Target
-              </span>
-            </div>
-
-            <p className="mt-3 font-mono text-[11px] text-white/40">
-              Fix 3 gaps to close most of the distance:
+            {/* Fix items inline */}
+            <p className="mt-3 font-mono text-[11px] leading-[18px] text-white/50">
+              Raise contrast{" "}
+              <span className="font-semibold text-[#22C55E]">+0.6</span>
+              {"  "}Add trial offer{" "}
+              <span className="font-semibold text-[#22C55E]">+0.5</span>
+              {"  "}Place logos{" "}
+              <span className="font-semibold text-[#22C55E]">+0.4</span>
             </p>
-
-            <div className="mt-2 space-y-1.5">
-              {[
-                { label: "Reduce contrast", delta: "+0.6" },
-                { label: "Add trial offer", delta: "+0.5" },
-                { label: "Place logos", delta: "+0.4" },
-              ].map((fix) => (
-                <div key={fix.label} className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] text-white/55">
-                    {fix.label}
-                  </span>
-                  <span className="font-mono text-[11px] font-semibold text-[#22C55E]">
-                    {fix.delta}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
