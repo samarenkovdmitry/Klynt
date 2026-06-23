@@ -34,6 +34,7 @@ export function AppHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [count, setCount] = useState<number | null>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -47,6 +48,13 @@ export function AppHeader() {
   }, []);
 
   useEffect(() => {
+    function onScroll() { setScrolled(window.scrollY > 4); }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
     if (!menuOpen) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setMenuOpen(false);
@@ -57,8 +65,12 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="app-site-header sticky top-0 z-50 w-full border-b border-[#DCD8CD] pt-[env(safe-area-inset-top,0px)]"
-        style={{ background: "rgba(236,234,226,0.82)", backdropFilter: "blur(14px)" }}
+      <header
+        className="app-site-header sticky top-0 z-50 w-full border-b border-[#DCD8CD] pt-[env(safe-area-inset-top,0px)] transition-[background] duration-200"
+        style={{
+          background: scrolled ? "rgba(236,234,226,0.82)" : "#ECEAE2",
+          backdropFilter: scrolled ? "blur(14px)" : "none",
+        }}
       >
         <div className="mx-auto flex h-[64px] max-w-[1080px] items-center justify-between gap-4 px-[26px]">
           {/* Left: logo + divider + badge */}
@@ -77,7 +89,10 @@ export function AppHeader() {
             {count !== null && (
               <>
                 <span className="h-[18px] w-px shrink-0 bg-[#CFC9BB]" aria-hidden />
-                <span className="inline-flex items-center gap-[7px] text-[11.5px] tracking-[0.04em] text-[#57544C]">
+                <span
+                  className="inline-flex items-center gap-[7px] text-[11.5px] tracking-[0.04em] text-[#57544C]"
+                  style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
+                >
                   <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-v2-pass" />
                   {count.toLocaleString("en-US")} PAGES IMPROVED
                 </span>
