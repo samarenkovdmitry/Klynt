@@ -37,7 +37,7 @@ export function ReportSourceRow({
   const signalCount = checklistCount ? checklistCount * 9 : 85;
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-nowrap items-center gap-3">
       {previewSrc && (
         <span className="block shrink-0 overflow-hidden rounded-lg border border-v2-card-border leading-none">
           <img
@@ -48,15 +48,16 @@ export function ReportSourceRow({
         </span>
       )}
 
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[15px] font-bold tracking-[-0.01em] text-v2-ink">{domain}</span>
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <span className="truncate text-[15px] font-bold tracking-[-0.01em] text-v2-ink">{domain}</span>
         <span className="font-mono text-[11px] tracking-[0.04em] text-v2-ink-muted">
-          {date && `ANALYSED ${date} · `}
-          {signalCount} SIGNALS
+          {date && <span className="sm:hidden">{date}</span>}
+          {date && <span className="hidden sm:inline">ANALYSED {date} · {signalCount} SIGNALS</span>}
+          {!date && <span>{signalCount} SIGNALS</span>}
         </span>
       </div>
 
-      <div className="ml-auto flex items-center gap-2.5">
+      <div className="ml-auto flex shrink-0 items-center gap-2.5">
         <button
           onClick={onShare}
           className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-card-border bg-v2-card px-[15px] py-[9px] text-[13px] font-semibold text-v2-ink-secondary transition-colors hover:bg-v2-card-inner"
