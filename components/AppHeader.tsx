@@ -67,9 +67,9 @@ export function AppHeader() {
               <Image
                 src="/klynt-logo-v4.svg"
                 alt="Klynt"
-                width={100}
-                height={30}
-                className="block h-[23px] w-auto"
+                width={92}
+                height={28}
+                className="block h-[22px] w-auto"
                 priority
               />
             </Link>
