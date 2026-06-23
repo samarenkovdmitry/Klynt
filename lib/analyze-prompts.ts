@@ -128,7 +128,7 @@ HARD CONSTRAINTS (violations auto-filtered server-side):
   A CTA with "free", "trial", a product name, or a specific outcome is NOT vague.
 - NAV_LINKS non-empty → structure-nav MUST be "pass", not "missing". Evidence: list the nav labels.
 - A gallery, portfolio, or product showcase counts as social proof — do not flag as missing trust.
-- Every gap (missing/weak) MUST include an evidence field: exact quote or element name, min 15 chars. Items without evidence are discarded.
+- Every gap (missing/weak) MUST include an evidence field: min 15 chars. Gap evidence MUST add NEW information — consequence, mechanism, or anchored quote — never rephrase the text field. Items without evidence are discarded.
 - Every pass MUST include an evidence field naming the specific visible element. Passes without evidence are discarded.
 - Maximum 1 generic gap per report. All others must cite a specific visible element.`;
 }
@@ -273,9 +273,24 @@ CHECKLIST BY SCORE (must match breakdown-derived score):
 - score_potential.chips MUST list one chip per copy/trust missing gap (same gap_label).
 - id: slug like "headline-category" or "cta-trial". For copy items, id MUST match the link_to value ("copy-headline", "copy-cta", "copy-subheadline"). Typography weak → id "subheadline-clarity".
 - gap_label: max 4 words, short badge for Copy studio ONLY. Examples: "Category missing", "Trial unclear", "Content weak", "Trust missing", "Weak typography". NEVER repeat checklist text or use ALL CAPS.
-- text: max 10 words, specific actionable label. Must match label in score_potential chips for copy/trust gaps.
+- text: max 10 words, specific actionable label. Must match label in score_potential chips for copy/trust gaps. Vary sentence structure — avoid starting with "Your [element]...", "No visible...", or "No [element]...". Use active assertions, consequence-first, or specific observation framing.
+  Good: "Headline targets no named audience" — Bad: "Your headline doesn't name the audience"
+  Good: "Trust signals absent above fold" — Bad: "No visible trust signals above the fold"
 - link_to: copy gaps → "copy-headline"/"copy-cta"/"copy-subheadline"; trust gap → "trust"; typography weak → "visual-fixes"; no nav → "structure-nav"; hero essay subhead → "hero-density"; pass items → null.
 - category: "copy" | "trust" | "visual" | "structure"
+
+HERO CARD QUALITY (the top gap's text + evidence render as the hero card headline + subtitle):
+- The subtitle (evidence) MUST add NEW information — consequence, mechanism, or anchored example. NEVER rephrase text as evidence.
+  D (link_to copy-headline): evidence = why THIS specific headline fails + what the visitor cannot do as a result.
+    Good: "'The better way' has no reference point — visitors can't self-qualify as your customer."
+    Bad: "The headline lacks audience clarity." (restates text — rejected)
+  C (link_to trust): evidence = the consequence of zero above-fold trust signals, not a restatement.
+    Good: "Visitors form a trust judgment in under 3 seconds — your hero gives them nothing to anchor it to."
+    Bad: "There are no trust signals visible above the fold." (restates text — rejected)
+  B (link_to copy-cta): evidence = what this specific CTA ambiguity costs in conversion terms.
+    Good: "'Start for free' — trial vs. freemium ambiguity; visitors don't know what they're committing to."
+    Bad: "The CTA doesn't clarify what free means." (restates text — rejected)
+
 - NEVER create two gaps about the same root cause (e.g. two headline/category items). One gap per link_to.
 - At most 1 weak typography item → link_to "visual-fixes", gap_label "Weak typography" — only when legibility is visibly poor on this screenshot.
 - pass items text: must name a specific visible element on this page — NEVER write generic observations.
