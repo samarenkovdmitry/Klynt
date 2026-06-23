@@ -139,12 +139,12 @@ export function Hero() {
 
       {/* ── RIGHT: image panel with floating cards ── */}
       <div className="relative hidden lg:flex lg:w-1/2 lg:items-center lg:justify-center">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/bg.png"
           alt=""
-          fill
-          className="object-cover object-center"
-          priority
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover object-center"
         />
         {/* Cards container */}
         <div className="relative z-10 flex w-full max-w-[440px] flex-col gap-0 px-8">
