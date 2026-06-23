@@ -165,7 +165,7 @@ export function FindingCardStack() {
         return (
           <div
             key={idx}
-            className="absolute inset-x-0 top-0 flex h-[294px] flex-col rounded-[24px] border border-lv2-card-border bg-lv2-card px-[32px] py-[26px] pb-[22px]"
+            className="absolute inset-x-0 top-0 flex h-[294px] flex-col rounded-[24px] bg-lv2-card px-[32px] py-[26px] pb-[22px]"
             style={getStyle(pos)}
           >
             {/* Card header */}

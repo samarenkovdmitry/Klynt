@@ -100,7 +100,7 @@ export function V2TrustedBy({ auditedCount = null }: V2TrustedByProps) {
           {AUDITS.map((a) => (
             <div
               key={a.name}
-              className="flex flex-col rounded-[16px] border border-lv2-card-border bg-lv2-list-bg px-[22px] py-[24px]"
+              className="flex flex-col rounded-[16px] border border-lv2-list-border bg-lv2-list-bg px-[22px] py-[24px]"
             >
               <div className="mb-4 flex items-center gap-3">
                 <span
