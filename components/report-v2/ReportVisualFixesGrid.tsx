@@ -34,29 +34,51 @@ const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
 function DimensionIcon({ dimension }: { dimension: VisualFixDimension }) {
   const cls = "shrink-0 text-v2-ink-secondary";
   switch (dimension) {
-    case "social_proof":     return <RiGroupLine size={18} className={cls} />;
-    case "depth":            return <RiStackLine size={18} className={cls} />;
-    case "cta_hierarchy":    return <RiCursorLine size={18} className={cls} />;
-    case "color_contrast":   return <RiContrastLine size={18} className={cls} />;
-    case "typography":       return <RiText size={18} className={cls} />;
-    default:                 return <RiPaletteLine size={18} className={cls} />;
+    case "social_proof":     return <RiGroupLine size={20} className={cls} />;
+    case "depth":            return <RiStackLine size={20} className={cls} />;
+    case "cta_hierarchy":    return <RiCursorLine size={20} className={cls} />;
+    case "color_contrast":   return <RiContrastLine size={20} className={cls} />;
+    case "typography":       return <RiText size={20} className={cls} />;
+    default:                 return <RiPaletteLine size={20} className={cls} />;
   }
 }
 
-function FixCell({ fix, bordered }: { fix: ReportVisualFix; bordered?: boolean }) {
+function parseHex(text: string): { displayText: string; hexColor: string | null } {
+  const match = text.match(/#[0-9A-Fa-f]{6}\b/);
+  if (!match) return { displayText: text, hexColor: null };
+  return {
+    displayText: text.replace(match[0], "").replace(/\s{2,}/g, " ").trim(),
+    hexColor: match[0],
+  };
+}
+
+function FixCell({ fix }: { fix: ReportVisualFix }) {
   const label = DIMENSION_LABELS[fix.dimension] ?? fix.dimension;
+  const { displayText, hexColor } = parseHex(fix.recommendation);
+
   return (
-    <div className={`p-6 ${bordered ? "border-t border-v2-card-divider" : ""}`}>
-      <div className="mb-2.5 flex items-center gap-2.5">
+    <div className="p-6">
+      <div className="mb-3 flex items-center gap-2.5">
         <DimensionIcon dimension={fix.dimension} />
         <span className="text-[16px] font-semibold tracking-[-0.01em] text-v2-ink">{label}</span>
       </div>
-      <p className="mb-3.5 text-[14px] leading-[1.5] text-v2-ink-muted">{fix.observation}</p>
-      <div className="flex items-start gap-2.5 rounded-[12px] bg-v2-card-inner px-3.5 py-3">
-        <RiArrowRightLine size={16} className="mt-px shrink-0 text-v2-accent" />
-        <span className="text-[14px] font-medium leading-[1.45] text-v2-dark-alt">
-          {fix.recommendation}
+      <p className="mb-4 text-[15px] leading-[1.5] text-v2-ink-muted">{fix.observation}</p>
+      <div className="flex items-center gap-3 rounded-[14px] bg-v2-card-inner px-4 py-3.5">
+        <RiArrowRightLine size={16} className="shrink-0 text-v2-accent" />
+        <span className="flex-1 text-[15px] font-medium leading-[1.45] text-v2-dark-alt">
+          {displayText}
         </span>
+        {hexColor && (
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-[8px] border border-[#E3E0D6] bg-white px-2.5 py-1">
+            <span
+              className="h-3.5 w-3.5 rounded-[3px] border border-[rgba(0,0,0,0.08)]"
+              style={{ backgroundColor: hexColor }}
+            />
+            <span className="font-mono text-[11.5px] tracking-[0.02em] text-v2-ink-secondary">
+              {hexColor}
+            </span>
+          </span>
+        )}
       </div>
     </div>
   );
@@ -85,10 +107,10 @@ export function ReportVisualFixesGrid({ fixes, passes }: Props) {
             <div
               key={fix.dimension}
               className={[
-                i % 2 === 0 && i < topFixes.length - 1 ? "sm:border-r sm:border-v2-card-divider" : "",
+                i % 2 === 0 && i + 1 < topFixes.length ? "sm:border-r sm:border-v2-card-divider" : "",
                 i >= 2 ? "border-t border-v2-card-divider" : "",
-                i > 0 && i < 2 ? "border-t sm:border-t-0 border-v2-card-divider" : "",
-              ].join(" ")}
+                i === 1 ? "border-t sm:border-t-0 border-v2-card-divider" : "",
+              ].filter(Boolean).join(" ")}
             >
               <FixCell fix={fix} />
             </div>
