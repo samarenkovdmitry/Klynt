@@ -11,32 +11,24 @@ type V2TrustedByProps = {
 
 const AUDITS = [
   {
-    name: "folk.app",
-    initial: "f",
-    color: "#6D5BD0",
-    category: "MESSAGING",
-    finding: "Hero headline — audience unclear",
-  },
-  {
-    name: "notion.so",
-    initial: "N",
-    color: "#111",
+    name: "tally.so",
     category: "CTA COPY",
-    finding: '"Get Started" — no outcome stated',
+    finding: '"Create a form" — no benefit or outcome stated',
   },
   {
-    name: "figma.com",
-    initial: "F",
-    color: "#F24E1E",
-    category: "FRICTION",
-    finding: "6 nav items compete with the CTA",
+    name: "beehiiv.com",
+    category: "TRUST",
+    finding: "0 logos or testimonials above fold on free plan page",
   },
   {
-    name: "linear.app",
-    initial: "L",
-    color: "#5E6AD2",
+    name: "loops.so",
+    category: "MESSAGING",
+    finding: "Headline addresses devs and marketers in same sentence",
+  },
+  {
+    name: "dub.co",
     category: "CONTRAST",
-    finding: "Contrast 2.8:1 — fails WCAG AA",
+    finding: "Primary CTA contrast ratio 3.1:1 — fails WCAG AA",
   },
 ];
 
@@ -103,11 +95,15 @@ export function V2TrustedBy({ auditedCount = null }: V2TrustedByProps) {
               className="flex flex-col rounded-[16px] border border-lv2-list-border bg-lv2-list-bg px-[22px] py-[24px]"
             >
               <div className="mb-4 flex items-center gap-3">
-                <span
-                  className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[10px] text-[18px] font-bold text-white"
-                  style={{ backgroundColor: a.color }}
-                >
-                  {a.initial}
+                <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://www.google.com/s2/favicons?domain=${a.name}&sz=64`}
+                    alt={a.name}
+                    width={28}
+                    height={28}
+                    className="h-[28px] w-[28px] object-contain"
+                  />
                 </span>
                 <span className="font-mono text-[16px] font-medium text-v2-dark">{a.name}</span>
               </div>
