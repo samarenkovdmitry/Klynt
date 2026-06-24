@@ -237,9 +237,15 @@ function FormatB({ slot }: { slot: CtaStatisticSlot }) {
             <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-ink-hairline">
               BEFORE
             </span>
-            <span className="inline-flex rounded-[10px] bg-[#B6B1A4] px-[22px] py-[11px] text-[15px] font-semibold text-white">
-              {slot.before_text}
-            </span>
+            {slot.before_text ? (
+              <span className="inline-flex rounded-[10px] bg-[#B6B1A4] px-[22px] py-[11px] text-[15px] font-semibold text-white">
+                {slot.before_text}
+              </span>
+            ) : (
+              <span className="inline-flex rounded-[10px] border border-dashed border-[#C8C3B8] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
+                CTA not detected
+              </span>
+            )}
           </div>
           <div className="grid place-items-center">
             <RiArrowRightLine size={20} className="text-v2-arrow" />

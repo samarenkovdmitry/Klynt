@@ -60,12 +60,23 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
         const sub = get('h1 + p, h1 + h2, h2, [class*="sub"], [class*="description"]');
         const subStyle = style(sub);
 
-        const cta = get(
-          'a[class*="primary"], button[class*="primary"], ' +
-          'a[class*="cta"], button[class*="cta"], ' +
-          'header a[class*="btn"], ' +
-          "main a:first-of-type, main button:first-of-type"
-        );
+        const ctaSelectors = [
+          'button[class*="primary"]',
+          'a[class*="primary"]',
+          'a[class*="cta"]',
+          'button[class*="cta"]',
+          'header a[class*="btn"]',
+          'header button',
+          '[class*="hero"] button',
+          '[class*="hero"] a[href]',
+          'main a:first-of-type',
+          'main button:first-of-type',
+        ];
+        let cta: Element | null = null;
+        for (const sel of ctaSelectors) {
+          cta = document.querySelector(sel);
+          if (cta) break;
+        }
         const ctaStyle = style(cta);
 
         const nav = get(
@@ -129,8 +140,8 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
         const proofElements = Array.from(document.querySelectorAll(proofSelector));
         const proofAboveFold = proofElements.some((el) => {
           const rect = el.getBoundingClientRect();
-          // Element's top edge must be within the viewport (not hidden or below fold)
-          return rect.top >= 0 && rect.top < viewportHeight && rect.width > 0;
+          // Scan 1.5× viewport — logos in the second visual block are still "above the fold" in practice
+          return rect.top >= 0 && rect.top < viewportHeight * 1.5 && rect.width > 0;
         });
         const socialProofFound = proofElements.length > 0;
 
@@ -184,7 +195,7 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
       viewport_width: computedValues?.viewport_width,
       viewport_height: computedValues?.viewport_height,
       h1_text: computedValues?.h1_text,
-      cta_text: computedValues?.cta_text,
+      cta_text_raw: computedValues?.cta_text,
     });
 
     await preparePageForHeroScreenshot(page);

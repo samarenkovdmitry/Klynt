@@ -488,6 +488,16 @@ export async function POST(req: Request) {
     );
     json.checklist = finalized.checklist;
 
+    // If social proof was detected within 1.5× viewport, trust cannot be the top critical issue
+    if (computedValues?.social_proof_above_fold === true) {
+      json.checklist = (json.checklist as import("@/lib/audit-report").ReportChecklistItem[]).map(
+        (item) =>
+          item.link_to === "trust" && item.status === "missing"
+            ? { ...item, status: "weak" as const }
+            : item
+      );
+    }
+
     json.score = calibrateReportScore(
       llmScore,
       normalizedBreakdown,

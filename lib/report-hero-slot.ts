@@ -79,8 +79,8 @@ function buildCtaStatisticSlot(item: ReportChecklistItem, report: AuditReport): 
     title: item.text,
     description:
       item.evidence ?? "A vague CTA forces visitors to guess what happens next — most don't.",
-    before_text: cta?.current ?? "Start for free",
-    after_text: cta?.variants?.[0]?.text ?? "Start your 14-day free trial",
+    before_text: cta?.current || "Start for free",
+    after_text: cta?.variants?.[0]?.text || "Start your 14-day free trial",
   };
 }
 
