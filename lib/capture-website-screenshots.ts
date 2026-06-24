@@ -60,21 +60,26 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
         const sub = get('h1 + p, h1 + h2, h2, [class*="sub"], [class*="description"]');
         const subStyle = style(sub);
 
+        // Returns first element in DOM matching selector that has visible non-empty text.
+        const findWithText = (selector: string): Element | null => {
+          const elements = Array.from(document.querySelectorAll(selector));
+          return (
+            elements.find(
+              (el) => (el as HTMLElement).innerText?.trim().length > 0
+            ) ?? null
+          );
+        };
+
         const ctaSelectors = [
-          'button[class*="primary"]',
-          'a[class*="primary"]',
-          'a[class*="cta"]',
-          'button[class*="cta"]',
-          'header a[class*="btn"]',
-          'header button',
-          '[class*="hero"] button',
-          '[class*="hero"] a[href]',
-          'main a:first-of-type',
-          'main button:first-of-type',
+          'header button:not([aria-label*="menu" i])',
+          "nav a.btn, nav button",
+          '[class*="hero"] button, [class*="hero"] a[href]',
+          'button[class*="primary"], a[class*="primary"]',
+          "section:first-of-type button, section:first-of-type a[href]",
         ];
         let cta: Element | null = null;
         for (const sel of ctaSelectors) {
-          cta = document.querySelector(sel);
+          cta = findWithText(sel);
           if (cta) break;
         }
         const ctaStyle = style(cta);
@@ -186,6 +191,23 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
       }) as PageComputedValues;
     } catch {
       // DOM extraction failed — continue with screenshots only
+    }
+
+    // Sanity check: reject cta_text if it doesn't appear in the actual page HTML.
+    // This catches cases where the selector matched an element with invisible/dynamic text.
+    if (computedValues?.cta_text) {
+      try {
+        const html = await page.content();
+        if (!html.toLowerCase().includes(computedValues.cta_text.toLowerCase())) {
+          console.warn("[capture] cta_text sanity FAIL — not found in page HTML, nulling", {
+            url,
+            cta_text: computedValues.cta_text,
+          });
+          computedValues = { ...computedValues, cta_text: null };
+        }
+      } catch {
+        // Non-fatal — keep the value if we can't verify
+      }
     }
 
     console.log("[capture] computed_values", {

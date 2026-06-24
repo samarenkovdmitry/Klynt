@@ -516,6 +516,16 @@ export async function POST(req: Request) {
       );
     }
 
+    // Anchor cta.current to Puppeteer ground truth for URL captures.
+    // If Puppeteer returned null (CTA undetected), force "" so the Before block
+    // shows "CTA not detected" rather than a hallucinated LLM value.
+    if (computedValues !== null && json.copy_variants && typeof json.copy_variants === "object") {
+      const cv = json.copy_variants as import("@/lib/audit-report").ReportCopyVariants;
+      if (cv.cta && typeof cv.cta === "object") {
+        cv.cta.current = computedValues.cta_text ?? "";
+      }
+    }
+
     if (json.meta && typeof json.meta === "object") {
       const meta = json.meta as Record<string, unknown>;
       if (typeof meta.title_suggestion === "string") {

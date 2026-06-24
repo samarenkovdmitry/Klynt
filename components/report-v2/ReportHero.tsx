@@ -254,9 +254,15 @@ function FormatB({ slot }: { slot: CtaStatisticSlot }) {
             <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-pass">
               AFTER
             </span>
-            <span className="inline-flex rounded-[10px] bg-v2-pass px-[22px] py-[11px] text-[15px] font-semibold text-white">
-              {slot.after_text}
-            </span>
+            {slot.after_text ? (
+              <span className="inline-flex rounded-[10px] bg-v2-pass px-[22px] py-[11px] text-[15px] font-semibold text-white">
+                {slot.after_text}
+              </span>
+            ) : (
+              <span className="inline-flex rounded-[10px] border border-dashed border-[#A9D8BC] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
+                Suggested copy pending
+              </span>
+            )}
           </div>
         </div>
       </BottomStrip>
