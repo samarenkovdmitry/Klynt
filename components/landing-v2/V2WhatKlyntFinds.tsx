@@ -176,7 +176,7 @@ export function V2WhatKlyntFinds() {
 
           {/* Accordion */}
           <div className="flex flex-col self-center">
-            {FINDINGS.map(({ Icon, title }, idx) => {
+            {FINDINGS.map(({ Icon, title, description, tag, method }, idx) => {
               const isActive = active === idx;
               const offset = isActive ? CIRC * (1 - progress) : CIRC;
               return (
@@ -220,7 +220,7 @@ export function V2WhatKlyntFinds() {
                       />
                     </div>
 
-                    {/* Title — fixed height, no expansion */}
+                    {/* Title */}
                     <div className="min-w-0 flex-1">
                       <h3 className="m-0 text-[22px] font-bold tracking-[-0.02em]">
                         {title}
@@ -236,36 +236,94 @@ export function V2WhatKlyntFinds() {
                         fill="none"
                         style={{ transform: "rotate(-90deg)", display: "block" }}
                       >
+                        <circle cx="15" cy="15" r="11" stroke="#DCD6C7" strokeWidth="2.5" fill="none" />
                         <circle
-                          cx="15"
-                          cy="15"
-                          r="11"
-                          stroke="#DCD6C7"
-                          strokeWidth="2.5"
-                          fill="none"
-                        />
-                        <circle
-                          cx="15"
-                          cy="15"
-                          r="11"
+                          cx="15" cy="15" r="11"
                           stroke={isActive ? "#1B1A17" : "transparent"}
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          fill="none"
-                          strokeDasharray={CIRC}
-                          strokeDashoffset={offset}
+                          strokeWidth="2.5" strokeLinecap="round" fill="none"
+                          strokeDasharray={CIRC} strokeDashoffset={offset}
                           style={{ transition: "stroke .3s ease" }}
                         />
                       </svg>
                     </span>
                   </button>
+
+                  {/* ── Mobile inline panel (hidden on md+) ── */}
+                  <div
+                    className="md:hidden overflow-hidden"
+                    style={{
+                      maxHeight: isActive ? 600 : 0,
+                      transition: "max-height 0.35s cubic-bezier(.22,.61,.36,1)",
+                    }}
+                  >
+                    <div className="pb-5">
+                      <div
+                        style={{
+                          backgroundColor: "#4E85FF",
+                          backgroundImage: PANEL_STYLE.backgroundImage,
+                          backgroundSize: PANEL_STYLE.backgroundSize,
+                          borderRadius: 16,
+                          padding: 20,
+                          position: "relative",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {/* Noise overlay */}
+                        <div
+                          aria-hidden
+                          style={{
+                            position: "absolute", inset: 0, zIndex: 1,
+                            pointerEvents: "none", mixBlendMode: "overlay",
+                            opacity: 0.16, backgroundImage: `url("${NOISE_URL}")`,
+                          }}
+                        />
+                        {/* Card */}
+                        <div style={{ position: "relative", zIndex: 2 }}>
+                          <div
+                            style={{
+                              background: "#FBFAF6", borderRadius: 12,
+                              padding: "20px 22px", display: "flex",
+                              flexDirection: "column", gap: 12,
+                              boxShadow: "0 12px 30px -12px rgba(10,30,160,.55)",
+                            }}
+                          >
+                            <p
+                              className="m-0 font-sans text-[16px] font-normal leading-[1.45] tracking-[-0.01em]"
+                              style={{ color: "#1B1A17" }}
+                            >
+                              {description}
+                            </p>
+                            <div style={{ borderTop: "1px solid #E8E4DC", paddingTop: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+                              <div className="flex items-center justify-between gap-3">
+                                <span
+                                  className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[.12em]"
+                                  style={{ color: "#2348FF" }}
+                                >
+                                  <RiRuler2Line size={13} aria-hidden />
+                                  HOW IT&rsquo;S MEASURED
+                                </span>
+                                <span className="font-mono text-[10px] tracking-[.07em]" style={{ color: "#B7B2A4" }}>
+                                  {tag}
+                                </span>
+                              </div>
+                              <p className="m-0 font-mono text-[13px] leading-[1.75]" style={{ color: "#3F3B33" }}>
+                                {method}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* ─────────────────────────────────────────────────────── */}
+
                 </div>
               );
             })}
           </div>
 
-          {/* Blue panel — fixed height, card always centered */}
-          <div style={PANEL_STYLE} className="self-start">
+          {/* Blue panel — desktop only */}
+          <div style={PANEL_STYLE} className="self-start hidden md:block">
             {/* Noise texture overlay */}
             <div
               aria-hidden
