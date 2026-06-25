@@ -73,25 +73,12 @@ const BOTTOM_ITEMS = [
   },
 ] as const;
 
-// Blue gradient derived from #2348ff
 const PANEL_STYLE: React.CSSProperties = {
-  backgroundColor: "#1B37E0",
-  backgroundImage: [
-    "linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px)",
-    "linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px)",
-    "radial-gradient(at 12% 14%,#7B96FF 0px,transparent 48%)",
-    "radial-gradient(at 90% 10%,#40CFFF 0px,transparent 46%)",
-    "radial-gradient(at 84% 88%,#071060 0px,transparent 54%)",
-    "radial-gradient(at 14% 94%,#2348FF 0px,transparent 50%)",
-    "radial-gradient(at 58% 52%,#3458EE 0px,transparent 60%)",
-  ].join(","),
-  backgroundSize:
-    "30px 30px,30px 30px,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%",
-  boxShadow: "0 30px 60px -30px rgba(15,32,160,.62)",
+  backgroundColor: "#4E85FF",
+  boxShadow: "0 30px 60px -30px rgba(30,60,200,.5)",
   borderRadius: 24,
   overflow: "hidden",
   position: "relative",
-  // Fixed min-height so the panel never resizes when the accordion expands
   minHeight: 440,
 };
 
@@ -318,7 +305,7 @@ export function V2WhatKlyntFinds() {
             >
               {/* CSS-grid stacking: all cards in cell 1/1 so they overlay */}
               <div style={{ display: "grid" }}>
-                {FINDINGS.map(({ tag, method }, idx) => {
+                {FINDINGS.map(({ title, tag, method }, idx) => {
                   const isActive = active === idx;
                   const isPrev = prevActive === idx;
 
@@ -359,27 +346,44 @@ export function V2WhatKlyntFinds() {
                           boxShadow: "0 16px 38px -16px rgba(10,30,160,.55)",
                         }}
                       >
-                        <div className="flex items-center justify-between gap-3">
-                          <span
-                            className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[.12em]"
-                            style={{ color: "#2348FF" }}
-                          >
-                            <RiRuler2Line size={13} aria-hidden />
-                            HOW IT&rsquo;S MEASURED
-                          </span>
-                          <span
-                            className="font-mono text-[10px] tracking-[.07em]"
-                            style={{ color: "#B7B2A4" }}
-                          >
-                            {tag}
-                          </span>
-                        </div>
+                        {/* Accordion title in Familjen, larger than the method text */}
                         <p
-                          className="m-0 font-mono text-[14px] leading-[1.75]"
-                          style={{ color: "#3F3B33" }}
+                          className="m-0 font-sans text-[18px] font-semibold leading-[1.15] tracking-[-0.02em]"
+                          style={{ color: "#1B1A17" }}
                         >
-                          {method}
+                          {title}
                         </p>
+                        <div
+                          style={{
+                            borderTop: "1px solid #E8E4DC",
+                            paddingTop: 14,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 14,
+                          }}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <span
+                              className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[.12em]"
+                              style={{ color: "#2348FF" }}
+                            >
+                              <RiRuler2Line size={13} aria-hidden />
+                              HOW IT&rsquo;S MEASURED
+                            </span>
+                            <span
+                              className="font-mono text-[10px] tracking-[.07em]"
+                              style={{ color: "#B7B2A4" }}
+                            >
+                              {tag}
+                            </span>
+                          </div>
+                          <p
+                            className="m-0 font-mono text-[14px] leading-[1.75]"
+                            style={{ color: "#3F3B33" }}
+                          >
+                            {method}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   );
@@ -392,7 +396,7 @@ export function V2WhatKlyntFinds() {
 
         {/* Bottom 3-column grid */}
         <div
-          className="mt-16 grid grid-cols-1 overflow-hidden rounded-[16px] md:grid-cols-3"
+          className="mt-[144px] grid grid-cols-1 overflow-hidden rounded-[16px] md:grid-cols-3"
           style={{ border: "1px solid #E3E0D6", background: "#FFFFFF" }}
         >
           {BOTTOM_ITEMS.map(({ Icon, title, desc }, i) => (
