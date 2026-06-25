@@ -75,6 +75,11 @@ const BOTTOM_ITEMS = [
 
 const PANEL_STYLE: React.CSSProperties = {
   backgroundColor: "#4E85FF",
+  backgroundImage: [
+    "linear-gradient(rgba(255,255,255,.15) 1px,transparent 1px)",
+    "linear-gradient(90deg,rgba(255,255,255,.15) 1px,transparent 1px)",
+  ].join(","),
+  backgroundSize: "30px 30px,30px 30px",
   boxShadow: "0 30px 60px -30px rgba(30,60,200,.5)",
   borderRadius: 24,
   overflow: "hidden",
@@ -171,7 +176,7 @@ export function V2WhatKlyntFinds() {
 
           {/* Accordion */}
           <div className="flex flex-col self-center">
-            {FINDINGS.map(({ Icon, title, description }, idx) => {
+            {FINDINGS.map(({ Icon, title }, idx) => {
               const isActive = active === idx;
               const offset = isActive ? CIRC * (1 - progress) : CIRC;
               return (
@@ -215,27 +220,11 @@ export function V2WhatKlyntFinds() {
                       />
                     </div>
 
-                    {/* Title + expandable description */}
+                    {/* Title — fixed height, no expansion */}
                     <div className="min-w-0 flex-1">
                       <h3 className="m-0 text-[22px] font-bold tracking-[-0.02em]">
                         {title}
                       </h3>
-                      <div
-                        style={{
-                          maxHeight: isActive ? 96 : 0,
-                          overflow: "hidden",
-                          opacity: isActive ? 1 : 0,
-                          transition:
-                            "max-height .4s cubic-bezier(.22,.61,.36,1), opacity .3s ease",
-                        }}
-                      >
-                        <p
-                          className="m-0 max-w-[46ch] pt-[9px] text-[15.5px] leading-[1.5]"
-                          style={{ color: "#57544C" }}
-                        >
-                          {description}
-                        </p>
-                      </div>
                     </div>
 
                     {/* Progress ring */}
@@ -305,7 +294,7 @@ export function V2WhatKlyntFinds() {
             >
               {/* CSS-grid stacking: all cards in cell 1/1 so they overlay */}
               <div style={{ display: "grid" }}>
-                {FINDINGS.map(({ title, tag, method }, idx) => {
+                {FINDINGS.map(({ description, tag, method }, idx) => {
                   const isActive = active === idx;
                   const isPrev = prevActive === idx;
 
@@ -346,12 +335,12 @@ export function V2WhatKlyntFinds() {
                           boxShadow: "0 16px 38px -16px rgba(10,30,160,.55)",
                         }}
                       >
-                        {/* Accordion title in Familjen, larger than the method text */}
+                        {/* Accordion description in Familjen, larger than the method text */}
                         <p
-                          className="m-0 font-sans text-[18px] font-semibold leading-[1.15] tracking-[-0.02em]"
+                          className="m-0 font-sans text-[17px] font-normal leading-[1.45] tracking-[-0.01em]"
                           style={{ color: "#1B1A17" }}
                         >
-                          {title}
+                          {description}
                         </p>
                         <div
                           style={{
