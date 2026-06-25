@@ -18,7 +18,8 @@ export function V2Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="relative flex h-16 items-center justify-between gap-4 border-b border-lv2-border px-6 md:px-[72px]">
+    <header className="relative border-b border-lv2-border px-6">
+      <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-4">
       {/* Logo + kit label */}
       <div className="flex min-w-0 items-center gap-4">
         <Link href="/" aria-label="Klynt — home">
@@ -68,6 +69,7 @@ export function V2Header() {
           ))}
         </nav>
       )}
+      </div>
     </header>
   );
 }

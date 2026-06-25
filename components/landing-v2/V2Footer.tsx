@@ -19,7 +19,7 @@ const COMPANY = [
 export function V2Footer() {
   return (
     <footer className="bg-v2-dark px-6 pb-10 pt-16 text-[#EDEAE2] md:px-[72px]">
-      <div className="mx-auto max-w-[1080px]">
+      <div className="mx-auto max-w-[1180px]">
         <div className="grid gap-12 border-b border-[#34322C] pb-10 md:grid-cols-[1.6fr_1fr_1fr]">
           <div className="max-w-[340px]">
             <Image

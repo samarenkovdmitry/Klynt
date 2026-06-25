@@ -66,7 +66,7 @@ export function V2TrustedBy({ auditedCount = null }: V2TrustedByProps) {
 
   return (
     <section className="border-t border-lv2-border bg-white px-6 py-[96px] md:px-[72px] md:py-[104px]">
-      <div className="mx-auto max-w-[1080px]">
+      <div className="mx-auto max-w-[1180px]">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-8">
           <div>
             <span className="mb-4 inline-flex items-center gap-2 font-mono text-[11.5px] tracking-[.1em] text-v2-ink-muted">

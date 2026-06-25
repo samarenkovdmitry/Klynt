@@ -18,7 +18,7 @@ const PAID_EXTRAS = [
 export function V2Pricing() {
   return (
     <section className="border-t border-lv2-border bg-lv2-cream px-6 py-[96px] md:px-[72px] md:py-[104px]">
-      <div className="mx-auto max-w-[1080px]">
+      <div className="mx-auto max-w-[1180px]">
         <div className="mb-12 max-w-[620px]">
           <span className="mb-[18px] inline-flex items-center gap-2 font-mono text-[11.5px] tracking-[.1em] text-v2-ink-muted">
             <RiPriceTag3Line size={14} className="text-lv2-green" aria-hidden />

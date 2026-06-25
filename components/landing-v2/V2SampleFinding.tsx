@@ -9,7 +9,7 @@ export function V2SampleFinding() {
       className="px-6 py-[96px] text-white md:px-[72px] md:py-[104px]"
       style={{ background: "radial-gradient(120% 120% at 18% 0%, #241F1A 0%, #16140F 60%)" }}
     >
-      <div className="mx-auto max-w-[1080px]">
+      <div className="mx-auto max-w-[1180px]">
         <div className="mb-10 max-w-[680px]">
           <span className="mb-[18px] inline-flex items-center gap-2 font-mono text-[11.5px] tracking-[.1em] text-[#C9B79A]">
             <RiFileSearchLine size={14} aria-hidden />
