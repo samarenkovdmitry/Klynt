@@ -73,23 +73,26 @@ const BOTTOM_ITEMS = [
   },
 ] as const;
 
+// Blue gradient derived from #2348ff
 const PANEL_STYLE: React.CSSProperties = {
-  backgroundColor: "#1B8C57",
+  backgroundColor: "#1B37E0",
   backgroundImage: [
     "linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px)",
     "linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px)",
-    "radial-gradient(at 12% 14%,#8BE39B 0px,transparent 48%)",
-    "radial-gradient(at 90% 10%,#16C2A6 0px,transparent 46%)",
-    "radial-gradient(at 84% 88%,#0A4E33 0px,transparent 54%)",
-    "radial-gradient(at 14% 94%,#23A862 0px,transparent 50%)",
-    "radial-gradient(at 58% 52%,#2BB071 0px,transparent 60%)",
+    "radial-gradient(at 12% 14%,#7B96FF 0px,transparent 48%)",
+    "radial-gradient(at 90% 10%,#40CFFF 0px,transparent 46%)",
+    "radial-gradient(at 84% 88%,#071060 0px,transparent 54%)",
+    "radial-gradient(at 14% 94%,#2348FF 0px,transparent 50%)",
+    "radial-gradient(at 58% 52%,#3458EE 0px,transparent 60%)",
   ].join(","),
   backgroundSize:
     "30px 30px,30px 30px,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%",
-  boxShadow: "0 30px 60px -30px rgba(15,80,45,.62)",
+  boxShadow: "0 30px 60px -30px rgba(15,32,160,.62)",
   borderRadius: 24,
   overflow: "hidden",
   position: "relative",
+  // Fixed min-height so the panel never resizes when the accordion expands
+  minHeight: 440,
 };
 
 const NOISE_URL =
@@ -97,20 +100,34 @@ const NOISE_URL =
 
 export function V2WhatKlyntFinds() {
   const [active, setActive] = useState(0);
+  const [prevActive, setPrevActive] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const activeRef = useRef(0);
   const startRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearPrevRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rafRef = useRef<number | null>(null);
 
   const advance = useCallback((idx: number) => {
+    const prev = activeRef.current;
+    activeRef.current = idx;
+
+    // Only set prevActive if we're actually changing the active item
+    if (prev !== idx) setPrevActive(prev);
     setActive(idx);
     setProgress(0);
     startRef.current = performance.now();
+
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(
       () => advance((idx + 1) % FINDINGS.length),
       ADV_MS,
     );
+
+    // Clear prevActive after the exit animation finishes
+    if (clearPrevRef.current) clearTimeout(clearPrevRef.current);
+    clearPrevRef.current = setTimeout(() => setPrevActive(null), 500);
   }, []);
 
   useEffect(() => {
@@ -122,6 +139,7 @@ export function V2WhatKlyntFinds() {
     rafRef.current = requestAnimationFrame(tick);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (clearPrevRef.current) clearTimeout(clearPrevRef.current);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [advance]);
@@ -136,7 +154,7 @@ export function V2WhatKlyntFinds() {
             className="inline-flex items-center gap-2 font-mono text-[11.5px] tracking-[.1em]"
             style={{ color: "#8C887D" }}
           >
-            <RiFocus2Line size={14} style={{ color: "#2E8B3A" }} aria-hidden />
+            <RiFocus2Line size={14} style={{ color: "#2348FF" }} aria-hidden />
             WHAT KLYNT FINDS
           </span>
           <div className="mt-[18px] flex flex-wrap items-end justify-between gap-8">
@@ -161,8 +179,8 @@ export function V2WhatKlyntFinds() {
           </p>
         </div>
 
-        {/* Two-column: accordion + right panel */}
-        <div className="grid grid-cols-1 items-stretch gap-7 md:grid-cols-2 md:gap-12">
+        {/* Two-column: accordion (left) + panel (right, fixed height) */}
+        <div className="grid grid-cols-1 items-start gap-7 md:grid-cols-2 md:gap-12">
 
           {/* Accordion */}
           <div className="flex flex-col self-center">
@@ -270,9 +288,9 @@ export function V2WhatKlyntFinds() {
             })}
           </div>
 
-          {/* Green method panel */}
-          <div style={PANEL_STYLE}>
-            {/* Noise overlay */}
+          {/* Blue panel — fixed height, card always centered */}
+          <div style={PANEL_STYLE} className="self-start">
+            {/* Noise texture overlay */}
             <div
               aria-hidden
               style={{
@@ -285,64 +303,87 @@ export function V2WhatKlyntFinds() {
                 backgroundImage: `url("${NOISE_URL}")`,
               }}
             />
-            {/* Inner (sticky on desktop) */}
+
+            {/* Absolutely fills panel, centers the card stack vertically */}
             <div
-              className="relative p-10 md:sticky md:top-24 md:p-14"
-              style={{ zIndex: 2 }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 2,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "56px",
+              }}
             >
-              <div className="relative" style={{ minHeight: 212 }}>
-                {FINDINGS.map(({ tag, method }, idx) => (
-                  <div
-                    key={tag}
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      opacity: active === idx ? 1 : 0,
-                      transform:
-                        active === idx ? "none" : "translateY(12px)",
-                      pointerEvents: active === idx ? "auto" : "none",
-                      transition:
-                        "opacity .42s ease, transform .42s ease",
-                    }}
-                  >
+              {/* CSS-grid stacking: all cards in cell 1/1 so they overlay */}
+              <div style={{ display: "grid" }}>
+                {FINDINGS.map(({ tag, method }, idx) => {
+                  const isActive = active === idx;
+                  const isPrev = prevActive === idx;
+
+                  // Active card: slides up from below + fades in
+                  // Leaving card: scales down + fades out (zoom-out)
+                  // Idle cards: waiting below, invisible
+                  const opacity = isActive ? 1 : 0;
+                  const transform = isActive
+                    ? "translateY(0px) scale(1)"
+                    : isPrev
+                      ? "translateY(0px) scale(0.93)"
+                      : "translateY(18px) scale(1)";
+                  const transition = isActive
+                    ? "opacity .42s cubic-bezier(.22,.61,.36,1), transform .42s cubic-bezier(.22,.61,.36,1)"
+                    : isPrev
+                      ? "opacity .32s ease, transform .32s ease"
+                      : "none";
+
+                  return (
                     <div
+                      key={tag}
                       style={{
-                        background: "#FBFAF6",
-                        borderRadius: 16,
-                        padding: "26px 28px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 14,
-                        boxShadow: "0 16px 38px -16px rgba(10,55,32,.6)",
+                        gridArea: "1 / 1",
+                        opacity,
+                        transform,
+                        pointerEvents: isActive ? "auto" : "none",
+                        transition,
                       }}
                     >
-                      <div className="flex items-center justify-between gap-3">
-                        <span
-                          className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[.12em]"
-                          style={{ color: "#2E8B3A" }}
-                        >
-                          <RiRuler2Line size={13} aria-hidden />
-                          HOW IT&rsquo;S MEASURED
-                        </span>
-                        <span
-                          className="font-mono text-[10px] tracking-[.07em]"
-                          style={{ color: "#B7B2A4" }}
-                        >
-                          {tag}
-                        </span>
-                      </div>
-                      <p
-                        className="m-0 font-mono text-[14px] leading-[1.75]"
-                        style={{ color: "#3F3B33" }}
+                      <div
+                        style={{
+                          background: "#FBFAF6",
+                          borderRadius: 16,
+                          padding: "26px 28px",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 14,
+                          boxShadow: "0 16px 38px -16px rgba(10,30,160,.55)",
+                        }}
                       >
-                        {method}
-                      </p>
+                        <div className="flex items-center justify-between gap-3">
+                          <span
+                            className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[.12em]"
+                            style={{ color: "#2348FF" }}
+                          >
+                            <RiRuler2Line size={13} aria-hidden />
+                            HOW IT&rsquo;S MEASURED
+                          </span>
+                          <span
+                            className="font-mono text-[10px] tracking-[.07em]"
+                            style={{ color: "#B7B2A4" }}
+                          >
+                            {tag}
+                          </span>
+                        </div>
+                        <p
+                          className="m-0 font-mono text-[14px] leading-[1.75]"
+                          style={{ color: "#3F3B33" }}
+                        >
+                          {method}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -377,4 +418,3 @@ export function V2WhatKlyntFinds() {
     </section>
   );
 }
-
