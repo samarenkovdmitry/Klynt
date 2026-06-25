@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { RiPencilLine } from "@remixicon/react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -18,7 +18,7 @@ type HeroFindingCardProps = (FormatA | FormatB | FormatC | FormatD) & {
 
 // ─── Shared primitives ────────────────────────────────────────────────────────
 
-function CardHeader({ domain, subtitle }: { domain: string; subtitle?: string }) {
+function CardHeader() {
   return (
     <div
       style={{
@@ -553,7 +553,7 @@ export function HeroFindingCard(props: HeroFindingCardProps) {
         ...styleProp,
       }}
     >
-      <CardHeader domain={props.domain} />
+      <CardHeader />
       <BadgeRow badge={props.badge} domain={props.domain} subtitle={subtitle} pencil={pencil} />
 
       {props.format === "A" && <FormatABody />}
@@ -569,31 +569,111 @@ export function HeroFindingCard(props: HeroFindingCardProps) {
 
 // ─── Rotating hero card (self-contained, ready to drop into any hero panel) ──
 
-export function RotatingFindingCard() {
-  const [active, setActive] = useState(0);
+type CardMeta = { badge: string; domain: string; subtitle?: string; pencil: boolean };
 
+const CARD_META: CardMeta[] = [
+  { badge: "CONTRAST",         domain: "linear.app", subtitle: "hero subhead", pencil: false },
+  { badge: "CTA COPY",         domain: "notion.com",                           pencil: false },
+  { badge: "TRUST",            domain: "vercel.com",                           pencil: false },
+  { badge: "AUDIENCE UNCLEAR", domain: "folk.app",                             pencil: true  },
+];
+
+function SlotContent({ idx }: { idx: number }) {
+  const m = CARD_META[idx];
+  return (
+    <>
+      <BadgeRow badge={m.badge} domain={m.domain} subtitle={m.subtitle} pencil={m.pencil} />
+      {idx === 0 && <FormatABody />}
+      {idx === 1 && <FormatBBody />}
+      {idx === 2 && <FormatCBody />}
+      {idx === 3 && <FormatDBody />}
+    </>
+  );
+}
+
+export function RotatingFindingCard() {
+  const [active, setActive]   = useState(0);
+  const [exiting, setExiting] = useState<number | null>(null);
+  const [animated, setAnimated] = useState(false);
+  const prevRef = useRef(0);
+
+  // Advance every 4 s
   useEffect(() => {
     const id = setInterval(() => setActive((i) => (i + 1) % 4), 4000);
     return () => clearInterval(id);
   }, []);
 
-  const dotProps = { dotIndex: active, dotCount: 4 };
+  // Manage exit animation when active changes
+  useEffect(() => {
+    if (prevRef.current === active) return;
+    const prev = prevRef.current;
+    prevRef.current = active;
+    setAnimated(true);
+    setExiting(prev);
+    const t = setTimeout(() => setExiting(null), 420);
+    return () => clearTimeout(t);
+  }, [active]);
 
   return (
-    <>
+    <div
+      style={{
+        background: "white",
+        borderRadius: 14,
+        overflow: "hidden",
+        boxShadow: "0 2px 16px rgba(0,0,0,0.08)",
+      }}
+    >
       <style>{`
-        @keyframes heroCardIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes hcSlideIn {
+          from { opacity: 0; transform: translateX(40px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes hcSlideOut {
+          from { opacity: 1; transform: translateX(0); }
+          to   { opacity: 0; transform: translateX(-40px); }
         }
       `}</style>
-      <div key={active} style={{ animation: "heroCardIn 0.35s ease-out both" }}>
-        {active === 0 && <HeroFindingCard format="A" badge="CONTRAST" domain="linear.app" subtitle="hero subhead" {...dotProps} />}
-        {active === 1 && <HeroFindingCard format="B" badge="CTA COPY" domain="notion.com" {...dotProps} />}
-        {active === 2 && <HeroFindingCard format="C" badge="TRUST" domain="vercel.com" {...dotProps} />}
-        {active === 3 && <HeroFindingCard format="D" badge="AUDIENCE UNCLEAR" domain="folk.app" {...dotProps} />}
+
+      {/* ── Fixed header ── */}
+      <CardHeader />
+
+      {/* ── Animated content zone ─────────────────────────────────────────── */}
+      {/* Ghost (idx 0 = tallest format) stays in flow and sets the zone height */}
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        <div style={{ visibility: "hidden", pointerEvents: "none" }}>
+          <SlotContent idx={0} />
+        </div>
+
+        {/* Exiting slot — slides out to the left */}
+        {exiting !== null && (
+          <div
+            key={`x${exiting}`}
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0,
+              animation: "hcSlideOut 0.4s ease-out forwards",
+            }}
+          >
+            <SlotContent idx={exiting} />
+          </div>
+        )}
+
+        {/* Entering slot — slides in from the right */}
+        <div
+          key={`e${active}`}
+          style={{
+            position: "absolute", top: 0, left: 0, right: 0,
+            ...(animated && { animation: "hcSlideIn 0.4s ease-out forwards" }),
+          }}
+        >
+          <SlotContent idx={active} />
+        </div>
       </div>
-    </>
+      {/* ────────────────────────────────────────────────────────────────────── */}
+
+      {/* ── Fixed footer ── */}
+      <NavDots active={active} count={4} />
+      <ScorePotential />
+    </div>
   );
 }
 

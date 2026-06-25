@@ -142,7 +142,7 @@ export function Hero() {
       <div className="relative hidden lg:flex lg:w-1/2 lg:items-center lg:justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/bg.png"
+          src="/bg-new.jpg"
           alt=""
           aria-hidden
           className="absolute inset-0 h-full w-full object-cover object-center"
