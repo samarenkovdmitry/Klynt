@@ -23,7 +23,7 @@ export function V2Header() {
       {/* Logo + kit label */}
       <div className="flex min-w-0 items-center gap-[32px]">
         <Link href="/" aria-label="Klynt — home">
-          <Image src="/klynt-logo-dark.svg" alt="Klynt" width={92} height={28} priority />
+          <Image src="/klynt-logo-v4.svg" alt="Klynt" width={96} height={29} priority />
         </Link>
         <span className="hidden font-mono text-[11.5px] tracking-[.04em] sm:block" style={{ color: "#8C887D" }}>
           LANDING IMPROVEMENT KIT
