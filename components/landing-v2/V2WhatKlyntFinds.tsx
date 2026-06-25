@@ -227,8 +227,8 @@ export function V2WhatKlyntFinds() {
                       </h3>
                     </div>
 
-                    {/* Progress ring */}
-                    <span style={{ flexShrink: 0, width: 30, height: 30 }}>
+                    {/* Progress ring — visible only for the active item */}
+                    <span style={{ flexShrink: 0, width: 30, height: 30, opacity: isActive ? 1 : 0, transition: "opacity .3s ease" }}>
                       <svg
                         width="30"
                         height="30"
