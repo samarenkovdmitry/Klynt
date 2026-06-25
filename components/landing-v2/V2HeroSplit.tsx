@@ -33,7 +33,9 @@ export function V2HeroSplit() {
       <div className="flex flex-col justify-center px-6 py-12 md:px-[40px] lg:pl-[max(24px,calc((100vw_-_1180px)_/_2))] lg:pr-10 lg:py-[72px]">
         <div className="max-w-[560px]">
           <h1 className="mb-6 font-sans text-[36px] font-bold leading-[1.0] tracking-[-0.035em] text-v2-dark md:text-[46px] lg:text-[54px]">
-            Visitors are leaving. Find out exactly why.
+            Visitors are leaving.{" "}
+            <br />
+            Find out exactly why.
           </h1>
           <p className="mb-9 max-w-[40ch] text-[18px] leading-[1.5] text-v2-ink-secondary">
             Paste your URL. Get exactly what to fix, and how.
