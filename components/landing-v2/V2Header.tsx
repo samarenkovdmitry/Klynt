@@ -18,15 +18,14 @@ export function V2Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="relative border-b border-lv2-border px-6">
+    <header className="relative px-6" style={{ boxShadow: "0 1px 0 rgba(27,26,23,.10)" }}>
       <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-4">
       {/* Logo + kit label */}
-      <div className="flex min-w-0 items-center gap-4">
+      <div className="flex min-w-0 items-center gap-[32px]">
         <Link href="/" aria-label="Klynt — home">
           <Image src="/klynt-logo-dark.svg" alt="Klynt" width={92} height={28} priority />
         </Link>
-        <span className="hidden h-[18px] w-px shrink-0 bg-lv2-border sm:block" aria-hidden />
-        <span className="hidden font-mono text-[11.5px] tracking-[.04em] text-v2-ink-secondary sm:block">
+        <span className="hidden font-mono text-[11.5px] tracking-[.04em] sm:block" style={{ color: "#8C887D" }}>
           LANDING IMPROVEMENT KIT
         </span>
       </div>
@@ -37,7 +36,8 @@ export function V2Header() {
           <Link
             key={item.href}
             href={item.href}
-            className="text-[#3D3A33] transition-colors hover:text-v2-dark"
+            className="transition-colors hover:text-[#1B1A17]"
+            style={{ color: "#57544C" }}
           >
             {item.label}
           </Link>
