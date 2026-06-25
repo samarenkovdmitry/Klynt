@@ -2,20 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiLink } from "@remixicon/react";
-import { HeroFindingCard } from "@/components/landing/HeroFindingCard";
+import { RotatingFindingCard } from "@/components/landing/HeroFindingCard";
 
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
-
-const HERO_CARDS = [
-  { format: "A" as const, badge: "CONTRAST",         domain: "linear.app", subtitle: "hero subhead" },
-  { format: "B" as const, badge: "CTA COPY",          domain: "notion.com" },
-  { format: "C" as const, badge: "TRUST",             domain: "vercel.com" },
-  { format: "D" as const, badge: "AUDIENCE UNCLEAR",  domain: "folk.app" },
-];
 
 const NAV_LINKS = [
   { href: "/landing-copy", label: "Hero copy" },
@@ -29,30 +22,10 @@ function normalizeUrl(input: string): string {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
-function renderActiveCard(idx: number) {
-  const dotProps = { dotIndex: idx, dotCount: HERO_CARDS.length };
-  switch (idx) {
-    case 0: return <HeroFindingCard format="A" badge="CONTRAST" domain="linear.app" subtitle="hero subhead" {...dotProps} />;
-    case 1: return <HeroFindingCard format="B" badge="CTA COPY" domain="notion.com" {...dotProps} />;
-    case 2: return <HeroFindingCard format="C" badge="TRUST" domain="vercel.com" {...dotProps} />;
-    case 3: return <HeroFindingCard format="D" badge="AUDIENCE UNCLEAR" domain="folk.app" {...dotProps} />;
-    default: return null;
-  }
-}
-
 export function Hero() {
   const router = useRouter();
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [activeCard, setActiveCard] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(
-      () => setActiveCard((i) => (i + 1) % HERO_CARDS.length),
-      4000,
-    );
-    return () => clearInterval(id);
-  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -175,17 +148,8 @@ export function Hero() {
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
 
-        <style>{`
-          @keyframes heroCardIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
-
         <div className="relative z-10 w-full max-w-[460px] px-8">
-          <div key={activeCard} style={{ animation: "heroCardIn 0.35s ease-out both" }}>
-            {renderActiveCard(activeCard)}
-          </div>
+          <RotatingFindingCard />
         </div>
       </div>
     </section>

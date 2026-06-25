@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { RiPencilLine } from "@remixicon/react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -561,6 +564,36 @@ export function HeroFindingCard(props: HeroFindingCardProps) {
       <NavDots active={dotIndex} count={dotCount} />
       <ScorePotential />
     </div>
+  );
+}
+
+// ─── Rotating hero card (self-contained, ready to drop into any hero panel) ──
+
+export function RotatingFindingCard() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setActive((i) => (i + 1) % 4), 4000);
+    return () => clearInterval(id);
+  }, []);
+
+  const dotProps = { dotIndex: active, dotCount: 4 };
+
+  return (
+    <>
+      <style>{`
+        @keyframes heroCardIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      <div key={active} style={{ animation: "heroCardIn 0.35s ease-out both" }}>
+        {active === 0 && <HeroFindingCard format="A" badge="CONTRAST" domain="linear.app" subtitle="hero subhead" {...dotProps} />}
+        {active === 1 && <HeroFindingCard format="B" badge="CTA COPY" domain="notion.com" {...dotProps} />}
+        {active === 2 && <HeroFindingCard format="C" badge="TRUST" domain="vercel.com" {...dotProps} />}
+        {active === 3 && <HeroFindingCard format="D" badge="AUDIENCE UNCLEAR" domain="folk.app" {...dotProps} />}
+      </div>
+    </>
   );
 }
 

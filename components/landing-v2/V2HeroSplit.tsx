@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { RiArrowRightLine, RiCheckLine, RiLink } from "@remixicon/react";
 
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
-import { FindingCardStack } from "./FindingCardStack";
+import { RotatingFindingCard } from "@/components/landing/HeroFindingCard";
 
 function normalizeUrl(input: string): string {
   const t = input.trim();
@@ -82,10 +82,8 @@ export function V2HeroSplit() {
         </div>
       </div>
 
-      {/* RIGHT — sky bg + cards */}
-      <div
-        className="relative flex min-h-[520px] items-center justify-center overflow-hidden px-[28px] py-[56px] md:px-[64px]"
-      >
+      {/* RIGHT — sky bg + rotating finding card */}
+      <div className="relative flex min-h-[520px] items-center justify-center overflow-hidden px-[28px] py-[56px] md:px-[64px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/bg.png"
@@ -93,57 +91,8 @@ export function V2HeroSplit() {
           aria-hidden
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
-        <div className="relative z-10 w-full max-w-[440px]">
-          <FindingCardStack />
-
-          {/* Dark score card */}
-          <div className="mt-1 rounded-[24px] border border-white/10 bg-[#1a1a1a] px-[32px] py-[22px] pb-[24px] text-white">
-            <span className="mb-4 block font-mono text-[10.5px] tracking-[.1em] text-[#8A857C]">
-              SCORE POTENTIAL
-            </span>
-
-            {/* Progress bar */}
-            <div className="relative mb-[11px] h-[6px] rounded-full bg-[#34322C]">
-              <div className="absolute left-0 top-0 h-full w-[65%] rounded-full bg-lv2-green-bright" />
-              <span
-                className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[1px]"
-                style={{ left: "65%", width: 2, height: 12, background: "#fff" }}
-              />
-              <span
-                className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-lv2-green-bright bg-transparent"
-                style={{ left: "80%", width: 10, height: 10 }}
-              />
-            </div>
-
-            {/* NOW / TARGET labels */}
-            <div className="relative mb-5 h-4">
-              <span className="absolute left-0 top-0 font-mono text-[11px] tracking-[.04em] text-[#9C968B]">
-                NOW <span className="font-semibold text-white">6.5</span>
-              </span>
-              <span
-                className="absolute top-0 -translate-x-1/2 font-mono text-[11px] tracking-[.04em] text-lv2-green"
-                style={{ left: "80%" }}
-              >
-                TARGET <span className="font-semibold text-lv2-green-bright">8.0</span>
-              </span>
-            </div>
-
-            <div className="mb-4 h-px bg-white/10" />
-
-            <p className="mb-3 text-[13px] font-medium leading-[1.35] tracking-[-0.005em] text-white">
-              Fix 3 gaps to close most of the distance
-            </p>
-            <p className="text-[13px] leading-[1.6] text-white">
-              Raise contrast{" "}
-              <span className="font-mono font-semibold text-lv2-green-bright">+0.6</span>
-              <span className="text-white/35"> · </span>
-              Add trial offer{" "}
-              <span className="font-mono font-semibold text-lv2-green-bright">+0.5</span>
-              <span className="text-white/35"> · </span>
-              Place logos{" "}
-              <span className="font-mono font-semibold text-lv2-green-bright">+0.4</span>
-            </p>
-          </div>
+        <div className="relative z-10 w-full max-w-[460px]">
+          <RotatingFindingCard />
         </div>
       </div>
     </div>
