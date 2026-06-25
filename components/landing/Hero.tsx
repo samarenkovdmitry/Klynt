@@ -2,12 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RiLink } from "@remixicon/react";
+import { HeroFindingCard } from "@/components/landing/HeroFindingCard";
 
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
+
+const HERO_CARDS = [
+  { format: "A" as const, badge: "CONTRAST",         domain: "linear.app", subtitle: "hero subhead" },
+  { format: "B" as const, badge: "CTA COPY",          domain: "notion.com" },
+  { format: "C" as const, badge: "TRUST",             domain: "vercel.com" },
+  { format: "D" as const, badge: "AUDIENCE UNCLEAR",  domain: "folk.app" },
+];
 
 const NAV_LINKS = [
   { href: "/landing-copy", label: "Hero copy" },
@@ -21,10 +29,30 @@ function normalizeUrl(input: string): string {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
+function renderActiveCard(idx: number) {
+  const dotProps = { dotIndex: idx, dotCount: HERO_CARDS.length };
+  switch (idx) {
+    case 0: return <HeroFindingCard format="A" badge="CONTRAST" domain="linear.app" subtitle="hero subhead" {...dotProps} />;
+    case 1: return <HeroFindingCard format="B" badge="CTA COPY" domain="notion.com" {...dotProps} />;
+    case 2: return <HeroFindingCard format="C" badge="TRUST" domain="vercel.com" {...dotProps} />;
+    case 3: return <HeroFindingCard format="D" badge="AUDIENCE UNCLEAR" domain="folk.app" {...dotProps} />;
+    default: return null;
+  }
+}
+
 export function Hero() {
   const router = useRouter();
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [activeCard, setActiveCard] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(
+      () => setActiveCard((i) => (i + 1) % HERO_CARDS.length),
+      4000,
+    );
+    return () => clearInterval(id);
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -137,7 +165,7 @@ export function Hero() {
         </div>
       </div>
 
-      {/* ── RIGHT: image panel with floating cards ── */}
+      {/* ── RIGHT: rotating finding card ── */}
       <div className="relative hidden lg:flex lg:w-1/2 lg:items-center lg:justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -146,111 +174,17 @@ export function Hero() {
           aria-hidden
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
-        {/* Cards container */}
-        <div className="relative z-10 flex w-full max-w-[440px] flex-col gap-0 px-8">
-          {/* White card — live finding */}
-          <div className="rounded-[24px] border border-[#E3E0D6] bg-white p-[26px] shadow-2xl">
-            {/* Card header row */}
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#22C55E]" />
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#57554C]">
-                  Live Finding
-                </span>
-              </div>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[#B4AFA4]">
-                85 Signals Scanned
-              </span>
-            </div>
 
-            {/* Issue badge + domain */}
-            <div className="mb-4 flex items-center justify-between">
-              <div className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-amber-700">
-                Issue · Contrast
-              </div>
-              <span className="font-mono text-[10px] text-[#B4AFA4]">
-                · linear.app
-              </span>
-            </div>
+        <style>{`
+          @keyframes heroCardIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
 
-            {/* Big metric */}
-            <div className="mb-1 leading-none">
-              <span className="font-sans text-[56px] font-bold tracking-tight text-[#1A1814]">
-                2.8
-              </span>
-              <span className="font-sans text-[56px] font-bold tracking-tight text-[#1A1814]/30">
-                :1
-              </span>
-            </div>
-
-            <p className="font-mono text-[10px] uppercase tracking-widest text-[#9CA3AF]">
-              contrast ratio · fails WCAG AA
-            </p>
-
-            {/* Color fix row */}
-            <div className="mt-3 flex items-center gap-1.5 overflow-hidden rounded-xl bg-[#F8F7F4] px-3 py-2">
-              <span
-                className="h-3.5 w-3.5 shrink-0 rounded-sm"
-                style={{ backgroundColor: "#9CA3AF" }}
-              />
-              <span className="whitespace-nowrap font-mono text-[11px] text-[#6B7280]">
-                <span className="line-through">#9CA3AF</span>
-                {" on white"}
-              </span>
-              <span className="font-mono text-[11px] text-[#C3BCAD]">→</span>
-              <span
-                className="h-3.5 w-3.5 shrink-0 rounded-full"
-                style={{ backgroundColor: "#4B5563" }}
-              />
-              <span className="whitespace-nowrap font-mono text-[11px] text-[#4B5563]">
-                #4B5563
-              </span>
-              <span className="whitespace-nowrap font-mono text-[11px] font-medium text-[#22C55E]">
-                · passes AA
-              </span>
-            </div>
-
-            {/* Footer */}
-            <div className="mt-3 border-t border-[#EDE9E2] pt-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[#B4AFA4]">
-                + 23 more findings
-              </span>
-            </div>
-          </div>
-
-          {/* Dark card — score potential (overlaps bottom of white card) */}
-          <div className="-mt-3 ml-4 rounded-2xl bg-[#1C1A16] p-5 shadow-2xl">
-            <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-white/40">
-              Score Potential
-            </p>
-
-            {/* Progress bar — NOW · bar · TARGET on one line */}
-            <div className="flex items-center gap-2">
-              <div className="flex shrink-0 flex-col items-start">
-                <span className="font-mono text-[9px] uppercase tracking-widest text-white/30">Now</span>
-                <span className="font-mono text-[14px] font-semibold text-white">6.5</span>
-              </div>
-              <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/10">
-                <div
-                  className="absolute left-0 top-0 h-full rounded-full bg-[#22C55E]"
-                  style={{ width: "65%" }}
-                />
-              </div>
-              <div className="flex shrink-0 flex-col items-end">
-                <span className="font-mono text-[9px] uppercase tracking-widest text-white/30">Target</span>
-                <span className="font-mono text-[14px] font-semibold text-white/50">8.0</span>
-              </div>
-            </div>
-
-            {/* Fix items inline */}
-            <p className="mt-3 font-mono text-[11px] leading-[18px] text-white/50">
-              Raise contrast{" "}
-              <span className="font-semibold text-[#22C55E]">+0.6</span>
-              {"  "}Add trial offer{" "}
-              <span className="font-semibold text-[#22C55E]">+0.5</span>
-              {"  "}Place logos{" "}
-              <span className="font-semibold text-[#22C55E]">+0.4</span>
-            </p>
+        <div className="relative z-10 w-full max-w-[460px] px-8">
+          <div key={activeCard} style={{ animation: "heroCardIn 0.35s ease-out both" }}>
+            {renderActiveCard(activeCard)}
           </div>
         </div>
       </div>
