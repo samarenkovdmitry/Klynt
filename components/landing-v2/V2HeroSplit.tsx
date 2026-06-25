@@ -69,14 +69,14 @@ export function V2HeroSplit() {
             <p className="mt-2 text-[13px] text-red-600/80">{error}</p>
           )}
 
-          <p className="mt-6 flex flex-wrap items-center gap-3 font-mono text-[12px] tracking-[.05em] text-v2-ink-muted">
+          <p className="mt-6 flex flex-wrap items-center gap-1 font-mono text-[12px] tracking-[.05em] text-v2-ink-muted">
             <span className="inline-flex items-center gap-[6px] text-lv2-green">
               <RiCheckLine size={15} aria-hidden />
               524 PAGES IMPROVED
             </span>
-            <span className="text-lv2-border">·</span>
+            <span className="text-v2-ink-secondary">·</span>
             <span>FREE</span>
-            <span className="text-lv2-border">·</span>
+            <span className="text-v2-ink-secondary">·</span>
             <span>NO SIGNUP REQUIRED</span>
           </p>
         </div>
