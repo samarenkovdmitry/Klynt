@@ -14,7 +14,9 @@ function AppFooterContent() {
     pathname === "/" ||
     pathname === "/landing-copy" ||
     pathname?.startsWith("/landing-copy/") ||
-    pathname?.startsWith("/report/");
+    pathname?.startsWith("/report/") ||
+    pathname === "/analyze" ||
+    pathname?.startsWith("/analyze/");
   const isPrintRoute = pathname?.includes("/print");
 
   if (isPrintRoute || isV2Landing) {
