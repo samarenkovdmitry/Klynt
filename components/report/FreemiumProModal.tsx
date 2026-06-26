@@ -45,7 +45,7 @@ function buildCheckoutUrl(reportId: string): string | null {
   );
 
   return (
-    `https://klynt.lemonsqueezy.com/buy/${variantId}` +
+    `https://klyntapp.lemonsqueezy.com/checkout/buy/${variantId}` +
     `?checkout[custom][report_id]=${reportId}` +
     `&checkout[redirect_url]=${redirectUrl}`
   );
