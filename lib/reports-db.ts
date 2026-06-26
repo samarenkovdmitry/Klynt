@@ -115,7 +115,7 @@ export async function loadReportFromDb(
 
   const { data, error } = await supabase
     .from("reports")
-    .select("payload")
+    .select("payload, status")
     .eq("id", reportId)
     .maybeSingle();
 
@@ -123,11 +123,31 @@ export async function loadReportFromDb(
     throw new Error(error.message);
   }
 
-  if (!data?.payload || !isAuditReport(data.payload)) {
-    return null;
-  }
+  if (!data) return null;
+  if (data.status === "processing") return null;
+  if (!data.payload || !isAuditReport(data.payload)) return null;
 
   return data.payload;
+}
+
+export async function getReportStatusFromDb(
+  reportId: string
+): Promise<"processing" | "ready" | "missing"> {
+  if (!isValidReportId(reportId) || !isSupabaseConfigured()) {
+    return "missing";
+  }
+
+  const supabase = createServerSupabase();
+
+  const { data, error } = await supabase
+    .from("reports")
+    .select("status")
+    .eq("id", reportId)
+    .maybeSingle();
+
+  if (error || !data) return "missing";
+  if (data.status === "processing") return "processing";
+  return "ready";
 }
 
 export async function findReportIdBySlugInDb(

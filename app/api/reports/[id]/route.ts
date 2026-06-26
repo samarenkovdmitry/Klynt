@@ -6,6 +6,7 @@ import { canGenerateReportMetadata, loadReportForPublicMetadata } from "@/lib/re
 import { isDemoReportRouteParam, resolveReportRouteParam } from "@/lib/report-route";
 import { buildReportPlainText } from "@/lib/report-text-content";
 import { isSupabaseConfigured } from "@/lib/supabase-server";
+import { getReportStatusFromDb } from "@/lib/reports-db";
 
 type RouteContext = {
   params: Promise<{ id: string }> | { id: string };
@@ -32,6 +33,11 @@ export async function GET(req: Request, context: RouteContext) {
   }
 
   try {
+    const status = await getReportStatusFromDb(routeParam).catch(() => null);
+    if (status === "processing") {
+      return NextResponse.json({ status: "processing" }, { status: 202 });
+    }
+
     const resolved = await resolveReportRouteParam(routeParam);
     const report = await loadReportForPublicMetadata(routeParam);
 

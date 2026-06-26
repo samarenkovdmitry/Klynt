@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AuditReport } from "@/lib/audit-report";
 import { isAuditReport } from "@/lib/audit-report";
 import { toReportClientCachePayload } from "@/lib/report-api-payload";
 import { loadReport, saveReport } from "@/lib/report-storage";
 
-export type ReportLoadState = "loading" | "ready" | "missing";
+export type ReportLoadState = "loading" | "processing" | "ready" | "missing";
 
 const REPORT_FETCH_TIMEOUT_MS = 15000;
+const POLLING_INTERVAL_MS = 3000;
 
 function parseStoredReport(
   stored: string,
@@ -37,7 +38,12 @@ function readCachedReport(routeParam: string): AuditReport | null {
   return parseStoredReport(stored, routeParam);
 }
 
-async function fetchReportFromApi(routeParam: string): Promise<AuditReport | null> {
+type FetchResult =
+  | { kind: "ready"; report: AuditReport }
+  | { kind: "processing" }
+  | { kind: "missing" };
+
+async function fetchReportFromApi(routeParam: string): Promise<FetchResult> {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(
     () => controller.abort(),
@@ -49,19 +55,26 @@ async function fetchReportFromApi(routeParam: string): Promise<AuditReport | nul
       signal: controller.signal,
     });
 
+    if (res.status === 202) {
+      return { kind: "processing" };
+    }
+
     if (!res.ok) {
-      return null;
+      return { kind: "missing" };
     }
 
     const parsed: unknown = await res.json();
 
     if (!isAuditReport(parsed)) {
-      return null;
+      return { kind: "missing" };
     }
 
-    return toReportClientCachePayload(parsed, routeParam);
+    return {
+      kind: "ready",
+      report: toReportClientCachePayload(parsed, routeParam),
+    };
   } catch {
-    return null;
+    return { kind: "missing" };
   } finally {
     window.clearTimeout(timeoutId);
   }
@@ -96,6 +109,14 @@ export function useReportData(
   const [loadState, setLoadState] = useState<ReportLoadState>(() =>
     getInitialLoadState(reportId, initialData)
   );
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  function stopPolling() {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  }
 
   useEffect(() => {
     if (!reportId) {
@@ -137,38 +158,63 @@ export function useReportData(
         setData(null);
       }
 
-      try {
-        const parsed = await fetchReportFromApi(id);
+      const result = await fetchReportFromApi(id);
 
-        if (!parsed) {
-          if (!cancelled) {
-            setLoadState("missing");
+      if (cancelled) return;
+
+      if (result.kind === "ready") {
+        try {
+          saveReport(id, result.report);
+        } catch {
+          // Cache optional
+        }
+        setData(result.report);
+        setLoadState("ready");
+        return;
+      }
+
+      if (result.kind === "processing") {
+        setLoadState("processing");
+
+        pollingRef.current = setInterval(async () => {
+          if (cancelled) {
+            stopPolling();
+            return;
           }
 
-          return;
-        }
+          const polled = await fetchReportFromApi(id);
 
-        try {
-          saveReport(id, parsed);
-        } catch {
-          // Cache optional — report still renders from API data
-        }
+          if (cancelled) {
+            stopPolling();
+            return;
+          }
 
-        if (!cancelled) {
-          setData(parsed);
-          setLoadState("ready");
-        }
-      } catch {
-        if (!cancelled) {
-          setLoadState("missing");
-        }
+          if (polled.kind === "ready") {
+            stopPolling();
+            try {
+              saveReport(id, polled.report);
+            } catch {
+              // Cache optional
+            }
+            setData(polled.report);
+            setLoadState("ready");
+          } else if (polled.kind === "missing") {
+            stopPolling();
+            setLoadState("missing");
+          }
+        }, POLLING_INTERVAL_MS);
+
+        return;
       }
+
+      setLoadState("missing");
     }
 
     void load();
 
     return () => {
       cancelled = true;
+      stopPolling();
     };
   }, [reportId]);
 
