@@ -1,20 +1,17 @@
-import { Hero } from "@/components/landing/Hero";
-import { LandingV2Page } from "@/components/landing-v2/LandingV2Page";
-import {
-  AUDITED_PAGES_COUNT_REVALIDATE_SECONDS,
-  getCachedAuditedPagesCount,
-} from "@/lib/audit-stats";
-
-export const revalidate = AUDITED_PAGES_COUNT_REVALIDATE_SECONDS;
-
-type HomeProps = {
-  params: Promise<Record<string, never>>;
-  searchParams: Promise<Record<string, never>>;
-};
-
-export default async function Home(_props: HomeProps) {
-  const auditedCount = await getCachedAuditedPagesCount();
-  return <LandingV2Page auditedCount={auditedCount} />;
-
-  // return <Hero />;
+export default function Home() {
+  return (
+    <main style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100vh",
+      fontFamily: "sans-serif",
+      background: "#F0EDE6",
+      color: "#1a1a1a",
+    }}>
+      <h1 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>klynt.one</h1>
+      <p style={{ color: "#666" }}>Something good is coming. Back soon.</p>
+    </main>
+  );
 }
