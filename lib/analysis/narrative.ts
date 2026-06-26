@@ -72,7 +72,7 @@ Copy variants rules:
 Visual fixes rules:
 - Generate 2-4 visual_fixes for layout/design issues visible in extraction data
 - Focus on: missing social proof placement, CTA visibility, mobile viewport issues
-- Skip visual_fixes if no clear visual issues found (return empty array)
+- Always generate 2-4 visual_fixes. If no obvious visual issues exist, find the weakest visual elements and recommend improvements.
 - "observation" is factual, "fix" is imperative
 
 Output ONLY valid JSON. No markdown, no commentary.`;
@@ -89,8 +89,8 @@ export async function generateNarrative(extraction: ExtractionResult, url: strin
   const { text, usage } = await callLLM({
     role: "narrative",
     systemPrompt: NARRATIVE_SYSTEM,
-    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "headline": string, "subheadline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "quickWins": string[], "copy_variants": CopyVariant[], "visual_fixes": VisualFix[] }\n\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
-    maxTokens: 1800,
+    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "headline": string, "subheadline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "quickWins": string[], "copy_variants": CopyVariant[], "visual_fixes": VisualFix[] }\n\nWhere Finding = { "type": "clarity"|"cta"|"trust"|"friction"|"performance", "severity": "high"|"medium"|"low", "element": string, "title": string, "body": string, "fix": string }\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
+    maxTokens: 3000,
     cacheSystem: true,
   });
 
