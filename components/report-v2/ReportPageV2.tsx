@@ -12,7 +12,13 @@ import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
 import { openReportPrintExport } from "@/lib/report-export";
-import type { AuditReport } from "@/lib/audit-report";
+import type {
+  AuditReport,
+  ReportIssue,
+  ReportChecklistItem,
+  ChecklistCategory,
+  ChecklistItemStatus,
+} from "@/lib/audit-report";
 import { ReportSourceRow } from "./ReportSourceRow";
 import { ReportHero } from "./ReportHero";
 import { ReportScorePanel } from "./ReportScorePanel";
@@ -23,6 +29,40 @@ import { ReportTrustMetaPanel } from "./ReportTrustMetaPanel";
 import { ReportMethodologyPanel } from "./ReportMethodologyPanel";
 import { ReportExportV2 } from "./ReportExportV2";
 import { ReportCtaBanner } from "./ReportCtaBanner";
+
+const ISSUE_CATEGORY_MAP: Record<string, ChecklistCategory> = {
+  missing_metadata: "structure",
+  clarity: "copy",
+  viewport_config: "structure",
+  social_proof_placement: "trust",
+  headline_clarity: "copy",
+  cta: "copy",
+  trust: "trust",
+  friction: "structure",
+  performance: "structure",
+};
+
+function adaptIssuesToChecklist(issues: ReportIssue[]): ReportChecklistItem[] {
+  return issues.map((issue, i) => {
+    const category: ChecklistCategory = ISSUE_CATEGORY_MAP[issue.category ?? ""] ?? "copy";
+
+    const status: ChecklistItemStatus =
+      issue.severity === "high" ? "missing" :
+      issue.severity === "low" ? "pass" : "weak";
+
+    const parts = [issue.why, issue.bullets?.join("\n")].filter(Boolean);
+    const evidence = parts.length > 0 ? parts.join("\n\n") : undefined;
+
+    return {
+      id: `issue-${i}`,
+      text: issue.title ?? "",
+      evidence,
+      status,
+      link_to: null,
+      category,
+    };
+  });
+}
 
 type Props = {
   routeParam: string;
@@ -100,7 +140,10 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
 
   const previewSrc = resolveReportPreviewSrc(routeParam, data.previewImage);
   const domain = formatReportDomain(data.url);
-  const hasNewLayout = Array.isArray(report.checklist) && report.checklist.length > 0;
+  const effectiveChecklist: ReportChecklistItem[] = report.checklist?.length
+    ? report.checklist
+    : adaptIssuesToChecklist(report.issues ?? []);
+  const hasNewLayout = effectiveChecklist.length > 0;
 
   return (
     <>
@@ -131,7 +174,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
           />
 
           {hasNewLayout && (
-            <ReportPriorityQueue checklist={report.checklist!} />
+            <ReportPriorityQueue checklist={effectiveChecklist} />
           )}
 
           {report.copy_variants && (
