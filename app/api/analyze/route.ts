@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 
-import { requestAuditAnalysis } from "@/lib/analyze-openai";
-import { buildFullAuditPrompt } from "@/lib/analyze-prompts";
+import { runAnalysisPipeline } from "@/lib/analysis/pipeline";
+import type { PageData, NarrativeResult, ExtractionResult } from "@/lib/analysis/pipeline";
+import type { HeroSlot } from "@/components/report-v2/ReportHero";
 import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
 
 import { isAuditReport, type AuditReport } from "@/lib/audit-report";
@@ -251,6 +252,82 @@ function normalizeIssueTitle(item: {
 
 
 // -----------------------------
+// PIPELINE HERO ADAPTER
+// -----------------------------
+function adaptHeroSlot(
+  hero: NarrativeResult["hero"],
+  extraction: ExtractionResult
+): HeroSlot {
+  const { format, topIssue, score, lift, headline, subheadline } = hero;
+
+  switch (format) {
+    case "D_textual":
+      return {
+        type: "headline_textual",
+        issue_title: topIssue.title,
+        quote: extraction.headline,
+        explanation: topIssue.body,
+        before_text: extraction.headline,
+        after_text: topIssue.fix,
+        section_label: "HEADLINE, BEFORE & AFTER",
+      };
+
+    case "B_before_after":
+      return {
+        type: "cta_statistic",
+        title: topIssue.title,
+        stat: "70%",
+        stat_label: "of visitors ignore generic CTAs",
+        stat_source: "CXL Institute",
+        description: topIssue.body,
+        before_text: extraction.primaryCta.text || "Get Started",
+        after_text: topIssue.fix,
+      };
+
+    case "C_count_trust": {
+      const ABSENT_MAP: Record<string, string> = {
+        logos: "Customer logos",
+        testimonials: "Testimonials",
+        numbers: "Ratings",
+        badges: "Guarantees",
+      };
+      const present = new Set(
+        extraction.socialProofTypes.filter((t) => t !== "none")
+      );
+      const absent = (["logos", "testimonials", "numbers", "badges"] as const)
+        .filter((t) => !present.has(t))
+        .map((t) => ABSENT_MAP[t])
+        .slice(0, 4);
+
+      return {
+        type: "trust_count",
+        title: topIssue.title,
+        description: topIssue.body,
+        count: extraction.trustedByCount,
+        label: "trust signals detected above the fold",
+        absent_items:
+          absent.length > 0
+            ? absent
+            : ["Customer logos", "Testimonials", "Ratings", "Guarantees"],
+      };
+    }
+
+    case "A_numeric":
+    default:
+      return {
+        type: "opportunity",
+        score: Math.round((score / 10) * 10) / 10,
+        score_label: `${lift}-point conversion lift possible`,
+        title: headline,
+        description: subheadline,
+        before_text: topIssue.body,
+        after_text: topIssue.fix,
+        section_label: "BEFORE & AFTER",
+      };
+  }
+}
+
+// -----------------------------
 // ROUTE
 // -----------------------------
 export async function POST(req: Request) {
@@ -314,6 +391,7 @@ export async function POST(req: Request) {
 
     let screenshotsBase64: string[] = [];
     let computedValues: import("@/lib/audit-report").PageComputedValues | null = null;
+    let bodyText = "";
 
     // PRIORITY #1 — uploaded screenshot
     if (uploadedScreenshot) {
@@ -325,17 +403,18 @@ export async function POST(req: Request) {
       screenshotsBase64 = [uploadedBase64];
     }
 
-    // PRIORITY #2 — auto capture from URL
-    else if (url) {
+    // PRIORITY #2 — auto capture from URL (skipped in mock mode)
+    else if (url && process.env.USE_MOCK_REPORT !== "true") {
       captureMode = "url";
       const captureResult = await timing.measure("capture_ms", () =>
         captureWebsiteScreenshots(url)
       );
       screenshotsBase64 = captureResult.screenshots;
       computedValues = captureResult.computedValues;
+      bodyText = captureResult.bodyText;
     }
 
-    if (screenshotsBase64.length === 0) {
+    if (screenshotsBase64.length === 0 && process.env.USE_MOCK_REPORT !== "true") {
       return NextResponse.json(
         {
           error: "Either URL or screenshot is required",
@@ -363,32 +442,66 @@ export async function POST(req: Request) {
     const pageContext: import("@/lib/audit-report").PageContext | undefined =
       audienceType === "b2b" ? "b2b" : audienceType === "b2c" ? "consumer" : undefined;
 
-    // Skip CTA audit in LLM prompt when derive can pre-determine the result from DOM data.
-    const skipCtaAudit = computedValues?.cta_text
-      ? willDeriveCtaFix(computedValues.cta_text, { audienceType, trafficSource, pageContext })
-      : false;
+    const pageData: PageData = {
+      url,
+      html: bodyText,
+      screenshot: rawHeroBase64 ?? "",
+      meta: { title: "", description: "" },
+      puppeteerExtracted: {
+        ctaText: computedValues?.cta_text ? [computedValues.cta_text] : [],
+        headlineText: computedValues?.h1_text ?? "",
+        subheadlineText: computedValues?.sub_text ?? "",
+        socialProofAboveFold: computedValues?.social_proof_above_fold ?? false,
+        loadTimeMs: 0,
+        mobileViewportWidth: computedValues?.viewport_width ?? 390,
+      },
+    };
 
-    const basePrompt = buildFullAuditPrompt(brandStage, trafficSource, audienceType, {
-      skipCtaAudit,
-      computedValues: computedValues
-        ? {
-            h1_text: computedValues.h1_text,
-            social_proof_above_fold: computedValues.social_proof_above_fold,
-            cta_text: computedValues.cta_text,
-            nav_link_count: computedValues.nav_link_count,
-            nav_link_labels: computedValues.nav_link_labels,
-          }
-        : null,
-    });
-
-    const json: Record<string, any> = await timing.measure("openai_ms", () =>
-      requestAuditAnalysis({
-        basePrompt,
-        url,
-        screenshotsBase64,
-        computedValues,
-      })
+    const pipelineResult = await timing.measure("pipeline_ms", () =>
+      runAnalysisPipeline(pageData)
     );
+
+    const hero_slot = adaptHeroSlot(
+      pipelineResult.narrative.hero,
+      pipelineResult.extraction
+    );
+
+    const json: Record<string, any> = {
+      hero_slot,
+      score: pipelineResult.narrative.hero.score / 10,
+      summary: pipelineResult.narrative.summary,
+      verdict: pipelineResult.narrative.hero.topIssue?.title ?? "",
+      key_observation: pipelineResult.narrative.hero.subheadline ?? "",
+      confidence: 88,
+      breakdown: {
+        clarity: pipelineResult.narrative.findings.some((f) => f.type === "clarity") ? 55 : 80,
+        trust: pipelineResult.narrative.findings.some((f) => f.type === "trust") ? 55 : 80,
+        friction: pipelineResult.narrative.findings.some((f) => f.type === "friction") ? 55 : 80,
+        visuals: 75,
+      },
+      issues: pipelineResult.narrative.findings.map((f) => ({
+        category: f.type,
+        title: f.title,
+        why: f.body,
+        severity: f.severity,
+        bullets: [] as string[],
+      })),
+      suggestions: pipelineResult.narrative.quickWins.slice(0, 3).map((qw) => ({
+        recommendation: qw,
+        priority: "quick_win",
+      })),
+      copy: [] as unknown[],
+      checklist: [] as unknown[],
+      copy_variants: null,
+      headline_directions: null,
+      visual_fixes: [] as unknown[],
+      visual_passes: [] as unknown[],
+      score_potential: {
+        target: pipelineResult.narrative.hero.scorePotential / 10,
+        chips: [{ label: "Fix top issues", delta: `+${pipelineResult.narrative.hero.lift / 10}` }],
+      },
+      pipeline_meta: pipelineResult.meta,
+    };
 
     timing.measureSync("normalize_ms", () => {
       json.confidence = Number.isFinite(Number(json.confidence))
@@ -597,6 +710,7 @@ export async function POST(req: Request) {
       breakdown: json.breakdown,
       visual_fixes: json.visual_fixes ?? [],
       visual_passes: json.visual_passes ?? [],
+      hero_slot,
       generatedAt: new Date().toISOString(),
     };
 

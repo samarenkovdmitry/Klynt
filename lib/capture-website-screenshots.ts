@@ -17,6 +17,7 @@ import type { PageComputedValues } from "@/lib/audit-report";
 export type CaptureWebsiteResult = {
   screenshots: string[];
   computedValues: PageComputedValues | null;
+  bodyText: string;
 };
 
 async function jumpTo(page: Page, y: number) {
@@ -40,6 +41,14 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
     await navigatePageForCapture(page, url);
 
     let computedValues: PageComputedValues | null = null;
+    let bodyText = "";
+    try {
+      bodyText = await page.evaluate(() =>
+        document.body.innerText.trim().slice(0, 16000)
+      );
+    } catch {
+      // Continue without body text
+    }
     try {
       computedValues = await page.evaluate(() => {
         const get = (selector: string) => document.querySelector(selector);
@@ -212,6 +221,7 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
         Buffer.from(lower as Buffer).toString("base64"),
       ],
       computedValues,
+      bodyText,
     };
   } catch (error) {
     resetSharedBrowserPool();
