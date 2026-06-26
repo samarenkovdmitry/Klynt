@@ -80,6 +80,8 @@ export async function runAnalysisPipeline(page: PageData): Promise<AnalysisResul
 
   const { result: narrative, usage: narrativeUsage } = await generateNarrative(extraction, page.url);
   console.log(`[pipeline] Narrative: score ${narrative.hero.score}, $${narrativeUsage.estimatedCostUsd.toFixed(5)}`);
+  console.log('[narrative] visual_fixes:', narrative.visual_fixes?.length, JSON.stringify(narrative.visual_fixes?.slice(0,1)));
+  console.log('[narrative] copy_variants:', narrative.copy_variants?.length);
 
   const totalCostUsd = extractionUsage.estimatedCostUsd + narrativeUsage.estimatedCostUsd;
   console.log(`[pipeline] Done in ${Date.now() - start}ms | $${totalCostUsd.toFixed(5)}`);
