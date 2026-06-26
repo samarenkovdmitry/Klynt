@@ -45,10 +45,22 @@ import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 type ReportPageViewProps = {
   routeParam: string;
   initialData?: AuditReport | null;
+  /** Actual DB report ID (not slug). Used for checkout URL. */
+  reportId?: string | null;
+  /** True when reports.unlocked_at is set (server-verified payment). */
+  isUnlocked?: boolean;
+  /** True when returning from Lemon Squeezy after successful payment. */
+  showUnlockedBanner?: boolean;
 };
 
 
-export function ReportPageView({ routeParam, initialData = null }: ReportPageViewProps) {
+export function ReportPageView({
+  routeParam,
+  initialData = null,
+  reportId = null,
+  isUnlocked = false,
+  showUnlockedBanner = false,
+}: ReportPageViewProps) {
   const router = useRouter();
   const { data, loadState } = useReportData(routeParam, initialData);
   const isDemo = isDemoReportRouteParam(routeParam);
@@ -82,7 +94,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
   }
 
   function handleExport() {
-    if (freemiumAccess.exportLocked) {
+    if (freemiumAccess.exportLocked && !isUnlocked) {
       openProModal("export-pdf");
       return;
     }
@@ -177,7 +189,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
     : undefined;
 
   const hasNewLayout = Array.isArray(report.checklist) && report.checklist.length > 0;
-  const useFreemium = hasNewLayout && isFreemiumEnabled() && freemiumAccess.active;
+  const useFreemium = hasNewLayout && isFreemiumEnabled() && freemiumAccess.active && !isUnlocked;
   const showLegacyWaitlist = waitlistActive && !useFreemium;
 
   const mainPaddingBottom =
@@ -190,6 +202,13 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
   return (
     <>
       <AppHeader />
+
+      {showUnlockedBanner && (
+        <div className="flex items-center justify-center gap-2 bg-emerald-600 px-4 py-3 text-[14px] font-medium text-white">
+          <span aria-hidden>✓</span>
+          Payment successful. Your full report is unlocked.
+        </div>
+      )}
 
       <main
         className={[
@@ -228,7 +247,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                   copyVariants={report.copy_variants}
                   checklist={report.checklist}
                   context={buildCopyStudioContext(report)}
-                  previewLocked={freemiumAccess.previewLocked}
+                  previewLocked={freemiumAccess.previewLocked && !isUnlocked}
                   onRequestProUpgrade={useFreemium ? openProModal : undefined}
                 />
               ) : null}
@@ -238,7 +257,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                   score={report.score}
                   scorePotential={report.score_potential}
                   checklist={report.checklist}
-                  chipsLocked={freemiumAccess.previewLocked}
+                  chipsLocked={freemiumAccess.previewLocked && !isUnlocked}
                   onRequestProUpgrade={useFreemium ? openProModal : undefined}
                 />
               ) : null}
@@ -253,7 +272,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                 <TrustMeta
                   meta={report.meta}
                   checklist={report.checklist!}
-                  metaCopyLocked={freemiumAccess.previewLocked}
+                  metaCopyLocked={freemiumAccess.previewLocked && !isUnlocked}
                   onRequestProUpgrade={useFreemium ? openProModal : undefined}
                 />
               ) : null}
@@ -290,7 +309,7 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
                     meta={report.meta}
                     checklist={report.checklist}
                     visualFixes={report.visual_fixes}
-                    locked={freemiumAccess.exportLocked}
+                    locked={freemiumAccess.exportLocked && !isUnlocked}
                     onRequestProUpgrade={useFreemium ? openProModal : undefined}
                   />
                 </section>
@@ -331,9 +350,8 @@ export function ReportPageView({ routeParam, initialData = null }: ReportPageVie
         <FreemiumProModal
           open={proModalOpen}
           onClose={closeProModal}
-          reportId={routeParam}
+          reportId={reportId ?? routeParam}
           trigger={proModalTrigger}
-          onJoined={freemiumAccess.markWaitlistJoined}
         />
       )}
 

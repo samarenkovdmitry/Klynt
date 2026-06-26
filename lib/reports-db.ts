@@ -147,6 +147,22 @@ export async function fetchRecentGapGroups(limit = 10): Promise<string[][]> {
     .filter((gaps) => gaps.length > 0);
 }
 
+export async function isReportUnlocked(reportId: string): Promise<boolean> {
+  if (!isValidReportId(reportId) || !isSupabaseConfigured()) {
+    return false;
+  }
+
+  const supabase = createServerSupabase();
+
+  const { data } = await supabase
+    .from("reports")
+    .select("unlocked_at")
+    .eq("id", reportId)
+    .maybeSingle();
+
+  return !!data?.unlocked_at;
+}
+
 export async function getAuditedPagesCount(): Promise<number | null> {
   if (!isSupabaseConfigured()) {
     return null;
