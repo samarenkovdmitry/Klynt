@@ -148,7 +148,6 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
     ? report.checklist
     : adaptIssuesToChecklist(report.issues ?? []);
   const hasNewLayout = effectiveChecklist.length > 0;
-  const issueCount = effectiveChecklist.filter((i) => i.status !== "pass").length;
 
   return (
     <>
@@ -179,64 +178,28 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
           />
 
           {hasNewLayout && (
-            <div className="relative">
-              <ReportPriorityQueue
-                checklist={effectiveChecklist}
-                lockedAfter={isUnlocked ? undefined : 2}
-              />
-              {!isUnlocked && reportId && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-t from-white via-white/80 to-transparent rounded-[16px]">
-                  <button
-                    type="button"
-                    onClick={() => setPaywallOpen(true)}
-                    className="pointer-events-auto rounded-full border border-v2-card-border bg-v2-card px-5 py-2.5 text-[14px] font-semibold text-v2-ink shadow-sm transition-colors hover:bg-v2-card-inner"
-                  >
-                    See all {issueCount} findings →
-                  </button>
-                </div>
-              )}
-            </div>
+            <ReportPriorityQueue
+              checklist={effectiveChecklist}
+              lockedAfter={isUnlocked ? undefined : 2}
+              onUnlock={!isUnlocked && reportId ? () => setPaywallOpen(true) : undefined}
+            />
           )}
 
           {report.copy_variants && (
-            <div className="relative">
-              <ReportCopyStudioV2
-                copyVariants={report.copy_variants}
-                lockedAfter={isUnlocked ? undefined : 1}
-              />
-              {!isUnlocked && reportId && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-t from-white via-white/80 to-transparent rounded-[16px]">
-                  <button
-                    type="button"
-                    onClick={() => setPaywallOpen(true)}
-                    className="pointer-events-auto rounded-full border border-v2-card-border bg-v2-card px-5 py-2.5 text-[14px] font-semibold text-v2-ink shadow-sm transition-colors hover:bg-v2-card-inner"
-                  >
-                    Unlock full copy studio →
-                  </button>
-                </div>
-              )}
-            </div>
+            <ReportCopyStudioV2
+              copyVariants={report.copy_variants}
+              lockedAfter={isUnlocked ? undefined : 1}
+              onUnlock={!isUnlocked && reportId ? () => setPaywallOpen(true) : undefined}
+            />
           )}
 
           {(report.visual_fixes?.length || report.visual_passes?.length) ? (
-            <div className="relative">
-              <ReportVisualFixesGrid
-                fixes={report.visual_fixes ?? []}
-                passes={report.visual_passes ?? []}
-                lockedAfter={isUnlocked ? undefined : 2}
-              />
-              {!isUnlocked && reportId && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-t from-white via-white/80 to-transparent rounded-[16px]">
-                  <button
-                    type="button"
-                    onClick={() => setPaywallOpen(true)}
-                    className="pointer-events-auto rounded-full border border-v2-card-border bg-v2-card px-5 py-2.5 text-[14px] font-semibold text-v2-ink shadow-sm transition-colors hover:bg-v2-card-inner"
-                  >
-                    See all visual fixes →
-                  </button>
-                </div>
-              )}
-            </div>
+            <ReportVisualFixesGrid
+              fixes={report.visual_fixes ?? []}
+              passes={report.visual_passes ?? []}
+              lockedAfter={isUnlocked ? undefined : 2}
+              onUnlock={!isUnlocked && reportId ? () => setPaywallOpen(true) : undefined}
+            />
           ) : null}
 
           {report.meta && (
