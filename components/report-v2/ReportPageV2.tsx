@@ -48,7 +48,7 @@ function adaptIssuesToChecklist(issues: ReportIssue[]): ReportChecklistItem[] {
 
     const status: ChecklistItemStatus =
       issue.severity === "high" ? "missing" :
-      issue.severity === "low" ? "pass" : "weak";
+      issue.severity === "low" ? "weak" : "weak";
 
     const parts = [issue.why, issue.bullets?.join("\n")].filter(Boolean);
     const evidence = parts.length > 0 ? parts.join("\n\n") : undefined;
