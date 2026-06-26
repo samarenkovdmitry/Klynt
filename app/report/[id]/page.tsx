@@ -20,7 +20,7 @@ export default async function ReportPage({ params, searchParams }: ReportPagePro
   const isUnlocked = isDemo || (reportId ? await isReportUnlocked(reportId) : false);
   const showUnlockedBanner = unlocked === "true" && isUnlocked;
 
-  return <ReportPageV2 routeParam={id} initialData={report} isUnlocked={isUnlocked} />;
+  return <ReportPageV2 routeParam={id} initialData={report} isUnlocked={isUnlocked} reportId={reportId} />;
 
   // return (
   //   <ReportPageView

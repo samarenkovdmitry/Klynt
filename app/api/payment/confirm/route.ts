@@ -62,5 +62,18 @@ export async function POST(req: NextRequest) {
   }
 
   console.log(`[payment] Report ${reportId} unlocked`);
+
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
+  void fetch(`${baseUrl}/api/narrative`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reportId }),
+  }).catch((err) =>
+    console.error("[payment] narrative trigger failed:", err)
+  );
+
   return NextResponse.json({ ok: true });
 }

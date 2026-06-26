@@ -15,6 +15,7 @@ import type { ReportVisualFix, ReportVisualPass, VisualFixDimension } from "@/li
 type Props = {
   fixes: ReportVisualFix[];
   passes: ReportVisualPass[];
+  lockedAfter?: number;
 };
 
 const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
@@ -84,7 +85,7 @@ function FixCell({ fix }: { fix: ReportVisualFix }) {
   );
 }
 
-export function ReportVisualFixesGrid({ fixes, passes }: Props) {
+export function ReportVisualFixesGrid({ fixes, passes, lockedAfter }: Props) {
   if (fixes.length === 0 && passes.length === 0) return null;
 
   const topFixes = fixes.slice(0, 4);
@@ -107,14 +108,11 @@ export function ReportVisualFixesGrid({ fixes, passes }: Props) {
             <div
               key={fix.dimension}
               className={[
-                // right border on left-column cells — always, as long as layout is ≥2 cols
                 i % 2 === 0 && topFixes.length > 1 ? "sm:border-r sm:border-v2-card-divider" : "",
-                // top border for second-row cells
                 i >= 2 ? "border-t border-v2-card-divider" : "",
-                // mobile stacking border for second item
                 i === 1 ? "border-t border-v2-card-divider sm:border-t-0" : "",
-                // bottom border on top-right cell when the row below it is incomplete (odd count)
                 i === 1 && topFixes.length % 2 === 1 ? "sm:border-b sm:border-v2-card-divider" : "",
+                lockedAfter !== undefined && i >= lockedAfter ? "opacity-30 blur-sm pointer-events-none select-none" : "",
               ].filter(Boolean).join(" ")}
             >
               <FixCell fix={fix} />

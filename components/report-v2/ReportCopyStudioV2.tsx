@@ -5,6 +5,7 @@ import type { ReportCopyVariants, CopyVariantBlock } from "@/lib/audit-report";
 
 type Props = {
   copyVariants: ReportCopyVariants;
+  lockedAfter?: number;
 };
 
 type CopyRow = {
@@ -56,7 +57,7 @@ function CopyBeforeAfter({ row }: { row: CopyRow }) {
   );
 }
 
-export function ReportCopyStudioV2({ copyVariants }: Props) {
+export function ReportCopyStudioV2({ copyVariants, lockedAfter }: Props) {
   const rows: CopyRow[] = [
     { index: 1, label: "Hero headline", block: copyVariants.headline, badge: "AUDIENCE UNCLEAR", textSize: "text-[18px]" },
     { index: 2, label: "Subheadline", block: copyVariants.subheadline, badge: "LOW CONTRAST · VAGUE", textSize: "text-[16px]" },
@@ -77,7 +78,13 @@ export function ReportCopyStudioV2({ copyVariants }: Props) {
       </div>
 
       {rows.map((row, i) => (
-        <div key={row.label} className={i > 0 ? "border-t border-v2-card-divider" : ""}>
+        <div
+          key={row.label}
+          className={[
+            i > 0 ? "border-t border-v2-card-divider" : "",
+            lockedAfter !== undefined && i >= lockedAfter ? "opacity-30 blur-sm pointer-events-none select-none" : "",
+          ].filter(Boolean).join(" ")}
+        >
           {/* Row header */}
           <div className="flex items-center gap-2.5 px-6 pb-4 pt-5">
             <span className="font-mono text-[12px] text-v2-ink-hairline">

@@ -6,6 +6,7 @@ import type { ReportChecklistItem, ChecklistItemStatus } from "@/lib/audit-repor
 
 type Props = {
   checklist: ReportChecklistItem[];
+  lockedAfter?: number;
 };
 
 type Severity = "CRITICAL" | "HIGH" | "MEDIUM" | "PASS";
@@ -28,7 +29,7 @@ function impactScore(index: number, status: ChecklistItemStatus): number {
   return Math.max(base - index * 9, 32);
 }
 
-export function ReportPriorityQueue({ checklist }: Props) {
+export function ReportPriorityQueue({ checklist, lockedAfter }: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const issues = checklist.filter((i) => i.status !== "pass");
   if (issues.length === 0) return null;
@@ -80,8 +81,13 @@ export function ReportPriorityQueue({ checklist }: Props) {
         return (
           <div
             key={item.id}
-            className={`px-6 py-4 ${i > 0 ? "border-t border-v2-card-divider" : ""} ${expandable ? "cursor-pointer" : ""}`}
-            onClick={() => expandable && toggle(item.id)}
+            className={[
+              "px-6 py-4",
+              i > 0 ? "border-t border-v2-card-divider" : "",
+              expandable && (lockedAfter === undefined || i < lockedAfter) ? "cursor-pointer" : "",
+              lockedAfter !== undefined && i >= lockedAfter ? "opacity-30 blur-sm pointer-events-none select-none" : "",
+            ].filter(Boolean).join(" ")}
+            onClick={() => (lockedAfter === undefined || i < lockedAfter) && expandable && toggle(item.id)}
           >
             <div className="flex items-center gap-4">
               <span className="font-mono w-4 shrink-0 text-[12px] text-v2-ink-hairline">{i + 1}</span>
