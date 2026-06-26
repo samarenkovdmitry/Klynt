@@ -14,6 +14,7 @@ import {
   type RemixiconComponentType,
 } from "@remixicon/react";
 import type { AuditReport } from "@/lib/audit-report";
+import { deriveHeroSlot } from "@/lib/report-hero-slot";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -236,9 +237,15 @@ function FormatB({ slot }: { slot: CtaStatisticSlot }) {
             <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-ink-hairline">
               BEFORE
             </span>
-            <span className="inline-flex rounded-[10px] bg-[#B6B1A4] px-[22px] py-[11px] text-[15px] font-semibold text-white">
-              {slot.before_text}
-            </span>
+            {slot.before_text ? (
+              <span className="inline-flex rounded-[10px] bg-[#B6B1A4] px-[22px] py-[11px] text-[15px] font-semibold text-white">
+                {slot.before_text}
+              </span>
+            ) : (
+              <span className="inline-flex rounded-[10px] border border-dashed border-[#C8C3B8] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
+                CTA not detected
+              </span>
+            )}
           </div>
           <div className="grid place-items-center">
             <RiArrowRightLine size={20} className="text-v2-arrow" />
@@ -247,9 +254,15 @@ function FormatB({ slot }: { slot: CtaStatisticSlot }) {
             <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-pass">
               AFTER
             </span>
-            <span className="inline-flex rounded-[10px] bg-v2-pass px-[22px] py-[11px] text-[15px] font-semibold text-white">
-              {slot.after_text}
-            </span>
+            {slot.after_text ? (
+              <span className="inline-flex rounded-[10px] bg-v2-pass px-[22px] py-[11px] text-[15px] font-semibold text-white">
+                {slot.after_text}
+              </span>
+            ) : (
+              <span className="inline-flex rounded-[10px] border border-dashed border-[#A9D8BC] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
+                Suggested copy pending
+              </span>
+            )}
           </div>
         </div>
       </BottomStrip>
@@ -430,32 +443,10 @@ function FormatE({ slot }: { slot: OpportunitySlot }) {
   );
 }
 
-// ─── Fallback builder ─────────────────────────────────────────────────────────
-
-function buildFallback(report: AuditReport): HeadlineTextualSlot {
-  const headlineItem =
-    report.checklist?.find((i) => i.link_to === "copy-headline" && i.status !== "pass") ??
-    report.checklist?.find((i) => i.status !== "pass");
-
-  const headline = report.copy_variants?.headline;
-
-  return {
-    type: "headline_textual",
-    issue_title: headlineItem?.text ?? "Your headline could be more specific",
-    quote: headline?.current ?? "",
-    explanation:
-      headlineItem?.evidence ??
-      "A headline that names its audience converts the visitors who self-identify.",
-    before_text: headline?.current ?? "",
-    after_text: headline?.variants?.[0]?.text ?? "",
-    section_label: "HEADLINE, BEFORE & AFTER",
-  };
-}
-
 // ─── Main export ──────────────────────────────────────────────────────────────
 
 export function ReportHero({ slot, report, domain }: Props) {
-  const resolved = slot ?? buildFallback(report);
+  const resolved = slot ?? deriveHeroSlot(report);
 
   switch (resolved.type) {
     case "contrast_numeric":

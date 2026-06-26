@@ -69,12 +69,28 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
         const sub = get('h1 + p, h1 + h2, h2, [class*="sub"], [class*="description"]');
         const subStyle = style(sub);
 
-        const cta = get(
-          'a[class*="primary"], button[class*="primary"], ' +
-          'a[class*="cta"], button[class*="cta"], ' +
-          'header a[class*="btn"], ' +
-          "main a:first-of-type, main button:first-of-type"
-        );
+        // Returns first element in DOM matching selector that has visible non-empty text.
+        const findWithText = (selector: string): Element | null => {
+          const elements = Array.from(document.querySelectorAll(selector));
+          return (
+            elements.find(
+              (el) => (el as HTMLElement).innerText?.trim().length > 0
+            ) ?? null
+          );
+        };
+
+        const ctaSelectors = [
+          'header button:not([aria-label*="menu" i])',
+          "nav a.btn, nav button",
+          '[class*="hero"] button, [class*="hero"] a[href]',
+          'button[class*="primary"], a[class*="primary"]',
+          "section:first-of-type button, section:first-of-type a[href]",
+        ];
+        let cta: Element | null = null;
+        for (const sel of ctaSelectors) {
+          cta = findWithText(sel);
+          if (cta) break;
+        }
         const ctaStyle = style(cta);
 
         const nav = get(
@@ -123,13 +139,25 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
           ).values(),
         ];
 
-        const proof = get(
-          '[class*="logo"], [class*="trust"], [class*="social"], ' +
-          '[class*="testimonial"], [class*="review"], [class*="badge"], ' +
-          '[class*="customer"], [class*="partner"]'
-        );
-        const proofRect = proof ? proof.getBoundingClientRect() : null;
         const viewportHeight = window.innerHeight;
+
+        // querySelectorAll so any above-fold element wins — querySelector would
+        // pick the first DOM match which may be a footer element or the site logo.
+        const proofSelector =
+          '[class*="logo"i], [class*="trust"i], [class*="social"i], ' +
+          '[class*="testimonial"i], [class*="review"i], [class*="badge"i], ' +
+          '[class*="customer"i], [class*="partner"i], [class*="rating"i], ' +
+          '[class*="star"i], [class*="g2"i], [class*="trustpilot"i], ' +
+          '[class*="award"i], [class*="press"i], [class*="featured"i], ' +
+          '[class*="client"i], img[alt*="logo" i]';
+
+        const proofElements = Array.from(document.querySelectorAll(proofSelector));
+        const proofAboveFold = proofElements.some((el) => {
+          const rect = el.getBoundingClientRect();
+          // Scan 1.5× viewport — logos in the second visual block are still "above the fold" in practice
+          return rect.top >= 0 && rect.top < viewportHeight * 1.5 && rect.width > 0;
+        });
+        const socialProofFound = proofElements.length > 0;
 
         return {
           hero_bg: heroStyle?.backgroundColor ?? null,
@@ -160,8 +188,8 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
               ? ["sticky", "fixed"].includes(getComputedStyle(stickyEl).position)
               : false;
           })(),
-          social_proof_found: !!proof,
-          social_proof_above_fold: proofRect ? proofRect.top < viewportHeight : false,
+          social_proof_found: socialProofFound,
+          social_proof_above_fold: proofAboveFold,
           card_border_radius: (() => {
             const card = get('[class*="card"], [class*="feature"], section > div > div');
             return card ? getComputedStyle(card).borderRadius : null;
@@ -173,6 +201,33 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
     } catch {
       // DOM extraction failed — continue with screenshots only
     }
+
+    // Sanity check: reject cta_text if it doesn't appear in the actual page HTML.
+    // This catches cases where the selector matched an element with invisible/dynamic text.
+    if (computedValues?.cta_text) {
+      try {
+        const html = await page.content();
+        if (!html.toLowerCase().includes(computedValues.cta_text.toLowerCase())) {
+          console.warn("[capture] cta_text sanity FAIL — not found in page HTML, nulling", {
+            url,
+            cta_text: computedValues.cta_text,
+          });
+          computedValues = { ...computedValues, cta_text: null };
+        }
+      } catch {
+        // Non-fatal — keep the value if we can't verify
+      }
+    }
+
+    console.log("[capture] computed_values", {
+      url,
+      social_proof_found: computedValues?.social_proof_found,
+      social_proof_above_fold: computedValues?.social_proof_above_fold,
+      viewport_width: computedValues?.viewport_width,
+      viewport_height: computedValues?.viewport_height,
+      h1_text: computedValues?.h1_text,
+      cta_text_raw: computedValues?.cta_text,
+    });
 
     await preparePageForHeroScreenshot(page);
 
