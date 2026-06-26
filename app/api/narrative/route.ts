@@ -28,7 +28,8 @@ export const maxDuration = 90;
 // -----------------------------
 function adaptHeroSlot(
   hero: NarrativeResult["hero"],
-  extraction: ExtractionResult
+  extraction: ExtractionResult,
+  copyVariants: NarrativeCopyVariant[]
 ): HeroSlot {
   const { format, topIssue, score, lift, headline, subheadline } = hero;
 
@@ -44,7 +45,9 @@ function adaptHeroSlot(
         section_label: "HEADLINE, BEFORE & AFTER",
       };
 
-    case "B_before_after":
+    case "B_before_after": {
+      const ctaVariant =
+        copyVariants.find((v) => v.section === "cta") ?? copyVariants[0];
       return {
         type: "cta_statistic",
         title: topIssue.title,
@@ -53,8 +56,9 @@ function adaptHeroSlot(
         stat_source: "CXL Institute",
         description: topIssue.body,
         before_text: extraction.primaryCta.text || "Get Started",
-        after_text: topIssue.fix,
+        after_text: ctaVariant?.after_text || topIssue.fix,
       };
+    }
 
     case "C_count_trust": {
       const ABSENT_MAP: Record<string, string> = {
@@ -172,7 +176,7 @@ export async function POST(req: Request) {
     );
 
     const score = Math.max(0, Math.min(10, narrative.hero.score / 10));
-    const hero_slot = adaptHeroSlot(narrative.hero, extraction);
+    const hero_slot = adaptHeroSlot(narrative.hero, extraction, narrative.copy_variants ?? []);
     const copy_variants = adaptCopyVariants(narrative.copy_variants ?? []) ?? undefined;
 
     const reportPayload: AuditReport = {
