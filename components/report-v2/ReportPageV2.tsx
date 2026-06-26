@@ -197,7 +197,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
 
           <ReportMethodologyPanel />
 
-          {report.copy_variants && report.meta && (
+          {report.copy_variants && (
             <ReportExportV2 onExport={handleExport} />
           )}
 
