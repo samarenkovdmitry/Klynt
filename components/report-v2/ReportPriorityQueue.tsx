@@ -3,6 +3,12 @@
 import { RiListCheck2, RiScalesLine } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistItemStatus } from "@/lib/audit-report";
 
+function truncateWords(str: string, max: number): string {
+  if (str.length <= max) return str;
+  const cut = str.lastIndexOf(" ", max);
+  return (cut > 0 ? str.slice(0, cut) : str.slice(0, max)) + "…";
+}
+
 type Props = {
   checklist: ReportChecklistItem[];
 };
@@ -75,9 +81,9 @@ export function ReportPriorityQueue({ checklist }: Props) {
               <p className="mb-1 text-[15px] font-semibold tracking-[-0.01em] text-v2-ink">
                 {item.text}
               </p>
-              <span className="font-mono text-[10.5px] tracking-[0.05em] text-v2-ink-faint uppercase">
-                {item.category}
-                {item.evidence ? ` · ${item.evidence.slice(0, 60)}${item.evidence.length > 60 ? "…" : ""}` : ""}
+              <span className="font-mono text-[10.5px] tracking-[0.05em] text-v2-ink-faint">
+                <span className="uppercase">{item.category}</span>
+                {item.evidence ? ` · ${truncateWords(item.evidence, 60)}` : ""}
               </span>
             </div>
 
