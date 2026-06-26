@@ -54,6 +54,7 @@ Write like a senior CRO consultant: direct, specific, no fluff.
 Rules:
 - "body" must reference the specific element from extraction (quote it if short).
 - "title" must NOT start with a verb. Bad: "Fix your CTA". Good: "CTA is too generic to convert".
+- "title" uses sentence case — only first word and proper nouns capitalized. Bad: "CTA Is Too Generic to Drive Sign-Ups". Good: "CTA is too generic to drive sign-ups".
 - "subheadline" must share zero words with "headline".
 - "fix" is one imperative sentence. Be concrete.
 - "evidence" is one short fact from the page, max 50 chars, no verbs. Examples:
