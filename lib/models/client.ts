@@ -31,14 +31,15 @@ export async function callLLM(opts: LLMCallOptions): Promise<LLMResult> {
     ? [{ type: "text" as const, text: systemPrompt, cache_control: { type: "ephemeral" } }]
     : systemPrompt;
 
-  const response = await anthropic.messages.create({
-    model,
-    max_tokens: maxTokens,
-    // @ts-expect-error prompt caching beta
-    betas: ["prompt-caching-2024-07-31"],
-    system: systemContent as string,
-    messages: [{ role: "user", content: userPrompt }],
-  });
+  const response = await anthropic.messages.create(
+    {
+      model,
+      max_tokens: maxTokens,
+      system: systemContent as string,
+      messages: [{ role: "user", content: userPrompt }],
+    },
+    { headers: { "anthropic-beta": "prompt-caching-2024-07-31" } }
+  );
 
   const text = response.content
     .filter((b): b is Anthropic.Messages.TextBlock => b.type === "text")
