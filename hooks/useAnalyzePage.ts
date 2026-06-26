@@ -7,8 +7,12 @@ import type {
   AudienceType,
   BrandStage,
   HeadlineDirections,
+  ReportCopyVariants,
+  ReportScorePotential,
+  ReportVisualFix,
   TrafficSource,
 } from "@/lib/audit-report";
+import type { HeroSlot } from "@/components/report-v2/ReportHero";
 import {
   DEFAULT_AUDIENCE_TYPE,
   DEFAULT_TRAFFIC_SOURCE,
@@ -93,6 +97,10 @@ type AuditResponseFlat = {
     trust: number;
     conversion: number;
   };
+  copy_variants?: ReportCopyVariants;
+  visual_fixes?: ReportVisualFix[];
+  score_potential?: ReportScorePotential;
+  hero_slot?: HeroSlot | null;
   generatedAt: string;
 };
 
@@ -368,6 +376,10 @@ export function useAnalyzePage() {
           trust: json.breakdown?.trust ?? 0,
           conversion: json.breakdown?.conversion ?? 0,
         },
+        copy_variants: json.copy_variants ?? undefined,
+        visual_fixes: json.visual_fixes ?? undefined,
+        score_potential: json.score_potential ?? undefined,
+        hero_slot: json.hero_slot ?? undefined,
         generatedAt:
           typeof json.generatedAt === "string" ? json.generatedAt : new Date().toISOString(),
       };
