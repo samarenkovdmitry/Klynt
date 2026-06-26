@@ -27,9 +27,10 @@ import { ReportCtaBanner } from "./ReportCtaBanner";
 type Props = {
   routeParam: string;
   initialData?: AuditReport | null;
+  isUnlocked?: boolean;
 };
 
-export function ReportPageV2({ routeParam, initialData = null }: Props) {
+export function ReportPageV2({ routeParam, initialData = null, isUnlocked = false }: Props) {
   const { data, loadState } = useReportData(routeParam, initialData);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
