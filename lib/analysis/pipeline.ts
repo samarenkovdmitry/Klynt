@@ -58,7 +58,11 @@ function getMockResult(url: string): AnalysisResult {
         { type: "cta", severity: "medium", element: "Hero CTA button", title: 'CTA "Get Started" signals nothing', body: '"Get Started" carries zero specificity — visitors don\'t know if they\'re signing up or booking a demo.', fix: 'Change to "Start your free newsletter →" to set expectations.', evidence: '"Get Started" — no outcome stated' },
       ],
       summary: "The landing page loses visitors in the first 5 seconds because the headline names a category instead of delivering a promise. Fixing headline clarity and moving social proof above the fold would lift conversion by an estimated 18 points.",
-      quickWins: ["Rewrite H1 to lead with subscriber growth outcome", "Move logo strip or testimonial above the fold", 'Change CTA from "Get Started" to "Start your free newsletter →"'],
+      quickWins: [
+        { text: "Rewrite H1 to lead with subscriber growth outcome", delta: 1.2 },
+        { text: "Move logo strip or testimonial above the fold", delta: 0.8 },
+        { text: 'Change CTA from "Get Started" to "Start your free newsletter →"', delta: 0.6 },
+      ],
       copy_variants: [],
       visual_fixes: [],
     },

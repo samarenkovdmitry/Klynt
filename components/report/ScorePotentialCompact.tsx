@@ -5,10 +5,6 @@ import type {
   ReportScorePotential,
   ReportChecklistItem,
 } from "@/lib/audit-report";
-import {
-  getScoreChipShortLabel,
-  resolveChipChecklistItem,
-} from "@/lib/normalize-report-checklist";
 import type { RequestProUpgrade } from "@/lib/freemium";
 import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
@@ -23,10 +19,6 @@ interface ScorePotentialCompactProps {
   onRequestProUpgrade?: RequestProUpgrade;
 }
 
-function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
 function formatScore(value: number) {
   return value % 1 === 0 ? value.toFixed(1) : String(value);
 }
@@ -34,20 +26,8 @@ function formatScore(value: number) {
 export default function ScorePotentialCompact({
   score,
   scorePotential,
-  checklist,
-  chipsLocked = false,
-  onRequestProUpgrade,
 }: ScorePotentialCompactProps) {
   const { target, chips } = scorePotential;
-
-  function handleChipClick(chipLabel: string, index: number) {
-    if (chipsLocked) {
-      onRequestProUpgrade?.("score-breakdown");
-      return;
-    }
-    const item = resolveChipChecklistItem(chipLabel, index, checklist);
-    if (item?.link_to) scrollTo(item.link_to);
-  }
 
   const description =
     chips.length > 0
@@ -92,25 +72,23 @@ export default function ScorePotentialCompact({
           {/* Vertical divider — desktop only */}
           <div className="mx-6 hidden h-[60px] w-px shrink-0 bg-[rgba(6,28,47,0.06)] md:block" />
 
-          {/* Description + chips */}
+          {/* Description + quick-win list */}
           {chips.length > 0 ? (
             <div className="mt-4 min-w-0 flex-1 md:mt-0">
-              <p className="mb-2 text-[14px] leading-5 text-[#061C2F]">{description}</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="mb-3 text-[14px] leading-5 text-[#061C2F]">{description}</p>
+              <ul className="space-y-[6px]">
                 {chips.map((chip, index) => (
-                  <button
-                    key={`${chip.label}-${index}`}
-                    type="button"
-                    onClick={() => handleChipClick(chip.label, index)}
-                    className="inline-flex h-7 items-center rounded-[8px] border border-[#E5E5E5] bg-white px-3 text-[14px] transition-colors hover:border-[rgba(6,28,47,0.2)]"
-                  >
-                    <span className="text-[#061C2F]">
-                      {getScoreChipShortLabel(chip.label, checklist)}
-                    </span>
-                    <span className="ml-[4px] text-status-good">{chip.delta}</span>
-                  </button>
+                  <li key={`${chip.label}-${index}`} className="flex items-center gap-1">
+                    <span className="shrink-0 text-[13px] text-[#8E99A2]">•</span>
+                    <span className="text-[13px] leading-5 text-[#061C2F]">{chip.label}</span>
+                    <span
+                      className="mx-2 flex-1 self-center border-b border-dotted border-[#C0C0C0]"
+                      aria-hidden
+                    />
+                    <span className="shrink-0 text-[13px] font-medium text-status-good">{chip.delta}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ) : null}
         </div>

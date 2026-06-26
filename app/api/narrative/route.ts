@@ -192,7 +192,7 @@ export async function POST(req: Request) {
         bullets: [],
       })),
       suggestions: narrative.quickWins.slice(0, 3).map((qw) => ({
-        recommendation: qw,
+        recommendation: qw.text,
         priority: "quick_win" as const,
       })),
       copy: [],
@@ -211,12 +211,10 @@ export async function POST(req: Request) {
       })),
       score_potential: {
         target: Math.min(9.4, (narrative.hero.scorePotential) / 10),
-        chips: [
-          {
-            label: "Fix top issues",
-            delta: `+${(narrative.hero.lift / 10).toFixed(1)}`,
-          },
-        ],
+        chips: narrative.quickWins.slice(0, 3).map((qw) => ({
+          label: qw.text,
+          delta: `+${qw.delta.toFixed(1)}`,
+        })),
       },
       hero_slot,
       generatedAt: new Date().toISOString(),
