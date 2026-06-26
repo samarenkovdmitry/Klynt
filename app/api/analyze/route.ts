@@ -756,7 +756,7 @@ export async function POST(req: Request) {
       previewImage,
       metric_observations: metricObservations,
       checklist: json.checklist,
-      copy_variants: copyVariants,
+      copy_variants: copyVariants ?? undefined,
       score_potential: json.score_potential,
       meta: json.meta,
       issues: json.issues,
