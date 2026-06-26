@@ -1,5 +1,4 @@
 import { ANALYZE_FALLBACK_ERROR } from "@/lib/api-errors";
-import { isValidAuditResponse } from "@/lib/report-storage";
 import { parseApiJsonResponse } from "@/lib/parse-api-response";
 
 export const ANALYZE_CLIENT_RETRY_DELAY_MS = 1200;
@@ -60,15 +59,10 @@ export async function postAnalyzeRequest(
       };
     }
 
-    if (!isValidAuditResponse(data)) {
-      const message =
-        typeof data.error === "string" && data.error.trim()
-          ? data.error.trim()
-          : "Analysis returned an incomplete report. Please try again.";
-
+    if (typeof data.reportId !== "string" || !data.reportId.trim()) {
       return {
         kind: "error",
-        message,
+        message: "Analysis returned an incomplete response. Please try again.",
         retryable: true,
       };
     }
