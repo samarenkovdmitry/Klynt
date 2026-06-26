@@ -53,13 +53,11 @@ function adaptIssuesToChecklist(issues: ReportIssue[]): ReportChecklistItem[] {
       issue.severity === "high" ? "missing" :
       issue.severity === "low" ? "weak" : "weak";
 
-    const parts = [issue.why, issue.bullets?.join("\n")].filter(Boolean);
-    const evidence = parts.length > 0 ? parts.join("\n\n") : undefined;
-
     return {
       id: `issue-${i}`,
       text: issue.title || issue.category?.replace(/_/g, " ") || "Issue",
-      evidence,
+      evidence: issue.evidence,
+      body: issue.why,
       status,
       link_to: null,
       category,

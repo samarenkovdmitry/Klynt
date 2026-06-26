@@ -187,6 +187,7 @@ export async function POST(req: Request) {
         category: f.type,
         title: f.title,
         why: f.body,
+        evidence: f.evidence,
         severity: f.severity,
         bullets: [],
       })),

@@ -1,13 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { RiListCheck2, RiScalesLine } from "@remixicon/react";
 import type { ReportChecklistItem, ChecklistItemStatus } from "@/lib/audit-report";
-
-function truncateWords(str: string, max: number): string {
-  if (str.length <= max) return str;
-  const cut = str.lastIndexOf(" ", max);
-  return (cut > 0 ? str.slice(0, cut) : str.slice(0, max)) + "…";
-}
 
 type Props = {
   checklist: ReportChecklistItem[];
@@ -34,10 +29,20 @@ function impactScore(index: number, status: ChecklistItemStatus): number {
 }
 
 export function ReportPriorityQueue({ checklist }: Props) {
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const issues = checklist.filter((i) => i.status !== "pass");
   if (issues.length === 0) return null;
 
   const total = checklist.length;
+
+  function toggle(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   return (
     <section
@@ -69,33 +74,44 @@ export function ReportPriorityQueue({ checklist }: Props) {
       {issues.map((item, i) => {
         const severity = getSeverity(item.status);
         const score = impactScore(i, item.status);
+        const isExpanded = expanded.has(item.id);
+        const expandable = Boolean(item.body);
 
         return (
           <div
             key={item.id}
-            className={`flex items-center gap-4 px-6 py-4 ${i > 0 ? "border-t border-v2-card-divider" : ""}`}
+            className={`px-6 py-4 ${i > 0 ? "border-t border-v2-card-divider" : ""} ${expandable ? "cursor-pointer" : ""}`}
+            onClick={() => expandable && toggle(item.id)}
           >
-            <span className="font-mono w-4 shrink-0 text-[12px] text-v2-ink-hairline">{i + 1}</span>
+            <div className="flex items-center gap-4">
+              <span className="font-mono w-4 shrink-0 text-[12px] text-v2-ink-hairline">{i + 1}</span>
 
-            <div className="min-w-0 flex-1">
-              <p className="mb-1 text-[15px] font-semibold tracking-[-0.01em] text-v2-ink">
-                {item.text}
-              </p>
-              <span className="font-mono text-[10.5px] tracking-[0.05em] text-v2-ink-faint">
-                <span className="uppercase">{item.category}</span>
-                {item.evidence ? ` · ${truncateWords(item.evidence, 60)}` : ""}
+              <div className="min-w-0 flex-1">
+                <p className="mb-1 text-[15px] font-semibold tracking-[-0.01em] text-v2-ink">
+                  {item.text}
+                </p>
+                <span className="font-mono text-[10.5px] tracking-[0.05em] text-v2-ink-faint">
+                  <span className="uppercase">{item.category}</span>
+                  {item.evidence ? ` · ${item.evidence}` : ""}
+                </span>
+              </div>
+
+              <span
+                className={`font-mono shrink-0 rounded-full px-[11px] py-[5px] text-[10.5px] tracking-[0.06em] ${SEVERITY_STYLES[severity]}`}
+              >
+                {severity}
+              </span>
+
+              <span className="font-mono w-8 shrink-0 text-right text-[14px] font-semibold text-v2-ink">
+                {score}
               </span>
             </div>
 
-            <span
-              className={`font-mono shrink-0 rounded-full px-[11px] py-[5px] text-[10.5px] tracking-[0.06em] ${SEVERITY_STYLES[severity]}`}
-            >
-              {severity}
-            </span>
-
-            <span className="font-mono w-8 shrink-0 text-right text-[14px] font-semibold text-v2-ink">
-              {score}
-            </span>
+            {isExpanded && item.body && (
+              <p className="mt-3 ml-8 text-[13px] leading-[1.6] text-v2-ink-secondary">
+                {item.body}
+              </p>
+            )}
           </div>
         );
       })}

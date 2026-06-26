@@ -20,6 +20,7 @@ export type ReportIssue = ImpactFields & {
   title?: string;
   bullets?: string[];
   why?: string;
+  evidence?: string;
   severity?: "low" | "medium" | "high";
 };
 
@@ -96,8 +97,10 @@ export type ReportChecklistItem = {
   text: string;
   /** Short label for Copy studio badges (3–5 words). */
   gap_label?: string;
-  /** Exact quote or specific visible element from the page — required for quality validation. */
+  /** One short fact from the page, max 50 chars (shown as subtitle). */
   evidence?: string;
+  /** Full description text shown when the row is expanded. */
+  body?: string;
   status: ChecklistItemStatus;
   link_to: ChecklistLinkTarget | null;
   category: ChecklistCategory;
