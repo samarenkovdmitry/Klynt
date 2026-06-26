@@ -9,16 +9,12 @@ export const revalidate = AUDITED_PAGES_COUNT_REVALIDATE_SECONDS;
 
 type HomeProps = {
   params: Promise<Record<string, never>>;
-  searchParams: Promise<{ v2?: string }>;
+  searchParams: Promise<Record<string, never>>;
 };
 
-export default async function Home({ searchParams }: HomeProps) {
-  const { v2 } = await searchParams;
+export default async function Home(_props: HomeProps) {
+  const auditedCount = await getCachedAuditedPagesCount();
+  return <LandingV2Page auditedCount={auditedCount} />;
 
-  if (v2 === "true") {
-    const auditedCount = await getCachedAuditedPagesCount();
-    return <LandingV2Page auditedCount={auditedCount} />;
-  }
-
-  return <Hero />;
+  // return <Hero />;
 }
