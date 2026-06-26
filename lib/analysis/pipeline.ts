@@ -59,6 +59,8 @@ function getMockResult(url: string): AnalysisResult {
       ],
       summary: "The landing page loses visitors in the first 5 seconds because the headline names a category instead of delivering a promise. Fixing headline clarity and moving social proof above the fold would lift conversion by an estimated 18 points.",
       quickWins: ["Rewrite H1 to lead with subscriber growth outcome", "Move logo strip or testimonial above the fold", 'Change CTA from "Get Started" to "Start your free newsletter →"'],
+      copy_variants: [],
+      visual_fixes: [],
     },
     meta: { extractionModel: "mock", narrativeModel: "mock", totalCostUsd: 0, durationMs: 0, extractionUsage: {}, narrativeUsage: {} },
   };
