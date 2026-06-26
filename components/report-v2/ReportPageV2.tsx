@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { RiLock2Line } from "@remixicon/react";
 import { AppHeader } from "@/components/AppHeader";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
@@ -149,6 +148,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
     ? report.checklist
     : adaptIssuesToChecklist(report.issues ?? []);
   const hasNewLayout = effectiveChecklist.length > 0;
+  const issueCount = effectiveChecklist.filter((i) => i.status !== "pass").length;
 
   return (
     <>
@@ -179,37 +179,65 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
           />
 
           {hasNewLayout && (
-            <ReportPriorityQueue
-              checklist={effectiveChecklist}
-              lockedAfter={isUnlocked ? undefined : 2}
-            />
+            <div className="relative">
+              <ReportPriorityQueue
+                checklist={effectiveChecklist}
+                lockedAfter={isUnlocked ? undefined : 2}
+              />
+              {!isUnlocked && reportId && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center justify-end rounded-b-[16px] pb-6 pt-24 bg-gradient-to-t from-white via-white/80 to-transparent">
+                  <button
+                    type="button"
+                    onClick={() => setPaywallOpen(true)}
+                    className="pointer-events-auto rounded-full border border-v2-card-border bg-v2-card px-5 py-2.5 text-[14px] font-semibold text-v2-ink shadow-sm transition-colors hover:bg-v2-card-inner"
+                  >
+                    See all {issueCount} findings →
+                  </button>
+                </div>
+              )}
+            </div>
           )}
 
           {report.copy_variants && (
-            <ReportCopyStudioV2
-              copyVariants={report.copy_variants}
-              lockedAfter={isUnlocked ? undefined : 1}
-            />
+            <div className="relative">
+              <ReportCopyStudioV2
+                copyVariants={report.copy_variants}
+                lockedAfter={isUnlocked ? undefined : 1}
+              />
+              {!isUnlocked && reportId && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center justify-end rounded-b-[16px] pb-6 pt-24 bg-gradient-to-t from-white via-white/80 to-transparent">
+                  <button
+                    type="button"
+                    onClick={() => setPaywallOpen(true)}
+                    className="pointer-events-auto rounded-full border border-v2-card-border bg-v2-card px-5 py-2.5 text-[14px] font-semibold text-v2-ink shadow-sm transition-colors hover:bg-v2-card-inner"
+                  >
+                    Unlock full copy studio →
+                  </button>
+                </div>
+              )}
+            </div>
           )}
 
           {(report.visual_fixes?.length || report.visual_passes?.length) ? (
-            <ReportVisualFixesGrid
-              fixes={report.visual_fixes ?? []}
-              passes={report.visual_passes ?? []}
-              lockedAfter={isUnlocked ? undefined : 2}
-            />
+            <div className="relative">
+              <ReportVisualFixesGrid
+                fixes={report.visual_fixes ?? []}
+                passes={report.visual_passes ?? []}
+                lockedAfter={isUnlocked ? undefined : 2}
+              />
+              {!isUnlocked && reportId && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center justify-end rounded-b-[16px] pb-6 pt-24 bg-gradient-to-t from-white via-white/80 to-transparent">
+                  <button
+                    type="button"
+                    onClick={() => setPaywallOpen(true)}
+                    className="pointer-events-auto rounded-full border border-v2-card-border bg-v2-card px-5 py-2.5 text-[14px] font-semibold text-v2-ink shadow-sm transition-colors hover:bg-v2-card-inner"
+                  >
+                    See all visual fixes →
+                  </button>
+                </div>
+              )}
+            </div>
           ) : null}
-
-          {!isUnlocked && reportId && (
-            <button
-              type="button"
-              onClick={() => setPaywallOpen(true)}
-              className="flex w-full items-center justify-center gap-2.5 rounded-[16px] border border-dashed border-v2-card-border bg-v2-card py-5 text-[15px] font-semibold text-v2-ink transition-colors hover:bg-v2-card-inner"
-            >
-              <RiLock2Line size={16} className="shrink-0 text-v2-ink-secondary" />
-              Unlock full report — $12
-            </button>
-          )}
 
           {report.meta && (
             <ReportTrustMetaPanel meta={report.meta} />

@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import {
-  RiCheckboxCircleFill,
-  RiCloseLine,
-  RiInformationLine,
-  RiLock2Line,
-} from "@remixicon/react";
-
+import { RiCheckboxCircleFill, RiCloseLine } from "@remixicon/react";
 import type { ProUpgradeTrigger } from "@/lib/freemium";
 
 type FreemiumProModalProps = {
@@ -19,22 +13,12 @@ type FreemiumProModalProps = {
   onJoined?: () => void;
 };
 
-const PRO_FEATURES = [
-  "Full Copy Studio",
-  "Visual improvement ideas",
-  "Export-ready reports",
+const FEATURES = [
+  { label: "All findings", sub: "Every issue ranked by conversion impact" },
+  { label: "Full Copy Studio", sub: "Before/after rewrites for headline, subheadline & CTA" },
+  { label: "Visual fixes", sub: "Design improvements across 10 dimensions" },
+  { label: "Export-ready report", sub: "Copy deck, designer brief & dev tasks" },
 ] as const;
-
-const TRIGGER_HINTS: Partial<Record<ProUpgradeTrigger, string>> = {
-  "copy-variant": "Copy variants are part of Pro.",
-  "score-breakdown": "Score breakdown is part of Pro.",
-  "meta-copy": "Meta copy export is part of Pro.",
-  "export-pdf": "PDF export is part of Pro.",
-  "export-copy-deck": "Copy deck export is part of Pro.",
-  "export-designer-brief": "Designer brief export is part of Pro.",
-  "export-dev-tasks": "Dev tasks export is part of Pro.",
-  "export-notion-slack": "Notion / Slack export is part of Pro.",
-};
 
 function buildCheckoutUrl(reportId: string): string | null {
   const variantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID;
@@ -55,7 +39,6 @@ export function FreemiumProModal({
   open,
   onClose,
   reportId,
-  trigger,
 }: FreemiumProModalProps) {
   useEffect(() => {
     if (!open) return;
@@ -76,13 +59,9 @@ export function FreemiumProModal({
 
   if (!open) return null;
 
-  const triggerHint = trigger ? TRIGGER_HINTS[trigger] : undefined;
-
   function handleCheckout() {
     const url = buildCheckoutUrl(reportId);
-    if (url) {
-      window.location.href = url;
-    }
+    if (url) window.location.href = url;
   }
 
   const checkoutReady = !!process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID && !!reportId;
@@ -91,7 +70,7 @@ export function FreemiumProModal({
     <div className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center">
       <button
         type="button"
-        className="share-backdrop-enter absolute inset-0 bg-black/55"
+        className="share-backdrop-enter absolute inset-0 bg-black/30"
         aria-label="Close"
         onClick={onClose}
       />
@@ -99,82 +78,58 @@ export function FreemiumProModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="pro-modal-title"
-        className="share-dialog-enter relative z-[1] w-full max-w-[400px] overflow-hidden rounded-[32px] bg-[#13122A] shadow-[0_16px_48px_rgba(20,18,60,0.7)]"
+        aria-labelledby="unlock-modal-title"
+        className="share-dialog-enter relative z-[1] w-full max-w-[420px] overflow-hidden rounded-[24px] border border-v2-card-border bg-[#FAF9F4] shadow-[0_8px_40px_rgba(27,26,23,0.12)]"
       >
-        {/* Radial glow overlay */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 90% 55% at 50% 33%, rgba(110,100,230,0.38) 0%, rgba(70,60,190,0.16) 45%, transparent 70%)",
-          }}
-          aria-hidden
-        />
-
-        {/* Close button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 z-[2] flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/50 transition-colors hover:bg-white/15 hover:text-white/80"
+          className="absolute right-4 top-4 z-[2] flex h-8 w-8 items-center justify-center rounded-full bg-v2-card-inner text-v2-ink-muted transition-colors hover:bg-[#ECEAE2] hover:text-v2-ink"
           aria-label="Close"
         >
           <RiCloseLine size={18} aria-hidden />
         </button>
 
-        <div className="relative px-8 pb-8 pt-10">
-          {/* Header: logo + divider + PRO */}
-          <div className="flex items-center justify-center gap-3">
-            <img src="/klynt-logo-light-compact.svg" alt="Klynt" className="h-[25px] w-auto" />
-            <span className="h-[30px] w-px bg-white/25" aria-hidden />
-            <span className="text-[15px] font-semibold tracking-[0.06em] text-white">
-              PRO
-            </span>
+        <div className="px-8 pb-8 pt-10">
+          <div className="flex justify-center">
+            <img src="/klynt-logo-dark.svg" alt="Klynt" className="h-[22px] w-auto" />
           </div>
 
-          {/* Title + subtitle */}
           <div className="mt-6 text-center">
             <h2
-              id="pro-modal-title"
-              className="text-[28px] font-semibold leading-[1.28] tracking-[-0.01em] text-white"
+              id="unlock-modal-title"
+              className="text-[26px] font-semibold leading-[1.25] tracking-[-0.02em] text-v2-ink"
             >
-              Go deeper
+              Unlock the full audit
             </h2>
-            <p className="mt-1 text-[15px] leading-[1.6] text-white/50">
-              More fixes. More variations. More clarity.
+            <p className="mt-2 text-[15px] leading-[1.6] text-v2-ink-muted">
+              One-time payment. Instant access.
             </p>
-            {triggerHint ? (
-              <p className="mt-3 text-[13px] font-medium text-white/40">{triggerHint}</p>
-            ) : null}
           </div>
 
-          {/* Features card */}
-          <div className="mt-6 flex flex-col gap-3 rounded-[24px] bg-white/[0.07] p-5">
-            {PRO_FEATURES.map((feature) => (
-              <div key={feature} className="flex items-center gap-3 text-[15px] leading-5 text-white">
-                <RiCheckboxCircleFill size={18} className="shrink-0 text-white" aria-hidden />
-                {feature}
+          <div className="mt-6 overflow-hidden rounded-[16px] border border-v2-card-border bg-v2-card">
+            {FEATURES.map((f, i) => (
+              <div
+                key={f.label}
+                className={`flex items-start gap-3 px-5 py-4 ${i > 0 ? "border-t border-v2-card-divider" : ""}`}
+              >
+                <RiCheckboxCircleFill size={17} className="mt-0.5 shrink-0 text-v2-pass" aria-hidden />
+                <div>
+                  <p className="text-[14.5px] font-semibold leading-snug text-v2-ink">{f.label}</p>
+                  <p className="mt-0.5 text-[13px] leading-[1.5] text-v2-ink-muted">{f.sub}</p>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Checkout CTA */}
-          <div className="mt-5">
-            <button
-              type="button"
-              onClick={handleCheckout}
-              disabled={!checkoutReady}
-              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-white text-[16px] font-semibold text-[#061C2F] transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              <RiLock2Line size={16} aria-hidden />
-              Unlock for $12
-            </button>
-
-            <p className="mt-4 flex items-center justify-center gap-1.5 text-[13px] text-white/40">
-              <RiInformationLine size={14} aria-hidden />
-              One-time payment · Instant access
-            </p>
-          </div>
+          <button
+            type="button"
+            onClick={handleCheckout}
+            disabled={!checkoutReady}
+            className="mt-5 flex h-[52px] w-full items-center justify-center rounded-full bg-v2-ink text-[16px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-40"
+          >
+            Unlock for $12
+          </button>
         </div>
       </div>
     </div>
