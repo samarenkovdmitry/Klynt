@@ -31,15 +31,18 @@ import { ReportExportV2 } from "./ReportExportV2";
 import { ReportCtaBanner } from "./ReportCtaBanner";
 
 const ISSUE_CATEGORY_MAP: Record<string, ChecklistCategory> = {
-  missing_metadata: "structure",
-  clarity: "copy",
-  viewport_config: "structure",
-  social_proof_placement: "trust",
-  headline_clarity: "copy",
-  cta: "copy",
-  trust: "trust",
-  friction: "structure",
-  performance: "structure",
+  missing_metadata:        "structure",
+  clarity:                 "copy",
+  viewport_config:         "structure",
+  social_proof_placement:  "trust",
+  headline_clarity:        "copy",
+  cta:                     "copy",
+  trust:                   "trust",
+  friction:                "structure",
+  performance:             "structure",
+  missing_mobile_viewport: "structure",
+  incomplete_subheadline:  "copy",
+  missing_meta_tags:       "structure",
 };
 
 function adaptIssuesToChecklist(issues: ReportIssue[]): ReportChecklistItem[] {
@@ -55,7 +58,7 @@ function adaptIssuesToChecklist(issues: ReportIssue[]): ReportChecklistItem[] {
 
     return {
       id: `issue-${i}`,
-      text: issue.title ?? "",
+      text: issue.title || issue.category?.replace(/_/g, " ") || "Issue",
       evidence,
       status,
       link_to: null,
