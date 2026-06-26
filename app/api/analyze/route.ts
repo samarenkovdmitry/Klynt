@@ -6,7 +6,8 @@ import type { PageData, NarrativeResult, ExtractionResult } from "@/lib/analysis
 import type { HeroSlot } from "@/components/report-v2/ReportHero";
 import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
 
-import { isAuditReport, type AuditReport } from "@/lib/audit-report";
+import { isAuditReport, type AuditReport, type ReportCopyVariants, type CopyVariantBlock } from "@/lib/audit-report";
+import type { CopyVariant as NarrativeCopyVariant } from "@/lib/analysis/narrative";
 import { normalizeMetricObservations } from "@/lib/metric-observations";
 import { normalizeReportHeroCopy } from "@/lib/report-hero-copy";
 import { createAnalyzeTiming } from "@/lib/analyze-timing";
@@ -325,6 +326,31 @@ function adaptHeroSlot(
         section_label: "BEFORE & AFTER",
       };
   }
+}
+
+// -----------------------------
+// NARRATIVE COPY ADAPTER
+// -----------------------------
+function adaptCopyVariants(raw: NarrativeCopyVariant[]): ReportCopyVariants | null {
+  if (!raw?.length) return null;
+
+  const bySection = Object.fromEntries(
+    ["headline", "cta", "subheadline"].map((s) => [
+      s,
+      raw.filter((v) => v.section === s),
+    ])
+  ) as Record<string, NarrativeCopyVariant[]>;
+
+  const toBlock = (items: NarrativeCopyVariant[]): CopyVariantBlock => ({
+    current: items[0]?.before_text ?? "",
+    variants: items.map((v) => ({ label: v.label, text: v.after_text })),
+  });
+
+  return {
+    headline:    toBlock(bySection.headline    ?? []),
+    cta:         toBlock(bySection.cta         ?? []),
+    subheadline: toBlock(bySection.subheadline ?? []),
+  };
 }
 
 // -----------------------------
@@ -706,6 +732,19 @@ export async function POST(req: Request) {
     const metricObservations = normalizeMetricObservations(json.metric_observations);
     const previewImage = await timing.measure("preview_ms", () => previewImagePromise);
 
+    const adaptedCopy = adaptCopyVariants(pipelineResult.narrative.copy_variants ?? []);
+    const copyVariants = adaptedCopy
+      ? normalizeReportCopyVariants(adaptedCopy, parseBrandStage(brandStage))
+      : (json.copy_variants as ReportCopyVariants | null) ?? null;
+
+    const rawVisualFixes = (pipelineResult.narrative.visual_fixes ?? []).map((f) => ({
+      ...f,
+      dimension: f.category,
+    }));
+    const visualFixes = rawVisualFixes.length
+      ? normalizeVisualSection(rawVisualFixes).fixes
+      : (json.visual_fixes as import("@/lib/audit-report").ReportVisualFix[]) ?? [];
+
     const reportPayload: AuditReport = {
       url: auditedUrl,
       score: Number(json.score) || 0,
@@ -717,7 +756,7 @@ export async function POST(req: Request) {
       previewImage,
       metric_observations: metricObservations,
       checklist: json.checklist,
-      copy_variants: json.copy_variants,
+      copy_variants: copyVariants,
       score_potential: json.score_potential,
       meta: json.meta,
       issues: json.issues,
@@ -728,7 +767,7 @@ export async function POST(req: Request) {
       audience_type: audienceType,
       headline_directions: json.headline_directions,
       breakdown: json.breakdown,
-      visual_fixes: json.visual_fixes ?? [],
+      visual_fixes: visualFixes,
       visual_passes: json.visual_passes ?? [],
       hero_slot,
       generatedAt: new Date().toISOString(),

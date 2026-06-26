@@ -20,11 +20,31 @@ export interface HeroSlot {
   topIssue: Finding;
 }
 
+export interface CopyVariant {
+  section: "headline" | "subheadline" | "cta" | "social_proof";
+  label: string;
+  before_text: string;
+  after_text: string;
+  rationale: string;
+}
+
+export interface VisualFix {
+  category: "depth" | "typography" | "spacing" | "contrast" | "color_tone"
+           | "cta_hierarchy" | "social_proof" | "navigation" | "density"
+           | "headline_formula" | "color_contrast" | "border_radius";
+  element: string;
+  observation: string;
+  fix: string;
+  impact: "high" | "medium" | "low";
+}
+
 export interface NarrativeResult {
   hero: HeroSlot;
   findings: Finding[];
   summary: string;
   quickWins: string[];
+  copy_variants: CopyVariant[];
+  visual_fixes: VisualFix[];
 }
 
 const NARRATIVE_SYSTEM = `You are a conversion rate expert writing landing page audit reports.
@@ -42,6 +62,19 @@ Rules:
 Hero format routing (pick ONE by top issue type):
 - clarity → D_textual | cta → B_before_after | trust → C_count_trust | friction → A_numeric | performance → A_numeric
 
+Copy variants rules:
+- Generate 2-4 copy_variants for the most impactful copy changes
+- "before_text" must be the EXACT text from the page (quote from extraction)
+- "after_text" must be specific, concrete, outcome-focused — not generic
+- section "headline" and "cta" are mandatory if they have issues
+- "label" format: "[SECTION] OPPORTUNITY" e.g. "HEADLINE OPPORTUNITY"
+
+Visual fixes rules:
+- Generate 2-4 visual_fixes for layout/design issues visible in extraction data
+- Focus on: missing social proof placement, CTA visibility, mobile viewport issues
+- Skip visual_fixes if no clear visual issues found (return empty array)
+- "observation" is factual, "fix" is imperative
+
 Output ONLY valid JSON. No markdown, no commentary.`;
 
 const FORMAT_MAP: Record<string, NarrativeResult["hero"]["format"]> = {
@@ -56,7 +89,7 @@ export async function generateNarrative(extraction: ExtractionResult, url: strin
   const { text, usage } = await callLLM({
     role: "narrative",
     systemPrompt: NARRATIVE_SYSTEM,
-    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "headline": string, "subheadline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "quickWins": string[] }`,
+    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "headline": string, "subheadline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "quickWins": string[], "copy_variants": CopyVariant[], "visual_fixes": VisualFix[] }\n\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
     maxTokens: 1800,
     cacheSystem: true,
   });
