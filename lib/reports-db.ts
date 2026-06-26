@@ -1,5 +1,6 @@
 import type { AuditReport } from "@/lib/audit-report";
 import { isAuditReport } from "@/lib/audit-report";
+import type { ExtractionResult } from "@/lib/analysis/extraction";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { isValidReportId } from "@/lib/report-id";
 import { slugifyReportDomain } from "@/lib/report-slug";
@@ -26,6 +27,46 @@ export async function saveReportToDb(payload: {
     audited_url: payload.auditedUrl.trim(),
     payload: payload.report,
   });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function saveExtractionToDb(
+  reportId: string,
+  extraction: ExtractionResult
+) {
+  if (!isSupabaseConfigured() || !isValidReportId(reportId)) {
+    return;
+  }
+
+  const supabase = createServerSupabase();
+
+  const { error } = await supabase
+    .from("reports")
+    .update({ extraction, status: "processing" })
+    .eq("id", reportId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function updateReportWithNarrativeInDb(
+  reportId: string,
+  report: AuditReport
+) {
+  if (!isSupabaseConfigured() || !isValidReportId(reportId)) {
+    return;
+  }
+
+  const supabase = createServerSupabase();
+
+  const { error } = await supabase
+    .from("reports")
+    .update({ payload: report, status: "ready" })
+    .eq("id", reportId);
 
   if (error) {
     throw new Error(error.message);
