@@ -43,7 +43,7 @@ export interface NarrativeResult {
   hero: HeroSlot;
   findings: Finding[];
   summary: string;
-  quickWins: string[];
+  quickWins: { text: string; delta: number }[];
   copy_variants: CopyVariant[];
   visual_fixes: VisualFix[];
 }
@@ -60,7 +60,10 @@ Rules:
   "\"Get started\" — no outcome stated"
   "33,000 users, no logos or names"
   "1280px viewport detected"
-- "quickWins" under 15 words each, start with a verb.
+- "quickWins": top 3 most impactful fixes, each with:
+  - "text": imperative sentence under 15 words, specific action
+  - "delta": score improvement estimate 0.1–1.5, one decimal
+  - Order by delta descending
 - Score 0–100: -15 per high severity issue, -7 medium, -3 low.
 - scorePotential = score + lift, cap at 94.
 
@@ -94,7 +97,7 @@ export async function generateNarrative(extraction: ExtractionResult, url: strin
   const { text, usage } = await callLLM({
     role: "narrative",
     systemPrompt: NARRATIVE_SYSTEM,
-    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "headline": string, "subheadline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "quickWins": string[], "copy_variants": CopyVariant[], "visual_fixes": VisualFix[] }\n\nWhere Finding = { "type": "clarity"|"cta"|"trust"|"friction"|"performance", "severity": "high"|"medium"|"low", "element": string, "title": string, "body": string, "fix": string, "evidence": string }\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
+    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "headline": string, "subheadline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "quickWins": { text: string, delta: number }[], "copy_variants": CopyVariant[], "visual_fixes": VisualFix[] }\n\nWhere Finding = { "type": "clarity"|"cta"|"trust"|"friction"|"performance", "severity": "high"|"medium"|"low", "element": string, "title": string, "body": string, "fix": string, "evidence": string }\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
     maxTokens: 3000,
     cacheSystem: true,
   });
