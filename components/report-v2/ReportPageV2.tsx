@@ -185,7 +185,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
                 lockedAfter={isUnlocked ? undefined : 2}
               />
               {!isUnlocked && reportId && (
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center justify-end rounded-b-[16px] pb-6 pt-24 bg-gradient-to-t from-white via-white/80 to-transparent">
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-t from-white via-white/80 to-transparent rounded-[16px]">
                   <button
                     type="button"
                     onClick={() => setPaywallOpen(true)}
@@ -205,7 +205,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
                 lockedAfter={isUnlocked ? undefined : 1}
               />
               {!isUnlocked && reportId && (
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center justify-end rounded-b-[16px] pb-6 pt-24 bg-gradient-to-t from-white via-white/80 to-transparent">
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-t from-white via-white/80 to-transparent rounded-[16px]">
                   <button
                     type="button"
                     onClick={() => setPaywallOpen(true)}
@@ -226,7 +226,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
                 lockedAfter={isUnlocked ? undefined : 2}
               />
               {!isUnlocked && reportId && (
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center justify-end rounded-b-[16px] pb-6 pt-24 bg-gradient-to-t from-white via-white/80 to-transparent">
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-t from-white via-white/80 to-transparent rounded-[16px]">
                   <button
                     type="button"
                     onClick={() => setPaywallOpen(true)}
