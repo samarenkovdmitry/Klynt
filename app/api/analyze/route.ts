@@ -806,6 +806,8 @@ export async function POST(req: Request) {
       generatedAt: reportPayload.generatedAt,
       previewImage: previewImagePath,
       metric_observations: metricObservations,
+      copy_variants: reportPayload.copy_variants ?? null,
+      visual_fixes: reportPayload.visual_fixes ?? [],
     }, { headers: rateLimitHeaders });
   } catch (error: any) {
     timing.log({
