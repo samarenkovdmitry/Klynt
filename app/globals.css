@@ -8,6 +8,61 @@
   --color-status-weak-alt: #7B5EA7;
   --color-status-medium:   #D97706;
   --color-status-low:      #DC2626;
+
+  /* Signal v4 report palette */
+  --color-v2-surface:        #ECEAE2;
+  --color-v2-card:           #FFFFFF;
+  --color-v2-card-border:    #E3E0D6;
+  --color-v2-card-divider:   #EEEBE2;
+  --color-v2-card-inner:     #F6F5F0;
+  --color-v2-card-faint:     #FAF9F4;
+  --color-v2-dark:           #1B1A17;
+  --color-v2-dark-alt:       #34322C;
+  --color-v2-accent:         #2348FF;
+  --color-v2-ink:            #1B1A17;
+  --color-v2-ink-secondary:  #57544C;
+  --color-v2-ink-muted:      #8C887D;
+  --color-v2-ink-faint:      #A39E90;
+  --color-v2-ink-hairline:   #B7B2A4;
+  --color-v2-critical:       #C8322E;
+  --color-v2-critical-bg:    #FBE6E3;
+  --color-v2-critical-text:  #E5484D;
+  --color-v2-high:           #97631A;
+  --color-v2-high-bg:        #F6EBD4;
+  --color-v2-medium:         #6B6557;
+  --color-v2-medium-bg:      #EEEBE1;
+  --color-v2-pass:           #1E8A4F;
+  --color-v2-pass-bg:        #DCF0E3;
+  --color-v2-pass-surface:   #EEF8F1;
+  --color-v2-potential:      #46C988;
+  --color-v2-potential-dark: #5FCB8C;
+
+  /* Landing v2 page tokens */
+  --color-lv2-cream:        #F0EDE6;
+  --color-lv2-green:        #2E8B3A;
+  --color-lv2-green-bright: #2ECC71;
+  --color-lv2-border:       #DCD8CD;
+  --color-lv2-card-border:  #DCD8CD;
+  --color-lv2-card:         #FBFAF6;
+  --color-lv2-step-num:     #ECE8DE;
+  --color-lv2-list-bg:      #FAF8F3;
+  --color-lv2-list-border:  #E8E4DA;
+  --color-lv2-amber:        #BA7517;
+  --color-lv2-amber-bg:     #F5EAD6;
+
+  /* Hero-slot specific tokens */
+  --color-v2-stat-suffix:    #E89490;
+  --color-v2-quote-icon:     #E6C3BA;
+  --color-v2-before-text:    #9A9588;
+  --color-v2-after-text:     #143322;
+  --color-v2-arrow:          #CBC6B9;
+  --color-v2-absent:         #C3BEB1;
+  --color-v2-absent-border:  #D8D1BF;
+  --color-v2-opp-score:      #2E9E6B;
+  --color-v2-opp-suffix:     #8FBFA6;
+  --color-v2-opp-surface:    #F4FBF7;
+  --color-v2-opp-divider:    #E4F0E8;
+  --color-v2-opp-border:     #BFE0CC;
 }
 
 :root {
@@ -45,6 +100,12 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+@keyframes kpulse {
+  0%   { box-shadow: 0 0 0 0 rgba(46,139,58,.45); }
+  70%  { box-shadow: 0 0 0 6px rgba(46,139,58,0); }
+  100% { box-shadow: 0 0 0 0 rgba(46,139,58,0); }
 }
 
 @keyframes pulse-segment {

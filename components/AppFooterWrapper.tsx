@@ -1,17 +1,23 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { Suspense } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { AppFooter } from "@/components/AppFooter";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 
-export function AppFooterWrapper() {
+function AppFooterContent() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isV2Landing = pathname === "/" && searchParams.get("v2") === "true";
   const isDarkFooter =
-    pathname === "/" || pathname === "/landing-copy" || pathname?.startsWith("/landing-copy/");
+    pathname === "/" ||
+    pathname === "/landing-copy" ||
+    pathname?.startsWith("/landing-copy/") ||
+    pathname?.startsWith("/report/");
   const isPrintRoute = pathname?.includes("/print");
 
-  if (isPrintRoute) {
+  if (isPrintRoute || isV2Landing) {
     return null;
   }
 
@@ -20,5 +26,13 @@ export function AppFooterWrapper() {
       variant={isDarkFooter ? "dark" : "light"}
       containerClass={isDarkFooter ? undefined : REPORT_PAGE_CONTAINER_CLASS}
     />
+  );
+}
+
+export function AppFooterWrapper() {
+  return (
+    <Suspense fallback={null}>
+      <AppFooterContent />
+    </Suspense>
   );
 }
