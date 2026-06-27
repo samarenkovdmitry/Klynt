@@ -166,8 +166,10 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
             generatedAt={data.generatedAt}
             checklistCount={report.checklist?.length}
             previewSrc={previewSrc}
+            isUnlocked={isUnlocked}
             onShare={handleShare}
-            onExport={() => handleExport("copy_deck")}
+            onExport={handleExport}
+            onPaywall={() => setPaywallOpen(true)}
           />
 
           <ReportHero

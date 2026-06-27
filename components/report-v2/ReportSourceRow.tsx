@@ -1,6 +1,16 @@
 "use client";
 
-import { RiShare2Line, RiFileDownloadLine, RiLockFill } from "@remixicon/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  RiShare2Line,
+  RiFileDownloadLine,
+  RiFileTextLine,
+  RiLayoutLine,
+  RiCodeSSlashLine,
+  RiNotification3Line,
+  RiArrowDownSLine,
+} from "@remixicon/react";
+import type { ExportType } from "@/lib/report-export-content";
 
 type Props = {
   url?: string;
@@ -8,9 +18,18 @@ type Props = {
   generatedAt?: string;
   checklistCount?: number;
   previewSrc?: string | null;
+  isUnlocked?: boolean;
   onShare: () => void;
-  onExport: () => void;
+  onExport: (type: ExportType) => void;
+  onPaywall: () => void;
 };
+
+const EXPORT_OPTIONS: { icon: React.ElementType; label: string; type: ExportType }[] = [
+  { icon: RiFileTextLine,      label: "Copy deck",      type: "copy_deck"      },
+  { icon: RiLayoutLine,        label: "Designer brief", type: "designer_brief" },
+  { icon: RiCodeSSlashLine,    label: "Dev tasks",      type: "dev_tasks"      },
+  { icon: RiNotification3Line, label: "Notion / Slack", type: "notion_slack"   },
+];
 
 function formatDate(iso?: string) {
   if (!iso) return null;
@@ -30,11 +49,42 @@ export function ReportSourceRow({
   generatedAt,
   checklistCount,
   previewSrc,
+  isUnlocked = false,
   onShare,
   onExport,
+  onPaywall,
 }: Props) {
   const date = formatDate(generatedAt);
   const signalCount = checklistCount ? checklistCount * 9 : 85;
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    function handleOutside(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setDropdownOpen(false);
+    }
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [dropdownOpen]);
+
+  function handleSelect(type: ExportType) {
+    setDropdownOpen(false);
+    if (isUnlocked) {
+      onExport(type);
+    } else {
+      onPaywall();
+    }
+  }
 
   return (
     <div className="flex flex-nowrap items-center gap-3">
@@ -65,16 +115,35 @@ export function ReportSourceRow({
           <RiShare2Line size={15} />
           Share
         </button>
-        <button
-          onClick={onExport}
-          className="relative inline-flex items-center gap-1.5 rounded-[9px] border border-v2-ink bg-v2-ink px-4 py-[9px] text-[13px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
-        >
-          <RiFileDownloadLine size={15} />
-          Export
-          <span className="absolute -right-[11px] -top-[11px] flex h-[22px] w-[22px] items-center justify-center rounded-full bg-v2-accent shadow-[0_0_0_2px_var(--color-v2-surface)]">
-            <RiLockFill size={11} className="text-white" />
-          </span>
-        </button>
+
+        <div ref={wrapperRef} className="relative">
+          <button
+            onClick={() => setDropdownOpen(v => !v)}
+            className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-ink bg-v2-ink px-4 py-[9px] text-[13px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
+          >
+            <RiFileDownloadLine size={15} />
+            Export
+            <RiArrowDownSLine
+              size={15}
+              className={`transition-transform duration-150 ${dropdownOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {dropdownOpen && (
+            <div className="absolute right-0 top-full z-50 mt-1.5 min-w-[172px] overflow-hidden rounded-[12px] border border-v2-card-border bg-[#FAF9F4] shadow-[0_4px_20px_rgba(27,26,23,0.10)]">
+              {EXPORT_OPTIONS.map(({ icon: Icon, label, type }) => (
+                <button
+                  key={type}
+                  onClick={() => handleSelect(type)}
+                  className="flex w-full items-center gap-2.5 px-4 py-[10px] text-left text-[13.5px] font-medium text-v2-ink transition-colors hover:bg-v2-card-inner first:pt-[12px] last:pb-[12px]"
+                >
+                  <Icon size={15} className="shrink-0 text-v2-ink-secondary" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
