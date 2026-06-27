@@ -46,7 +46,7 @@ export function V2Pricing() {
               ))}
             </div>
             <a
-              href="#analyze"
+              href="/analyze"
               className="mt-auto flex h-[54px] items-center justify-center gap-[9px] rounded-[13px] border border-[1.5px] border-v2-dark bg-transparent font-sans text-[16px] font-semibold text-v2-dark transition-colors hover:bg-v2-dark hover:text-white"
             >
               Start free audit →
@@ -77,7 +77,7 @@ export function V2Pricing() {
               ))}
             </div>
             <a
-              href="#analyze"
+              href="/analyze"
               className="mt-auto flex h-[54px] items-center justify-center gap-[9px] rounded-[13px] border-none bg-v2-dark font-sans text-[16px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
             >
               Analyse free, then unlock →
