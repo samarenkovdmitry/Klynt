@@ -13,6 +13,7 @@ import {
 import type { RemixiconComponentType } from "@remixicon/react";
 
 import { ReportPagePreview } from "@/components/report/ReportPagePreview";
+import { SiteFavicon } from "@/components/report/SiteFavicon";
 import {
   REPORT_HERO_CARD_BORDER_CLASS,
   REPORT_HERO_RADIUS_CLASS,
@@ -187,11 +188,7 @@ export function ReportHeroSummary({
         <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[14px]">
           <div className="flex min-w-0 items-center gap-1.5">
             {url && (
-              <img
-                src={`https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=32`}
-                alt=""
-                className="h-[18px] w-[18px] shrink-0 rounded-sm"
-              />
+              <SiteFavicon domain={domain} size={32} className="h-[18px] w-[18px] shrink-0 rounded-sm" />
             )}
             {reportHref ? (
               <a
