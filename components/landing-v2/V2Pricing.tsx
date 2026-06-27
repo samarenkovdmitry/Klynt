@@ -1,4 +1,4 @@
-import { RiAddLine, RiArrowRightLine, RiCheckLine, RiPriceTag3Line } from "@remixicon/react";
+import { RiAddLine, RiCheckLine, RiPriceTag3Line } from "@remixicon/react";
 
 const FREE_FEATURES = [
   "Full UX report",
@@ -45,13 +45,12 @@ export function V2Pricing() {
                 </span>
               ))}
             </div>
-            <button
-              type="button"
+            <a
+              href="#analyze"
               className="mt-auto flex h-[54px] items-center justify-center gap-[9px] rounded-[13px] border border-[1.5px] border-v2-dark bg-transparent font-sans text-[16px] font-semibold text-v2-dark transition-colors hover:bg-v2-dark hover:text-white"
             >
-              Start free
-              <RiArrowRightLine size={18} aria-hidden />
-            </button>
+              Start free audit →
+            </a>
           </div>
 
           {/* Full report */}
@@ -77,13 +76,12 @@ export function V2Pricing() {
                 </span>
               ))}
             </div>
-            <button
-              type="button"
+            <a
+              href="#analyze"
               className="mt-auto flex h-[54px] items-center justify-center gap-[9px] rounded-[13px] border-none bg-v2-dark font-sans text-[16px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
             >
-              Unlock for $12
-              <RiArrowRightLine size={18} aria-hidden />
-            </button>
+              Analyse free, then unlock →
+            </a>
           </div>
         </div>
 

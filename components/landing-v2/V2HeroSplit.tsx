@@ -28,7 +28,7 @@ export function V2HeroSplit() {
   }
 
   return (
-    <div className="grid min-h-[calc(100vh-65px)] grid-cols-1 lg:grid-cols-2">
+    <div id="analyze" className="grid min-h-[calc(100vh-65px)] grid-cols-1 lg:grid-cols-2">
       {/* LEFT — copy */}
       <div className="flex flex-col justify-center px-6 py-12 md:px-[40px] lg:pl-[max(24px,calc((100vw_-_1180px)_/_2))] lg:pr-10 lg:py-[72px]">
         <div className="max-w-[560px]">
