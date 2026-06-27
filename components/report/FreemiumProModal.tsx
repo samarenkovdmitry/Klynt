@@ -22,17 +22,20 @@ const FEATURES = [
 
 function buildCheckoutUrl(reportId: string): string | null {
   const variantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID;
+  console.log("[checkout] variantId:", variantId, "| reportId:", reportId);
   if (!variantId || !reportId) return null;
 
   const redirectUrl = encodeURIComponent(
     `${window.location.origin}${window.location.pathname}?unlocked=true`
   );
 
-  return (
+  const url =
     `https://klyntapp.lemonsqueezy.com/checkout/buy/${variantId}` +
     `?checkout[custom][report_id]=${reportId}` +
-    `&checkout[redirect_url]=${redirectUrl}`
-  );
+    `&checkout[redirect_url]=${redirectUrl}`;
+
+  console.log("[checkout] url:", url);
+  return url;
 }
 
 export function FreemiumProModal({
