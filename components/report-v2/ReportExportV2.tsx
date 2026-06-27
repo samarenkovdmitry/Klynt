@@ -7,18 +7,19 @@ import {
   RiCodeSSlashLine,
   RiNotification3Line,
 } from "@remixicon/react";
+import type { ExportType } from "@/lib/report-export-content";
 
 type Props = {
-  onExport: () => void;
+  onExport: (type: ExportType) => void;
   locked?: boolean;
 };
 
-const EXPORT_OPTIONS = [
-  { icon: RiFileTextLine, label: "Copy deck", sub: "ALL VARIANTS · MD" },
-  { icon: RiLayoutLine, label: "Designer brief", sub: "FIGMA TASK LIST" },
-  { icon: RiCodeSSlashLine, label: "Dev tasks", sub: "CSS + TEXT CHANGES" },
-  { icon: RiNotification3Line, label: "Notion / Slack", sub: "FORMATTED TO SHARE" },
-] as const;
+const EXPORT_OPTIONS: { icon: React.ElementType; label: string; sub: string; type: ExportType }[] = [
+  { icon: RiFileTextLine,    label: "Copy deck",      sub: "ALL VARIANTS · MD",  type: "copy_deck"      },
+  { icon: RiLayoutLine,      label: "Designer brief", sub: "FIGMA TASK LIST",    type: "designer_brief" },
+  { icon: RiCodeSSlashLine,  label: "Dev tasks",      sub: "CSS + TEXT CHANGES", type: "dev_tasks"      },
+  { icon: RiNotification3Line, label: "Notion / Slack", sub: "FORMATTED TO SHARE", type: "notion_slack" },
+];
 
 export function ReportExportV2({ onExport }: Props) {
   return (
@@ -35,10 +36,10 @@ export function ReportExportV2({ onExport }: Props) {
       </div>
 
       <div className="grid grid-cols-2 divide-x divide-y divide-v2-card-divider sm:grid-cols-4 sm:divide-y-0">
-        {EXPORT_OPTIONS.map(({ icon: Icon, label, sub }) => (
+        {EXPORT_OPTIONS.map(({ icon: Icon, label, sub, type }) => (
           <button
-            key={label}
-            onClick={onExport}
+            key={type}
+            onClick={() => onExport(type)}
             className="flex flex-col items-start p-5 text-left transition-colors hover:bg-v2-card-inner"
           >
             <Icon size={18} className="text-v2-ink-secondary" />

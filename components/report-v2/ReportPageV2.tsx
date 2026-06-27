@@ -12,7 +12,6 @@ import { normalizeVisualSection } from "@/lib/report-visual-fixes";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
-import { openReportPrintExport } from "@/lib/report-export";
 import type {
   AuditReport,
   ReportIssue,
@@ -20,6 +19,7 @@ import type {
   ChecklistCategory,
   ChecklistItemStatus,
 } from "@/lib/audit-report";
+import type { ExportType } from "@/lib/report-export-content";
 import { ReportSourceRow } from "./ReportSourceRow";
 import { ReportHero } from "./ReportHero";
 import { ReportScorePanel } from "./ReportScorePanel";
@@ -29,6 +29,7 @@ import { ReportVisualFixesGrid } from "./ReportVisualFixesGrid";
 import { ReportTrustMetaPanel } from "./ReportTrustMetaPanel";
 import { ReportMethodologyPanel } from "./ReportMethodologyPanel";
 import { ReportExportV2 } from "./ReportExportV2";
+import { ExportModal } from "./ExportModal";
 import { ReportCtaBanner } from "./ReportCtaBanner";
 
 const ISSUE_CATEGORY_MAP: Record<string, ChecklistCategory> = {
@@ -78,14 +79,18 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
   const [shareOpen, setShareOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportType, setExportType] = useState<ExportType>("copy_deck");
 
   function handleShare() {
     setShareUrl(window.location.href);
     setShareOpen(true);
   }
 
-  function handleExport() {
-    openReportPrintExport(routeParam);
+  function handleExport(type: ExportType) {
+    if (!report) return;
+    setExportType(type);
+    setExportOpen(true);
   }
 
   const report = useMemo(() => {
@@ -162,7 +167,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
             checklistCount={report.checklist?.length}
             previewSrc={previewSrc}
             onShare={handleShare}
-            onExport={handleExport}
+            onExport={() => handleExport("copy_deck")}
           />
 
           <ReportHero
@@ -232,6 +237,15 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
           open={paywallOpen}
           onClose={() => setPaywallOpen(false)}
           reportId={reportId}
+        />
+      )}
+
+      {report && (
+        <ExportModal
+          open={exportOpen}
+          onClose={() => setExportOpen(false)}
+          type={exportType}
+          report={report}
         />
       )}
     </>
