@@ -1,3 +1,5 @@
+export const revalidate = 0;
+
 import { isDemoReportRouteParam } from "@/lib/report-route";
 import { isReportUnlocked } from "@/lib/reports-db";
 import { ReportPageView } from "@/components/report/ReportPageView";
