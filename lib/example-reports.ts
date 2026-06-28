@@ -9,12 +9,12 @@ export type ExampleReport = {
 };
 
 const PINNED_REPORT_IDS = [
-  "vq6y9fn9d3", // wise.com
-  "b34b0vvafv", // figma.com
-  "quvekkudcw", // loom.com
-  "ho2808rdzu", // notion.so
+  "vq6y9fn9d3", // figma.com
+  "b34b0vvafv", // loom.com
+  "quvekkudcw", // notion.so
   "3fx8oz0nh2", // cal.com
   "1vmtrfrwgm", // linear.app
+  "qk3pu16zje", // wise.com
 ];
 
 export async function fetchExampleReports(_limit?: number): Promise<ExampleReport[]> {
