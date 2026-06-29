@@ -11,6 +11,7 @@ import { normalizeVisualSection } from "@/lib/report-visual-fixes";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
+import { deriveHeroSlot } from "@/lib/report-hero-slot";
 import type {
   AuditReport,
   ReportIssue,
@@ -174,6 +175,8 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
               checklist={effectiveChecklist}
               copyVariants={report.copy_variants}
               viewportWidth={report.viewport_width ?? 1280}
+              heroSlot={report.hero_slot ?? deriveHeroSlot(report)}
+              domain={domain}
             />
           )}
 

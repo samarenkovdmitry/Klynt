@@ -3,8 +3,26 @@
 import {
   RiAlarmWarningLine,
   RiRocket2Line,
+  RiArrowRightLine,
+  RiBuildingLine,
+  RiChatQuoteLine,
+  RiStarLine,
+  RiShieldCheckLine,
+  RiCheckboxCircleFill,
+  RiDoubleQuotesL,
+  type RemixiconComponentType,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ReportCopyVariants } from "@/lib/audit-report";
+import type {
+  HeroSlot,
+  TrustCountSlot,
+  CtaStatisticSlot,
+  HeadlineTextualSlot,
+  OpportunitySlot,
+  ContrastNumericSlot,
+} from "./ReportHero";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type HeroMode = "critical" | "opportunity";
 
@@ -12,7 +30,11 @@ type Props = {
   checklist: ReportChecklistItem[];
   copyVariants?: ReportCopyVariants | null;
   viewportWidth?: number;
+  heroSlot?: HeroSlot | null;
+  domain?: string;
 };
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 // Exported so ReportPageV2 can read the chosen id for deduplication in ReportPriorityQueue.
 export function pickHeroFinding(
@@ -24,7 +46,6 @@ export function pickHeroFinding(
   const critical = issues.find((i) => i.status === "missing");
   if (critical) return { finding: critical, mode: "critical" };
 
-  // No critical — highest impact is the first weak item (list is already sorted by impact).
   return { finding: issues[0], mode: "opportunity" };
 }
 
@@ -56,7 +77,45 @@ function isViewportOrPerformanceItem(item: ReportChecklistItem): boolean {
   );
 }
 
-// ─── Inline viewport scale ────────────────────────────────────────────────────
+// ─── Shared primitives ────────────────────────────────────────────────────────
+
+function HeroBadge({ isCritical }: { isCritical: boolean }) {
+  if (isCritical) {
+    return (
+      <span className="font-mono mb-6 inline-flex items-center gap-2 rounded-full bg-v2-critical-bg px-[13px] py-[7px] text-[11.5px] tracking-[0.1em] text-v2-critical">
+        <RiAlarmWarningLine size={14} aria-hidden />
+        MOST CRITICAL ISSUE
+      </span>
+    );
+  }
+  return (
+    <span className="font-mono mb-6 inline-flex items-center gap-2 rounded-full bg-v2-pass-bg px-[13px] py-[7px] text-[11.5px] tracking-[0.1em] text-v2-pass">
+      <RiRocket2Line size={14} aria-hidden />
+      BIGGEST OPPORTUNITY
+    </span>
+  );
+}
+
+function BottomStrip({
+  label,
+  bottomBg,
+  children,
+}: {
+  label: string;
+  bottomBg: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={`border-t px-6 py-[22px] md:px-8 ${bottomBg}`}>
+      <span className="font-mono text-[11px] tracking-[0.06em] text-v2-ink-muted uppercase">
+        {label}
+      </span>
+      {children}
+    </div>
+  );
+}
+
+// ─── Viewport scale (inline) ──────────────────────────────────────────────────
 
 const SCALE_MIN = 320;
 const SCALE_MAX = 1440;
@@ -87,7 +146,6 @@ function ViewportScale({ viewportWidth }: { viewportWidth: number }) {
 
       {/* Pill + vertical line above marker */}
       <div className="relative h-[36px]">
-        {/* Pill */}
         <div
           className="absolute top-0 -translate-x-1/2"
           style={{ left: `${pCurrent}%` }}
@@ -96,7 +154,6 @@ function ViewportScale({ viewportWidth }: { viewportWidth: number }) {
             {viewportWidth}px
           </span>
         </div>
-        {/* Vertical line */}
         <div
           className="absolute w-[1px] -translate-x-1/2 bg-[#EF4444]"
           style={{ left: `${pCurrent}%`, bottom: 0, height: "8px" }}
@@ -105,12 +162,10 @@ function ViewportScale({ viewportWidth }: { viewportWidth: number }) {
 
       {/* Track */}
       <div className="relative h-[7px] rounded-full bg-[rgba(0,0,0,0.06)]">
-        {/* Green zone: Mobile → Tablet */}
         <div
           className="absolute h-full bg-[#4CAF50]"
           style={{ left: `${greenLeft}%`, width: `${greenWidth}%`, borderRadius: "999px 0 0 999px" }}
         />
-        {/* Red zone: Tablet → current (2px gap from green) */}
         {redWidth > 0 && (
           <div
             className="absolute h-full bg-[#EF4444]"
@@ -121,7 +176,6 @@ function ViewportScale({ viewportWidth }: { viewportWidth: number }) {
             }}
           />
         )}
-        {/* Marker dot — filled red, no border */}
         <div
           className="absolute top-1/2 h-[10px] w-[10px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#EF4444]"
           style={{ left: `${pCurrent}%` }}
@@ -152,28 +206,284 @@ function ViewportScale({ viewportWidth }: { viewportWidth: number }) {
   );
 }
 
-// ─── Hero badge ───────────────────────────────────────────────────────────────
+// ─── Format: trust_count ──────────────────────────────────────────────────────
 
-function HeroBadge({ isCritical }: { isCritical: boolean }) {
-  if (isCritical) {
-    return (
-      <span className="font-mono mb-6 inline-flex items-center gap-2 rounded-full bg-v2-critical-bg px-[13px] py-[7px] text-[11.5px] tracking-[0.1em] text-v2-critical">
-        <RiAlarmWarningLine size={14} aria-hidden />
-        MOST CRITICAL ISSUE
-      </span>
-    );
-  }
+const TRUST_ICONS: Record<string, RemixiconComponentType> = {
+  "Customer logos": RiBuildingLine,
+  Testimonials: RiChatQuoteLine,
+  Ratings: RiStarLine,
+  Guarantees: RiShieldCheckLine,
+};
+
+function TrustCountHero({
+  slot, isCritical, cardBorder, bottomBg,
+}: { slot: TrustCountSlot; isCritical: boolean; cardBorder: string; bottomBg: string }) {
   return (
-    <span className="font-mono mb-6 inline-flex items-center gap-2 rounded-full bg-v2-pass-bg px-[13px] py-[7px] text-[11.5px] tracking-[0.1em] text-v2-pass">
-      <RiRocket2Line size={14} aria-hidden />
-      BIGGEST OPPORTUNITY
-    </span>
+    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+      <div className="px-6 pb-7 pt-8 md:px-8">
+        <HeroBadge isCritical={isCritical} />
+        <div className="flex flex-wrap items-start gap-9">
+          <div className="shrink-0">
+            <div className="text-[74px] font-semibold leading-[0.84] tracking-[-0.04em] text-v2-critical-text">
+              {slot.count}
+            </div>
+            <div className="font-mono mt-3 max-w-[150px] text-[11px] leading-[1.5] tracking-[0.03em] text-v2-ink-muted">
+              {slot.label.toUpperCase()}
+            </div>
+          </div>
+          <div className="min-w-[280px] flex-1">
+            <h2 className="mb-3 text-[25px] font-semibold leading-[1.2] tracking-[-0.022em] text-v2-ink">
+              {slot.title}
+            </h2>
+            <p className="text-[15.5px] leading-[1.55] text-v2-ink-secondary">{slot.description}</p>
+          </div>
+        </div>
+      </div>
+      <BottomStrip label="ABSENT — NONE DETECTED ABOVE THE FOLD" bottomBg={bottomBg}>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {slot.absent_items.map((item) => {
+            const Icon = TRUST_ICONS[item] ?? RiShieldCheckLine;
+            return (
+              <div
+                key={item}
+                className="flex flex-col items-center gap-2.5 rounded-[12px] border-[1.5px] border-dashed border-v2-absent-border bg-v2-card px-3 py-[18px] text-center"
+              >
+                <Icon size={22} className="text-v2-absent" />
+                <span className="text-[13px] font-semibold text-v2-ink-muted">{item}</span>
+              </div>
+            );
+          })}
+        </div>
+      </BottomStrip>
+    </section>
+  );
+}
+
+// ─── Format: cta_statistic ────────────────────────────────────────────────────
+
+function CtaStatisticHero({
+  slot, isCritical, cardBorder, bottomBg,
+}: { slot: CtaStatisticSlot; isCritical: boolean; cardBorder: string; bottomBg: string }) {
+  const match = slot.stat.match(/^([\d.]+)(.*)$/);
+  const statBase = match?.[1] ?? slot.stat;
+  const statSuffix = match?.[2] ?? "";
+
+  return (
+    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+      <div className="px-6 pb-7 pt-8 md:px-8">
+        <HeroBadge isCritical={isCritical} />
+        <div className="flex flex-wrap items-start gap-9">
+          <div className="shrink-0">
+            <div className="text-[74px] font-semibold leading-[0.84] tracking-[-0.04em] text-v2-critical-text">
+              {statBase}
+              <span className="text-[38px] font-medium text-v2-stat-suffix">{statSuffix}</span>
+            </div>
+            <div className="font-mono mt-3 max-w-[160px] text-[11px] leading-[1.5] tracking-[0.03em] text-v2-ink-muted">
+              {slot.stat_label.toUpperCase()}
+              <br />({slot.stat_source.toUpperCase()})
+            </div>
+          </div>
+          <div className="min-w-[280px] flex-1">
+            <h2 className="mb-3 text-[25px] font-semibold leading-[1.2] tracking-[-0.022em] text-v2-ink">
+              {slot.title}
+            </h2>
+            <p className="text-[15.5px] leading-[1.55] text-v2-ink-secondary">{slot.description}</p>
+          </div>
+        </div>
+      </div>
+      <BottomStrip label="THE BUTTON, BEFORE & AFTER" bottomBg={bottomBg}>
+        <div className="mt-3.5 grid grid-cols-[1fr_44px_1fr] items-center">
+          <div className="flex flex-col items-center gap-3 rounded-[12px] border border-[#E8E5DB] bg-v2-card py-[22px]">
+            <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-ink-hairline">BEFORE</span>
+            {slot.before_text ? (
+              <span className="inline-flex rounded-[10px] bg-[#B6B1A4] px-[22px] py-[11px] text-[15px] font-semibold text-white">
+                {slot.before_text}
+              </span>
+            ) : (
+              <span className="inline-flex rounded-[10px] border border-dashed border-[#C8C3B8] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
+                CTA not detected
+              </span>
+            )}
+          </div>
+          <div className="grid place-items-center">
+            <RiArrowRightLine size={20} className="text-v2-arrow" />
+          </div>
+          <div className="flex flex-col items-center gap-3 rounded-[12px] border-[1.5px] border-[#A9D8BC] bg-v2-pass-surface py-[22px]">
+            <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-pass">AFTER</span>
+            {slot.after_text ? (
+              <span className="inline-flex rounded-[10px] bg-v2-pass px-[22px] py-[11px] text-[15px] font-semibold text-white">
+                {slot.after_text}
+              </span>
+            ) : (
+              <span className="inline-flex rounded-[10px] border border-dashed border-[#A9D8BC] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
+                Suggested copy pending
+              </span>
+            )}
+          </div>
+        </div>
+      </BottomStrip>
+    </section>
+  );
+}
+
+// ─── Format: headline_textual ─────────────────────────────────────────────────
+
+function HeadlineTextualHero({
+  slot, isCritical, cardBorder,
+}: { slot: HeadlineTextualSlot; isCritical: boolean; cardBorder: string }) {
+  return (
+    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+      <div className="px-8 py-7">
+        <HeroBadge isCritical={isCritical} />
+        <div className="flex flex-wrap items-start gap-5">
+          <RiDoubleQuotesL size={52} className="shrink-0" style={{ color: "#F4A7A7", lineHeight: 0.8 }} />
+          <div className="min-w-[280px] flex-1">
+            <h2 className="mb-3 text-[25px] font-semibold leading-[1.2] tracking-[-0.022em] text-v2-ink">
+              {slot.issue_title}
+            </h2>
+            <p className="text-[15px] leading-[1.6] text-[#6B7280]">
+              {slot.quote && (
+                <><b className="font-semibold text-[#374151]">&ldquo;{slot.quote}&rdquo;</b>{" "}</>
+              )}
+              {slot.explanation}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="border-t border-v2-card-divider bg-[#F7F6F3] px-6 py-5">
+        <span className="font-mono mb-3 block text-[11px] tracking-[0.08em] text-[#9CA3AF]">
+          {slot.section_label}
+        </span>
+        <div className="grid grid-cols-1 items-stretch sm:grid-cols-[1fr_36px_1fr]">
+          <div className="rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F5F3EF] px-5 py-[18px]">
+            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-[#9CA3AF]">BEFORE</p>
+            <p className="text-[17px] font-semibold leading-[1.3] text-[#9CA3AF]">{slot.before_text}</p>
+          </div>
+          <div className="flex items-center justify-center">
+            <span className="hidden text-[18px] text-[#9CA3AF] sm:inline">→</span>
+            <span className="py-2 text-[18px] text-[#9CA3AF] sm:hidden">↓</span>
+          </div>
+          <div className="rounded-lg border-[1.5px] border-[#86EFAC] bg-[#F0FAF4] px-5 py-[18px]">
+            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-[#166534]">AFTER</p>
+            <p className="text-[17px] font-bold leading-[1.3] text-[#14532D]">{slot.after_text}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Format: opportunity ──────────────────────────────────────────────────────
+
+function OpportunityHero({
+  slot, isCritical, cardBorder, bottomBg,
+}: { slot: OpportunitySlot; isCritical: boolean; cardBorder: string; bottomBg: string }) {
+  return (
+    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+      <div className="px-6 pb-7 pt-8 md:px-8">
+        <HeroBadge isCritical={isCritical} />
+        <div className="flex flex-wrap items-start gap-9">
+          <div className="shrink-0">
+            <div className="text-[74px] font-semibold leading-[0.84] tracking-[-0.04em] text-v2-opp-score">
+              {slot.score.toFixed(1)}
+              <span className="text-[34px] font-medium text-v2-opp-suffix">/10</span>
+            </div>
+            <div className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold tracking-[0.01em] text-v2-pass">
+              <RiCheckboxCircleFill size={14} />
+              {slot.score_label}
+            </div>
+          </div>
+          <div className="min-w-[280px] flex-1">
+            <h2 className="mb-3 text-[25px] font-semibold leading-[1.2] tracking-[-0.022em] text-v2-ink">
+              {slot.title}
+            </h2>
+            <p className="text-[15.5px] leading-[1.55] text-v2-ink-secondary">{slot.description}</p>
+          </div>
+        </div>
+      </div>
+      <BottomStrip label={slot.section_label} bottomBg={bottomBg}>
+        <div className="mt-3.5 grid grid-cols-1 items-stretch sm:grid-cols-[1fr_44px_1fr]">
+          <div className="rounded-t-[12px] border border-[#E8E5DB] bg-v2-card px-[18px] py-4 sm:rounded-l-[12px] sm:rounded-tr-none">
+            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-v2-ink-hairline">BEFORE</p>
+            <p className="text-[14px] leading-[1.45] text-v2-before-text">{slot.before_text}</p>
+          </div>
+          <div className="flex items-center justify-center py-2 sm:py-0">
+            <RiArrowRightLine size={20} className="rotate-90 text-[#B6D8C3] sm:rotate-0" />
+          </div>
+          <div className="rounded-b-[12px] border-[1.5px] border-[#A9D8BC] bg-v2-pass-surface px-[18px] py-4 sm:rounded-r-[12px] sm:rounded-bl-none">
+            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-v2-pass">AFTER</p>
+            <p className="text-[14px] leading-[1.45] text-[#2C4536]">{slot.after_text}</p>
+          </div>
+        </div>
+      </BottomStrip>
+    </section>
+  );
+}
+
+// ─── Format: contrast_numeric ─────────────────────────────────────────────────
+
+function ContrastNumericHero({
+  slot, isCritical, cardBorder, bottomBg, domain,
+}: { slot: ContrastNumericSlot; isCritical: boolean; cardBorder: string; bottomBg: string; domain?: string }) {
+  const [ratioBase, ratioSuffix] = slot.ratio.includes(":")
+    ? [slot.ratio.split(":")[0], `:${slot.ratio.split(":")[1]}`]
+    : [slot.ratio, ""];
+
+  return (
+    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+      <div className="px-6 pb-7 pt-8 md:px-8">
+        <HeroBadge isCritical={isCritical} />
+        <div className="flex flex-wrap items-start gap-9">
+          <div className="shrink-0">
+            <div className="text-[74px] font-semibold leading-[0.84] tracking-[-0.04em] text-v2-critical-text">
+              {ratioBase}
+              <span className="text-[36px] font-medium text-v2-stat-suffix">{ratioSuffix}</span>
+            </div>
+            <div className="mt-3 text-[13px] font-semibold tracking-[0.01em] text-v2-critical">
+              Fails WCAG AA · needs 4.5:1
+            </div>
+          </div>
+          <div className="min-w-[280px] flex-1">
+            <h2 className="mb-3 text-[25px] font-semibold leading-[1.2] tracking-[-0.022em] text-v2-ink">
+              {slot.title}
+            </h2>
+            <p className="text-[15.5px] leading-[1.55] text-v2-ink-secondary">{slot.description}</p>
+          </div>
+        </div>
+      </div>
+      <BottomStrip
+        label={domain ? `AS IT RENDERS ON ${domain.toUpperCase()}` : "AS IT RENDERS"}
+        bottomBg={bottomBg}
+      >
+        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div
+            className="relative rounded-[12px] border border-[#E8E5DB] px-5 py-[18px]"
+            style={{ background: slot.side_by_side.bg_before || "#ffffff" }}
+          >
+            <span className="font-mono absolute right-3.5 top-3 rounded-full bg-v2-critical-bg px-[9px] py-1 text-[10.5px] font-semibold text-v2-critical">
+              {slot.ratio}
+            </span>
+            <p className="pt-6 text-[14.5px] leading-[1.5]" style={{ color: slot.side_by_side.color_before }}>
+              {slot.side_by_side.text}
+            </p>
+          </div>
+          <div className="relative rounded-[12px] border-[1.5px] border-[#A9D8BC] bg-v2-pass-surface px-5 py-[18px]">
+            <span className="font-mono absolute right-3.5 top-3 rounded-full bg-v2-pass-bg px-[9px] py-1 text-[10.5px] font-semibold text-v2-pass">
+              {slot.after_label}
+            </span>
+            <p className="pt-6 text-[14.5px] leading-[1.5]" style={{ color: slot.side_by_side.color_after }}>
+              {slot.side_by_side.text}
+            </p>
+          </div>
+        </div>
+      </BottomStrip>
+    </section>
   );
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Props) {
+export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, heroSlot, domain }: Props) {
   const result = pickHeroFinding(checklist);
   if (!result) return null;
 
@@ -185,16 +495,10 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
   // ── Viewport / performance finding ──────────────────────────────────────────
   if (isViewportOrPerformanceItem(finding) && viewportWidth != null) {
     const ratio = (viewportWidth / 375).toFixed(1);
-
     return (
-      <section
-        className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}
-      >
+      <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
         <div className="px-6 pb-[30px] pt-[34px] md:px-9">
-          {/* Single top badge — no severity chip below */}
           <HeroBadge isCritical={isCritical} />
-
-          {/* Two columns: big ratio left, title + paragraph right */}
           <div className="flex flex-wrap items-start gap-6 md:gap-9">
             <div className="shrink-0">
               <div className="text-[72px] font-semibold leading-[0.84] tracking-[-0.04em] text-v2-critical-text">
@@ -205,7 +509,6 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
                 wider than<br />mobile screen
               </div>
             </div>
-
             <div className="min-w-[240px] flex-1">
               <h2 className="mb-3 text-[22px] font-semibold leading-[1.2] tracking-[-0.02em] text-v2-ink md:text-[25px]">
                 Viewport locks out your mobile majority
@@ -216,8 +519,6 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
             </div>
           </div>
         </div>
-
-        {/* Bottom: scale bar */}
         <div className={`border-t px-6 py-6 md:px-9 ${bottomBg}`}>
           <ViewportScale viewportWidth={viewportWidth} />
         </div>
@@ -225,8 +526,24 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
     );
   }
 
-  // ── Standard finding layout ──────────────────────────────────────────────────
-  // Single badge at top, no severity chip. Before/after shown when copy data is linked.
+  // ── Hero-slot formats ────────────────────────────────────────────────────────
+  if (heroSlot) {
+    switch (heroSlot.type) {
+      case "trust_count":
+        return <TrustCountHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+      case "cta_statistic":
+        return <CtaStatisticHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+      case "headline_textual":
+        return <HeadlineTextualHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} />;
+      case "opportunity":
+        return <OpportunityHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+      case "contrast_numeric":
+        return <ContrastNumericHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} domain={domain} />;
+    }
+  }
+
+  // ── Fallback: simple layout ──────────────────────────────────────────────────
+  // Used when hero_slot is not available (old reports without narrative).
   const linkedCopy = copyVariants ? getLinkedCopy(finding, copyVariants) : null;
 
   const bottomSection = linkedCopy ? (
@@ -251,12 +568,9 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
   ) : null;
 
   return (
-    <section
-      className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}
-    >
+    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
       <div className="px-6 pb-[30px] pt-[34px] md:px-9">
         <HeroBadge isCritical={isCritical} />
-
         <h2 className="mb-3.5 text-[22px] font-semibold leading-[1.2] tracking-[-0.02em] text-v2-ink md:text-[27px]">
           {finding.text}
         </h2>
@@ -266,7 +580,6 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
           </p>
         )}
       </div>
-
       {bottomSection}
     </section>
   );
