@@ -20,8 +20,7 @@ import type {
 } from "@/lib/audit-report";
 import type { ExportType } from "@/lib/report-export-content";
 import { ReportSourceRow } from "./ReportSourceRow";
-import { ReportHero } from "./ReportHero";
-import { ReportHeroFinding } from "./ReportHeroFinding";
+import { ReportHeroFinding, pickHeroFinding } from "./ReportHeroFinding";
 import { ReportScorePanel } from "./ReportScorePanel";
 import { ReportPriorityQueue } from "./ReportPriorityQueue";
 import { ReportCopyStudioV2 } from "./ReportCopyStudioV2";
@@ -153,6 +152,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
     ? report.checklist
     : adaptIssuesToChecklist(report.issues ?? []);
   const hasNewLayout = effectiveChecklist.length > 0;
+  const heroFindingId = pickHeroFinding(effectiveChecklist)?.finding.id;
 
   return (
     <>
@@ -167,12 +167,6 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
             onShare={handleShare}
             onExport={handleExport}
             onPaywall={() => setPaywallOpen(true)}
-          />
-
-          <ReportHero
-            slot={report.hero_slot ?? null}
-            report={report}
-            domain={domain}
           />
 
           {effectiveChecklist.length > 0 && (
@@ -192,6 +186,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
           {hasNewLayout && (
             <ReportPriorityQueue
               checklist={effectiveChecklist}
+              heroFindingId={heroFindingId}
               lockedAfter={isUnlocked ? undefined : 2}
               onUnlock={!isUnlocked && reportId ? () => setPaywallOpen(true) : undefined}
             />

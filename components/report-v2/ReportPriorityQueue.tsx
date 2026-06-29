@@ -6,6 +6,7 @@ import type { ReportChecklistItem, ChecklistItemStatus } from "@/lib/audit-repor
 
 type Props = {
   checklist: ReportChecklistItem[];
+  heroFindingId?: string;
   lockedAfter?: number;
   onUnlock?: () => void;
 };
@@ -87,9 +88,11 @@ function IssueRow({
   );
 }
 
-export function ReportPriorityQueue({ checklist, lockedAfter, onUnlock }: Props) {
+export function ReportPriorityQueue({ checklist, heroFindingId, lockedAfter, onUnlock }: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const issues = checklist.filter((i) => i.status !== "pass");
+  const issues = checklist.filter(
+    (i) => i.status !== "pass" && i.id !== heroFindingId
+  );
   if (issues.length === 0) return null;
 
   const total = checklist.length;
