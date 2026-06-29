@@ -291,37 +291,33 @@ function CtaStatisticHero({
           </div>
         </div>
       </div>
-      <BottomStrip label="THE BUTTON, BEFORE & AFTER" bottomBg={bottomBg}>
-        <div className="mt-3.5 grid grid-cols-[1fr_44px_1fr] items-center">
-          <div className="flex flex-col items-center gap-3 rounded-[12px] border border-[#E8E5DB] bg-v2-card py-[22px]">
-            <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-ink-hairline">BEFORE</span>
-            {slot.before_text ? (
-              <span className="inline-flex rounded-[10px] bg-[#B6B1A4] px-[22px] py-[11px] text-[15px] font-semibold text-white">
-                {slot.before_text}
-              </span>
-            ) : (
-              <span className="inline-flex rounded-[10px] border border-dashed border-[#C8C3B8] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
-                CTA not detected
-              </span>
-            )}
-          </div>
-          <div className="grid place-items-center">
-            <RiArrowRightLine size={20} className="text-v2-arrow" />
-          </div>
-          <div className="flex flex-col items-center gap-3 rounded-[12px] border-[1.5px] border-[#A9D8BC] bg-v2-pass-surface py-[22px]">
-            <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-pass">AFTER</span>
-            {slot.after_text ? (
+      {slot.after_text && (
+        <BottomStrip label="THE BUTTON, BEFORE & AFTER" bottomBg={bottomBg}>
+          <div className="mt-3.5 grid grid-cols-[1fr_44px_1fr] items-center">
+            <div className="flex flex-col items-center gap-3 rounded-[12px] border border-[#E8E5DB] bg-v2-card py-[22px]">
+              <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-ink-hairline">BEFORE</span>
+              {slot.before_text ? (
+                <span className="inline-flex rounded-[10px] bg-[#B6B1A4] px-[22px] py-[11px] text-[15px] font-semibold text-white">
+                  {slot.before_text}
+                </span>
+              ) : (
+                <span className="inline-flex rounded-[10px] border border-dashed border-[#C8C3B8] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
+                  CTA not detected
+                </span>
+              )}
+            </div>
+            <div className="grid place-items-center">
+              <RiArrowRightLine size={20} className="text-v2-arrow" />
+            </div>
+            <div className="flex flex-col items-center gap-3 rounded-[12px] border-[1.5px] border-[#A9D8BC] bg-v2-pass-surface py-[22px]">
+              <span className="font-mono text-[10.5px] font-semibold tracking-[0.06em] text-v2-pass">AFTER</span>
               <span className="inline-flex rounded-[10px] bg-v2-pass px-[22px] py-[11px] text-[15px] font-semibold text-white">
                 {slot.after_text}
               </span>
-            ) : (
-              <span className="inline-flex rounded-[10px] border border-dashed border-[#A9D8BC] px-[22px] py-[11px] text-[13px] italic text-v2-ink-muted">
-                Suggested copy pending
-              </span>
-            )}
+            </div>
           </div>
-        </div>
-      </BottomStrip>
+        </BottomStrip>
+      )}
     </section>
   );
 }
@@ -350,25 +346,27 @@ function HeadlineTextualHero({
           </div>
         </div>
       </div>
-      <div className="border-t border-v2-card-divider bg-[#F7F6F3] px-6 py-5">
-        <span className="font-mono mb-3 block text-[11px] tracking-[0.08em] text-[#9CA3AF]">
-          {slot.section_label}
-        </span>
-        <div className="grid grid-cols-1 items-stretch sm:grid-cols-[1fr_36px_1fr]">
-          <div className="rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F5F3EF] px-5 py-[18px]">
-            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-[#9CA3AF]">BEFORE</p>
-            <p className="text-[17px] font-semibold leading-[1.3] text-[#9CA3AF]">{slot.before_text}</p>
-          </div>
-          <div className="flex items-center justify-center">
-            <span className="hidden text-[18px] text-[#9CA3AF] sm:inline">→</span>
-            <span className="py-2 text-[18px] text-[#9CA3AF] sm:hidden">↓</span>
-          </div>
-          <div className="rounded-lg border-[1.5px] border-[#86EFAC] bg-[#F0FAF4] px-5 py-[18px]">
-            <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-[#166534]">AFTER</p>
-            <p className="text-[17px] font-bold leading-[1.3] text-[#14532D]">{slot.after_text}</p>
+      {slot.after_text && (
+        <div className="border-t border-v2-card-divider bg-[#F7F6F3] px-6 py-5">
+          <span className="font-mono mb-3 block text-[11px] tracking-[0.08em] text-[#9CA3AF]">
+            {slot.section_label}
+          </span>
+          <div className="grid grid-cols-1 items-stretch sm:grid-cols-[1fr_36px_1fr]">
+            <div className="rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F5F3EF] px-5 py-[18px]">
+              <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-[#9CA3AF]">BEFORE</p>
+              <p className="text-[17px] font-semibold leading-[1.3] text-[#9CA3AF]">{slot.before_text}</p>
+            </div>
+            <div className="flex items-center justify-center">
+              <span className="hidden text-[18px] text-[#9CA3AF] sm:inline">→</span>
+              <span className="py-2 text-[18px] text-[#9CA3AF] sm:hidden">↓</span>
+            </div>
+            <div className="rounded-lg border-[1.5px] border-[#86EFAC] bg-[#F0FAF4] px-5 py-[18px]">
+              <p className="font-mono mb-2 text-[10.5px] font-semibold tracking-[0.06em] text-[#166534]">AFTER</p>
+              <p className="text-[17px] font-bold leading-[1.3] text-[#14532D]">{slot.after_text}</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
@@ -528,17 +526,33 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, hero
 
   // ── Hero-slot formats ────────────────────────────────────────────────────────
   if (heroSlot) {
-    switch (heroSlot.type) {
+    // Stored hero_slot may have after_text = topIssue.fix (a generic instruction).
+    // Override with the real copy variant when available; empty string hides the section.
+    let resolvedSlot = heroSlot;
+    if (heroSlot.type === "headline_textual") {
+      resolvedSlot = {
+        ...heroSlot,
+        after_text: copyVariants?.headline?.variants?.[0]?.text ?? "",
+      };
+    } else if (heroSlot.type === "cta_statistic") {
+      resolvedSlot = {
+        ...heroSlot,
+        before_text: copyVariants?.cta?.current ?? heroSlot.before_text,
+        after_text: copyVariants?.cta?.variants?.[0]?.text ?? "",
+      };
+    }
+
+    switch (resolvedSlot.type) {
       case "trust_count":
-        return <TrustCountHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+        return <TrustCountHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
       case "cta_statistic":
-        return <CtaStatisticHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+        return <CtaStatisticHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
       case "headline_textual":
-        return <HeadlineTextualHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} />;
+        return <HeadlineTextualHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} />;
       case "opportunity":
-        return <OpportunityHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+        return <OpportunityHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
       case "contrast_numeric":
-        return <ContrastNumericHero slot={heroSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} domain={domain} />;
+        return <ContrastNumericHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} domain={domain} />;
     }
   }
 
