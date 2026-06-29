@@ -87,37 +87,45 @@ function ViewportScale({ viewportWidth }: { viewportWidth: number }) {
         Viewport Width
       </span>
 
-      {/* "← current" label above the marker dot */}
-      <div className="relative mb-1 h-[14px]">
-        <span
-          className="font-mono absolute whitespace-nowrap text-[10px] font-semibold text-[#EF4444]"
-          style={{ left: `${pCurrent}%`, transform: "translateX(-50%)" }}
+      {/* Pill + vertical line above marker */}
+      <div className="relative h-[36px]">
+        {/* Pill */}
+        <div
+          className="absolute top-0 -translate-x-1/2"
+          style={{ left: `${pCurrent}%` }}
         >
-          ← current
-        </span>
+          <span className="font-mono inline-block whitespace-nowrap rounded-full border border-[#EF4444] px-[7px] py-[2px] text-[10px] font-semibold leading-[1.4] text-[#EF4444]">
+            {viewportWidth}px
+          </span>
+        </div>
+        {/* Vertical line */}
+        <div
+          className="absolute w-[1px] -translate-x-1/2 bg-[#EF4444]"
+          style={{ left: `${pCurrent}%`, bottom: 0, height: "8px" }}
+        />
       </div>
 
       {/* Track */}
       <div className="relative h-[7px] rounded-full bg-[rgba(0,0,0,0.06)]">
         {/* Green zone: Mobile → Tablet */}
         <div
-          className="absolute h-full rounded-full bg-[#4CAF50]"
-          style={{ left: `${greenLeft}%`, width: `${greenWidth}%` }}
+          className="absolute h-full bg-[#4CAF50]"
+          style={{ left: `${greenLeft}%`, width: `${greenWidth}%`, borderRadius: "999px 0 0 999px" }}
         />
-        {/* Red zone: Tablet → current */}
+        {/* Red zone: Tablet → current (2px gap from green) */}
         {redWidth > 0 && (
           <div
             className="absolute h-full bg-[#EF4444]"
             style={{
-              left: `${pTablet}%`,
-              width: `${redWidth}%`,
-              borderRadius: "0 9999px 9999px 0",
+              left: `calc(${pTablet}% + 2px)`,
+              width: `calc(${redWidth}% - 2px)`,
+              borderRadius: "0 999px 999px 0",
             }}
           />
         )}
-        {/* Marker dot */}
+        {/* Marker dot — filled red, no border */}
         <div
-          className="absolute top-1/2 h-[14px] w-[14px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#EF4444] bg-white shadow-sm"
+          className="absolute top-1/2 h-[10px] w-[10px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#EF4444]"
           style={{ left: `${pCurrent}%` }}
         />
       </div>
@@ -202,10 +210,10 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
 
             <div className="min-w-[240px] flex-1">
               <h2 className="mb-3 text-[22px] font-semibold leading-[1.2] tracking-[-0.02em] text-v2-ink md:text-[25px]">
-                Viewport locked at {viewportWidth}px
+                Viewport locks out your mobile majority
               </h2>
               <p className="text-[15px] leading-[1.55] text-v2-ink-secondary">
-                {finding.evidence || `${viewportWidth}px viewport detected, no mobile scaling`}
+                Every smartphone visitor sees a desktop-scaled page — pinch-zoom required, scroll broken, CTAs cut off. One meta tag fix stops this immediately.
               </p>
             </div>
           </div>
