@@ -2,9 +2,7 @@
 
 import {
   RiAlarmWarningLine,
-  RiCloseCircleFill,
   RiRocket2Line,
-  RiCheckboxCircleFill,
 } from "@remixicon/react";
 import type { ReportChecklistItem, ReportCopyVariants } from "@/lib/audit-report";
 
@@ -130,7 +128,7 @@ function ViewportScale({ viewportWidth }: { viewportWidth: number }) {
         />
       </div>
 
-      {/* Breakpoint labels — no px numbers */}
+      {/* Breakpoint labels */}
       <div className="relative mt-2 h-[18px]">
         {SCALE_LABELS.map(({ px, label }) => (
           <span
@@ -196,7 +194,7 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
           {/* Single top badge — no severity chip below */}
           <HeroBadge isCritical={isCritical} />
 
-          {/* Two columns: big ratio left, title + evidence right */}
+          {/* Two columns: big ratio left, title + paragraph right */}
           <div className="flex flex-wrap items-start gap-6 md:gap-9">
             <div className="shrink-0">
               <div className="text-[72px] font-semibold leading-[0.84] tracking-[-0.04em] text-v2-critical-text">
@@ -228,6 +226,7 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
   }
 
   // ── Standard finding layout ──────────────────────────────────────────────────
+  // Single badge at top, no severity chip. Before/after shown when copy data is linked.
   const linkedCopy = copyVariants ? getLinkedCopy(finding, copyVariants) : null;
 
   const bottomSection = linkedCopy ? (
@@ -258,36 +257,14 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth }: Pr
       <div className="px-6 pb-[30px] pt-[34px] md:px-9">
         <HeroBadge isCritical={isCritical} />
 
-        <div className="flex flex-wrap items-start gap-6 md:gap-10">
-          <div className="shrink-0">
-            {isCritical ? (
-              <div className="inline-flex items-center gap-2 rounded-xl bg-v2-critical-bg px-4 py-3">
-                <RiCloseCircleFill size={20} className="text-v2-critical-text" aria-hidden />
-                <span className="font-mono text-[12px] font-semibold tracking-[0.06em] text-v2-critical">
-                  {finding.status === "missing" ? "CRITICAL" : "HIGH"}
-                </span>
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-2 rounded-xl bg-v2-pass-bg px-4 py-3">
-                <RiCheckboxCircleFill size={20} className="text-v2-pass" aria-hidden />
-                <span className="font-mono text-[12px] font-semibold tracking-[0.06em] text-v2-pass">
-                  HIGH IMPACT
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="min-w-[260px] flex-1">
-            <h2 className="mb-3.5 text-[22px] font-semibold leading-[1.2] tracking-[-0.02em] text-v2-ink md:text-[27px]">
-              {finding.text}
-            </h2>
-            {finding.evidence && (
-              <p className="text-[15px] leading-[1.55] text-v2-ink-secondary md:text-[16.5px]">
-                {finding.evidence}
-              </p>
-            )}
-          </div>
-        </div>
+        <h2 className="mb-3.5 text-[22px] font-semibold leading-[1.2] tracking-[-0.02em] text-v2-ink md:text-[27px]">
+          {finding.text}
+        </h2>
+        {finding.evidence && (
+          <p className="text-[15px] leading-[1.55] text-v2-ink-secondary md:text-[16.5px]">
+            {finding.evidence}
+          </p>
+        )}
       </div>
 
       {bottomSection}
