@@ -225,6 +225,8 @@ export type AuditReport = {
   suggestions?: ReportSuggestion[];
   /** @deprecated use copy_variants instead */
   copy?: ReportCopyItem[];
+  /** Viewport width (px) at which the page was captured. Used by ViewportScaleBar. */
+  viewport_width?: number;
   brand_stage?: BrandStage;
   traffic_source?: TrafficSource;
   audience_type?: AudienceType;

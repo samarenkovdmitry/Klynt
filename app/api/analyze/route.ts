@@ -202,7 +202,7 @@ export async function POST(req: Request) {
         id: reportId,
         audited_url: auditedUrl,
         payload: {},
-        extraction,
+        extraction: { ...extraction, viewport_width: computedValues?.viewport_width ?? 1280 },
         status: "processing",
       });
 

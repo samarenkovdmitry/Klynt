@@ -167,7 +167,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const extraction = data.extraction as ExtractionResult;
+    const extraction = data.extraction as ExtractionResult & { viewport_width?: number };
     const url = (data.audited_url as string) ?? "";
 
     const { result: narrative, usage } = await generateNarrative(extraction, url);
@@ -182,6 +182,7 @@ export async function POST(req: Request) {
     const reportPayload: AuditReport = {
       url,
       score,
+      viewport_width: extraction.viewport_width ?? 1280,
       risk: deriveRiskFromScore(score),
       summary: narrative.summary,
       verdict: narrative.hero.topIssue?.title ?? "",

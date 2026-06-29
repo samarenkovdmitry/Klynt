@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AppHeader } from "@/components/AppHeader";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { FreemiumProModal } from "@/components/report/FreemiumProModal";
@@ -22,6 +21,7 @@ import type {
 import type { ExportType } from "@/lib/report-export-content";
 import { ReportSourceRow } from "./ReportSourceRow";
 import { ReportHero } from "./ReportHero";
+import { ReportHeroFinding } from "./ReportHeroFinding";
 import { ReportScorePanel } from "./ReportScorePanel";
 import { ReportPriorityQueue } from "./ReportPriorityQueue";
 import { ReportCopyStudioV2 } from "./ReportCopyStudioV2";
@@ -156,8 +156,6 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
 
   return (
     <>
-      <AppHeader />
-
       <main className="min-h-[calc(100dvh-68px)] bg-v2-surface px-4 pb-20 pt-8 text-v2-ink md:px-6 md:pt-[52px]">
         <div className="mx-auto flex w-full max-w-[920px] flex-col gap-7">
           <ReportSourceRow
@@ -165,7 +163,6 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
             domain={domain}
             generatedAt={data.generatedAt}
             checklistCount={report.checklist?.length}
-            previewSrc={previewSrc}
             isUnlocked={isUnlocked}
             onShare={handleShare}
             onExport={handleExport}
@@ -177,6 +174,14 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
             report={report}
             domain={domain}
           />
+
+          {effectiveChecklist.length > 0 && (
+            <ReportHeroFinding
+              checklist={effectiveChecklist}
+              copyVariants={report.copy_variants}
+              viewportWidth={report.viewport_width ?? 1280}
+            />
+          )}
 
           <ReportScorePanel
             score={report.score}
