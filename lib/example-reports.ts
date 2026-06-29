@@ -10,7 +10,7 @@ export type ExampleReport = {
 
 const PINNED_REPORT_IDS = [
   "vq6y9fn9d3", // figma.com
-  "b34b0vvafv", // loom.com
+  "b8wch78p7r", // loom.com
   "quvekkudcw", // notion.so
   "3fx8oz0nh2", // cal.com
   "1vmtrfrwgm", // linear.app
