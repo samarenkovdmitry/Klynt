@@ -296,18 +296,18 @@ function CtaStatisticHero({
       <div className="px-6 pb-7 pt-8 md:px-8">
         <HeroBadge isCritical={isCritical} />
         <div className="flex flex-wrap items-start gap-9">
-          <div className="shrink-0">
-            <div className="text-[74px] font-semibold leading-[0.84] tracking-[-0.04em] text-v2-critical-text">
+          <div className="shrink-0 min-w-[220px]">
+            <div className="text-[86px] font-semibold leading-[0.84] tracking-[-0.04em] text-v2-critical-text">
               {statBase}
-              <span className="text-[38px] font-medium text-v2-stat-suffix">{statSuffix}</span>
+              <span className="text-[44px] font-semibold text-v2-critical-text">{statSuffix}</span>
             </div>
-            <div className="font-mono mt-3 max-w-[160px] text-[11px] leading-[1.5] tracking-[0.03em] text-v2-ink-muted">
+            <div className="font-mono mt-3 max-w-[220px] text-[11px] leading-[1.5] tracking-[0.03em] text-v2-ink-muted">
               {slot.stat_label.toUpperCase()}
               <br />({slot.stat_source.toUpperCase()})
             </div>
           </div>
           <div className="min-w-[280px] flex-1">
-            <h2 className="mb-3 text-[25px] font-semibold leading-[1.2] tracking-[-0.022em] text-v2-ink">
+            <h2 className="mb-5 text-[28px] font-semibold leading-[1.2] tracking-[-0.022em] text-v2-ink">
               {slot.title}
             </h2>
             <p className="text-[15.5px] leading-[1.55] text-v2-ink-secondary">{slot.description}</p>
