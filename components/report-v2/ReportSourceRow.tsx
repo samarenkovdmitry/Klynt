@@ -102,7 +102,7 @@ export function ReportSourceRow({
       <div className="ml-auto flex shrink-0 items-center gap-2.5">
         <button
           onClick={onShare}
-          className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-card-border bg-v2-card px-[15px] py-[9px] text-[14px] font-semibold text-v2-ink-secondary transition-colors hover:bg-v2-card-inner"
+          className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-card-border bg-v2-card px-[15px] py-[10px] text-[15px] font-semibold text-v2-ink-secondary transition-colors hover:bg-v2-card-inner"
         >
           <RiShare2Line size={16} />
           Share
@@ -111,7 +111,7 @@ export function ReportSourceRow({
         <div ref={wrapperRef} className="relative">
           <button
             onClick={() => setDropdownOpen(v => !v)}
-            className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-ink bg-v2-ink px-4 py-[9px] text-[14px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
+            className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-ink bg-v2-ink px-4 py-[10px] text-[15px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
           >
             Use report
             <RiArrowDownSLine
