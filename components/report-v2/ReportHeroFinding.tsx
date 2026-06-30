@@ -12,6 +12,7 @@ import {
   RiDoubleQuotesL,
   type RemixiconComponentType,
 } from "@remixicon/react";
+import type { ReactNode } from "react";
 import type { ReportChecklistItem, ReportCopyVariants } from "@/lib/audit-report";
 import type {
   HeroSlot,
@@ -32,6 +33,7 @@ type Props = {
   viewportWidth?: number;
   heroSlot?: HeroSlot | null;
   domain?: string;
+  sourceRow?: ReactNode;
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -79,6 +81,27 @@ function isViewportOrPerformanceItem(item: ReportChecklistItem): boolean {
 
 // ─── Shared primitives ────────────────────────────────────────────────────────
 
+function CardShell({
+  cardBorder,
+  header,
+  children,
+}: {
+  cardBorder: string;
+  header?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+      {header && (
+        <div className="border-b border-v2-card-divider px-6 py-3 md:px-8">
+          {header}
+        </div>
+      )}
+      {children}
+    </section>
+  );
+}
+
 function HeroBadge({ isCritical }: { isCritical: boolean }) {
   if (isCritical) {
     return (
@@ -103,7 +126,7 @@ function BottomStrip({
 }: {
   label: string;
   bottomBg: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className={`border-t px-6 py-[22px] md:px-8 ${bottomBg}`}>
@@ -216,10 +239,10 @@ const TRUST_ICONS: Record<string, RemixiconComponentType> = {
 };
 
 function TrustCountHero({
-  slot, isCritical, cardBorder, bottomBg,
-}: { slot: TrustCountSlot; isCritical: boolean; cardBorder: string; bottomBg: string }) {
+  slot, isCritical, bottomBg,
+}: { slot: TrustCountSlot; isCritical: boolean; bottomBg: string }) {
   return (
-    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+    <>
       <div className="px-6 pb-7 pt-8 md:px-8">
         <HeroBadge isCritical={isCritical} />
         <div className="flex flex-wrap items-start gap-9">
@@ -255,21 +278,21 @@ function TrustCountHero({
           })}
         </div>
       </BottomStrip>
-    </section>
+    </>
   );
 }
 
 // ─── Format: cta_statistic ────────────────────────────────────────────────────
 
 function CtaStatisticHero({
-  slot, isCritical, cardBorder, bottomBg,
-}: { slot: CtaStatisticSlot; isCritical: boolean; cardBorder: string; bottomBg: string }) {
+  slot, isCritical, bottomBg,
+}: { slot: CtaStatisticSlot; isCritical: boolean; bottomBg: string }) {
   const match = slot.stat.match(/^([\d.]+)(.*)$/);
   const statBase = match?.[1] ?? slot.stat;
   const statSuffix = match?.[2] ?? "";
 
   return (
-    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+    <>
       <div className="px-6 pb-7 pt-8 md:px-8">
         <HeroBadge isCritical={isCritical} />
         <div className="flex flex-wrap items-start gap-9">
@@ -318,17 +341,17 @@ function CtaStatisticHero({
           </div>
         </BottomStrip>
       )}
-    </section>
+    </>
   );
 }
 
 // ─── Format: headline_textual ─────────────────────────────────────────────────
 
 function HeadlineTextualHero({
-  slot, isCritical, cardBorder,
-}: { slot: HeadlineTextualSlot; isCritical: boolean; cardBorder: string }) {
+  slot, isCritical,
+}: { slot: HeadlineTextualSlot; isCritical: boolean }) {
   return (
-    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+    <>
       <div className="px-8 py-7">
         <HeroBadge isCritical={isCritical} />
         <div className="flex flex-wrap items-start gap-5">
@@ -367,17 +390,17 @@ function HeadlineTextualHero({
           </div>
         </div>
       )}
-    </section>
+    </>
   );
 }
 
 // ─── Format: opportunity ──────────────────────────────────────────────────────
 
 function OpportunityHero({
-  slot, isCritical, cardBorder, bottomBg,
-}: { slot: OpportunitySlot; isCritical: boolean; cardBorder: string; bottomBg: string }) {
+  slot, isCritical, bottomBg,
+}: { slot: OpportunitySlot; isCritical: boolean; bottomBg: string }) {
   return (
-    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+    <>
       <div className="px-6 pb-7 pt-8 md:px-8">
         <HeroBadge isCritical={isCritical} />
         <div className="flex flex-wrap items-start gap-9">
@@ -414,21 +437,21 @@ function OpportunityHero({
           </div>
         </div>
       </BottomStrip>
-    </section>
+    </>
   );
 }
 
 // ─── Format: contrast_numeric ─────────────────────────────────────────────────
 
 function ContrastNumericHero({
-  slot, isCritical, cardBorder, bottomBg, domain,
-}: { slot: ContrastNumericSlot; isCritical: boolean; cardBorder: string; bottomBg: string; domain?: string }) {
+  slot, isCritical, bottomBg, domain,
+}: { slot: ContrastNumericSlot; isCritical: boolean; bottomBg: string; domain?: string }) {
   const [ratioBase, ratioSuffix] = slot.ratio.includes(":")
     ? [slot.ratio.split(":")[0], `:${slot.ratio.split(":")[1]}`]
     : [slot.ratio, ""];
 
   return (
-    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+    <>
       <div className="px-6 pb-7 pt-8 md:px-8">
         <HeroBadge isCritical={isCritical} />
         <div className="flex flex-wrap items-start gap-9">
@@ -475,13 +498,13 @@ function ContrastNumericHero({
           </div>
         </div>
       </BottomStrip>
-    </section>
+    </>
   );
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, heroSlot, domain }: Props) {
+export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, heroSlot, domain, sourceRow }: Props) {
   const result = pickHeroFinding(checklist);
   if (!result) return null;
 
@@ -489,12 +512,13 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, hero
   const isCritical = mode === "critical";
   const cardBorder = isCritical ? "border-v2-card-border" : "border-v2-opp-border";
   const bottomBg   = isCritical ? "border-v2-card-divider bg-v2-card-inner" : "border-v2-opp-divider bg-v2-opp-surface";
+  const header = sourceRow ?? undefined;
 
   // ── Viewport / performance finding ──────────────────────────────────────────
   if (isViewportOrPerformanceItem(finding) && viewportWidth != null) {
     const ratio = (viewportWidth / 375).toFixed(1);
     return (
-      <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+      <CardShell cardBorder={cardBorder} header={header}>
         <div className="px-6 pb-[30px] pt-[34px] md:px-9">
           <HeroBadge isCritical={isCritical} />
           <div className="flex flex-wrap items-start gap-6 md:gap-9">
@@ -520,7 +544,7 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, hero
         <div className={`border-t px-6 py-6 md:px-9 ${bottomBg}`}>
           <ViewportScale viewportWidth={viewportWidth} />
         </div>
-      </section>
+      </CardShell>
     );
   }
 
@@ -544,15 +568,35 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, hero
 
     switch (resolvedSlot.type) {
       case "trust_count":
-        return <TrustCountHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+        return (
+          <CardShell cardBorder={cardBorder} header={header}>
+            <TrustCountHero slot={resolvedSlot} isCritical={isCritical} bottomBg={bottomBg} />
+          </CardShell>
+        );
       case "cta_statistic":
-        return <CtaStatisticHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+        return (
+          <CardShell cardBorder={cardBorder} header={header}>
+            <CtaStatisticHero slot={resolvedSlot} isCritical={isCritical} bottomBg={bottomBg} />
+          </CardShell>
+        );
       case "headline_textual":
-        return <HeadlineTextualHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} />;
+        return (
+          <CardShell cardBorder={cardBorder} header={header}>
+            <HeadlineTextualHero slot={resolvedSlot} isCritical={isCritical} />
+          </CardShell>
+        );
       case "opportunity":
-        return <OpportunityHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} />;
+        return (
+          <CardShell cardBorder={cardBorder} header={header}>
+            <OpportunityHero slot={resolvedSlot} isCritical={isCritical} bottomBg={bottomBg} />
+          </CardShell>
+        );
       case "contrast_numeric":
-        return <ContrastNumericHero slot={resolvedSlot} isCritical={isCritical} cardBorder={cardBorder} bottomBg={bottomBg} domain={domain} />;
+        return (
+          <CardShell cardBorder={cardBorder} header={header}>
+            <ContrastNumericHero slot={resolvedSlot} isCritical={isCritical} bottomBg={bottomBg} domain={domain} />
+          </CardShell>
+        );
     }
   }
 
@@ -582,7 +626,7 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, hero
   ) : null;
 
   return (
-    <section className={`overflow-hidden rounded-[16px] border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)] ${cardBorder}`}>
+    <CardShell cardBorder={cardBorder} header={header}>
       <div className="px-6 pb-[30px] pt-[34px] md:px-9">
         <HeroBadge isCritical={isCritical} />
         <h2 className="mb-3.5 text-[22px] font-semibold leading-[1.2] tracking-[-0.02em] text-v2-ink md:text-[27px]">
@@ -595,6 +639,6 @@ export function ReportHeroFinding({ checklist, copyVariants, viewportWidth, hero
         )}
       </div>
       {bottomSection}
-    </section>
+    </CardShell>
   );
 }

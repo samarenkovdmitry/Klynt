@@ -159,17 +159,6 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
     <>
       <main className="min-h-[calc(100dvh-68px)] bg-v2-surface px-4 pb-20 pt-8 text-v2-ink md:px-6 md:pt-[52px]">
         <div className="mx-auto flex w-full max-w-[920px] flex-col gap-7">
-          <ReportSourceRow
-            url={data.url}
-            domain={domain}
-            generatedAt={data.generatedAt}
-            checklistCount={report.checklist?.length}
-            isUnlocked={isUnlocked}
-            onShare={handleShare}
-            onExport={handleExport}
-            onPaywall={() => setPaywallOpen(true)}
-          />
-
           {effectiveChecklist.length > 0 && (
             <ReportHeroFinding
               checklist={effectiveChecklist}
@@ -177,6 +166,18 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
               viewportWidth={report.viewport_width ?? 1280}
               heroSlot={report.hero_slot ?? deriveHeroSlot(report)}
               domain={domain}
+              sourceRow={
+                <ReportSourceRow
+                  url={data.url}
+                  domain={domain}
+                  generatedAt={data.generatedAt}
+                  checklistCount={report.checklist?.length}
+                  isUnlocked={isUnlocked}
+                  onShare={handleShare}
+                  onExport={handleExport}
+                  onPaywall={() => setPaywallOpen(true)}
+                />
+              }
             />
           )}
 
