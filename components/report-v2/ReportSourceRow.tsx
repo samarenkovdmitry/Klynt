@@ -7,17 +7,17 @@ import {
   RiFileTextLine,
   RiLayoutLine,
   RiCodeSSlashLine,
-  RiNotification3Line,
+  RiSendPlaneLine,
   RiArrowDownSLine,
 } from "@remixicon/react";
 import type { ExportType } from "@/lib/report-export-content";
+import { FaviconImg } from "@/components/examples/FaviconImg";
 
 type Props = {
   url?: string;
   domain: string;
   generatedAt?: string;
   checklistCount?: number;
-  previewSrc?: string | null;
   isUnlocked?: boolean;
   onShare: () => void;
   onExport: (type: ExportType) => void;
@@ -28,7 +28,7 @@ const EXPORT_OPTIONS: { icon: React.ElementType; label: string; type: ExportType
   { icon: RiFileTextLine,      label: "Copy deck",      type: "copy_deck"      },
   { icon: RiLayoutLine,        label: "Designer brief", type: "designer_brief" },
   { icon: RiCodeSSlashLine,    label: "Dev tasks",      type: "dev_tasks"      },
-  { icon: RiNotification3Line, label: "Notion / Slack", type: "notion_slack"   },
+  { icon: RiSendPlaneLine,      label: "Notion / Slack", type: "notion_slack"   },
 ];
 
 function formatDate(iso?: string) {
@@ -48,7 +48,6 @@ export function ReportSourceRow({
   domain,
   generatedAt,
   checklistCount,
-  previewSrc,
   isUnlocked = false,
   onShare,
   onExport,
@@ -88,17 +87,11 @@ export function ReportSourceRow({
 
   return (
     <div className="flex flex-nowrap items-center gap-3">
-      {previewSrc && (
-        <span className="block shrink-0 overflow-hidden rounded-lg border border-v2-card-border leading-none">
-          <img
-            src={previewSrc}
-            alt={domain}
-            className="block h-11 w-16 object-cover object-top"
-          />
-        </span>
-      )}
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-[#E8E4DB] bg-[#F4F1EB]">
+        <FaviconImg domain={domain} />
+      </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="truncate text-[15px] font-bold tracking-[-0.01em] text-v2-ink">{domain}</span>
         <span className="font-mono text-[11px] tracking-[0.04em] text-v2-ink-muted">
           {date && <span className="sm:hidden">{date}</span>}
@@ -110,21 +103,21 @@ export function ReportSourceRow({
       <div className="ml-auto flex shrink-0 items-center gap-2.5">
         <button
           onClick={onShare}
-          className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-card-border bg-v2-card px-[15px] py-[9px] text-[13px] font-semibold text-v2-ink-secondary transition-colors hover:bg-v2-card-inner"
+          className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-card-border bg-v2-card px-[15px] py-[9px] text-[14px] font-semibold text-v2-ink-secondary transition-colors hover:bg-v2-card-inner"
         >
-          <RiShare2Line size={15} />
+          <RiShare2Line size={14} />
           Share
         </button>
 
         <div ref={wrapperRef} className="relative">
           <button
             onClick={() => setDropdownOpen(v => !v)}
-            className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-ink bg-v2-ink px-4 py-[9px] text-[13px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
+            className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-ink bg-v2-ink px-4 py-[9px] text-[14px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
           >
-            <RiFileDownloadLine size={15} />
-            Export
+            <RiFileDownloadLine size={14} />
+            Use report
             <RiArrowDownSLine
-              size={15}
+              size={14}
               className={`transition-transform duration-150 ${dropdownOpen ? "rotate-180" : ""}`}
             />
           </button>

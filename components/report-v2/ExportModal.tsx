@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { RiCloseLine, RiFileCopyLine, RiDownload2Line, RiCheckLine } from "@remixicon/react";
-import type { AuditReport } from "@/lib/audit-report";
+import type { AuditReport, ReportCopyVariants } from "@/lib/audit-report";
 import {
   generateExportContent,
   getExportFilename,
@@ -15,6 +15,55 @@ type Props = {
   type: ExportType;
   report: AuditReport;
 };
+
+const COPY_DECK_SECTIONS = [
+  { key: "headline"    as const, title: "Headline"    },
+  { key: "subheadline" as const, title: "Subheadline" },
+  { key: "cta"         as const, title: "CTA"         },
+] as const;
+
+function CopyDeckView({ cv }: { cv: ReportCopyVariants }) {
+  return (
+    <div className="max-h-[360px] divide-y divide-v2-card-divider overflow-y-auto bg-v2-card-inner">
+      {COPY_DECK_SECTIONS.map(({ key, title }) => {
+        const block = cv[key];
+        if (!block) return null;
+        return (
+          <div key={key} className="px-6 py-5">
+            <p className="font-mono mb-3 text-[10.5px] tracking-[0.06em] text-v2-ink-muted uppercase">
+              {title}
+            </p>
+
+            <div className="mb-2.5 rounded-[10px] border border-[#E8E5DB] bg-v2-card px-4 py-3">
+              <p className="font-mono mb-1.5 text-[10px] font-semibold tracking-[0.05em] text-v2-ink-hairline">
+                CURRENT
+              </p>
+              <p className="text-[13.5px] leading-[1.45] text-v2-ink-muted">
+                {block.current}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {(block.variants ?? []).map((v, i) => (
+                <div
+                  key={i}
+                  className="rounded-[10px] border-[1.5px] border-[#A9D8BC] bg-[#F0FAF4] px-4 py-3"
+                >
+                  <p className="font-mono mb-1.5 text-[10px] font-semibold tracking-[0.05em] text-[#166534]">
+                    {v.label.toUpperCase()}
+                  </p>
+                  <p className="text-[13.5px] font-semibold leading-[1.45] text-[#14532D]">
+                    {v.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 const META: Record<ExportType, { title: string; sub: string; copyLabel: string; download: boolean }> = {
   copy_deck:      { title: "Copy deck",      sub: "ALL VARIANTS · MD",  copyLabel: "Copy MD",           download: true  },
@@ -93,9 +142,13 @@ export function ExportModal({ open, onClose, type, report }: Props) {
           </button>
         </div>
 
-        <pre className="max-h-[360px] overflow-y-auto whitespace-pre-wrap break-words bg-v2-card-inner px-6 py-5 font-mono text-[12px] leading-[1.75] text-v2-ink-secondary">
-          {content}
-        </pre>
+        {type === "copy_deck" && report.copy_variants ? (
+          <CopyDeckView cv={report.copy_variants} />
+        ) : (
+          <pre className="max-h-[360px] overflow-y-auto whitespace-pre-wrap break-words bg-v2-card-inner px-6 py-5 font-mono text-[12px] leading-[1.75] text-v2-ink-secondary">
+            {content}
+          </pre>
+        )}
 
         <div className="flex items-center justify-end gap-2.5 border-t border-v2-card-divider px-6 py-4">
           {meta.download && (
