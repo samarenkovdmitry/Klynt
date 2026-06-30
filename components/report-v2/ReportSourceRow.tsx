@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
   RiShare2Line,
-  RiFileDownloadLine,
   RiFileTextLine,
   RiLayoutLine,
   RiCodeSSlashLine,
@@ -105,7 +104,7 @@ export function ReportSourceRow({
           onClick={onShare}
           className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-card-border bg-v2-card px-[15px] py-[9px] text-[14px] font-semibold text-v2-ink-secondary transition-colors hover:bg-v2-card-inner"
         >
-          <RiShare2Line size={14} />
+          <RiShare2Line size={16} />
           Share
         </button>
 
@@ -114,11 +113,10 @@ export function ReportSourceRow({
             onClick={() => setDropdownOpen(v => !v)}
             className="inline-flex items-center gap-1.5 rounded-[9px] border border-v2-ink bg-v2-ink px-4 py-[9px] text-[14px] font-semibold text-white transition-colors hover:bg-v2-dark-alt"
           >
-            <RiFileDownloadLine size={14} />
             Use report
             <RiArrowDownSLine
               size={14}
-              className={`transition-transform duration-150 ${dropdownOpen ? "rotate-180" : ""}`}
+              className={`opacity-60 transition-transform duration-150 ${dropdownOpen ? "rotate-180" : ""}`}
             />
           </button>
 
