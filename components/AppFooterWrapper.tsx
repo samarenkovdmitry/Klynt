@@ -3,7 +3,8 @@
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 
-import { V2Footer } from "@/components/landing-v2/V2Footer";
+import { AppFooter } from "@/components/AppFooter";
+import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 
 function AppFooterContent() {
   const pathname = usePathname();
@@ -12,7 +13,15 @@ function AppFooterContent() {
     return null;
   }
 
-  return <V2Footer />;
+  const isDarkFooter =
+    pathname === "/" || pathname === "/landing-copy" || pathname?.startsWith("/landing-copy/");
+
+  return (
+    <AppFooter
+      variant={isDarkFooter ? "dark" : "light"}
+      containerClass={isDarkFooter ? undefined : REPORT_PAGE_CONTAINER_CLASS}
+    />
+  );
 }
 
 export function AppFooterWrapper() {
