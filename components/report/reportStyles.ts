@@ -1,3 +1,5 @@
+export const REPORT_PAGE_BG_CLASS = "bg-[#EFF3F6]";
+
 export const REPORT_PAGE_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
 
 export const REPORT_SECTION_SPACING_CLASS = "mt-12";
@@ -12,6 +14,17 @@ export const REPORT_HERO_CARD_BORDER_CLASS = "border border-[rgba(6,28,47,0.09)]
 export const REPORT_SURFACE_SHADOW_CLASS = "shadow-[0_10px_40px_rgba(0,0,0,0.03)]";
 
 export const REPORT_HERO_RADIUS_CLASS = "rounded-[20px]";
+
+export const REPORT_SECTION_HEADING_CLASS =
+  "flex items-center gap-2 text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]";
+
+export const REPORT_SECTION_META_CLASS = "text-[14px] leading-5 text-[#7D8C99]";
+
+export const REPORT_SURFACE_CARD_CLASS = [
+  "overflow-hidden bg-white",
+  REPORT_HERO_RADIUS_CLASS,
+  "shadow-[0_0_0_1px_rgba(6,28,47,0.08)]",
+].join(" ");
 
 const REPORT_CARD_BASE_CLASS =
   "rounded-[18px] px-[21px] py-[21px] transition-all duration-200 hover:-translate-y-[1px] md:px-[33px] md:py-[25px]";

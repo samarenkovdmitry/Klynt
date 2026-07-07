@@ -69,10 +69,6 @@ const PREVIEW_PASSES: ReportVisualPass[] = [
 export default function VisualFixesPreviewPage() {
   const demo = DEMO_REPORT;
 
-  const criticalCount = demo.checklist.filter((item) => item.status !== "pass").length;
-  const missingCount = demo.checklist.filter((item) => item.status === "missing").length;
-  const weakCount = demo.checklist.filter((item) => item.status === "weak").length;
-
   return (
     <>
       <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-[13px] text-amber-700">
@@ -96,10 +92,6 @@ export default function VisualFixesPreviewPage() {
             confidence={demo.confidence}
             keyObservation={demo.key_observation}
             previewImage={DEMO_REPORT_PREVIEW_IMAGE}
-            criticalCount={criticalCount}
-            missingCount={missingCount}
-            weakCount={weakCount}
-            scorePotential={demo.score_potential?.target}
             onShare={() => {}}
             onExport={() => {}}
           />
