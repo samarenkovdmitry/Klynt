@@ -13,7 +13,6 @@ import { getImpactEntries, type ImpactEntry } from "@/lib/report-impact";
 import { getMetricObservationFallbacks } from "@/lib/metric-observations";
 import { normalizeRisk } from "@/lib/report-metrics";
 import { PRIORITY_LABELS } from "@/lib/report-priority";
-import { STATUS_COLORS } from "@/lib/status-colors";
 import {
   formatAnalyzedDate,
   formatOverallScore,
@@ -194,7 +193,7 @@ function PrintHeadlineDirectionsCard({
               fontWeight: 600,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
-              color: STATUS_COLORS.good,
+              color: "#059669",
             }}
           >
             Option {String.fromCharCode(65 + index)} — {option.label}
@@ -241,7 +240,7 @@ function PrintCopyCard({ item, index }: { item: ReportCopyItem; index: number })
             fontWeight: 600,
             letterSpacing: "0.08em",
             textTransform: "uppercase",
-            color: STATUS_COLORS.good,
+            color: "#059669",
           }}
         >
           Improved

@@ -1,15 +1,5 @@
 import { RiDownload2Line, RiShareForwardLine } from "@remixicon/react";
 import { REPORT_ACTION_BUTTON_CLASS } from "@/components/report/reportStyles";
-import { SiteFavicon } from "@/components/report/SiteFavicon";
-
-function extractDomain(url?: string) {
-  if (!url) return undefined;
-  try {
-    return new URL(url.startsWith("http") ? url : `https://${url}`).hostname;
-  } catch {
-    return url;
-  }
-}
 
 type ReportHeaderProps = {
   url?: string;
@@ -50,7 +40,11 @@ export function ReportHeader({
         <div className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1 text-[13px] text-[var(--ink-secondary)] md:gap-x-2 md:text-[14px]">
           <div className="flex min-w-0 items-center gap-2">
             {url && (
-              <SiteFavicon domain={extractDomain(url)} size={32} className="h-4 w-4 shrink-0 rounded-sm" />
+              <img
+                src={`https://www.google.com/s2/favicons?domain_url=${url}&sz=32`}
+                alt=""
+                className="h-4 w-4 shrink-0 rounded-sm"
+              />
             )}
             <span className="truncate">{url}</span>
           </div>

@@ -1,4 +1,7 @@
-import { SiteFavicon } from "@/components/report/SiteFavicon";
+import {
+  REPORT_PREVIEW_HEIGHT,
+  REPORT_PREVIEW_WIDTH,
+} from "@/lib/report-preview-size";
 
 type ReportPagePreviewProps = {
   domain?: string;
@@ -25,16 +28,32 @@ export function ReportPagePreview({
           ) : null}
         </div>
 
-        <div
-          className={`relative flex w-full items-center justify-center overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7] ${PREVIEW_ASPECT_CLASS}`}
-        >
-          <SiteFavicon domain={domain} size={64} className="h-16 w-16 rounded-lg" />
-        </div>
+        {previewImage ? (
+          <div className={`relative w-full overflow-hidden bg-[#F8FAFC] ${PREVIEW_ASPECT_CLASS}`}>
+            <img
+              src={previewImage}
+              alt="Analyzed page preview"
+              width={REPORT_PREVIEW_WIDTH}
+              height={REPORT_PREVIEW_HEIGHT}
+              className="h-full w-full object-cover object-top"
+            />
+          </div>
+        ) : (
+          <div
+            className={`relative w-full overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7] ${PREVIEW_ASPECT_CLASS}`}
+          >
+            <div className="absolute inset-x-4 top-4 space-y-2">
+              <div className="h-2.5 w-2/3 rounded bg-[rgba(6,28,47,0.08)]" />
+              <div className="h-2.5 w-1/2 rounded bg-[rgba(6,28,47,0.06)]" />
+              <div className="mt-4 h-16 rounded-md bg-[rgba(6,28,47,0.04)]" />
+            </div>
+          </div>
+        )}
       </div>
 
       {topIssueTitle && (
         <div className="absolute bottom-0 left-1/2 z-10 w-[calc(100%-20px)] -translate-x-1/2">
-          <div className="rounded-[10px] bg-white px-3 py-2 shadow-[0_4px_20px_rgba(6,28,47,0.12)]">
+          <div className="rounded-full bg-white px-3.5 py-2 shadow-[0_4px_20px_rgba(6,28,47,0.12)]">
             <p className="truncate text-[12px] leading-[17px] text-[var(--ink-primary)] md:text-[13px] md:leading-[18px]">
               <span className="font-medium text-[rgba(6,28,47,0.45)]">Top issue · </span>
               {topIssueTitle}

@@ -1,9 +1,9 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import {
-  RiArrowRightLine,
   RiBrainLine,
-  RiErrorWarningFill,
   RiFilePdf2Line,
   RiFocus3Line,
   RiLayoutGridLine,
@@ -12,11 +12,13 @@ import {
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
+import { KlyntFooterLogo } from "@/components/report/KlyntFooterLogo";
 import { ReportPagePreview } from "@/components/report/ReportPagePreview";
-import { SiteFavicon } from "@/components/report/SiteFavicon";
+import { ScoreStatusChip } from "@/components/report/ScoreStatusChip";
 import {
   REPORT_HERO_CARD_BORDER_CLASS,
   REPORT_HERO_RADIUS_CLASS,
+  REPORT_METRIC_DESCRIPTION_CLASS,
   REPORT_SURFACE_SHADOW_CLASS,
 } from "@/components/report/reportStyles";
 import type {
@@ -24,15 +26,17 @@ import type {
   ReportIssue,
   ReportMetricObservations,
 } from "@/lib/audit-report";
+import { getMetricObservationFallbacks } from "@/lib/metric-observations";
 import {
   formatAnalyzedDate,
   formatOverallScore,
   formatReportDomain,
   formatReportHref,
   getFrictionScore,
+  getMetricBarColor,
   getReportHeroTheme,
+  getTierLabel,
 } from "@/lib/report-hero-theme";
-import { STATUS_COLORS } from "@/lib/status-colors";
 
 type ReportHeroSummaryProps = {
   url?: string;
@@ -47,96 +51,129 @@ type ReportHeroSummaryProps = {
   previewImage?: string;
   metricObservations?: ReportMetricObservations;
   issues?: ReportIssue[];
-  /** Count of non-pass checklist items (replaces issues.length for new reports) */
-  criticalCount?: number;
-  /** Count of "missing" checklist items */
-  missingCount?: number;
-  /** Count of "weak" checklist items */
-  weakCount?: number;
-  /** Potential score after fixes (from score_potential.target) */
-  scorePotential?: number;
   onShare: () => void;
   onExport: () => void;
 };
 
-const HERO_ACTION_BUTTON_CLASS =
-  "inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-[#E5E5E5] bg-white px-3.5 text-[14px] font-medium text-[#061C2F] transition-[background-color,box-shadow] hover:bg-[#F8F9FA] hover:shadow-[0_1px_4px_rgba(6,28,47,0.08)]";
-
-const SCORE_COLORS: Record<string, string> = {
-  healthy:  STATUS_COLORS.good,
-  medium:   STATUS_COLORS.weak,
-  critical: STATUS_COLORS.low,
-};
-
-const RIGHT_COL_DOT = "rgba(0,0,0,0.10)";
-
-const METRIC_SHORT_DESC: Record<string, Record<string, string>> = {
-  Trust: {
-    Good: "Social proof builds confidence",
-    Medium: "Some trust signals present",
-    Weak: "Trust cues feel incomplete",
-    Low: "No credibility signals found",
-  },
-  Clarity: {
-    Good: "Value is immediately obvious",
-    Medium: "Benefit mostly comes through",
-    Weak: "Core message needs sharpening",
-    Low: "Value proposition not clear",
-  },
-  Friction: {
-    Good: "User flow feels effortless",
-    Medium: "Minor obstacles slow users down",
-    Weak: "Several friction points present",
-    Low: "Heavy friction blocks conversion",
-  },
-  Hierarchy: {
-    Good: "Attention lands in right place",
-    Medium: "Visual order mostly works",
-    Weak: "Hierarchy needs clearer structure",
-    Low: "No clear visual focal point",
-  },
-};
-
-function getMetricStatus(value: number): { label: string; color: string } {
-  if (value >= 70) return { label: "Good",   color: STATUS_COLORS.good };
-  if (value >= 55) return { label: "Medium", color: STATUS_COLORS.medium };
-  if (value >= 35) return { label: "Weak",   color: STATUS_COLORS.weak };
-  return            { label: "Low",    color: STATUS_COLORS.low };
-}
-
-function CompactMetric({
-  icon: Icon,
-  name,
-  value,
-}: {
+type MetricCardProps = {
   icon: RemixiconComponentType;
-  name: string;
+  label: string;
+  description: string;
   value: number;
-}) {
-  const { label, color } = getMetricStatus(value);
-  const shortDesc = METRIC_SHORT_DESC[name]?.[label] ?? label;
+};
+
+const HERO_ACTION_BUTTON_CLASS =
+  "inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-white/90 text-[14px] font-medium text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(6,28,47,0.08)] transition-[background-color,box-shadow] hover:bg-white hover:shadow-[0_2px_8px_rgba(6,28,47,0.12)] w-9 px-0 sm:w-auto sm:px-4";
+
+const HERO_GRID_LINE = "rgba(6,28,47,0.07)";
+const HERO_GRID_SIZE = "24px 24px";
+const HERO_GRID_POSITION = "0 7px";
+const HERO_GRID_MASK =
+  "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 24%, #000 46%, #000 100%)";
+
+function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) {
+  const barColor = getMetricBarColor(value);
 
   return (
-    <div className="flex flex-col gap-[5px]">
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-[8px] text-[14px] font-semibold text-[#061C2F]">
-          <Icon size={14} color="#8E99A2" aria-hidden />
-          {name}
-        </span>
-        <span className="text-[13px] font-semibold" style={{ color }}>
-          {label}
-        </span>
+    <div className="flex min-w-0 flex-col md:h-full">
+      <div className="flex items-center gap-2">
+        <Icon size={18} className="relative top-[1px] shrink-0 text-[#8E99A2]" aria-hidden />
+        <p className="text-[16px] font-semibold text-[var(--ink-primary)]">{label}</p>
       </div>
-      <div className="my-[1px] h-[3px] overflow-hidden rounded-full bg-[rgba(6,28,47,0.08)]">
-        <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${value}%`, backgroundColor: color }}
-        />
+
+      <p className={REPORT_METRIC_DESCRIPTION_CLASS}>{description}</p>
+
+      <div className="mt-auto flex items-center gap-3">
+        <div className="h-[5px] min-w-0 flex-1 overflow-hidden rounded-full bg-[#F5F5F5]">
+          <div
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${value}%`, backgroundColor: barColor }}
+          />
+        </div>
+        <p
+          className="shrink-0 text-[12px] font-semibold tabular-nums leading-[18px]"
+          style={{ color: barColor }}
+        >
+          {value}%
+        </p>
       </div>
-      <span className="text-[13px] font-normal leading-[18px] text-[rgba(6,28,47,0.45)]">
-        {shortDesc}
-      </span>
     </div>
+  );
+}
+
+function getTrustDescription(value: number) {
+  return getMetricObservationFallbacks({ trust: value }).trust ?? "";
+}
+
+function getClarityDescription(value: number) {
+  return getMetricObservationFallbacks({ clarity: value }).clarity ?? "";
+}
+
+function getFrictionDescription(value: number, breakdown?: ReportBreakdown) {
+  return getMetricObservationFallbacks(breakdown).friction ?? "";
+}
+
+function getVisualsDescription(value: number, breakdown?: ReportBreakdown) {
+  return getMetricObservationFallbacks(breakdown).visuals ?? "";
+}
+
+function isDistinctInsight(insight: string, summary?: string, verdict?: string) {
+  if (!insight) return false;
+
+  const normalizedInsight = insight.trim().toLowerCase();
+  const normalizedSummary = summary?.trim().toLowerCase() ?? "";
+  const normalizedVerdict = verdict?.trim().toLowerCase() ?? "";
+
+  return (
+    normalizedInsight !== normalizedSummary && normalizedInsight !== normalizedVerdict
+  );
+}
+
+function LabeledTakeaway({
+  label,
+  children,
+  className = "mt-3",
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <p
+      className={`${className} text-[15px] leading-[22px] md:text-[16px] md:leading-[24px]`}
+    >
+      <span className="font-medium text-[var(--ink-primary)]">{label}:</span>
+      <span className="text-[rgba(6,28,47,0.5)]"> {children}</span>
+    </p>
+  );
+}
+
+function HeroRightPanel({ gridColor }: { gridColor: string }) {
+  const gridStyle = {
+    backgroundImage: `linear-gradient(${HERO_GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${HERO_GRID_LINE} 1px, transparent 1px)`,
+    backgroundSize: HERO_GRID_SIZE,
+    backgroundPosition: HERO_GRID_POSITION,
+    WebkitMaskImage: HERO_GRID_MASK,
+    maskImage: HERO_GRID_MASK,
+  } as const;
+
+  return (
+    <>
+      <div
+        className="pointer-events-none absolute -right-3 -top-3 bottom-0 hidden w-[min(512px,calc(54%+12px))] md:block"
+        style={gridStyle}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -right-3 -top-3 bottom-0 hidden w-[min(512px,calc(54%+12px))] md:block"
+        style={{
+          background: `radial-gradient(ellipse 85% 80% at 72% 42%, ${gridColor}55, transparent 72%)`,
+          WebkitMaskImage: HERO_GRID_MASK,
+          maskImage: HERO_GRID_MASK,
+        }}
+        aria-hidden
+      />
+    </>
   );
 }
 
@@ -145,183 +182,197 @@ export function ReportHeroSummary({
   generatedAt,
   score = 0,
   verdict,
+  summary,
   breakdown,
   confidence = 0,
+  keyObservation,
   previewImage,
+  metricObservations,
   issues = [],
-  criticalCount,
-  missingCount,
-  weakCount,
-  scorePotential,
   onShare,
   onExport,
 }: ReportHeroSummaryProps) {
   const theme = getReportHeroTheme(score);
-  const scoreColor = SCORE_COLORS[theme.tier] ?? "#BA7517";
   const domain = formatReportDomain(url);
   const reportHref = formatReportHref(url);
   const trust = Math.max(0, Math.min(100, Number(breakdown?.trust ?? 0)));
   const clarity = Math.max(0, Math.min(100, Number(breakdown?.clarity ?? 0)));
   const friction = Math.max(0, Math.min(100, getFrictionScore(breakdown)));
   const visuals = Math.max(0, Math.min(100, Number(breakdown?.visuals ?? 0)));
-  const signalsCount = Math.max(0, Math.min(100, Number(confidence)));
-  const criticalGaps = criticalCount ?? issues.length;
-
-  const displayScore = parseFloat(formatOverallScore(score));
-  const potentialScore =
-    scorePotential != null
-      ? formatOverallScore(scorePotential)
-      : Math.min(10, displayScore + 1.5).toFixed(1);
-
-  const dotStyle = {
-    backgroundImage: `radial-gradient(circle, ${RIGHT_COL_DOT} 1px, transparent 1px)`,
-    backgroundSize: "16px 16px",
-    backgroundColor: "#FAFAFA",
-  };
+  const topIssueTitle = issues[0]?.title?.trim() || verdict?.trim();
+  const overallScore = formatOverallScore(score);
+  const confidenceValue = Math.max(0, Math.min(100, Number(confidence)));
+  const tierLabel = getTierLabel(theme.tier);
+  const trustDescription =
+    metricObservations?.trust?.trim() || getTrustDescription(trust);
+  const clarityDescription =
+    metricObservations?.clarity?.trim() || getClarityDescription(clarity);
+  const frictionDescription =
+    metricObservations?.friction?.trim() ||
+    getFrictionDescription(friction, breakdown);
+  const visualsDescription =
+    metricObservations?.visuals?.trim() || getVisualsDescription(visuals, breakdown);
+  const keyInsight = keyObservation?.trim() ?? "";
+  const showKeyInsight = isDistinctInsight(keyInsight, summary, verdict);
 
   return (
     <div
       className={`overflow-hidden bg-white ${REPORT_HERO_RADIUS_CLASS} ${REPORT_HERO_CARD_BORDER_CLASS} ${REPORT_SURFACE_SHADOW_CLASS}`}
     >
-      {/* ── TOP BAR ─────────────────────────────────────────── */}
-      <div className="flex items-center justify-between border-b border-[rgba(6,28,47,0.06)] px-5 py-3 md:px-[30px]">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[14px]">
-          <div className="flex min-w-0 items-center gap-1.5">
-            {url && (
-              <SiteFavicon domain={domain} size={32} className="h-[18px] w-[18px] shrink-0 rounded-sm" />
-            )}
-            {reportHref ? (
-              <a
-                href={reportHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-[#1a1a1a] transition-opacity hover:opacity-70"
-              >
-                {domain}
-              </a>
-            ) : (
-              <span className="font-medium text-[#1a1a1a]">{domain}</span>
-            )}
-          </div>
-          <span
+      <div className="relative overflow-hidden">
+        <section
+          className="relative overflow-hidden px-5 pb-5 pt-5 md:px-[30px] md:pb-7 md:pt-6"
+          style={{ backgroundColor: theme.heroBg }}
+        >
+          <HeroRightPanel gridColor={theme.gridColor} />
+
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-10"
+            style={{
+              background: "linear-gradient(to bottom, transparent, #ffffff)",
+            }}
             aria-hidden
-            className="mx-[4px] hidden h-[16px] w-[1px] shrink-0 bg-[rgba(6,28,47,0.10)] md:inline-block"
           />
-          <span className="font-normal text-[rgba(6,28,47,0.4)]">
-            {formatAnalyzedDate(generatedAt)}
-          </span>
-        </div>
 
-        <div className="flex shrink-0 items-center gap-1.5">
-          <button
-            type="button"
-            onClick={onShare}
-            className={HERO_ACTION_BUTTON_CLASS}
-            aria-label="Share report"
-          >
-            <RiShare2Line size={16} aria-hidden />
-            <span className="hidden sm:inline">Share</span>
-          </button>
-          <button
-            type="button"
-            onClick={onExport}
-            className={HERO_ACTION_BUTTON_CLASS}
-            aria-label="Export PDF"
-          >
-            <RiFilePdf2Line size={16} aria-hidden />
-            <span className="hidden sm:inline">Export PDF</span>
-          </button>
-        </div>
-      </div>
+          <div className="relative z-[1]">
+            <div className="relative min-h-9 sm:flex sm:min-h-0 sm:items-center sm:justify-between sm:gap-4">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 pr-[5.25rem] text-[14px] sm:pr-0">
+                <div className="flex min-w-0 items-center gap-2">
+                  {url && (
+                    <img
+                      src={`https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=32`}
+                      alt=""
+                      className="h-4 w-4 shrink-0 rounded-sm"
+                    />
+                  )}
+                  {reportHref ? (
+                    <a
+                      href={reportHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-[var(--ink-primary)] transition-opacity hover:opacity-70"
+                    >
+                      {domain}
+                    </a>
+                  ) : (
+                    <span className="font-medium text-[var(--ink-primary)]">{domain}</span>
+                  )}
+                </div>
 
-      {/* ── HERO 2-COL GRID ─────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_324px] lg:grid-cols-[1fr_356px]">
+                <span className="hidden h-4 w-px bg-[rgba(6,28,47,0.1)] sm:inline-block" />
 
-        {/* LEFT COLUMN */}
-        <div className="flex flex-col p-5 md:px-[30px] md:py-5">
-
-          {/* Score */}
-          <div className="flex items-baseline gap-[5px]">
-            <span
-              className="font-semibold leading-none"
-              style={{ fontSize: 40, letterSpacing: "-2px", color: scoreColor }}
-            >
-              {formatOverallScore(score)}
-            </span>
-            <span className="text-[14px] font-normal text-[rgba(6,28,47,0.35)]" style={{ fontVariantNumeric: "proportional-nums lining-nums" }}>/10</span>
-          </div>
-
-          {/* Verdict headline */}
-          <h1 className="mt-[8px] text-[24px] font-semibold leading-[28px] tracking-[-0.02em] text-[#061C2F]">
-            {verdict || "UX assessment complete"}
-          </h1>
-
-          {/* Divider — bleeds to card edges */}
-          <hr className="-mx-5 mt-[20px] border-none border-t border-[rgba(6,28,47,0.06)] md:-mx-[30px]" style={{ borderTopWidth: "1px" }} />
-
-          {/* 2×2 metrics grid */}
-          <div className="mt-[10px] mb-6 grid grid-cols-2 gap-x-[30px] gap-y-3">
-            <CompactMetric icon={RiShieldCheckLine} name="Trust" value={trust} />
-            <CompactMetric icon={RiFocus3Line} name="Clarity" value={clarity} />
-            <CompactMetric icon={RiBrainLine} name="Friction" value={friction} />
-            <CompactMetric icon={RiLayoutGridLine} name="Hierarchy" value={visuals} />
-          </div>
-
-          {/* Signals — pinned to bottom of left column */}
-          {signalsCount > 0 && (
-            <div className="mt-auto -mx-5 border-t border-[rgba(6,28,47,0.08)] px-5 pt-4 md:-mx-[30px] md:px-[30px]">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex shrink-0 items-center rounded-md border border-[rgba(6,28,47,0.10)] bg-[rgba(6,28,47,0.04)] px-2 py-[3px] text-[13px] font-medium text-[rgba(6,28,47,0.55)]">
-                  {signalsCount} signals analysed
-                </span>
-                <span className="text-[13px] text-[rgba(6,28,47,0.45)]">
-                  UI structure, messaging and conversion signals
+                <span className="text-[rgba(6,28,47,0.5)]">
+                  {formatAnalyzedDate(generatedAt)}
                 </span>
               </div>
-            </div>
-          )}
-        </div>
 
-        {/* RIGHT COLUMN — screenshot + dot bg */}
-        <div
-          className="relative flex flex-col items-center justify-center border-t border-[rgba(6,28,47,0.06)] px-3 py-4 md:border-l md:border-t-0"
-          style={dotStyle}
-        >
-          <div className="relative z-[1] w-full">
-            <ReportPagePreview
-              domain={domain}
-              previewImage={previewImage}
-              topIssueTitle={undefined}
+              <div className="absolute right-0 top-0 flex shrink-0 items-center gap-1.5 sm:static sm:gap-2 sm:justify-end">
+                <button
+                  type="button"
+                  onClick={onShare}
+                  className={HERO_ACTION_BUTTON_CLASS}
+                  aria-label="Share report"
+                >
+                  <RiShare2Line size={16} aria-hidden />
+                  <span className="hidden sm:inline">Share</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={onExport}
+                  className={HERO_ACTION_BUTTON_CLASS}
+                  aria-label="Export PDF"
+                >
+                  <RiFilePdf2Line size={16} aria-hidden />
+                  <span className="hidden sm:inline">Export PDF</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-col gap-5 md:mt-6 md:flex-row md:items-start md:justify-between md:gap-8">
+              <div className="min-w-0 flex-1 md:max-w-[560px]">
+                <h1 className="text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
+                  {verdict || "UX assessment complete"}
+                </h1>
+
+                <div className="mt-3">
+                  <ScoreStatusChip
+                    score={overallScore}
+                    tierLabel={tierLabel}
+                    badgeBg={theme.badgeBg}
+                  />
+                </div>
+
+                <LabeledTakeaway label="Visitor takeaway" className="mt-4">
+                  {summary || "No summary generated."}
+                </LabeledTakeaway>
+
+                {showKeyInsight && (
+                  <LabeledTakeaway label="Key insight">{keyInsight}</LabeledTakeaway>
+                )}
+              </div>
+
+              <div className="flex shrink-0 justify-center md:justify-end">
+                <ReportPagePreview
+                  domain={domain}
+                  previewImage={previewImage}
+                  topIssueTitle={topIssueTitle}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-white px-5 pb-6 pt-5 md:px-[30px] md:pb-6 md:pt-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-6 xl:grid-cols-4">
+            <MetricCard
+              icon={RiShieldCheckLine}
+              label="Trust Signals"
+              value={trust}
+              description={trustDescription}
+            />
+            <MetricCard
+              icon={RiFocus3Line}
+              label="Decision Clarity"
+              value={clarity}
+              description={clarityDescription}
+            />
+            <MetricCard
+              icon={RiBrainLine}
+              label="Cognitive Friction"
+              value={friction}
+              description={frictionDescription}
+            />
+            <MetricCard
+              icon={RiLayoutGridLine}
+              label="Visual Hierarchy"
+              value={visuals}
+              description={visualsDescription}
             />
           </div>
 
-          {/* Pills row: critical gaps + score improvement */}
-          <div className="relative z-[1] mt-[10px] flex flex-wrap items-center justify-center gap-2">
-            {criticalGaps > 0 && (
-              <div className="inline-flex h-6 items-center gap-1 rounded-full border border-[rgba(185,117,37,0.20)] bg-[#FEF3E2] pl-1 pr-2 text-[13px] font-medium text-[#7A3E00]">
-                <RiErrorWarningFill size={16} className="shrink-0 text-status-weak" aria-hidden />
-                <span style={{ position: "relative", top: -1 }}>
-                  {criticalGaps} critical gap{criticalGaps !== 1 ? "s" : ""}
+          <div className="mt-5 md:mt-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+              <p className="min-w-0 text-[13px] leading-[18px]">
+                <span className="font-medium text-[var(--ink-primary)]">
+                  AI confidence: {confidenceValue}%
                 </span>
-              </div>
-            )}
-            {displayScore > 0 && (
-              <div className="inline-flex items-center gap-1 rounded-full bg-status-good px-2 py-[5px]">
-                <span className="text-[13px] font-bold leading-none text-white">
-                  {formatOverallScore(score)}
+                <span className="font-normal text-[rgba(6,28,47,0.5)]">
+                  {" "}
+                  – Based on visible UI structure, messaging clarity and conversion signals.
                 </span>
-                <RiArrowRightLine size={12} className="shrink-0 text-white" aria-hidden />
-                <span className="text-[13px] font-bold leading-none text-white">
-                  {potentialScore}
-                </span>
-                <span className="mx-0.5 h-4 w-px shrink-0 bg-[rgba(255,255,255,0.15)]" aria-hidden />
-                <span className="text-[13px] font-normal leading-none text-white">
-                  after fixes
-                </span>
-              </div>
-            )}
+              </p>
+              <a
+                href="https://klynt.one"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center gap-1.5 self-start text-[13px] leading-[18px] font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80 md:self-auto"
+              >
+                Generated with
+                <KlyntFooterLogo />
+              </a>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

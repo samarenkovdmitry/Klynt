@@ -7,6 +7,7 @@ import {
   RiLoader4Line,
 } from "@remixicon/react";
 
+import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import type { ReportLoadState } from "@/hooks/useReportData";
 
@@ -26,9 +27,12 @@ type ReportPageStatesProps = {
 
 function ReportStateLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="flex min-h-[calc(100dvh-68px)] items-center justify-center bg-white px-4 md:px-6">
-      {children}
-    </main>
+    <>
+      <AppHeader />
+      <main className="flex min-h-[calc(100dvh-68px)] items-center justify-center bg-white px-4 md:px-6">
+        {children}
+      </main>
+    </>
   );
 }
 

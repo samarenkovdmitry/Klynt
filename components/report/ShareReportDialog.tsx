@@ -233,7 +233,7 @@ export function ShareReportDialog({
               type="button"
               variant="accent"
               fullWidth
-              className="!mt-3 !h-[48px] !min-h-[48px] !rounded-full !text-[15px] hover:!translate-y-0 !bg-black !text-white hover:!bg-zinc-800 !shadow-none"
+              className="!mt-3 !h-[48px] !min-h-[48px] !rounded-full !text-[15px] hover:!translate-y-0"
               icon={
                 copied ? (
                   <RiCheckLine size={18} className="text-white" aria-hidden />
