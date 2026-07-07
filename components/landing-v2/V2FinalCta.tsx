@@ -44,14 +44,14 @@ export function V2FinalCta() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://yoursite.com"
-            className="h-[56px] flex-1 min-w-0 rounded-[13px] border border-white bg-white px-[18px] font-sans text-[16px] text-v2-dark outline-none placeholder:text-[#A8A294]"
+            className="min-h-[52px] h-[56px] flex-1 min-w-0 rounded-[13px] border border-white bg-white px-[18px] font-sans text-[16px] text-v2-dark outline-none placeholder:text-[#A8A294]"
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
           />
           <button
             type="submit"
-            className="flex h-[56px] shrink-0 items-center justify-center gap-[9px] rounded-[13px] border-none bg-v2-dark px-[26px] font-sans text-[16px] font-semibold text-white transition-transform hover:-translate-y-px sm:w-auto w-full"
+            className="flex min-h-[52px] h-[56px] shrink-0 items-center justify-center gap-[9px] rounded-[13px] border-none bg-v2-dark px-[26px] font-sans text-[16px] font-semibold text-white transition-transform hover:-translate-y-px sm:w-auto w-full"
           >
             Analyse free
             <RiArrowRightLine size={18} aria-hidden />

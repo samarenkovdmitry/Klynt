@@ -42,7 +42,7 @@ export function V2HeroSplit() {
           </p>
 
           <form className="flex max-w-[520px] flex-col gap-3 sm:flex-row" onSubmit={handleSubmit} noValidate>
-            <label className="flex h-[60px] flex-1 min-w-0 cursor-text items-center gap-[11px] rounded-[13px] border border-[1.5px] border-lv2-border bg-lv2-card px-[18px] transition-colors focus-within:border-v2-dark">
+            <label className="flex min-h-[52px] h-[60px] flex-1 min-w-0 cursor-text items-center gap-[11px] rounded-[13px] border border-[1.5px] border-lv2-border bg-lv2-card px-[18px] transition-colors focus-within:border-v2-dark">
               <RiLink size={19} className="shrink-0 text-[#A8A294]" aria-hidden />
               <input
                 type="url"
@@ -58,7 +58,7 @@ export function V2HeroSplit() {
             </label>
             <button
               type="submit"
-              className="flex h-[60px] shrink-0 items-center gap-[10px] rounded-[13px] bg-v2-dark px-[28px] font-sans text-[17px] font-semibold text-white transition-colors hover:bg-v2-dark-alt sm:w-auto w-full justify-center"
+              className="flex min-h-[52px] h-[60px] shrink-0 items-center gap-[10px] rounded-[13px] bg-v2-dark px-[28px] font-sans text-[17px] font-semibold text-white transition-colors hover:bg-v2-dark-alt sm:w-auto w-full justify-center"
             >
               Analyse free
               <RiArrowRightLine size={19} aria-hidden />

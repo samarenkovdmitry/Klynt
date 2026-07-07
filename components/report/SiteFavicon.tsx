@@ -14,7 +14,10 @@ export function SiteFavicon({ domain, size = 64, className = "" }: SiteFaviconPr
   const cleanDomain = domain?.replace(/^www\./, "");
   const letter = cleanDomain ? cleanDomain[0].toUpperCase() : "?";
 
-  if (!domain || failed) {
+  const faviconSrc = `https://www.google.com/s2/favicons?domain=${cleanDomain}&sz=${size}`;
+  console.log("[SiteFavicon]", { domain, cleanDomain, faviconSrc, failed });
+
+  if (!cleanDomain || failed) {
     return (
       <div
         className={`flex items-center justify-center rounded-lg bg-[#E8EFFE] font-semibold text-[#2F6FED] ${className}`}
@@ -26,10 +29,13 @@ export function SiteFavicon({ domain, size = 64, className = "" }: SiteFaviconPr
   }
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=${size}`}
+      src={faviconSrc}
       alt=""
-      className={className}
+      width={size}
+      height={size}
+      className={`object-contain ${className}`}
       onError={() => setFailed(true)}
     />
   );

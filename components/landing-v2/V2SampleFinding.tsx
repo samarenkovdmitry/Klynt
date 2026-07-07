@@ -1,9 +1,25 @@
 import Link from "next/link";
 import { RiArrowRightLine, RiErrorWarningFill, RiFileSearchLine } from "@remixicon/react";
 
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
+import type { AuditReport } from "@/lib/audit-report";
+import { getDomain } from "@/lib/example-reports";
 
-export function V2SampleFinding() {
+type V2SampleFindingProps = {
+  report?: AuditReport | null;
+  reportId?: string;
+};
+
+export function V2SampleFinding({ report, reportId }: V2SampleFindingProps) {
+  const headline = report?.copy_variants?.headline;
+  const domain = report?.url ? getDomain(report.url) : null;
+  const score = report?.score;
+  const reportHref = reportId ? `/report/${reportId}?demo=true` : null;
+
+  const before = headline?.current ?? "Meet the night shift.";
+  const after = headline?.variants?.[0]?.text ?? "Your AI team that never clocks out.";
+  const displayDomain = domain ?? "notion.so";
+  const displayScore = typeof score === "number" ? score.toFixed(1) : "7.2";
+
   return (
     <section
       className="px-6 py-[96px] text-white md:px-[72px] md:py-[104px]"
@@ -19,7 +35,7 @@ export function V2SampleFinding() {
             A real finding, from a real audit.
           </h2>
           <p className="max-w-[50ch] text-[18px] leading-[1.55] text-[#B6AFA2]">
-            This is the actual output — one hero slot, measured and rewritten. No mockup.
+            This is the actual output — one headline slot, measured and rewritten. No mockup.
           </p>
         </div>
 
@@ -29,15 +45,15 @@ export function V2SampleFinding() {
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-[7px] rounded-full bg-lv2-amber-bg px-[11px] py-[6px] font-mono text-[10.5px] font-semibold tracking-[.06em] text-lv2-amber">
                 <RiErrorWarningFill size={12} aria-hidden />
-                ISSUE · CONTRAST
+                COPY · HEADLINE
               </span>
               <span className="inline-flex items-center gap-[6px] font-mono text-[11px] text-v2-ink-faint">
                 <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-v2-ink-faint" />
-                linear.app · hero subhead
+                {displayDomain} · hero headline
               </span>
             </div>
-            <div className="font-sans text-[58px] font-bold leading-[.8] tracking-[-0.045em] text-v2-dark">
-              2.8<span className="font-semibold text-[#6B6557]">:1</span>
+            <div className="font-sans text-[42px] font-bold leading-[.9] tracking-[-0.04em] text-v2-dark">
+              {displayScore}<span className="text-[22px] font-semibold text-[#6B6557]">/10</span>
             </div>
           </div>
 
@@ -46,11 +62,11 @@ export function V2SampleFinding() {
             <div className="overflow-hidden rounded-[16px] border border-[#EEE9DD]">
               <div className="flex items-center justify-between border-b border-[#EEE9DD] bg-[#F4F0E7] px-4 py-[10px]">
                 <span className="font-mono text-[10.5px] font-semibold tracking-[.07em] text-[#B0A99A]">BEFORE</span>
-                <span className="font-mono text-[10.5px] font-semibold tracking-[.04em] text-lv2-amber">FAIL · 2.8:1</span>
+                <span className="font-mono text-[10.5px] font-semibold tracking-[.04em] text-lv2-amber">VAGUE · no product signal</span>
               </div>
               <div className="bg-white px-5 py-[26px]">
                 <p className="text-[21px] font-semibold leading-[1.25] tracking-[-0.01em] text-[#9CA3AF]">
-                  Start your free trial today
+                  {before}
                 </p>
               </div>
             </div>
@@ -58,37 +74,34 @@ export function V2SampleFinding() {
             <div className="overflow-hidden rounded-[16px] border border-[#EEE9DD]">
               <div className="flex items-center justify-between border-b border-[#DCEBDF] bg-[#EAF3EC] px-4 py-[10px]">
                 <span className="font-mono text-[10.5px] font-semibold tracking-[.07em] text-lv2-green">AFTER</span>
-                <span className="font-mono text-[10.5px] font-semibold tracking-[.04em] text-lv2-green">PASS · 7.1:1</span>
+                <span className="font-mono text-[10.5px] font-semibold tracking-[.04em] text-lv2-green">CLEAR · AI + outcome</span>
               </div>
               <div className="bg-white px-5 py-[26px]">
                 <p className="text-[21px] font-semibold leading-[1.25] tracking-[-0.01em] text-[#1F2937]">
-                  Start your free trial today
+                  {after}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Color row */}
-          <div className="mt-[18px] flex flex-wrap items-center gap-[10px] border-t border-[#EEEBE2] pt-[18px] text-[12px]">
-            <span className="inline-flex items-center gap-[6px] font-mono text-[#9A9588] line-through decoration-[#CBC4B5]">
-              <span className="h-[9px] w-[9px] shrink-0 rounded-full bg-[#9CA3AF]" />
-              #9CA3AF
-            </span>
-            <RiArrowRightLine size={15} className="text-[#C8C1B1]" aria-hidden />
-            <span className="inline-flex items-center gap-[6px] font-mono font-semibold text-v2-dark">
-              <span className="h-[9px] w-[9px] shrink-0 rounded-full bg-[#1F2937]" />
-              #1F2937 on #FFFFFF · passes AA
-            </span>
+          {/* Insight row */}
+          <div className="mt-[18px] border-t border-[#EEEBE2] pt-[18px]">
+            <p className="font-mono text-[11.5px] leading-[1.6] text-v2-ink-faint">
+              <span className="mr-2 font-semibold text-lv2-amber">WHY IT MATTERS</span>
+              A metaphor headline with no product category named leaves cold visitors unsure what they&apos;re signing up for.
+            </p>
           </div>
         </div>
 
-        <Link
-          href={DEMO_REPORT_PATH}
-          className="mt-7 inline-flex h-[52px] items-center gap-[9px] rounded-[13px] border-2 border-white/25 px-[26px] text-[16px] font-semibold text-white transition-transform hover:-translate-y-px"
-        >
-          View full sample report
-          <RiArrowRightLine size={18} aria-hidden />
-        </Link>
+        {reportHref ? (
+          <Link
+            href={reportHref}
+            className="mt-7 inline-flex h-[52px] items-center gap-[9px] rounded-[13px] border-2 border-white/25 px-[26px] text-[16px] font-semibold text-white transition-transform hover:-translate-y-px"
+          >
+            View full report
+            <RiArrowRightLine size={18} aria-hidden />
+          </Link>
+        ) : null}
       </div>
     </section>
   );

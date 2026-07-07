@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RiErrorWarningFill, RiPulseLine } from "@remixicon/react";
+import type { ExampleReport } from "@/lib/example-reports";
+import { getDomain, getTopFinding, getTopFindingCategory } from "@/lib/example-reports";
 
 const FALLBACK_COUNT = 1247;
 
-type V2TrustedByProps = {
-  auditedCount?: number | null;
-};
-
-const AUDITS = [
+const FALLBACK_AUDITS = [
   {
     name: "tally.so",
     category: "CTA COPY",
@@ -32,10 +30,58 @@ const AUDITS = [
   },
 ];
 
-export function V2TrustedBy({ auditedCount = null }: V2TrustedByProps) {
+type AuditCard = {
+  name: string;
+  category: string;
+  finding: string;
+};
+
+function shuffle<T>(arr: T[]): T[] {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+function reportsToCards(reports: ExampleReport[]): AuditCard[] {
+  return reports
+    .map((r) => {
+      const finding = getTopFinding(r.payload);
+      if (!finding) return null;
+      return {
+        name: getDomain(r.audited_url),
+        category: getTopFindingCategory(r.payload),
+        finding,
+      };
+    })
+    .filter((c): c is AuditCard => c !== null);
+}
+
+type V2TrustedByProps = {
+  auditedCount?: number | null;
+  exampleReports?: ExampleReport[];
+};
+
+export function V2TrustedBy({ auditedCount = null, exampleReports = [] }: V2TrustedByProps) {
   const target = typeof auditedCount === "number" && auditedCount > 0 ? auditedCount : FALLBACK_COUNT;
   const counterRef = useRef<HTMLSpanElement>(null);
   const observedRef = useRef(false);
+
+  const dynamicCards = reportsToCards(exampleReports);
+  const [cards, setCards] = useState<AuditCard[]>(
+    dynamicCards.length >= 4
+      ? dynamicCards.slice(0, 4)
+      : FALLBACK_AUDITS
+  );
+
+  useEffect(() => {
+    if (dynamicCards.length >= 4) {
+      setCards(shuffle(dynamicCards).slice(0, 4));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const el = counterRef.current;
@@ -89,9 +135,9 @@ export function V2TrustedBy({ auditedCount = null }: V2TrustedByProps) {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {AUDITS.map((a) => (
+          {cards.map((a, i) => (
             <div
-              key={a.name}
+              key={`${a.name}-${i}`}
               className="flex flex-col rounded-[16px] border border-lv2-list-border bg-lv2-list-bg px-[22px] py-[24px]"
             >
               <div className="mb-4 flex items-center gap-3">

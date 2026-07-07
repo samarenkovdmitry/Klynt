@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { RiDownloadLine, RiVipCrownFill } from "@remixicon/react";
 
 
-import { AppHeader } from "@/components/AppHeader";
 import { ReportActionLayout } from "@/components/report/ReportActionLayout";
 import { ReportChecklist } from "@/components/report/ReportChecklist";
 import CopyStudio from "@/components/report/CopyStudio";
@@ -201,8 +200,6 @@ export function ReportPageView({
 
   return (
     <>
-      <AppHeader />
-
       {showUnlockedBanner && (
         <div className="flex items-center justify-center gap-2 bg-emerald-600 px-4 py-3 text-[14px] font-medium text-white">
           <span aria-hidden>✓</span>

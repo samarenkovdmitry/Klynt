@@ -2,12 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { RiCheckboxCircleLine } from "@remixicon/react";
 
-import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 const PRODUCT = [
-  { href: "/analyze",       label: "UX audit" },
-  { href: "/landing-copy",  label: "Hero copy" },
-  { href: DEMO_REPORT_PATH, label: "Sample report" },
+  { href: "/analyze",   label: "UX audit" },
+  { href: "/examples",  label: "Examples" },
 ];
 
 const COMPANY = [

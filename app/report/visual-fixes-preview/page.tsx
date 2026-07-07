@@ -1,6 +1,5 @@
 "use client";
 
-import { AppHeader } from "@/components/AppHeader";
 import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
 import { ReportChecklist } from "@/components/report/ReportChecklist";
 import CopyStudio from "@/components/report/CopyStudio";
@@ -76,8 +75,6 @@ export default function VisualFixesPreviewPage() {
 
   return (
     <>
-      <AppHeader />
-
       <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-[13px] text-amber-700">
         <span className="font-semibold">DEV PREVIEW</span>
         <span className="text-amber-500">·</span>

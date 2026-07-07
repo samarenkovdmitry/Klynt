@@ -5,47 +5,55 @@ import { createServerSupabase, isSupabaseConfigured } from "@/lib/supabase-serve
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
-  const signature = req.headers.get("x-signature");
+  const signature = req.headers.get("x-nowpayments-sig");
 
   if (!signature) {
     return NextResponse.json({ error: "Missing signature" }, { status: 401 });
   }
 
-  const secret = process.env.LEMONSQUEEZY_SIGNING_SECRET;
+  const secret = process.env.NOWPAYMENTS_IPN_SECRET;
   if (!secret) {
-    console.error("[payment] LEMONSQUEEZY_SIGNING_SECRET not set");
+    console.error("[payment/confirm] NOWPAYMENTS_IPN_SECRET not set");
     return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
   }
 
-  const hmac = crypto
-    .createHmac("sha256", secret)
-    .update(rawBody)
-    .digest("hex");
+  // NOWPayments IPN: HMAC-SHA-512 of JSON body with keys sorted alphabetically
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(rawBody);
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const sortedBody = JSON.stringify(
+    Object.keys(parsed)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, key) => { acc[key] = parsed[key]; return acc; }, {})
+  );
+
+  const hmac = crypto.createHmac("sha512", secret).update(sortedBody).digest("hex");
 
   if (hmac !== signature) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  const event = JSON.parse(rawBody);
+  const { payment_status, order_description } = parsed as {
+    payment_status?: string;
+    order_description?: string;
+  };
 
-  if (event.meta?.event_name !== "order_created") {
+  if (payment_status !== "finished") {
     return NextResponse.json({ ok: true });
   }
 
-  // Only unlock on paid orders (guard against refunds / pending)
-  const orderStatus = event.data?.attributes?.status;
-  if (orderStatus !== "paid") {
-    return NextResponse.json({ ok: true });
-  }
-
-  const reportId = event.meta?.custom_data?.report_id;
+  const reportId = order_description?.trim();
   if (!reportId) {
-    console.error("[payment] No report_id in custom_data");
-    return NextResponse.json({ error: "Missing report_id" }, { status: 400 });
+    console.error("[payment/confirm] No reportId in order_description");
+    return NextResponse.json({ error: "Missing reportId" }, { status: 400 });
   }
 
   if (!isSupabaseConfigured()) {
-    console.error("[payment] Supabase not configured");
+    console.error("[payment/confirm] Supabase not configured");
     return NextResponse.json({ error: "DB not configured" }, { status: 500 });
   }
 
@@ -57,11 +65,11 @@ export async function POST(req: NextRequest) {
     .eq("id", reportId);
 
   if (error) {
-    console.error("[payment] Supabase update failed:", error.message);
+    console.error("[payment/confirm] Supabase update failed:", error.message);
     return NextResponse.json({ error: "DB update failed" }, { status: 500 });
   }
 
-  console.log(`[payment] Report ${reportId} unlocked`);
+  console.log(`[payment/confirm] Report ${reportId} unlocked`);
 
   const baseUrl = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
@@ -72,7 +80,7 @@ export async function POST(req: NextRequest) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ reportId }),
   }).catch((err) =>
-    console.error("[payment] narrative trigger failed:", err)
+    console.error("[payment/confirm] narrative trigger failed:", err)
   );
 
   return NextResponse.json({ ok: true });

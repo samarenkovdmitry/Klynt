@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { RiCheckboxCircleFill, RiCloseLine } from "@remixicon/react";
+import { useEffect, useState } from "react";
+import { RiCheckboxCircleFill, RiCloseLine, RiLoader4Line } from "@remixicon/react";
 import type { ProUpgradeTrigger } from "@/lib/freemium";
 
 type FreemiumProModalProps = {
@@ -20,29 +20,14 @@ const FEATURES = [
   { label: "Export-ready report", sub: "Copy deck, designer brief & dev tasks" },
 ] as const;
 
-function buildCheckoutUrl(reportId: string): string | null {
-  const variantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID;
-  console.log("[checkout] variantId:", variantId, "| reportId:", reportId);
-  if (!variantId || !reportId) return null;
-
-  const redirectUrl = encodeURIComponent(
-    `${window.location.origin}${window.location.pathname}?unlocked=true`
-  );
-
-  const url =
-    `https://klyntapp.lemonsqueezy.com/checkout/buy/${variantId}` +
-    `?checkout[custom][report_id]=${reportId}` +
-    `&checkout[redirect_url]=${redirectUrl}`;
-
-  console.log("[checkout] url:", url);
-  return url;
-}
-
 export function FreemiumProModal({
   open,
   onClose,
   reportId,
 }: FreemiumProModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     if (!open) return;
 
@@ -62,12 +47,32 @@ export function FreemiumProModal({
 
   if (!open) return null;
 
-  function handleCheckout() {
-    const url = buildCheckoutUrl(reportId);
-    if (url) window.location.href = url;
-  }
+  async function handleCheckout() {
+    if (loading || !reportId) return;
+    setLoading(true);
+    setError(null);
 
-  const checkoutReady = !!process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID && !!reportId;
+    try {
+      const res = await fetch("/api/payment/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reportId }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data?.payment_url) {
+        setError(data?.error ?? "Could not start checkout. Please try again.");
+        return;
+      }
+
+      window.open(data.payment_url, "_blank", "noopener,noreferrer");
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center">
@@ -125,13 +130,26 @@ export function FreemiumProModal({
             ))}
           </div>
 
+          {error && (
+            <p className="mt-4 rounded-[12px] border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-600">
+              {error}
+            </p>
+          )}
+
           <button
             type="button"
             onClick={handleCheckout}
-            disabled={!checkoutReady}
-            className="mt-5 flex h-[52px] w-full items-center justify-center rounded-full bg-v2-ink text-[16px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-40"
+            disabled={loading || !reportId}
+            className="mt-5 flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-v2-ink text-[16px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-40"
           >
-            Unlock for $12
+            {loading ? (
+              <>
+                <RiLoader4Line size={18} className="animate-spin" aria-hidden />
+                Opening checkout…
+              </>
+            ) : (
+              "Unlock for $12"
+            )}
           </button>
         </div>
       </div>

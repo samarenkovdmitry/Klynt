@@ -14,10 +14,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: absoluteUrl("/landing-copy"),
+      url: absoluteUrl("/examples"),
       lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
+      changeFrequency: "daily",
+      priority: 0.85,
     },
     {
       url: absoluteUrl("/analyze"),

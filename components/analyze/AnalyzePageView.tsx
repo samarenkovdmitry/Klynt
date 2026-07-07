@@ -15,7 +15,6 @@ import {
 } from "@/hooks/useAnalyzePage";
 import { AnalyzePageContextPanel } from "@/components/analyze/AnalyzePageContextPanel";
 import { GeneratingReportLoader } from "@/components/analyze/GeneratingReportLoader";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
@@ -211,8 +210,6 @@ export function AnalyzePageView() {
 
   return (
     <>
-      <AppHeader />
-
       <main className="flex flex-1 flex-col bg-[#ECEAE2] px-4 pb-10 pt-6 text-[#1B1A17] md:px-6 md:pb-12 md:pt-10">
         <div className={`${ANALYZE_PAGE_CONTAINER_CLASS} flex flex-1 flex-col justify-center`}>
           <header className="text-center">
