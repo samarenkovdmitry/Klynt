@@ -1,156 +1,238 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
+import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
+import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
-const NAV_ITEMS = [
-  { href: "/analyze",  label: "UX audit",      isActive: (p: string) => p.startsWith("/analyze") || p.startsWith("/report") },
-  { href: "/examples", label: "Sample reports", isActive: (p: string) => p.startsWith("/examples") },
-  { href: "/contact",  label: "Contact",       isActive: (p: string) => p === "/contact" },
+const HEADER_HEIGHT_PX = 68;
+
+type NavItem = {
+  href: string;
+  label: string;
+  isActive?: (pathname: string) => boolean;
+};
+
+const navItems: NavItem[] = [
+  {
+    href: "/landing-copy",
+    label: "Hero copy",
+    isActive: (p) => p.startsWith("/landing-copy"),
+  },
+  {
+    href: "/analyze",
+    label: "UX audit",
+    isActive: (p) => p.startsWith("/analyze"),
+  },
+  {
+    href: DEMO_REPORT_PATH,
+    label: "Sample report",
+    isActive: (p) => p === DEMO_REPORT_PATH || p.startsWith(`${DEMO_REPORT_PATH}/`),
+  },
+  { href: "/contact", label: "Contact" },
 ];
+
+function navLinkClass(isActive: boolean, isLanding: boolean) {
+  const base =
+    "rounded-full px-3 py-2 text-[13px] font-medium transition-colors md:px-4 md:text-[14px]";
+
+  if (isLanding) {
+    return [
+      base,
+      isActive
+        ? "bg-white/15 font-semibold text-white"
+        : "text-white/75 hover:bg-white/10 hover:text-white",
+    ].join(" ");
+  }
+
+  return [
+    base,
+    isActive
+      ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
+      : "text-[#061C2F]/65 hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
+  ].join(" ");
+}
+
+function mobileNavLinkClass(isActive: boolean) {
+  return [
+    "block w-full rounded-xl px-4 py-3 text-left text-[15px] font-medium transition-colors",
+    isActive
+      ? "bg-[rgba(6,28,47,0.06)] font-semibold text-[#061C2F]"
+      : "text-[#061C2F]/80 hover:bg-[rgba(6,28,47,0.04)] hover:text-[#061C2F]",
+  ].join(" ");
+}
+
+function isNavActive(item: NavItem, pathname: string) {
+  if (item.isActive) return item.isActive(pathname);
+  if (item.href === "/") return pathname === "/";
+  if (item.href.startsWith("#")) return false;
+  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+}
 
 export function AppHeader() {
   const pathname = usePathname();
+  const isLanding = pathname === "/";
+  const isReport = pathname.startsWith("/report");
+  const showSubtitle = !isLanding && !isReport;
   const [menuOpen, setMenuOpen] = useState(false);
-  const [count, setCount] = useState<number | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const isHome = pathname === "/";
-
-  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   useEffect(() => {
-    if (isHome) return;
-    fetch("/api/stats").then((r) => r.json()).then((d) => setCount(d.count)).catch(() => {});
-  }, [isHome]);
-
-  useEffect(() => {
-    function onScroll() { setScrolled(window.scrollY > 4); }
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    setMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
-    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setMenuOpen(false); }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [menuOpen]);
 
   return (
     <>
       <header
-        className="app-site-header sticky top-0 z-50 w-full border-b border-[#DCD8CD] px-6 pt-[env(safe-area-inset-top,0px)] transition-[background] duration-200 md:px-[72px]"
-        style={{
-          background: scrolled ? "rgba(236,234,226,0.82)" : "#ECEAE2",
-          backdropFilter: scrolled ? "blur(14px)" : "none",
-        }}
+        className={[
+          "app-site-header sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
+          isLanding
+            ? "border-b border-transparent bg-transparent"
+            : "border-b border-[rgba(6,28,47,0.10)] bg-white",
+        ].join(" ")}
       >
-        <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-4">
-          {/* Logo + badge */}
-          <div className="flex min-w-0 items-center gap-8">
-            <Link href="/" aria-label="Klynt — home" onClick={() => setMenuOpen(false)}>
-              <Image
-                src="/klynt-logo-v4.svg"
-                alt="Klynt"
-                width={108}
-                height={32}
-                className="block h-[28px] w-auto"
-                priority
-              />
-            </Link>
-
-            {isHome ? (
-              <span className="hidden font-mono text-[11.5px] tracking-[.04em] text-[#8C887D] sm:block">
-                LANDING IMPROVEMENT KIT
-              </span>
-            ) : count !== null && (
-              <span
-                className="hidden items-center gap-[7px] text-[11.5px] tracking-[0.04em] text-[#57544C] sm:inline-flex"
-                style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
-              >
-                <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-v2-pass" />
-                {count.toLocaleString("en-US")} PAGES IMPROVED
-              </span>
+        <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between gap-4 px-4 md:px-6">
+          <Link
+            href="/"
+            className="flex min-w-0 items-center gap-3.5 sm:gap-4 md:gap-5"
+            aria-label="Klynt — home"
+            onClick={() => setMenuOpen(false)}
+          >
+            <img
+              src={isLanding ? "/klynt-logo-light.svg" : "/klynt-logo-dark.svg"}
+              alt="Klynt"
+              className="h-[30px] w-[100px] shrink-0"
+            />
+            {!showSubtitle ? null : (
+              <>
+                <span
+                  className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
+                  aria-hidden
+                />
+                <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
+                  UX Clarity Analyzer
+                </span>
+                <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:hidden">
+                  UX Analyzer
+                </span>
+              </>
             )}
-          </div>
+          </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden shrink-0 items-center gap-[22px] md:flex" aria-label="Main">
-            {NAV_ITEMS.map((item) => {
-              const active = item.isActive(pathname);
-              return (
+          <nav
+            className="hidden shrink-0 items-center gap-0.5 md:flex md:gap-1"
+            aria-label="Main"
+          >
+            {navItems.map((item) =>
+              item.href === DEMO_REPORT_PATH ? (
+                <ReportPrefetchLink
+                  key={item.href}
+                  href={item.href}
+                  routeParam={DEMO_REPORT_SLUG}
+                  className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                >
+                  {item.label}
+                </ReportPrefetchLink>
+              ) : (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={[
-                    "rounded-full px-3 py-[6px] text-[14px] transition-colors duration-150 ease-out",
-                    active
-                      ? "bg-[#E8E6E0] font-semibold text-[#1B1A17]"
-                      : "font-medium text-[#9B9B9B] hover:text-[#1A1A1A]",
-                  ].join(" ")}
+                  className={navLinkClass(isNavActive(item, pathname), isLanding)}
                 >
                   {item.label}
                 </Link>
-              );
-            })}
+              )
+            )}
           </nav>
 
-          {/* Mobile hamburger */}
           <button
             type="button"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#1B1A17] transition-colors hover:bg-[rgba(27,26,23,0.06)] md:hidden"
+            className={[
+              "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors md:hidden",
+              isLanding
+                ? "text-white hover:bg-white/10"
+                : "text-[#061C2F] hover:bg-[#061C2F]/8",
+            ].join(" ")}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             aria-controls="mobile-nav-menu"
-            onClick={() => setMenuOpen((o) => !o)}
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            {menuOpen ? <RiCloseLine size={24} aria-hidden /> : <RiMenuLine size={24} aria-hidden />}
+            {menuOpen ? (
+              <RiCloseLine size={24} aria-hidden />
+            ) : (
+              <RiMenuLine size={24} aria-hidden />
+            )}
           </button>
         </div>
       </header>
 
-      {/* Mobile menu */}
       <div className="md:hidden" aria-hidden={!menuOpen}>
         <button
           type="button"
-          className={`fixed inset-0 z-40 bg-[#1B1A17]/40 ${menuOpen ? "" : "pointer-events-none invisible"}`}
+          className={`fixed inset-0 z-40 bg-[#18181B]/45 ${menuOpen ? "" : "pointer-events-none invisible"}`}
           aria-label="Close menu"
           tabIndex={menuOpen ? 0 : -1}
           onClick={() => setMenuOpen(false)}
         />
+
         <nav
           id="mobile-nav-menu"
-          className={[
-            "fixed right-4 z-50 min-w-[200px] rounded-2xl border border-[#DCD8CD] bg-[rgba(236,234,226,0.96)] p-2 shadow-[0_16px_48px_rgba(27,26,23,0.14)] backdrop-blur-sm",
-            menuOpen ? "" : "pointer-events-none invisible",
-          ].join(" ")}
-          style={{ top: `calc(64px + env(safe-area-inset-top, 0px) + 8px)` }}
+          className={`
+            fixed
+            right-4
+            z-50
+            min-w-[200px]
+            rounded-2xl
+            border
+            border-[rgba(6,28,47,0.08)]
+            bg-white
+            p-2
+            shadow-[0_16px_48px_rgba(6,28,47,0.14)]
+            ${menuOpen ? "" : "pointer-events-none invisible"}
+          `}
+          style={{
+            top: `calc(${HEADER_HEIGHT_PX}px + env(safe-area-inset-top, 0px) + 8px)`,
+          }}
           aria-label="Main mobile"
           aria-hidden={!menuOpen}
         >
-          {NAV_ITEMS.map((item) => {
-            const active = item.isActive(pathname);
-            return (
+          {navItems.map((item) =>
+            item.href === DEMO_REPORT_PATH ? (
+              <ReportPrefetchLink
+                key={item.href}
+                href={item.href}
+                routeParam={DEMO_REPORT_SLUG}
+                tabIndex={menuOpen ? 0 : -1}
+                className={mobileNavLinkClass(isNavActive(item, pathname))}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </ReportPrefetchLink>
+            ) : (
               <Link
                 key={item.href}
                 href={item.href}
                 tabIndex={menuOpen ? 0 : -1}
-                className={[
-                  "block w-full rounded-xl px-4 py-3 text-left text-[15px] transition-colors",
-                  active
-                    ? "bg-[rgba(27,26,23,0.06)] font-semibold text-[#1B1A17]"
-                    : "font-medium text-[#57544C] hover:bg-[rgba(27,26,23,0.04)] hover:text-[#1B1A17]",
-                ].join(" ")}
+                className={mobileNavLinkClass(isNavActive(item, pathname))}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
               </Link>
-            );
-          })}
+            )
+          )}
         </nav>
       </div>
     </>
