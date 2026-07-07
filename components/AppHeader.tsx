@@ -5,47 +5,26 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
-import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
-import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
 
 const NAV_ITEMS = [
-  {
-    href: "/landing-copy",
-    label: "Hero copy",
-    isActive: (p: string) => p.startsWith("/landing-copy"),
-  },
-  {
-    href: "/analyze",
-    label: "UX audit",
-    isActive: (p: string) => p.startsWith("/analyze") || p.startsWith("/report"),
-  },
-  {
-    href: "/contact",
-    label: "Contact",
-    isActive: (p: string) => p === "/contact",
-  },
+  { href: "/analyze",  label: "UX audit",      isActive: (p: string) => p.startsWith("/analyze") || p.startsWith("/report") },
+  { href: "/examples", label: "Sample reports", isActive: (p: string) => p.startsWith("/examples") },
+  { href: "/contact",  label: "Contact",       isActive: (p: string) => p === "/contact" },
 ];
-
-function isActive(item: (typeof NAV_ITEMS)[number], pathname: string) {
-  return item.isActive(pathname);
-}
 
 export function AppHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const isHome = pathname === "/";
+
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    fetch("/api/stats")
-      .then((r) => r.json())
-      .then((d) => setCount(d.count))
-      .catch(() => {});
-  }, []);
+    if (isHome) return;
+    fetch("/api/stats").then((r) => r.json()).then((d) => setCount(d.count)).catch(() => {});
+  }, [isHome]);
 
   useEffect(() => {
     function onScroll() { setScrolled(window.scrollY > 4); }
@@ -56,9 +35,7 @@ export function AppHeader() {
 
   useEffect(() => {
     if (!menuOpen) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setMenuOpen(false);
-    }
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setMenuOpen(false); }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
@@ -66,65 +43,56 @@ export function AppHeader() {
   return (
     <>
       <header
-        className="app-site-header sticky top-0 z-50 w-full border-b border-[#DCD8CD] pt-[env(safe-area-inset-top,0px)] transition-[background] duration-200"
+        className="app-site-header sticky top-0 z-50 w-full border-b border-[#DCD8CD] px-6 pt-[env(safe-area-inset-top,0px)] transition-[background] duration-200 md:px-[72px]"
         style={{
           background: scrolled ? "rgba(236,234,226,0.82)" : "#ECEAE2",
           backdropFilter: scrolled ? "blur(14px)" : "none",
         }}
       >
-        <div className="mx-auto flex h-[64px] max-w-[1080px] items-center justify-between gap-4 px-[26px]">
-          {/* Left: logo + divider + badge */}
-          <div className="flex min-w-0 items-center gap-4">
+        <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-4">
+          {/* Logo + badge */}
+          <div className="flex min-w-0 items-center gap-8">
             <Link href="/" aria-label="Klynt — home" onClick={() => setMenuOpen(false)}>
               <Image
                 src="/klynt-logo-v4.svg"
                 alt="Klynt"
-                width={92}
-                height={28}
-                className="block h-[22px] w-auto"
+                width={108}
+                height={32}
+                className="block h-[28px] w-auto"
                 priority
               />
             </Link>
 
-            {count !== null && (
-              <>
-                <span className="h-[18px] w-px shrink-0 bg-[#CFC9BB]" aria-hidden />
-                <span
-                  className="inline-flex items-center gap-[7px] text-[11.5px] tracking-[0.04em] text-[#57544C]"
-                  style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
-                >
-                  <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-v2-pass" />
-                  {count.toLocaleString("en-US")} PAGES IMPROVED
-                </span>
-              </>
+            {isHome ? (
+              <span className="hidden font-mono text-[11.5px] tracking-[.04em] text-[#8C887D] sm:block">
+                LANDING IMPROVEMENT KIT
+              </span>
+            ) : count !== null && (
+              <span
+                className="hidden items-center gap-[7px] text-[11.5px] tracking-[0.04em] text-[#57544C] sm:inline-flex"
+                style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
+              >
+                <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-v2-pass" />
+                {count.toLocaleString("en-US")} PAGES IMPROVED
+              </span>
             )}
           </div>
 
           {/* Desktop nav */}
           <nav className="hidden shrink-0 items-center gap-[22px] md:flex" aria-label="Main">
             {NAV_ITEMS.map((item) => {
-              const active = isActive(item, pathname);
-              const cls = [
-                "text-[14px] pb-[3px] transition-colors",
-                active
-                  ? "font-semibold text-[#1B1A17] border-b-2 border-v2-accent"
-                  : "font-medium text-[#8C887D] border-b-2 border-transparent hover:text-[#1B1A17]",
-              ].join(" ");
-
-              if (item.href === DEMO_REPORT_PATH) {
-                return (
-                  <ReportPrefetchLink
-                    key={item.href}
-                    href={item.href}
-                    routeParam={DEMO_REPORT_SLUG}
-                    className={cls}
-                  >
-                    {item.label}
-                  </ReportPrefetchLink>
-                );
-              }
+              const active = item.isActive(pathname);
               return (
-                <Link key={item.href} href={item.href} className={cls}>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={[
+                    "rounded-full px-3 py-[6px] text-[14px] transition-colors duration-150 ease-out",
+                    active
+                      ? "bg-[#E8E6E0] font-semibold text-[#1B1A17]"
+                      : "font-medium text-[#9B9B9B] hover:text-[#1A1A1A]",
+                  ].join(" ")}
+                >
                   {item.label}
                 </Link>
               );
@@ -165,34 +133,18 @@ export function AppHeader() {
           aria-hidden={!menuOpen}
         >
           {NAV_ITEMS.map((item) => {
-            const active = isActive(item, pathname);
-            const cls = [
-              "block w-full rounded-xl px-4 py-3 text-left text-[15px] transition-colors",
-              active
-                ? "font-semibold text-[#1B1A17] bg-[rgba(27,26,23,0.06)]"
-                : "font-medium text-[#57544C] hover:bg-[rgba(27,26,23,0.04)] hover:text-[#1B1A17]",
-            ].join(" ");
-
-            if (item.href === DEMO_REPORT_PATH) {
-              return (
-                <ReportPrefetchLink
-                  key={item.href}
-                  href={item.href}
-                  routeParam={DEMO_REPORT_SLUG}
-                  tabIndex={menuOpen ? 0 : -1}
-                  className={cls}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {item.label}
-                </ReportPrefetchLink>
-              );
-            }
+            const active = item.isActive(pathname);
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 tabIndex={menuOpen ? 0 : -1}
-                className={cls}
+                className={[
+                  "block w-full rounded-xl px-4 py-3 text-left text-[15px] transition-colors",
+                  active
+                    ? "bg-[rgba(27,26,23,0.06)] font-semibold text-[#1B1A17]"
+                    : "font-medium text-[#57544C] hover:bg-[rgba(27,26,23,0.04)] hover:text-[#1B1A17]",
+                ].join(" ")}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
