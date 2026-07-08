@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { RiArrowRightLine, RiMailLine, RiTimeLine } from "@remixicon/react";
-import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/Button";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { inputFieldClass } from "@/components/ui/inputClasses";
@@ -85,8 +84,6 @@ export default function ContactPage() {
 
   return (
     <>
-      <AppHeader />
-
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
         <div className={REPORT_PAGE_CONTAINER_CLASS}>
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,480px)] lg:items-start lg:gap-12">
