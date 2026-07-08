@@ -1,4 +1,4 @@
-import { HEADER_HEIGHT_PX } from "@/components/AppHeader";
+import { HEADER_HEIGHT_PX } from "@/lib/layout-constants";
 
 export function LandingPageAtmosphere() {
   return (
