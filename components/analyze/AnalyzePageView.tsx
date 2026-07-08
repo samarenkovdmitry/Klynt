@@ -210,13 +210,13 @@ export function AnalyzePageView() {
 
   return (
     <>
-      <main className="flex flex-1 flex-col bg-[#ECEAE2] px-4 pb-10 pt-6 text-[#1B1A17] md:px-6 md:pb-12 md:pt-10">
+      <main className="flex flex-1 flex-col bg-white px-4 pb-10 pt-6 text-[var(--ink-primary)] md:px-6 md:pb-12 md:pt-10">
         <div className={`${ANALYZE_PAGE_CONTAINER_CLASS} flex flex-1 flex-col justify-center`}>
           <header className="text-center">
-            <h1 className="text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[#1B1A17] md:text-[38px] md:leading-[1.05]">
+            <h1 className="text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--ink-primary)] md:text-[38px] md:leading-[1.05]">
               Check your site&apos;s UX in minutes
             </h1>
-            <p className="mx-auto mt-3 max-w-[540px] text-[15px] leading-[24px] text-[#57544C] md:text-[16px] md:leading-[25px]">
+            <p className="mx-auto mt-3 max-w-[540px] text-[15px] leading-[24px] text-[rgba(6,28,47,0.5)] md:text-[16px] md:leading-[25px]">
               Paste a URL or upload a screenshot. Klynt flags friction, weak copy, and trust
               gaps — with fixes you can ship.
             </p>
@@ -225,7 +225,7 @@ export function AnalyzePageView() {
           {!loading && (
             <div className="mt-4 flex justify-center">
               <div
-                className="inline-flex h-[40px] items-center rounded-full bg-[rgba(27,26,23,0.07)] p-1"
+                className="inline-flex h-[40px] items-center rounded-full bg-[#ECF0F6] p-1"
                 role="tablist"
                 aria-label="Analysis input type"
               >
@@ -270,7 +270,7 @@ export function AnalyzePageView() {
                   <div className="group relative">
                     <RiLink
                       size={18}
-                      className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#8C887D] transition-colors group-focus-within:text-[#57544C]"
+                      className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#8E99A2] transition-colors group-focus-within:text-[#646E76]"
                       aria-hidden
                     />
                     <input
@@ -295,7 +295,7 @@ export function AnalyzePageView() {
                         type="button"
                         onClick={clearUrl}
                         aria-label="Clear URL"
-                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F0EDE6] text-[#8C887D] transition hover:bg-[#E3E0D6] hover:text-[#1B1A17]"
+                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#F5F7FA] text-[#8E99A2] transition hover:bg-[#EBEFF3] hover:text-[var(--ink-primary)]"
                       >
                         <RiCloseLine size={18} aria-hidden />
                       </button>
@@ -317,20 +317,20 @@ export function AnalyzePageView() {
                       "w-full rounded-[20px] border border-dashed text-left transition",
                       uploadedImage
                         ? "border-[#A4F4CF] bg-[#ECFDF5]"
-                        : "border-[#DCD8CD] bg-white hover:border-[#8C887D]",
+                        : "border-[#DCE2E7] bg-white hover:border-[#8E99A2]",
                       "cursor-pointer",
                     ].join(" ")}
                   >
                     {!uploadedImage ? (
                       <span className="flex items-center gap-4 px-4 py-5 md:px-5">
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(27,26,23,0.05)]">
-                          <RiImageUploadLine size={22} className="text-[#1B1A17]" aria-hidden />
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[rgba(6,28,47,0.05)]">
+                          <RiImageUploadLine size={22} className="text-[var(--ink-primary)]" aria-hidden />
                         </span>
                         <span className="min-w-0 text-left">
-                          <span className="block text-[15px] font-medium text-[#1B1A17]">
+                          <span className="block text-[15px] font-medium text-[var(--ink-primary)]">
                             Click to upload screenshot
                           </span>
-                          <span className="mt-0.5 block text-[13px] text-[#8C887D]">
+                          <span className="mt-0.5 block text-[13px] text-[#8E99A2]">
                             PNG or JPG, up to 20 MB · full-page works best
                           </span>
                         </span>
@@ -342,7 +342,7 @@ export function AnalyzePageView() {
                             <RiCheckLine size={18} className="text-white" aria-hidden />
                           </span>
                           <span className="min-w-0">
-                            <span className="block truncate text-[15px] font-medium text-[#1B1A17]">
+                            <span className="block truncate text-[15px] font-medium text-[var(--ink-primary)]">
                               {imageName}
                             </span>
                             <span className="mt-0.5 block text-[13px] text-[#10B981]">
@@ -350,7 +350,7 @@ export function AnalyzePageView() {
                             </span>
                           </span>
                         </span>
-                        <span className="shrink-0 rounded-full border border-[#E3E0D6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#1B1A17]">
+                        <span className="shrink-0 rounded-full border border-[rgba(6,28,47,0.10)] bg-white px-3 py-1.5 text-[13px] font-medium text-[var(--ink-primary)]">
                           Replace
                         </span>
                       </span>
@@ -396,8 +396,8 @@ export function AnalyzePageView() {
             </div>
           )}
 
-          <p className="mt-6 flex items-center justify-center gap-2 text-center text-[13px] leading-5 text-[#8C887D]">
-            <RiShieldCheckLine size={16} className="shrink-0 text-[#8C887D]" aria-hidden />
+          <p className="mt-6 flex items-center justify-center gap-2 text-center text-[13px] leading-5 text-[#8E99A2]">
+            <RiShieldCheckLine size={16} className="shrink-0 text-[#8E99A2]" aria-hidden />
             Your URLs and screenshots are processed securely and never shared.
           </p>
         </div>
