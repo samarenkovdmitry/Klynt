@@ -7,7 +7,7 @@ import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 
-const HEADER_HEIGHT_PX = 68;
+export const HEADER_HEIGHT_PX = 68;
 
 type NavItem = {
   href: string;

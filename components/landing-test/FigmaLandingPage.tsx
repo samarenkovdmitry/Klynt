@@ -12,11 +12,11 @@ type FigmaLandingPageProps = {
 export function FigmaLandingPage({ auditedCount = null }: FigmaLandingPageProps) {
   return (
     <main
-      className="relative overflow-hidden text-white"
+      className="relative text-white"
       style={{ backgroundColor: LANDING_DARK }}
     >
       <LandingPageAtmosphere />
-      <div className="relative z-[1]">
+      <div className="relative z-[1] overflow-hidden">
         <LandingTestHero auditedCount={auditedCount} />
         <LandingTestHowItWorks />
         <LandingTestReportScope />
