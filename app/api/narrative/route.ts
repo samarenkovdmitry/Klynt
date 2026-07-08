@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { generateNarrative } from "@/lib/analysis/narrative";
 import type { ExtractionResult } from "@/lib/analysis/extraction";
 import type { CopyVariant as NarrativeCopyVariant } from "@/lib/analysis/narrative";
+import type { Finding } from "@/lib/analysis/narrative";
+import type { PageContextInput } from "@/lib/analysis/narrative";
 import type { HeroSlot } from "@/components/report-v2/ReportHero";
 import type { NarrativeResult } from "@/lib/analysis/narrative";
 
@@ -11,6 +13,13 @@ import {
   type ReportCopyVariants,
   type CopyVariantBlock,
   type VisualFixDimension,
+  type ReportChecklistItem,
+  type ChecklistCategory,
+  type ChecklistItemStatus,
+  type ChecklistLinkTarget,
+  type BrandStage,
+  type TrafficSource,
+  type AudienceType,
 } from "@/lib/audit-report";
 import { deriveRiskFromScore } from "@/lib/report-metrics";
 import { isValidReportId } from "@/lib/report-id";
@@ -113,10 +122,31 @@ function adaptCopyVariants(raw: NarrativeCopyVariant[]): ReportCopyVariants | nu
     ])
   ) as Record<string, NarrativeCopyVariant[]>;
 
-  const toBlock = (items: NarrativeCopyVariant[]): CopyVariantBlock => ({
-    current: items[0]?.before_text ?? "",
-    variants: items.map((v) => ({ label: v.label, text: v.after_text })),
-  });
+  const toBlock = (items: NarrativeCopyVariant[]): CopyVariantBlock => {
+    const variants = items.map((v) => ({
+      label: v.label,
+      text: v.after_text,
+      rationale: v.rationale,
+      strategy: v.strategy,
+      recommended: v.recommended,
+    }));
+
+    // Defensive: the prompt requires exactly one `recommended: true` per
+    // section group, but LLM output isn't guaranteed — if it gives us 0 or
+    // 2+, fall back to the first variant so the UI never shows an ambiguous
+    // or missing recommendation.
+    const recommendedCount = variants.filter((v) => v.recommended).length;
+    if (variants.length > 0 && recommendedCount !== 1) {
+      variants.forEach((v, i) => {
+        v.recommended = i === 0;
+      });
+    }
+
+    return {
+      current: items[0]?.before_text ?? "",
+      variants,
+    };
+  };
 
   return {
     headline:    toBlock(bySection.headline    ?? []),
@@ -125,10 +155,87 @@ function adaptCopyVariants(raw: NarrativeCopyVariant[]): ReportCopyVariants | nu
   };
 }
 
+// Mirrors ISSUE_CATEGORY_MAP in ReportPageV2.tsx (v1 issue.category -> ChecklistCategory)
+// so findings and legacy issues land in the same buckets.
+const FINDING_CATEGORY_MAP: Record<Finding["type"], ChecklistCategory> = {
+  clarity:     "copy",
+  cta:         "copy",
+  trust:       "trust",
+  friction:    "structure",
+  performance: "structure",
+};
+
+const FINDING_LINK_MAP: Record<Finding["type"], ChecklistLinkTarget> = {
+  clarity:     "copy-headline",
+  cta:         "copy-cta",
+  trust:       "trust",
+  friction:    "structure-nav",
+  performance: "structure-nav",
+};
+
+// Reach is a coarse "does this get seen at all" heuristic, not a measured %:
+// extraction only gives us above/below-fold booleans for the primary CTA and
+// social proof — no DOM coordinates or scroll-depth data exist upstream (see
+// lib/analysis/extraction.ts). Deliberately NOT using hasMobileViewport here:
+// without a mobile traffic share (traffic_source only gives cold/warm/mixed),
+// any mobile-based adjustment would be a guess dressed up as a number.
+const REACH_BASE: Record<Finding["type"], number> = {
+  clarity: 95,     // hero headline/subheadline — seen by virtually all visitors
+  cta: 70,         // primary CTA — reach depends on fold position, adjusted below
+  trust: 55,       // social proof section — reach depends on fold position, adjusted below
+  friction: 40,    // forms/pricing — only reached by visitors already committed to convert
+  performance: 90, // load time — affects everyone before any content renders
+};
+
+const REACH_FOLD_ADJUSTMENT = 12;
+
+function computeReach(type: Finding["type"], extraction: ExtractionResult): number {
+  let reach = REACH_BASE[type];
+
+  if (type === "cta") {
+    reach += extraction.primaryCta.aboveFold ? REACH_FOLD_ADJUSTMENT : -REACH_FOLD_ADJUSTMENT;
+  } else if (type === "trust") {
+    reach += extraction.socialProofAboveFold ? REACH_FOLD_ADJUSTMENT : -REACH_FOLD_ADJUSTMENT;
+  }
+
+  return Math.max(0, Math.min(100, reach));
+}
+
+function adaptFindingsToChecklist(
+  findings: Finding[],
+  extraction: ExtractionResult
+): ReportChecklistItem[] {
+  return findings.map((f, i) => {
+    const status: ChecklistItemStatus =
+      f.severity === "critical" || f.severity === "high" ? "missing" : "weak";
+    const reach = computeReach(f.type, extraction);
+
+    return {
+      id: `finding-${i}`,
+      text: f.title,
+      evidence: f.evidence,
+      body: f.body,
+      status,
+      link_to: FINDING_LINK_MAP[f.type] ?? null,
+      category: FINDING_CATEGORY_MAP[f.type] ?? "copy",
+      impact_score: Math.round((reach * f.drag_score) / 100),
+      why_it_matters_here: f.why_it_matters_here,
+      reasoning_chain: f.reasoning_chain,
+    };
+  });
+}
+
 // -----------------------------
 // ROUTE
 // -----------------------------
 export async function POST(req: Request) {
+  if (process.env.NARRATIVE_MOCK === "true") {
+    const { mockNarrativeFixture } = await import(
+      "@/lib/analysis/mock-narrative-fixture"
+    );
+    return NextResponse.json(mockNarrativeFixture);
+  }
+
   try {
     const body = await req.json().catch(() => null);
     const reportId =
@@ -148,7 +255,7 @@ export async function POST(req: Request) {
     const supabase = createServerSupabase();
     const { data, error: dbError } = await supabase
       .from("reports")
-      .select("extraction, audited_url")
+      .select("extraction, audited_url, brand_stage, traffic_source, audience_type")
       .eq("id", reportId)
       .maybeSingle();
 
@@ -170,7 +277,19 @@ export async function POST(req: Request) {
     const extraction = data.extraction as ExtractionResult & { viewport_width?: number };
     const url = (data.audited_url as string) ?? "";
 
-    const { result: narrative, usage } = await generateNarrative(extraction, url);
+    const brandStage = data.brand_stage as BrandStage | null | undefined;
+    const trafficSource = data.traffic_source as TrafficSource | null | undefined;
+    const audienceType = data.audience_type as AudienceType | null | undefined;
+    const pageContext: PageContextInput | undefined =
+      brandStage || trafficSource || audienceType
+        ? {
+            brand_stage: brandStage ?? undefined,
+            traffic_source: trafficSource ?? undefined,
+            audience_type: audienceType ?? undefined,
+          }
+        : undefined;
+
+    const { result: narrative, usage } = await generateNarrative(extraction, url, pageContext);
     console.log(
       `[narrative] score=${narrative.hero.score} visual_fixes=${narrative.visual_fixes?.length} copy_variants=${narrative.copy_variants?.length} cost=$${usage.estimatedCostUsd.toFixed(5)}`
     );
@@ -193,7 +312,9 @@ export async function POST(req: Request) {
         title: f.title,
         why: f.body,
         evidence: f.evidence,
-        severity: f.severity,
+        // ReportIssue.severity is a deprecated legacy field that only knows
+        // "low"|"medium"|"high" — fold "critical" into "high" here.
+        severity: f.severity === "critical" ? "high" : f.severity,
         bullets: [],
       })),
       suggestions: narrative.quickWins.slice(0, 3).map((qw) => ({
@@ -201,7 +322,7 @@ export async function POST(req: Request) {
         priority: "quick_win" as const,
       })),
       copy: [],
-      checklist: [],
+      checklist: adaptFindingsToChecklist(narrative.findings, extraction),
       breakdown: {
         clarity:  narrative.findings.some((f) => f.type === "clarity")  ? 55 : 80,
         trust:    narrative.findings.some((f) => f.type === "trust")    ? 55 : 80,

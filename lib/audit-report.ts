@@ -104,11 +104,27 @@ export type ReportChecklistItem = {
   status: ChecklistItemStatus;
   link_to: ChecklistLinkTarget | null;
   category: ChecklistCategory;
+  /** report-v2 schema: overrides the client-side impact formula when present. */
+  impact_score?: number;
+  /** report-v2 schema: context on why this finding matters for this page/audience. */
+  why_it_matters_here?: string;
+  /** report-v2 schema: sees/infers/decides narrative behind the finding. */
+  reasoning_chain?: {
+    sees: string;
+    infers: string;
+    decides: string;
+  };
 };
 
 export type CopyVariant = {
   label: string;
   text: string;
+  /** Why this variant is recommended (from narrative.ts CopyVariant.rationale). */
+  rationale?: string;
+  /** Persuasion angle used in `text` (from narrative.ts CopyVariant.strategy). */
+  strategy?: "outcome_led" | "audience_led" | "urgency_led";
+  /** True for the single strongest variant within its section group. */
+  recommended?: boolean;
 };
 
 export type CopyVariantBlock = {
@@ -158,6 +174,8 @@ export type ReportVisualFix = {
   dimension: VisualFixDimension;
   observation: string;
   recommendation: string;
+  /** report-v2 schema: free-text label override, used instead of DIMENSION_LABELS[dimension] when present. */
+  title?: string;
 };
 
 export type ReportVisualPass = {
