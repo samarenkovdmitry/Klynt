@@ -97,10 +97,10 @@ export function AppHeader() {
     <>
       <header
         className={[
-          "app-site-header sticky top-0 z-50 w-full pt-[env(safe-area-inset-top,0px)]",
+          "app-site-header z-50 w-full pt-[env(safe-area-inset-top,0px)]",
           isLanding
-            ? "border-b border-transparent bg-transparent"
-            : "border-b border-[rgba(6,28,47,0.10)] bg-white",
+            ? "static border-b border-transparent bg-transparent"
+            : "sticky top-0 border-b border-[rgba(6,28,47,0.10)] bg-white",
         ].join(" ")}
       >
         <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between gap-4 px-4 md:px-6">

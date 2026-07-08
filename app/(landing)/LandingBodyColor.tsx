@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { LANDING_DARK } from "@/components/landing-test/landingPageStyles";
+
 const APP_CHROME = "#FFFFFF";
 
 export function LandingBodyColor() {
@@ -12,9 +14,9 @@ export function LandingBodyColor() {
       'meta[name="theme-color"]'
     ) as HTMLMetaElement | null;
 
-    html.style.backgroundColor = "transparent";
-    body.style.backgroundColor = "transparent";
-    themeMeta?.setAttribute("content", "transparent");
+    html.style.backgroundColor = LANDING_DARK;
+    body.style.backgroundColor = LANDING_DARK;
+    themeMeta?.setAttribute("content", LANDING_DARK);
 
     return () => {
       html.style.backgroundColor = "";
