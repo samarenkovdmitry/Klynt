@@ -12,7 +12,7 @@ export const ANALYZE_TAB_BUTTON_INACTIVE_CLASS =
   "text-[#8E99A2] hover:text-[var(--ink-primary)]";
 
 export const ANALYZE_PRIMARY_BUTTON_CLASS =
-  "!rounded-2xl !border-transparent !bg-[var(--brand-primary)] hover:!bg-[var(--brand-primary-hover)]";
+  "!h-[52px] !min-h-[52px] !rounded-full !px-7 !text-[15px] !font-semibold hover:!translate-y-0";
 
 export const ANALYZE_INPUT_CLASS =
   "h-[52px] bg-white !pl-11";

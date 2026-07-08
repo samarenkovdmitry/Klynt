@@ -133,7 +133,7 @@ function AnalyzeFormActions({
       <div className="flex flex-col gap-2">
         <Button
           type="button"
-          variant="primary"
+          variant="accent"
           onClick={switchToScreenshotUpload}
           icon={<RiImageUploadLine size={18} aria-hidden />}
           className={ANALYZE_PRIMARY_BUTTON_CLASS}
@@ -156,7 +156,7 @@ function AnalyzeFormActions({
     return (
       <Button
         type="button"
-        variant="primary"
+        variant="accent"
         onClick={handleAnalyze}
         className={ANALYZE_PRIMARY_BUTTON_CLASS}
       >
@@ -168,7 +168,7 @@ function AnalyzeFormActions({
   return (
     <Button
       type="button"
-      variant="primary"
+      variant="accent"
       onClick={handleAnalyze}
       className={ANALYZE_PRIMARY_BUTTON_CLASS}
     >
