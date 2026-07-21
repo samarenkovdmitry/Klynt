@@ -24,8 +24,8 @@ export function FigmaLandingPage({ auditedCount = null }: FigmaLandingPageProps)
       <LandingPageAtmosphere />
       <div className="relative z-[1] overflow-hidden">
         <LandingTestHero auditedCount={auditedCount} />
-        <LandingTestWhatsInside />
         <LandingTestHowItWorks />
+        <LandingTestWhatsInside />
         <LandingTestCtaSection />
       </div>
     </main>

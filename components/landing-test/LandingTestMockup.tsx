@@ -1,17 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import {
+  RiArrowRightLine,
   RiArrowUpLine,
-  RiContrastLine,
-  RiGroupLine,
   RiShare2Line,
-  type RemixiconComponentType,
 } from "@remixicon/react";
 
-import { ScoreStatusChip } from "@/components/report/ScoreStatusChip";
+import type { ReportChecklistItem } from "@/lib/audit-report";
 import { DEMO_REPORT, DEMO_REPORT_PATH } from "@/lib/demo-report";
+import { getVisualFixDimensionLabel } from "@/lib/report-visual-fixes";
 import {
+  formatOverallScore,
   formatReportDomain,
   getReportHeroTheme,
   getTierLabel,
@@ -24,75 +25,102 @@ import {
 const CARD_CLASS =
   "overflow-hidden rounded-[16px] border border-white/10 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.24)] ring-1 ring-black/[0.06] transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_28px_72px_rgba(0,0,0,0.28)] md:rounded-[20px]";
 
-const SURFACE_CARD_CLASS =
-  "rounded-[10px] border border-[rgba(6,28,47,0.06)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.03)]";
+const textClamp2 = "line-clamp-2";
 
-const MOCK_SCORE = 6.5;
+/** Complete sentences for mockup — avoids mid-sentence clamp cuts */
+const MOCK_SUMMARY =
+  "Visitors can't tell who the product is for in the first few seconds. Without proof near the CTA, the pitch reads as marketing.";
 
-/** Static landing preview copy — matches Mainpage Zeplin card, not live demo report body. */
-const LANDING_REPORT_MOCK = {
-  verdict: "Unverified privacy claims and hidden pricing block conversion.",
-  summary:
-    "A first-time visitor reads a clean, confident privacy pitch and feels mildly persuaded but not yet ready to commit, because the pag...",
-  gapItems: [
-    { text: "Pricing hidden until signup blocks comparison", delta: 0.8 },
-    { text: "Privacy claims not backed by visible proof", delta: 0.8 },
-  ],
-  visualCards: [
-    {
-      title: "Text contrast",
-      icon: RiContrastLine,
-      impact: "medium" as const,
-      description: "The light gray subheadline sits below the 4.5:1 contrast threshold...",
-    },
-    {
-      title: "Add proof",
-      icon: RiGroupLine,
-      impact: "medium" as const,
-      description: "No visible customer logos, stats, or testimonials above the fold.",
-    },
-  ],
-};
+function sortByImpact(items: ReportChecklistItem[]) {
+  return [...items].sort((a, b) => (b.impact_score ?? 0) - (a.impact_score ?? 0));
+}
+
+function getCriticalItems(checklist: ReportChecklistItem[]) {
+  return sortByImpact(
+    checklist.filter((item) => item.status === "missing" || item.status === "weak")
+  );
+}
+
+function CompactScoreChip({
+  score,
+  tierLabel,
+  badgeBg,
+}: {
+  score: string;
+  tierLabel: string;
+  badgeBg: string;
+}) {
+  return (
+    <div
+      className="inline-flex h-6 items-center gap-1.5 rounded-full border pl-0.5 pr-2"
+      style={{
+        borderColor: `${badgeBg}33`,
+        backgroundColor: `${badgeBg}0a`,
+      }}
+    >
+      <span
+        className="inline-flex h-5 min-w-[26px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold leading-none text-white"
+        style={{ backgroundColor: badgeBg }}
+      >
+        {score}
+      </span>
+      <span className="text-[11px] font-medium leading-none" style={{ color: badgeBg }}>
+        {tierLabel}
+      </span>
+    </div>
+  );
+}
+
+function SectionTeaser({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="min-w-0 rounded-lg bg-[#FAFBFC] px-2.5 py-2 ring-1 ring-[rgba(6,28,47,0.06)]">
+      <p className="text-[10px] font-medium text-[rgba(6,28,47,0.45)]">{label}</p>
+      <div className="mt-1">{children}</div>
+    </div>
+  );
+}
 
 function DeltaPill({ value }: { value: number }) {
   return (
-    <span className="inline-flex h-[21px] shrink-0 items-center gap-0.5 rounded-full bg-[rgba(29,158,117,0.07)] py-1 pl-[7px] pr-2.5 text-[11px] font-bold text-[#1D9E75]">
+    <span className="inline-flex h-[21px] shrink-0 items-center gap-0.5 rounded-full bg-indigo-500/10 py-1 pl-1.5 pr-2 text-[11px] font-bold text-indigo-600">
       <RiArrowUpLine size={14} aria-hidden />
       {value.toFixed(1)}
     </span>
   );
 }
 
-function MockVisualFixCard({
-  title,
-  icon: Icon,
-  description,
-}: {
-  title: string;
-  icon: RemixiconComponentType;
-  description: string;
-}) {
-  return (
-    <div className={`${SURFACE_CARD_CLASS} rounded-[12px] px-[18px] py-4`}>
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
-          <Icon size={16} className="shrink-0 text-[#5B6378]" aria-hidden />
-          <p className="text-[14px] font-semibold leading-[19px] tracking-[-0.01em] text-[#061C2F]">
-            {title}
-          </p>
-        </div>
-        <span className="inline-flex h-[21px] shrink-0 items-center rounded-full bg-[#FFF6D8] px-2 text-[11px] font-bold lowercase text-[#B8790E]">
-          medium
-        </span>
-      </div>
-      <p className="mt-1 text-[14px] leading-5 text-[#6B7488]">{description}</p>
-    </div>
-  );
+function getRecommendedHeadline(data: typeof DEMO_REPORT) {
+  const variants = data.copy_variants?.headline?.variants ?? [];
+  return variants.find((variant) => variant.recommended)?.text ?? variants[0]?.text ?? "";
 }
 
 export function LandingTestMockup() {
-  const theme = getReportHeroTheme(MOCK_SCORE);
-  const domain = formatReportDomain(DEMO_REPORT.url);
+  const data = DEMO_REPORT;
+  const score = Number(data.score);
+  const theme = getReportHeroTheme(score);
+  const domain = formatReportDomain(data.url);
+  const overallScore = formatOverallScore(score);
+  const tierLabel = getTierLabel(theme.tier);
+  const potentialTarget = 8.9;
+  const potentialScore = formatOverallScore(potentialTarget);
+  const scoreDelta = Math.max(0, potentialTarget - score);
+  const progressPct = Math.min(100, Math.round((potentialTarget / 10) * 100));
+  const criticalItems = getCriticalItems(data.checklist ?? []).slice(0, 2);
+  const headlineCurrent = data.copy_variants?.headline?.current ?? "";
+  const headlineRecommended = getRecommendedHeadline(data);
+  const topVisualFix =
+    data.visual_fixes?.find((fix) => fix.dimension === "color_contrast") ??
+    data.visual_fixes?.[0];
+  const visualFixTitle = topVisualFix
+    ? getVisualFixDimensionLabel(topVisualFix.dimension)
+    : "";
+  const visualFixDetail = topVisualFix?.observation ?? topVisualFix?.recommendation ?? "";
 
   return (
     <Link
@@ -106,88 +134,129 @@ export function LandingTestMockup() {
           className="pointer-events-none select-none"
           style={{ WebkitUserSelect: "none", userSelect: "none" }}
         >
-          <div className="flex flex-col gap-5 p-5">
-            <div className="flex items-center justify-between">
-              <p className="text-[13px] font-medium leading-[19.5px] text-[rgba(6,28,47,0.45)]">
+          {/* Hero — matches ReportHeroSummary tone */}
+          <div className="relative overflow-hidden bg-white px-4 pb-4 pt-4 md:px-5 md:pb-5 md:pt-5">
+            <div className="mb-4 flex items-center justify-between gap-3 md:mb-5">
+              <p className="text-[12px] font-medium text-[rgba(6,28,47,0.45)] md:text-[13px]">
                 Share-ready report
               </p>
-              <span className="inline-flex h-7 w-7 items-center justify-center text-[rgba(6,28,47,0.35)]">
-                <RiShare2Line size={15} aria-hidden />
+              <span
+                className="inline-flex h-7 w-7 items-center justify-center text-[rgba(6,28,47,0.35)]"
+                aria-hidden
+              >
+                <RiShare2Line size={15} />
               </span>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_220px]">
+            <div className="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_200px] md:grid-cols-[minmax(0,1fr)_220px] md:gap-5">
               <div className="min-w-0">
-                <ScoreStatusChip
-                  score={MOCK_SCORE.toFixed(1)}
-                  tierLabel={getTierLabel(theme.tier)}
-                  badgeBg={theme.badgeBg}
-                />
-
-                <h2 className="mt-2 line-clamp-2 text-[20px] font-bold leading-[25px] tracking-[-0.01em] text-[#061C2F]">
-                  {LANDING_REPORT_MOCK.verdict}
+                <h2
+                  className={`text-[19px] font-bold leading-[1.25] tracking-[-0.01em] text-[#061C2F] md:text-[20px] ${textClamp2}`}
+                >
+                  {data.verdict}
                 </h2>
 
-                <p className="mt-2 line-clamp-3 text-[14px] leading-5 text-[rgba(6,28,47,0.5)]">
-                  {LANDING_REPORT_MOCK.summary}
+                <div className="mt-2">
+                  <CompactScoreChip
+                    score={overallScore}
+                    tierLabel={tierLabel}
+                    badgeBg={theme.badgeBg}
+                  />
+                </div>
+
+                <p className="mt-2.5 text-[14px] leading-[1.45] text-[rgba(6,28,47,0.5)] md:leading-[20px]">
+                  {MOCK_SUMMARY}
                 </p>
               </div>
 
-              <div className="mx-auto w-full max-w-[220px] sm:mx-0 sm:justify-self-end">
-                <div className="overflow-hidden rounded-[10px] border border-black/[0.08] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
-                  <div className="flex items-center gap-1 border-b border-black/[0.06] bg-white px-2 py-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#FF5F57]" aria-hidden />
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#FFBD2E]" aria-hidden />
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#28CA41]" aria-hidden />
-                    <span className="ml-0.5 truncate text-[9px] text-[rgba(6,28,47,0.45)]">{domain}</span>
-                  </div>
-                  {DEMO_REPORT.previewImage ? (
-                    <img
-                      src={DEMO_REPORT.previewImage}
-                      alt=""
-                      width={REPORT_PREVIEW_WIDTH}
-                      height={REPORT_PREVIEW_HEIGHT}
-                      className="block aspect-[620/380] w-full object-cover object-top"
-                      draggable={false}
-                    />
-                  ) : (
-                    <div className="aspect-[620/380] w-full bg-[#F7F5FF]" />
-                  )}
+              <div className="mx-auto w-2/3 overflow-hidden rounded-lg border border-black/[0.08] bg-white shadow-[0_8px_28px_rgba(0,0,0,0.05)] sm:mx-0 sm:w-full">
+                <div className="flex items-center gap-1.5 border-b border-black/[0.06] bg-white px-2.5 py-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF5F57]" aria-hidden />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FFBD2E]" aria-hidden />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#28CA41]" aria-hidden />
+                  <span className="ml-1 truncate text-[9px] text-[rgba(6,28,47,0.45)]">
+                    {domain}
+                  </span>
                 </div>
+                {data.previewImage ? (
+                  <img
+                    src={data.previewImage}
+                    alt=""
+                    width={REPORT_PREVIEW_WIDTH}
+                    height={REPORT_PREVIEW_HEIGHT}
+                    className="block aspect-[620/380] w-full object-cover object-top"
+                    draggable={false}
+                  />
+                ) : (
+                  <div className="aspect-[620/380] w-full bg-gradient-to-b from-[#F8FAFC] to-[#EEF2F7]" />
+                )}
               </div>
-            </div>
-
-            <div className={`${SURFACE_CARD_CLASS} px-3 py-2.5`}>
-              <p className="text-[12px] font-medium leading-[18px] text-[rgba(6,28,47,0.45)]">
-                Close the gap{" "}
-                <span className="font-normal">6.5 → 8.9</span>
-              </p>
-
-              <ul className="mt-2">
-                {LANDING_REPORT_MOCK.gapItems.map((item, index) => (
-                  <li key={item.text}>
-                    {index > 0 ? <div className="my-2 h-px bg-[#EEF1F5]" aria-hidden /> : null}
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="line-clamp-1 text-[14px] font-semibold leading-[18px] tracking-[-0.01em] text-[#061C2F]">
-                        {item.text}
-                      </p>
-                      <DeltaPill value={item.delta} />
-                    </div>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 border-t border-[rgba(32,52,94,0.09)] px-5 py-5 sm:grid-cols-2">
-            {LANDING_REPORT_MOCK.visualCards.map((card) => (
-              <MockVisualFixCard
-                key={card.title}
-                title={card.title}
-                icon={card.icon}
-                description={card.description}
+          {/* Close the gap teaser */}
+          <div className="border-t border-[rgba(32,52,94,0.08)] bg-white px-4 py-4 md:px-5 md:pb-5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[12px] font-semibold text-[#061C2F] md:text-[13px]">
+                Close the gap
+              </p>
+              <div className="flex items-center gap-1.5 text-[13px] font-semibold tabular-nums tracking-[-0.02em] md:text-[14px]">
+                <span className="text-[rgba(6,28,47,0.45)]">{overallScore}</span>
+                <RiArrowRightLine size={14} className="text-[rgba(6,28,47,0.25)]" aria-hidden />
+                <span className="text-indigo-600">{potentialScore}</span>
+              </div>
+            </div>
+
+            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[rgba(6,28,47,0.08)]">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[rgba(6,28,47,0.2)] to-indigo-500/70"
+                style={{ width: `${progressPct}%` }}
               />
-            ))}
+            </div>
+            <p className="mt-1.5 text-[11px] text-[rgba(6,28,47,0.45)] md:text-[12px]">
+              +{scoreDelta.toFixed(1)} pts if you fix the top issues
+            </p>
+
+            <ul className="mt-3 space-y-2">
+              {criticalItems.map((item, index) => (
+                <li key={item.id} className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FAFBFC] text-[10px] font-medium tabular-nums text-[rgba(6,28,47,0.4)] ring-1 ring-[rgba(6,28,47,0.08)]">
+                      {index + 1}
+                    </span>
+                    <p className="truncate text-[13px] font-medium text-[#061C2F]">{item.text}</p>
+                  </div>
+                  {item.delta != null ? <DeltaPill value={item.delta} /> : null}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[rgba(32,52,94,0.06)] pt-3">
+              <SectionTeaser label="Copy studio">
+                <p className="line-clamp-2 text-[11px] leading-[15px] text-[rgba(6,28,47,0.35)] line-through decoration-[rgba(6,28,47,0.15)]">
+                  {headlineCurrent}
+                </p>
+                <div className="mt-2">
+                  <p className="text-[9px] font-medium uppercase tracking-[0.08em] text-[rgba(6,28,47,0.45)]">
+                    Recommended
+                  </p>
+                  <p className="mt-0.5 line-clamp-2 text-[11px] font-medium leading-[15px] text-[#061C2F]">
+                    {headlineRecommended}
+                  </p>
+                </div>
+              </SectionTeaser>
+
+              {topVisualFix ? (
+                <SectionTeaser label="Visual fixes">
+                  <p className="truncate text-[11px] font-semibold leading-[15px] text-[#061C2F]">
+                    {visualFixTitle}
+                  </p>
+                  <p className="mt-0.5 line-clamp-2 text-[11px] leading-[15px] text-[rgba(6,28,47,0.45)]">
+                    {visualFixDetail}
+                  </p>
+                </SectionTeaser>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
