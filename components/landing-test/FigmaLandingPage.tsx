@@ -1,8 +1,8 @@
 import { LandingPageAtmosphere } from "@/components/landing-test/LandingPageAtmosphere";
+import { LandingTestWhatsInside } from "@/components/landing-test/LandingTestWhatsInside";
 import { LandingTestCtaSection } from "@/components/landing-test/LandingTestCtaSection";
 import { LandingTestHero } from "@/components/landing-test/LandingTestHero";
 import { LandingTestHowItWorks } from "@/components/landing-test/LandingTestHowItWorks";
-import { LandingTestReportScope } from "@/components/landing-test/LandingTestReportScope";
 import { LANDING_DARK } from "@/components/landing-test/landingPageStyles";
 import { HEADER_HEIGHT_PX } from "@/lib/layout-constants";
 
@@ -24,8 +24,8 @@ export function FigmaLandingPage({ auditedCount = null }: FigmaLandingPageProps)
       <LandingPageAtmosphere />
       <div className="relative z-[1] overflow-hidden">
         <LandingTestHero auditedCount={auditedCount} />
+        <LandingTestWhatsInside />
         <LandingTestHowItWorks />
-        <LandingTestReportScope />
         <LandingTestCtaSection />
       </div>
     </main>
