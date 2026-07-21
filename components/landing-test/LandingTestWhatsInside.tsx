@@ -2,8 +2,8 @@ import Link from "next/link";
 import {
   RiArrowRightLine,
   RiArrowUpLine,
-  RiCheckLine,
   RiContrast2Line,
+  RiErrorWarningLine,
   RiSearchLine,
 } from "@remixicon/react";
 
@@ -13,16 +13,33 @@ import {
   LANDING_CONTAINER,
   LANDING_LEAD,
   LANDING_SECTION,
+  LANDING_SURFACE_BG,
 } from "./landingPageStyles";
+
+/** Brand indigo — matches How it works / landing accent */
+const INDIGO_BG = "bg-indigo-400/15";
+const INDIGO_TEXT = "text-indigo-300";
+
+/** Amber — score & problem states only (matches report at-risk tone) */
+const AMBER_BG = "rgba(232,168,73,0.12)";
 
 const TILE_SUBTITLE =
   "mt-2 max-w-[380px] text-[14px] leading-[22px] text-white/50 md:text-[15px] md:leading-[24px]";
 
-const TILE_SHELL =
-  "relative flex flex-col overflow-hidden rounded-[22px] border border-white/[0.05] bg-[#141416] p-6 md:p-7";
+/** Outer bento tile — raised, same family as How it works visuals */
+const TILE_SHELL = [
+  "relative flex flex-col overflow-hidden rounded-[20px]",
+  "border border-white/[0.08]",
+  LANDING_SURFACE_BG,
+  "p-6 shadow-[0_8px_32px_rgba(0,0,0,0.14)] md:p-7",
+].join(" ");
 
-/** Neutral tonal surface — borderless, defined by fill alone to keep the block airy */
-const SURFACE = "rounded-2xl bg-white/[0.035]";
+/** Inner UI mockup frame — matches LandingStepVisuals */
+const UI_FRAME = [
+  "overflow-hidden rounded-[12px] border border-white/[0.08]",
+  LANDING_SURFACE_BG,
+  "shadow-[0_8px_32px_rgba(0,0,0,0.14)]",
+].join(" ");
 
 const SAMPLE_BUTTON =
   "inline-flex h-[50px] items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-transparent px-7 text-[15px] font-semibold text-white transition-colors hover:border-white/25 hover:bg-white/[0.04]";
@@ -40,7 +57,9 @@ function TileHeader({ title, subtitle }: { title: string; subtitle: string }) {
 
 function DeltaPill({ value }: { value: number }) {
   return (
-    <span className="inline-flex h-[19px] shrink-0 items-center gap-0.5 rounded-full bg-[rgba(29,158,117,0.14)] pl-1.5 pr-2 text-[10px] font-bold text-[#2FC38C]">
+    <span
+      className={`inline-flex h-[19px] shrink-0 items-center gap-0.5 rounded-full pl-1.5 pr-2 text-[10px] font-bold ${INDIGO_BG} ${INDIGO_TEXT}`}
+    >
       <RiArrowUpLine size={11} aria-hidden />
       {value.toFixed(1)}
     </span>
@@ -64,46 +83,46 @@ function CloseTheGap() {
       />
 
       <div className="mt-7 flex flex-1 flex-col justify-center">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] sm:items-center">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] sm:items-center">
           {/* Score motif */}
-          <div>
+          <div className={`${UI_FRAME} p-4`}>
             <div className="flex items-end gap-3">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/30">
                   Now
                 </p>
-                <p className="text-[44px] font-semibold leading-[0.9] tracking-[-0.04em] text-[#E8A849]">
+                <p className="text-[44px] font-semibold leading-[0.9] tracking-[-0.04em] text-white/45">
                   6.5
                 </p>
               </div>
               <RiArrowRightLine size={20} className="mb-2.5 text-white/20" aria-hidden />
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#2FC38C]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/35">
                   Potential
                 </p>
-                <p className="text-[44px] font-semibold leading-[0.9] tracking-[-0.04em] text-[#2FC38C]">
+                <p className="text-[44px] font-semibold leading-[0.9] tracking-[-0.04em] text-white">
                   8.9
                 </p>
               </div>
             </div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.06]">
-              <div className="h-full w-[89%] rounded-full bg-gradient-to-r from-[#BA7517] to-[#2FC38C]" />
+            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+              <div className="h-full w-[89%] rounded-full bg-indigo-400/65" />
             </div>
             <p className="mt-2.5 text-[12px] text-white/35">+2.4 points if you fix the top 3</p>
           </div>
 
           {/* Checklist */}
-          <ul className={`${SURFACE} space-y-0.5 p-2`}>
+          <ul className={`${UI_FRAME} space-y-0.5 p-2`}>
             {CHECKLIST.map((item, index) => (
               <li
                 key={item.text}
-                className="flex items-center justify-between gap-2 rounded-xl px-2 py-2"
+                className="flex items-center justify-between gap-2 rounded-lg px-2 py-2"
               >
                 <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[10px] font-bold text-white/70">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-[10px] font-medium tabular-nums text-white/40">
                     {index + 1}
                   </span>
-                  <p className="truncate text-[13px] font-medium text-white/70">{item.text}</p>
+                  <p className="truncate text-[13px] font-medium text-white/60">{item.text}</p>
                 </div>
                 <DeltaPill value={item.delta} />
               </li>
@@ -126,42 +145,29 @@ function CopyStudio() {
       />
 
       <div className="mt-7 flex flex-1 flex-col justify-center">
-        <div className="grid grid-cols-2 gap-3">
-          {/* Before */}
-          <div className={`${SURFACE} p-3.5`}>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/30">
-              Before
-            </p>
-            <p className="mt-2 text-[14px] font-medium leading-[1.3] text-white/40 line-through decoration-white/20">
-              Manage your business relationships
-            </p>
-          </div>
+        <div className={`${UI_FRAME} p-3.5`}>
+          <p className="text-[11px] text-white/30">
+            Headline · Subheadline · CTA
+          </p>
 
-          {/* Recommended */}
-          <div className="rounded-2xl bg-[rgba(74,74,255,0.12)] p-3.5">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#9B9BFF]">
-              Recommended
-            </p>
-            <p className="mt-2 text-[14px] font-semibold leading-[1.3] tracking-[-0.01em] text-white">
-              The CRM built for teams who sell together
-            </p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-white/25">
+                Before
+              </p>
+              <p className="mt-1.5 text-[13px] font-medium leading-[1.35] text-white/35 line-through decoration-white/15">
+                Manage your business relationships
+              </p>
+            </div>
+            <div>
+              <p className={`text-[10px] font-medium uppercase tracking-[0.08em] ${INDIGO_TEXT}`}>
+                Recommended
+              </p>
+              <p className="mt-1.5 text-[13px] font-semibold leading-[1.35] tracking-[-0.01em] text-white">
+                The CRM built for teams who sell together
+              </p>
+            </div>
           </div>
-        </div>
-
-        <div className="mt-3.5 flex flex-wrap gap-2">
-          {["Headline", "Subheadline", "CTA"].map((field, index) => (
-            <span
-              key={field}
-              className={[
-                "inline-flex h-6 items-center rounded-full px-2.5 text-[11px] font-medium",
-                index === 0
-                  ? "bg-[rgba(74,74,255,0.16)] text-[#9B9BFF]"
-                  : "bg-white/[0.05] text-white/45",
-              ].join(" ")}
-            >
-              {field}
-            </span>
-          ))}
         </div>
       </div>
     </article>
@@ -178,45 +184,41 @@ function VisualFixes() {
         subtitle="Exact UI issues — not vague advice."
       />
 
-      <div className="mt-7 flex flex-1 flex-col justify-center gap-3">
-        {/* Hero fix card, amber-tinted (no white, no border) */}
-        <div className="rounded-2xl bg-[rgba(186,117,23,0.1)] p-3.5">
+      <div className="mt-7 flex flex-1 flex-col justify-center">
+        <div className={`${UI_FRAME} p-3.5`}>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[rgba(186,117,23,0.2)] text-[#E8A849]">
+              <span
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#E8A849]"
+                style={{ backgroundColor: AMBER_BG }}
+              >
                 <RiContrast2Line size={17} aria-hidden />
               </span>
               <p className="text-[14px] font-semibold text-white">Text contrast</p>
             </div>
-            <span className="rounded-full bg-[rgba(186,117,23,0.2)] px-2 py-0.5 text-[10px] font-bold uppercase text-[#E8A849]">
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase ${INDIGO_BG} ${INDIGO_TEXT}`}
+            >
               Medium
             </span>
           </div>
 
           <div className="mt-3 flex items-center gap-2.5">
-            <span className="flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-2.5 py-1.5">
-              <span className="h-4 w-4 rounded bg-white/25" />
-              <span className="text-[11px] font-semibold text-white/40">3.2:1</span>
+            <span className="flex items-center gap-1.5 rounded-lg bg-white/[0.04] px-2.5 py-1.5">
+              <span className="h-4 w-4 rounded bg-white/20" />
+              <span className="text-[11px] font-semibold text-[#E8A849]/70">3.2:1</span>
             </span>
-            <RiArrowRightLine size={14} className="text-white/25" aria-hidden />
-            <span className="flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-2.5 py-1.5">
-              <span className="h-4 w-4 rounded bg-white" />
-              <span className="text-[11px] font-semibold text-[#2FC38C]">4.5:1</span>
+            <RiArrowRightLine size={14} className="text-white/20" aria-hidden />
+            <span className="flex items-center gap-1.5 rounded-lg bg-white/[0.04] px-2.5 py-1.5">
+              <span className="h-4 w-4 rounded bg-white/80" />
+              <span className="text-[11px] font-semibold text-white/75">4.5:1</span>
             </span>
-            <span className="ml-auto text-[11px] text-white/35">passes AA</span>
+            <span className="ml-auto text-[11px] text-white/40">passes AA</span>
           </div>
-        </div>
 
-        {/* Breadth chips */}
-        <div className="flex flex-wrap gap-2">
-          {["Visual hierarchy", "Proof placement", "CTA prominence"].map((chip) => (
-            <span
-              key={chip}
-              className="inline-flex h-7 items-center rounded-full bg-white/[0.05] px-3 text-[12px] text-white/45"
-            >
-              {chip}
-            </span>
-          ))}
+          <p className="mt-3.5 border-t border-white/[0.06] pt-3 text-[11px] leading-[16px] text-white/30">
+            Also checks visual hierarchy, proof placement, and CTA prominence
+          </p>
         </div>
       </div>
     </article>
@@ -239,34 +241,33 @@ function TrustMeta() {
         subtitle="How you look in search — and to visitors."
       />
 
-      <div className="mt-7 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+      <div className="mt-7 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
         {/* SERP snippet */}
-        <div className={`${SURFACE} flex flex-col justify-center p-4`}>
+        <div className={`${UI_FRAME} flex flex-col justify-center p-4`}>
           <div className="flex items-center gap-2 text-[11px] text-white/30">
             <RiSearchLine size={13} aria-hidden />
             Search preview
           </div>
-          <p className="mt-3 text-[11px] text-white/40">folk.app</p>
-          <p className="mt-0.5 text-[18px] font-medium leading-6 text-[#8ab4f8]">
+          <p className="mt-3 text-[11px] text-white/35">folk.app</p>
+          <p className="mt-0.5 text-[17px] font-medium leading-6 text-white/75">
             Folk CRM: Simple CRM for Teams
           </p>
-          <p className="mt-1 line-clamp-2 text-[13px] leading-5 text-white/45">
+          <p className="mt-1 line-clamp-2 text-[13px] leading-5 text-white/40">
             Folk is a simple CRM designed for teams to manage relationships effortlessly.
           </p>
         </div>
 
-        {/* Trust notes — anchored in a surface, not floating */}
-        <div className={`${SURFACE} p-4`}>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/35">
-            Trust gaps
-          </p>
-          <ul className="mt-3 space-y-2.5">
+        {/* Trust notes */}
+        <div className={`${UI_FRAME} p-4`}>
+          <ul className="space-y-2.5">
             {NOTES.map((note) => (
               <li key={note} className="flex items-start gap-2.5">
-                <span className="mt-px flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[#2FC38C] text-[#0c221a]">
-                  <RiCheckLine size={13} aria-hidden />
-                </span>
-                <span className="text-[13px] leading-[18px] text-white/60">{note}</span>
+                <RiErrorWarningLine
+                  size={16}
+                  className="mt-0.5 shrink-0 text-[#E8A849]"
+                  aria-hidden
+                />
+                <span className="text-[13px] leading-[18px] text-white/55">{note}</span>
               </li>
             ))}
           </ul>
