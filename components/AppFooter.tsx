@@ -67,23 +67,26 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
       className={`app-site-footer mt-auto w-full shrink-0 px-4 py-2 md:px-6 ${styles.footer}`}
     >
       <div
-        className={`${container} flex h-[68px] items-center justify-between gap-3 md:gap-4`}
+        className={`${container} flex flex-col items-center gap-3 py-4 text-center md:h-[68px] md:flex-row md:items-center md:justify-between md:gap-4 md:py-0 md:text-left`}
       >
-        <div
-          className={`flex min-w-0 items-center gap-3 text-[13px] md:gap-7 md:text-[14px] ${styles.text}`}
-        >
-          <p className="shrink-0 font-normal sm:hidden">© 2026 Klynt</p>
-          <p className="hidden shrink-0 font-normal sm:block">
+        <div className="flex flex-col items-center gap-3 md:flex-row md:items-center md:gap-7">
+          <p className={`shrink-0 text-[13px] font-normal md:text-[14px] ${styles.text}`}>
             © 2026 Klynt – Landing improvement kit
           </p>
-          {legalLinks.map((link) => (
-            <Link key={link.href} href={link.href} className={`shrink-0 font-medium ${styles.link}`}>
-              {link.label}
-            </Link>
-          ))}
+
+          <nav
+            className={`flex items-center justify-center gap-3 text-[13px] md:justify-start md:gap-7 md:text-[14px] ${styles.text}`}
+            aria-label="Legal"
+          >
+            {legalLinks.map((link) => (
+              <Link key={link.href} href={link.href} className={`shrink-0 font-medium ${styles.link}`}>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center justify-center gap-2 md:justify-start">
           {socialLinks.map((link) => {
             const Icon = link.icon;
 
