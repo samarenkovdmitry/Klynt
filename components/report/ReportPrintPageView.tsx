@@ -78,7 +78,7 @@ export function ReportPrintPageView({
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex h-10 cursor-pointer items-center justify-center rounded-full border-none bg-[#2563EB] px-5 text-[14px] font-semibold text-white"
+            className="inline-flex h-10 cursor-pointer items-center justify-center rounded-full border-none bg-[var(--brand-primary)] px-5 text-[14px] font-semibold text-white"
           >
             Save as PDF
           </button>

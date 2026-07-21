@@ -4,7 +4,7 @@ import { useState } from "react";
 import { RiArrowRightLine, RiMailLine, RiTimeLine } from "@remixicon/react";
 import { Button } from "@/components/ui/Button";
 import { FormLabel } from "@/components/ui/FormLabel";
-import { inputFieldClass } from "@/components/ui/inputClasses";
+import { inputFieldClass, inputFieldSizeClass } from "@/components/ui/inputClasses";
 import {
   REPORT_HERO_RADIUS_CLASS,
   REPORT_PAGE_CONTAINER_CLASS,
@@ -111,14 +111,14 @@ export default function ContactPage() {
                     {"href" in point ? (
                       <a
                         href={point.href}
-                        className="mt-1 inline-flex items-center gap-2 text-[16px] font-medium text-[var(--ink-primary)] transition hover:text-[#2563EB]"
+                        className="mt-1 inline-flex items-center gap-2 text-[16px] font-medium text-[var(--ink-primary)] transition hover:text-[var(--brand-primary)]"
                       >
-                        <Icon size={18} className="shrink-0 text-[#2563EB]" aria-hidden />
+                        <Icon size={18} className="shrink-0 text-[var(--brand-primary)]" aria-hidden />
                         {point.value}
                       </a>
                     ) : (
                       <p className="mt-1 flex items-center gap-2 text-[16px] font-medium text-[var(--ink-primary)]">
-                        <Icon size={18} className="shrink-0 text-[#2563EB]" aria-hidden />
+                        <Icon size={18} className="shrink-0 text-[var(--brand-primary)]" aria-hidden />
                         {point.value}
                       </p>
                     )}
@@ -143,7 +143,7 @@ export default function ContactPage() {
                   <button
                     type="button"
                     onClick={() => setSent(false)}
-                    className="mt-6 text-[14px] font-medium text-[#2563EB] hover:underline"
+                    className="mt-6 text-[14px] font-medium text-[var(--brand-primary)] hover:underline"
                   >
                     Send another message
                   </button>
@@ -167,7 +167,7 @@ export default function ContactPage() {
                       placeholder="Your name"
                       disabled={submitting}
                       autoComplete="name"
-                      className={`${inputFieldClass({ disabled: submitting })} mt-2 h-[52px] bg-[#FAFBFC] md:h-[54px]`}
+                      className={`${inputFieldClass({ disabled: submitting })} ${inputFieldSizeClass} mt-2`}
                     />
                   </div>
 
@@ -181,7 +181,7 @@ export default function ContactPage() {
                       placeholder="you@company.com"
                       disabled={submitting}
                       autoComplete="email"
-                      className={`${inputFieldClass({ disabled: submitting })} mt-2 h-[52px] bg-[#FAFBFC] md:h-[54px]`}
+                      className={`${inputFieldClass({ disabled: submitting })} ${inputFieldSizeClass} mt-2`}
                     />
                   </div>
 
@@ -194,7 +194,7 @@ export default function ContactPage() {
                       placeholder="How can we help?"
                       disabled={submitting}
                       rows={5}
-                      className={`${inputFieldClass({ disabled: submitting })} mt-2 min-h-[140px] resize-y bg-[#FAFBFC] py-4 leading-relaxed`}
+                      className={`${inputFieldClass({ disabled: submitting })} ${inputFieldSizeClass} mt-2 min-h-[140px] resize-y py-4 leading-relaxed`}
                     />
                   </div>
 

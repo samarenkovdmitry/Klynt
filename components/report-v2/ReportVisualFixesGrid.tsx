@@ -55,7 +55,7 @@ function parseHex(text: string): { displayText: string; hexColor: string | null 
 }
 
 function FixCell({ fix }: { fix: ReportVisualFix }) {
-  const label = DIMENSION_LABELS[fix.dimension] ?? fix.dimension;
+  const label = fix.title ?? DIMENSION_LABELS[fix.dimension] ?? fix.dimension;
   const { displayText, hexColor } = parseHex(fix.recommendation);
 
   return (

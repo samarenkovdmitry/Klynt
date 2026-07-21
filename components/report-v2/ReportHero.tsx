@@ -88,6 +88,16 @@ type Props = {
   slot?: HeroSlot | null;
   report: AuditReport;
   domain?: string;
+  /** report-v2 schema: short bridge line rendered below the hero card when present. */
+  bridge?: string;
+  /** report-v2 schema: tints the hero card border when present; no effect when omitted. */
+  scoreStatus?: "healthy" | "at_risk" | "critical";
+};
+
+const SCORE_STATUS_BORDER: Record<NonNullable<Props["scoreStatus"]>, string> = {
+  healthy:  "border-2 border-v2-pass",
+  at_risk:  "border-2 border-v2-high",
+  critical: "border-2 border-v2-critical",
 };
 
 // ─── Shared pieces ────────────────────────────────────────────────────────────
@@ -445,19 +455,34 @@ function FormatE({ slot }: { slot: OpportunitySlot }) {
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 
-export function ReportHero({ slot, report, domain }: Props) {
+export function ReportHero({ slot, report, domain, bridge, scoreStatus }: Props) {
   const resolved = slot ?? deriveHeroSlot(report);
 
-  switch (resolved.type) {
-    case "contrast_numeric":
-      return <FormatA slot={resolved} domain={domain} />;
-    case "cta_statistic":
-      return <FormatB slot={resolved} />;
-    case "trust_count":
-      return <FormatC slot={resolved} />;
-    case "headline_textual":
-      return <FormatD slot={resolved} />;
-    case "opportunity":
-      return <FormatE slot={resolved} />;
+  const card = (() => {
+    switch (resolved.type) {
+      case "contrast_numeric":
+        return <FormatA slot={resolved} domain={domain} />;
+      case "cta_statistic":
+        return <FormatB slot={resolved} />;
+      case "trust_count":
+        return <FormatC slot={resolved} />;
+      case "headline_textual":
+        return <FormatD slot={resolved} />;
+      case "opportunity":
+        return <FormatE slot={resolved} />;
+    }
+  })();
+
+  if (!bridge && !scoreStatus) {
+    return card;
   }
+
+  return (
+    <div className={["rounded-[16px]", scoreStatus ? SCORE_STATUS_BORDER[scoreStatus] : ""].filter(Boolean).join(" ")}>
+      {card}
+      {bridge && (
+        <p className="mt-3 text-[13.5px] leading-[1.5] text-v2-ink-secondary">{bridge}</p>
+      )}
+    </div>
+  );
 }

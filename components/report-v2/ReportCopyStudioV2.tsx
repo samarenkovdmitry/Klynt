@@ -2,6 +2,7 @@
 
 import { RiQuillPenLine, RiArrowRightLine } from "@remixicon/react";
 import type { ReportCopyVariants, CopyVariantBlock } from "@/lib/audit-report";
+import { getRecommendedVariant } from "@/lib/report/get-recommended-variant";
 
 type Props = {
   copyVariants: ReportCopyVariants;
@@ -19,7 +20,7 @@ type CopyRow = {
 };
 
 function CopyBeforeAfter({ row }: { row: CopyRow }) {
-  const after = row.block.variants?.[0];
+  const after = getRecommendedVariant(row.block.variants);
   if (!row.block.current && !after?.text) return null;
 
   return (
@@ -79,7 +80,7 @@ export function ReportCopyStudioV2({ copyVariants, lockedAfter, onUnlock }: Prop
     { index: 1, label: "Hero headline", block: copyVariants.headline, badge: "AUDIENCE UNCLEAR", textSize: "text-[18px]" },
     { index: 2, label: "Subheadline", block: copyVariants.subheadline, badge: "LOW CONTRAST · VAGUE", textSize: "text-[16px]" },
     { index: 3, label: "Primary CTA", block: copyVariants.cta, badge: "NO OFFER STATED", isCTA: true },
-  ].filter((r) => r.block?.current || r.block?.variants?.[0]?.text);
+  ].filter((r) => r.block?.current || getRecommendedVariant(r.block?.variants)?.text);
 
   if (rows.length === 0) return null;
 

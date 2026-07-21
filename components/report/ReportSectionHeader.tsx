@@ -3,6 +3,7 @@ import {
   RiAlertLine,
   RiEdit2Line,
   RiLightbulbFlashLine,
+  RiListCheck2,
 } from "@remixicon/react";
 import type { ReportSectionKind } from "@/lib/report-sections";
 import { REPORT_SECTION_META } from "@/lib/report-sections";
@@ -18,13 +19,18 @@ const VARIANT_STYLES: Record<
   },
   improvements: {
     icon: RiLightbulbFlashLine,
-    iconWrap: "bg-[#EFF6FF] border-[#BFDBFE]",
-    iconColor: "text-[#2563EB]",
+    iconWrap: "bg-[var(--nordic-bg)] border-[var(--nordic-border)]",
+    iconColor: "text-[var(--brand-primary)]",
   },
   copy: {
     icon: RiEdit2Line,
     iconWrap: "bg-[#ECFDF5] border-[#A7F3D0]",
     iconColor: "text-[#059669]",
+  },
+  checklist: {
+    icon: RiListCheck2,
+    iconWrap: "bg-[#FFF7ED] border-[#FED7AA]",
+    iconColor: "text-[#C2410C]",
   },
 };
 

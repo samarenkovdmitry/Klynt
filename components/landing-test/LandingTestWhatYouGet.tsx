@@ -103,12 +103,12 @@ function FeatureVisual({ id }: { id: string }) {
 
   if (id === "copy-rewrites") {
     return (
-      <div className="h-[110px] w-full rounded-[20px] border border-[#BFDBFE] bg-[#F0F7FF] p-4 lg:w-[245px]">
+      <div className="h-[110px] w-full rounded-[20px] border border-[var(--nordic-border)] bg-[var(--nordic-bg)] p-4 lg:w-[245px]">
         <div className="flex items-center justify-between gap-2">
           <span className="rounded-full border border-[#BAE7FD] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#006BA6]">
             AI Suggestion
           </span>
-          <span className="rounded-full border border-[#BFDBFE] bg-[#F0F9FF] px-2.5 py-1 text-[11px] font-semibold text-[#2563EB]">
+          <span className="rounded-full border border-[var(--nordic-border)] bg-[var(--nordic-bg)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-primary)]">
             +15%
           </span>
         </div>
@@ -178,7 +178,7 @@ export function LandingTestWhatYouGet() {
                 <div className={UPDATE_CARD_STRIPE_OVERLAY} aria-hidden />
 
                 <div className="relative z-10 flex min-w-0 flex-col">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2563EB]/10 text-[#2563EB]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]">
                     <Icon size={20} />
                   </div>
                   <h3 className="mt-5 text-[22px] font-semibold tracking-[-0.03em] text-[#061C2F]">

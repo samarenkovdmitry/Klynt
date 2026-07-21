@@ -19,7 +19,7 @@ export function ReportWaitlistStickyBar({ visible = true }: ReportWaitlistSticky
         <a
           href="#waitlist-gate"
           className={[
-            "flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-primary)] text-[14px] font-semibold text-white shadow-[0_8px_24px_rgba(37,99,235,0.24)] transition-opacity duration-200",
+            "flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-primary)] text-[14px] font-semibold text-white shadow-[0_8px_24px_var(--brand-primary-shadow)] transition-opacity duration-200",
             visible ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
           ].join(" ")}
           tabIndex={visible ? 0 : -1}

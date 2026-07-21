@@ -5,11 +5,10 @@ import { RiArrowRightLine, RiCloseLine, RiLock2Line } from "@remixicon/react";
 
 import { CopyOptimizerAtmosphere } from "@/components/landing-copy/CopyOptimizerAtmosphere";
 import { CopyOptimizerFieldCard } from "@/components/landing-copy/CopyOptimizerFieldCard";
-import { CopyOptimizerHeader } from "@/components/landing-copy/CopyOptimizerHeader";
 import { LANDING_DARK, LANDING_CONTAINER } from "@/components/landing-test/landingPageStyles";
 import { Button } from "@/components/ui/Button";
 import { LoadingProgressPanel } from "@/components/ui/LoadingProgressPanel";
-import { inputFieldClass } from "@/components/ui/inputClasses";
+import { inputFieldClass, inputFieldSizeClass } from "@/components/ui/inputClasses";
 import { useCopyOptimizer } from "@/hooks/useCopyOptimizer";
 import { useLoadingStall } from "@/hooks/useLoadingStall";
 import type { CopyOptimizerLayer } from "@/lib/copy-optimize";
@@ -18,7 +17,10 @@ import {
   COPY_OPTIMIZE_STALL_LABEL,
   getStallLoadingLabel,
 } from "@/lib/loading-progress";
+import { HEADER_HEIGHT_PX } from "@/lib/layout-constants";
 import { formatReportDomain } from "@/lib/report-hero-theme";
+
+const HEADER_OFFSET = `calc(${HEADER_HEIGHT_PX}px + env(safe-area-inset-top, 0px))`;
 
 const RESULT_LAYERS: CopyOptimizerLayer[] = ["headline", "subheadline", "cta"];
 
@@ -61,15 +63,16 @@ export function CopyOptimizerPageView() {
 
   return (
     <main
-      className="relative min-h-dvh overflow-hidden text-white"
-      style={{ backgroundColor: LANDING_DARK }}
+      className="relative min-h-dvh text-white"
+      style={{
+        backgroundColor: LANDING_DARK,
+        paddingTop: HEADER_OFFSET,
+      }}
     >
       <CopyOptimizerAtmosphere />
 
       <div className="relative z-[1]">
-        <CopyOptimizerHeader />
-
-        <div className={`${LANDING_CONTAINER} px-4 pb-10 pt-4 md:px-6 md:pb-14 md:pt-6`}>
+        <div className={`${LANDING_CONTAINER} px-4 pb-10 md:px-6 md:pb-14`}>
           <div className="mx-auto max-w-[720px]">
             <header className="text-center">
               <p className="text-[13px] font-medium text-white/45 md:text-[14px]">Free</p>
@@ -114,7 +117,7 @@ export function CopyOptimizerPageView() {
                         error: showUrlError,
                         withClearButton: url.length > 0,
                         withMargin: false,
-                      })} h-[52px] bg-white md:h-[54px]`}
+                      })} ${inputFieldSizeClass}`}
                     />
 
                     {url.length > 0 && !loading && (

@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { ReportPrefetchLink } from "@/components/ReportPrefetchLink";
+import { LANDING_DARK } from "@/components/landing-test/landingPageStyles";
 import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 import { HEADER_HEIGHT_PX } from "@/lib/layout-constants";
+
+const APP_CHROME = "#FFFFFF";
 
 type NavItem = {
   href: string;
@@ -70,15 +73,36 @@ function isNavActive(item: NavItem, pathname: string) {
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 
+function isDarkLandingHeader(pathname: string) {
+  return pathname === "/" || pathname.startsWith("/landing-copy");
+}
+
 export function AppHeader() {
   const pathname = usePathname();
-  const isLanding = pathname === "/";
-  const isReport = pathname.startsWith("/report");
-  const showSubtitle = !isLanding && !isReport;
+  const isDarkLanding = isDarkLandingHeader(pathname);
+  const isCopyOptimizer = pathname.startsWith("/landing-copy");
+  const isHome = pathname === "/";
+  const isOverlayHeader = isHome || isCopyOptimizer;
+  const showSubtitle = !isDarkLanding;
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     setMenuOpen(false);
+  }, [pathname]);
+
+  useLayoutEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const themeMeta = document.querySelector(
+      'meta[name="theme-color"]'
+    ) as HTMLMetaElement | null;
+
+    html.style.backgroundColor = APP_CHROME;
+    body.style.backgroundColor = APP_CHROME;
+    themeMeta?.setAttribute(
+      "content",
+      pathname === "/" ? LANDING_DARK : APP_CHROME
+    );
   }, [pathname]);
 
   useEffect(() => {
@@ -97,8 +121,8 @@ export function AppHeader() {
       <header
         className={[
           "app-site-header z-50 w-full pt-[env(safe-area-inset-top,0px)]",
-          isLanding
-            ? "static border-b border-transparent bg-transparent"
+          isOverlayHeader
+            ? "absolute inset-x-0 top-0 border-b border-transparent bg-transparent"
             : "sticky top-0 border-b border-[rgba(6,28,47,0.10)] bg-white",
         ].join(" ")}
       >
@@ -110,7 +134,7 @@ export function AppHeader() {
             onClick={() => setMenuOpen(false)}
           >
             <img
-              src={isLanding ? "/klynt-logo-light.svg" : "/klynt-logo-dark.svg"}
+              src={isDarkLanding ? "/klynt-logo-light.svg" : "/klynt-logo-dark.svg"}
               alt="Klynt"
               className="h-[30px] w-[100px] shrink-0"
             />
@@ -120,11 +144,8 @@ export function AppHeader() {
                   className="h-4 w-px shrink-0 bg-[rgba(6,28,47,0.10)]"
                   aria-hidden
                 />
-                <span className="hidden truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:inline md:text-[14px]">
-                  UX Clarity Analyzer
-                </span>
-                <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] sm:hidden">
-                  UX Analyzer
+                <span className="truncate text-[13px] font-medium tracking-normal text-[rgba(6,28,47,0.72)] md:text-[14px]">
+                  Landing improvement kit
                 </span>
               </>
             )}
@@ -140,7 +161,7 @@ export function AppHeader() {
                   key={item.href}
                   href={item.href}
                   routeParam={DEMO_REPORT_SLUG}
-                  className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                  className={navLinkClass(isNavActive(item, pathname), isDarkLanding)}
                 >
                   {item.label}
                 </ReportPrefetchLink>
@@ -148,7 +169,7 @@ export function AppHeader() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={navLinkClass(isNavActive(item, pathname), isLanding)}
+                  className={navLinkClass(isNavActive(item, pathname), isDarkLanding)}
                 >
                   {item.label}
                 </Link>
@@ -160,7 +181,7 @@ export function AppHeader() {
             type="button"
             className={[
               "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors md:hidden",
-              isLanding
+              isDarkLanding
                 ? "text-white hover:bg-white/10"
                 : "text-[#061C2F] hover:bg-[#061C2F]/8",
             ].join(" ")}
@@ -178,62 +199,48 @@ export function AppHeader() {
         </div>
       </header>
 
-      <div className="md:hidden" aria-hidden={!menuOpen}>
-        <button
-          type="button"
-          className={`fixed inset-0 z-40 bg-[#18181B]/45 ${menuOpen ? "" : "pointer-events-none invisible"}`}
-          aria-label="Close menu"
-          tabIndex={menuOpen ? 0 : -1}
-          onClick={() => setMenuOpen(false)}
-        />
+      {menuOpen ? (
+        <div className="md:hidden">
+          <button
+            type="button"
+            className="fixed inset-0 z-40 bg-[#18181B]/45"
+            aria-label="Close menu"
+            onClick={() => setMenuOpen(false)}
+          />
 
-        <nav
-          id="mobile-nav-menu"
-          className={`
-            fixed
-            right-4
-            z-50
-            min-w-[200px]
-            rounded-2xl
-            border
-            border-[rgba(6,28,47,0.08)]
-            bg-white
-            p-2
-            shadow-[0_16px_48px_rgba(6,28,47,0.14)]
-            ${menuOpen ? "" : "pointer-events-none invisible"}
-          `}
-          style={{
-            top: `calc(${HEADER_HEIGHT_PX}px + env(safe-area-inset-top, 0px) + 8px)`,
-          }}
-          aria-label="Main mobile"
-          aria-hidden={!menuOpen}
-        >
-          {navItems.map((item) =>
-            item.href === DEMO_REPORT_PATH ? (
-              <ReportPrefetchLink
-                key={item.href}
-                href={item.href}
-                routeParam={DEMO_REPORT_SLUG}
-                tabIndex={menuOpen ? 0 : -1}
-                className={mobileNavLinkClass(isNavActive(item, pathname))}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </ReportPrefetchLink>
-            ) : (
-              <Link
-                key={item.href}
-                href={item.href}
-                tabIndex={menuOpen ? 0 : -1}
-                className={mobileNavLinkClass(isNavActive(item, pathname))}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            )
-          )}
-        </nav>
-      </div>
+          <nav
+            id="mobile-nav-menu"
+            className="fixed right-4 z-50 min-w-[200px] rounded-2xl border border-[rgba(6,28,47,0.08)] bg-white p-2 shadow-[0_16px_48px_rgba(6,28,47,0.14)]"
+            style={{
+              top: `calc(${HEADER_HEIGHT_PX}px + env(safe-area-inset-top, 0px) + 8px)`,
+            }}
+            aria-label="Main mobile"
+          >
+            {navItems.map((item) =>
+              item.href === DEMO_REPORT_PATH ? (
+                <ReportPrefetchLink
+                  key={item.href}
+                  href={item.href}
+                  routeParam={DEMO_REPORT_SLUG}
+                  className={mobileNavLinkClass(isNavActive(item, pathname))}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </ReportPrefetchLink>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={mobileNavLinkClass(isNavActive(item, pathname))}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
+          </nav>
+        </div>
+      ) : null}
     </>
   );
 }

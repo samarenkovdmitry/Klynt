@@ -64,70 +64,40 @@ export function AppFooter({ variant = "light", containerClass }: AppFooterProps)
 
   return (
     <footer
-      className={`app-site-footer mt-auto w-full shrink-0 px-6 py-[33px] md:px-6 md:py-10 ${styles.footer}`}
+      className={`app-site-footer mt-auto w-full shrink-0 px-4 py-2 md:px-6 ${styles.footer}`}
     >
-      <div className={container}>
-        <div className="flex flex-col items-center text-center md:hidden">
-          <p className={`text-[14px] font-normal ${styles.text}`}>
-            © 2026 Klynt – UX Clarity Analyzer
+      <div
+        className={`${container} flex h-[68px] items-center justify-between gap-3 md:gap-4`}
+      >
+        <div
+          className={`flex min-w-0 items-center gap-3 text-[13px] md:gap-7 md:text-[14px] ${styles.text}`}
+        >
+          <p className="shrink-0 font-normal sm:hidden">© 2026 Klynt</p>
+          <p className="hidden shrink-0 font-normal sm:block">
+            © 2026 Klynt – Landing improvement kit
           </p>
-
-          <div
-            className={`mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px] font-medium ${styles.text}`}
-          >
-            {legalLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={styles.link}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-10 flex items-center justify-center gap-5 md:gap-4">
-            {socialLinks.map((link) => {
-              const Icon = link.icon;
-
-              return (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
-                  aria-label={link.label}
-                >
-                  <Icon size={20} />
-                </a>
-              );
-            })}
-          </div>
+          {legalLinks.map((link) => (
+            <Link key={link.href} href={link.href} className={`shrink-0 font-medium ${styles.link}`}>
+              {link.label}
+            </Link>
+          ))}
         </div>
 
-        <div className="hidden items-center justify-between md:flex">
-          <div
-            className={`flex flex-wrap items-center gap-x-7 gap-y-2 text-[14px] ${styles.text}`}
-          >
-            <p className="font-normal">© 2026 Klynt – UX Clarity Analyzer</p>
-            {legalLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={`font-medium ${styles.link}`}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
+        <div className="flex shrink-0 items-center gap-2">
+          {socialLinks.map((link) => {
+            const Icon = link.icon;
 
-          <div className="flex shrink-0 items-center gap-2">
-            {socialLinks.map((link) => {
-              const Icon = link.icon;
-
-              return (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
-                  aria-label={link.label}
-                >
-                  <Icon size={20} />
-                </a>
-              );
-            })}
-          </div>
+            return (
+              <a
+                key={link.label}
+                href={link.href}
+                className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
+                aria-label={link.label}
+              >
+                <Icon size={20} aria-hidden />
+              </a>
+            );
+          })}
         </div>
       </div>
     </footer>

@@ -32,7 +32,7 @@ export function ReportHeader({
             Clarity Report
           </h1>
 
-          <div className="rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-3 py-1 text-[12px] font-semibold text-[#2F6FED]">
+          <div className="rounded-full border border-[var(--nordic-border)] bg-[var(--nordic-bg)] px-3 py-1 text-[12px] font-semibold text-[var(--brand-primary)]">
             AI Generated
           </div>
         </div>

@@ -95,14 +95,14 @@ export function AnalyzeBrandStagePanel({
                     className={[
                       "flex w-full flex-col rounded-[12px] px-3 py-2 text-left transition",
                       isActive
-                        ? "bg-[rgba(37,99,235,0.08)]"
+                        ? "bg-[var(--nordic-bg)]"
                         : "hover:bg-[#F5F7FA]",
                     ].join(" ")}
                   >
                     <span
                       className={[
                         "text-[14px] font-semibold",
-                        isActive ? "text-[#2563EB]" : "text-[var(--ink-primary)]",
+                        isActive ? "text-[var(--brand-primary)]" : "text-[var(--ink-primary)]",
                       ].join(" ")}
                     >
                       {option.label}
@@ -110,7 +110,7 @@ export function AnalyzeBrandStagePanel({
                     <span
                       className={[
                         "mt-0.5 text-[12px] leading-4",
-                        isActive ? "text-[#2563EB]/80" : "text-[#8E99A2]",
+                        isActive ? "text-[var(--brand-primary)]/80" : "text-[#8E99A2]",
                       ].join(" ")}
                     >
                       {option.shortLabel}

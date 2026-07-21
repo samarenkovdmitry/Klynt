@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { ReportCopySection } from "@/components/report/ReportCopySection";
+import { ReportCloseTheGap } from "@/components/report/ReportCloseTheGap";
+import { ReportCopyStudioSection } from "@/components/report/ReportCopyStudioSection";
 import { ReportCtaSection } from "@/components/report/ReportCtaSection";
 import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
+import { ReportTrustMetaSection } from "@/components/report/ReportTrustMetaSection";
+import { VisualFixes } from "@/components/report/VisualFixes";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
-import { ReportSuggestionsSection } from "@/components/report/ReportSuggestionsSection";
-import { ReportUxIssuesSection } from "@/components/report/ReportUxIssuesSection";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import type { AuditReport } from "@/lib/audit-report";
 import { openReportPrintExport } from "@/lib/report-export";
@@ -58,9 +59,6 @@ export function ReportPageView({
     return <ReportPageStates loadState={loadState} />;
   }
 
-  const issues = data.issues ?? [];
-  const suggestions = data.suggestions ?? [];
-  const copy = data.copy ?? [];
   const previewSrc = resolveReportPreviewSrc(routeParam, data.previewImage);
 
   return (
@@ -73,29 +71,30 @@ export function ReportPageView({
             score={data.score}
             verdict={data.verdict}
             summary={data.summary}
-            risk={data.risk}
-            breakdown={data.breakdown}
-            confidence={data.confidence}
-            keyObservation={data.key_observation}
             previewImage={previewSrc}
-            metricObservations={data.metric_observations}
-            issues={data.issues}
             onShare={handleShare}
             onExport={handleExport}
           />
 
-          <div className="space-y-0">
-            <ReportUxIssuesSection issues={issues} breakdown={data.breakdown} />
-
-            <ReportSuggestionsSection suggestions={suggestions} />
-            <ReportCopySection
-              copy={copy}
-              headlineDirections={data.headline_directions}
-              brandStage={data.brand_stage}
-              copiedIndex={copiedIndex}
-              onCopy={handleCopy}
+          {data.score_potential && (
+            <ReportCloseTheGap
+              score={data.score}
+              scorePotential={data.score_potential}
+              checklist={data.checklist}
             />
-          </div>
+          )}
+
+          <ReportCopyStudioSection
+            copyVariants={data.copy_variants}
+            headlineDirections={data.headline_directions}
+            brandStage={data.brand_stage}
+            copiedIndex={copiedIndex}
+            onCopy={handleCopy}
+          />
+
+          <VisualFixes visualFixes={data.visual_fixes} visualPasses={data.visual_passes} />
+
+          <ReportTrustMetaSection meta={data.meta} checklist={data.checklist} />
 
           <div className="mt-12">
             <ReportCtaSection onRerun={handleRerun} onExport={handleExport} />

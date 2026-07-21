@@ -45,8 +45,8 @@ function getMockResult(url: string): AnalysisResult {
     narrative: {
       hero: {
         format: "D_textual",
+        title: "Newsletter platform headline names a category, not a result",
         headline: "Visitors don't know who this is for",
-        subheadline: "Your headline skips the outcome — and users bounce",
         score: 61,
         scorePotential: 79,
         lift: 18,
@@ -58,13 +58,13 @@ function getMockResult(url: string): AnalysisResult {
         { type: "cta", severity: "medium", element: "Hero CTA button", title: 'CTA "Get Started" signals nothing', body: '"Get Started" carries zero specificity — visitors don\'t know if they\'re signing up or booking a demo.', fix: 'Change to "Start your free newsletter →" to set expectations.', evidence: '"Get Started" — no outcome stated', why_it_matters_here: "A visitor unsure what \"Get Started\" commits them to hesitates instead of clicking.", reasoning_chain: { sees: '"Get Started" button with no outcome or commitment stated', infers: "Unclear what happens after clicking", decides: "Hesitates instead of clicking through" }, drag_score: 60 },
       ],
       summary: "The landing page loses visitors in the first 5 seconds because the headline names a category instead of delivering a promise. Fixing headline clarity and moving social proof above the fold would lift conversion by an estimated 18 points.",
-      quickWins: [
-        { text: "Rewrite H1 to lead with subscriber growth outcome", delta: 1.2 },
-        { text: "Move logo strip or testimonial above the fold", delta: 0.8 },
-        { text: 'Change CTA from "Get Started" to "Start your free newsletter →"', delta: 0.6 },
-      ],
       copy_variants: [],
       visual_fixes: [],
+      meta: {
+        title_suggestion: "The Newsletter Platform Built for Creators",
+        description_suggestion: "Grow and monetize your newsletter without a dev team — built for independent creators.",
+        proof_suggestion: "Move logo strip above the fold",
+      },
     },
     meta: { extractionModel: "mock", narrativeModel: "mock", totalCostUsd: 0, durationMs: 0, extractionUsage: {}, narrativeUsage: {} },
   };

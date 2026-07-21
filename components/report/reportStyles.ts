@@ -23,7 +23,8 @@ export const REPORT_SECTION_META_CLASS = "text-[14px] leading-5 text-[#7D8C99]";
 export const REPORT_SURFACE_CARD_CLASS = [
   "overflow-hidden bg-white",
   REPORT_HERO_RADIUS_CLASS,
-  "shadow-[0_0_0_1px_rgba(6,28,47,0.08)]",
+  REPORT_SURFACE_BORDER_CLASS,
+  REPORT_SURFACE_SHADOW_CLASS,
 ].join(" ");
 
 const REPORT_CARD_BASE_CLASS =

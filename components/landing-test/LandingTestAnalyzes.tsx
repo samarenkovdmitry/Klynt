@@ -31,7 +31,7 @@ export function LandingTestAnalyzes() {
 
             return (
               <div key={item.title} className="mx-auto w-full max-w-[180px] text-center">
-                <Icon size={24} className="mx-auto text-[#2563EB]" aria-hidden />
+                <Icon size={24} className="mx-auto text-[var(--brand-primary)]" aria-hidden />
                 <h3 className="mt-4 text-[17px] font-semibold text-[#061C2F]">
                   {item.title}
                 </h3>

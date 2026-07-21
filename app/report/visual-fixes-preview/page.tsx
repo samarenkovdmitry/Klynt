@@ -87,10 +87,6 @@ export default function VisualFixesPreviewPage() {
             score={demo.score}
             verdict={demo.verdict}
             summary={demo.summary}
-            risk={demo.risk}
-            breakdown={demo.breakdown}
-            confidence={demo.confidence}
-            keyObservation={demo.key_observation}
             previewImage={DEMO_REPORT_PREVIEW_IMAGE}
             onShare={() => {}}
             onExport={() => {}}

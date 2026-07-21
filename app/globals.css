@@ -18,7 +18,7 @@
   --color-v2-card-faint:     #FAF9F4;
   --color-v2-dark:           #1B1A17;
   --color-v2-dark-alt:       #34322C;
-  --color-v2-accent:         #2348FF;
+  --color-v2-accent:         #4A4AFF;
   --color-v2-ink:            #1B1A17;
   --color-v2-ink-secondary:  #57544C;
   --color-v2-ink-muted:      #8C887D;
@@ -63,6 +63,10 @@
   --color-v2-opp-surface:    #F4FBF7;
   --color-v2-opp-divider:    #E4F0E8;
   --color-v2-opp-border:     #BFE0CC;
+
+  /* App brand */
+  --color-brand-primary:       #4A4AFF;
+  --color-brand-primary-hover: #3838EB;
 }
 
 :root {
@@ -75,14 +79,16 @@
   --stroke-light: #DCE2E7;
   --gray-soft: #EBEFF3;
 
-  --brand-primary: #2563eb;
-  --brand-primary-hover: #1d4ed8;
+  --brand-primary: #4A4AFF;
+  --brand-primary-hover: #3838EB;
+  --brand-primary-shadow: rgba(74, 74, 255, 0.22);
+  --brand-primary-shadow-strong: rgba(74, 74, 255, 0.28);
   --surface-dark: #0e1b36;
 
   --nordic: #10a6da;
-  --nordic-text: #2563eb;
-  --nordic-border: rgba(37, 99, 235, 0.28);
-  --nordic-bg: rgba(37, 99, 235, 0.08);
+  --nordic-text: #4A4AFF;
+  --nordic-border: rgba(74, 74, 255, 0.28);
+  --nordic-bg: rgba(74, 74, 255, 0.08);
 }
 
 /* Убираем принудительный шрифт — теперь Tailwind font-sans = Familjen Grotesk */

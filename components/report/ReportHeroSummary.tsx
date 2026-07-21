@@ -1,39 +1,19 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { RiFilePdf2Line, RiShare2Line } from "@remixicon/react";
 
-import {
-  RiBrainLine,
-  RiFilePdf2Line,
-  RiFocus3Line,
-  RiLayoutGridLine,
-  RiShare2Line,
-  RiShieldCheckLine,
-} from "@remixicon/react";
-import type { RemixiconComponentType } from "@remixicon/react";
-
-import { KlyntFooterLogo } from "@/components/report/KlyntFooterLogo";
 import { ReportPagePreview } from "@/components/report/ReportPagePreview";
 import { ScoreStatusChip } from "@/components/report/ScoreStatusChip";
 import {
   REPORT_HERO_CARD_BORDER_CLASS,
   REPORT_HERO_RADIUS_CLASS,
-  REPORT_METRIC_DESCRIPTION_CLASS,
   REPORT_SURFACE_SHADOW_CLASS,
 } from "@/components/report/reportStyles";
-import type {
-  ReportBreakdown,
-  ReportIssue,
-  ReportMetricObservations,
-} from "@/lib/audit-report";
-import { getMetricObservationFallbacks } from "@/lib/metric-observations";
 import {
   formatAnalyzedDate,
   formatOverallScore,
   formatReportDomain,
   formatReportHref,
-  getFrictionScore,
-  getMetricBarColor,
   getReportHeroTheme,
   getTierLabel,
 } from "@/lib/report-hero-theme";
@@ -44,22 +24,9 @@ type ReportHeroSummaryProps = {
   score?: number;
   verdict?: string;
   summary?: string;
-  risk?: string;
-  breakdown?: ReportBreakdown;
-  confidence?: number;
-  keyObservation?: string;
   previewImage?: string;
-  metricObservations?: ReportMetricObservations;
-  issues?: ReportIssue[];
   onShare: () => void;
   onExport: () => void;
-};
-
-type MetricCardProps = {
-  icon: RemixiconComponentType;
-  label: string;
-  description: string;
-  value: number;
 };
 
 const HERO_ACTION_BUTTON_CLASS =
@@ -71,84 +38,7 @@ const HERO_GRID_POSITION = "0 7px";
 const HERO_GRID_MASK =
   "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 24%, #000 46%, #000 100%)";
 
-function MetricCard({ icon: Icon, label, description, value }: MetricCardProps) {
-  const barColor = getMetricBarColor(value);
-
-  return (
-    <div className="flex min-w-0 flex-col md:h-full">
-      <div className="flex items-center gap-2">
-        <Icon size={18} className="relative top-[1px] shrink-0 text-[#8E99A2]" aria-hidden />
-        <p className="text-[16px] font-semibold text-[var(--ink-primary)]">{label}</p>
-      </div>
-
-      <p className={REPORT_METRIC_DESCRIPTION_CLASS}>{description}</p>
-
-      <div className="mt-auto flex items-center gap-3">
-        <div className="h-[5px] min-w-0 flex-1 overflow-hidden rounded-full bg-[#F5F5F5]">
-          <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{ width: `${value}%`, backgroundColor: barColor }}
-          />
-        </div>
-        <p
-          className="shrink-0 text-[12px] font-semibold tabular-nums leading-[18px]"
-          style={{ color: barColor }}
-        >
-          {value}%
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function getTrustDescription(value: number) {
-  return getMetricObservationFallbacks({ trust: value }).trust ?? "";
-}
-
-function getClarityDescription(value: number) {
-  return getMetricObservationFallbacks({ clarity: value }).clarity ?? "";
-}
-
-function getFrictionDescription(value: number, breakdown?: ReportBreakdown) {
-  return getMetricObservationFallbacks(breakdown).friction ?? "";
-}
-
-function getVisualsDescription(value: number, breakdown?: ReportBreakdown) {
-  return getMetricObservationFallbacks(breakdown).visuals ?? "";
-}
-
-function isDistinctInsight(insight: string, summary?: string, verdict?: string) {
-  if (!insight) return false;
-
-  const normalizedInsight = insight.trim().toLowerCase();
-  const normalizedSummary = summary?.trim().toLowerCase() ?? "";
-  const normalizedVerdict = verdict?.trim().toLowerCase() ?? "";
-
-  return (
-    normalizedInsight !== normalizedSummary && normalizedInsight !== normalizedVerdict
-  );
-}
-
-function LabeledTakeaway({
-  label,
-  children,
-  className = "mt-3",
-}: {
-  label: string;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <p
-      className={`${className} text-[15px] leading-[22px] md:text-[16px] md:leading-[24px]`}
-    >
-      <span className="font-medium text-[var(--ink-primary)]">{label}:</span>
-      <span className="text-[rgba(6,28,47,0.5)]"> {children}</span>
-    </p>
-  );
-}
-
-function HeroRightPanel({ gridColor }: { gridColor: string }) {
+function HeroGridPattern() {
   const gridStyle = {
     backgroundImage: `linear-gradient(${HERO_GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${HERO_GRID_LINE} 1px, transparent 1px)`,
     backgroundSize: HERO_GRID_SIZE,
@@ -158,22 +48,11 @@ function HeroRightPanel({ gridColor }: { gridColor: string }) {
   } as const;
 
   return (
-    <>
-      <div
-        className="pointer-events-none absolute -right-3 -top-3 bottom-0 hidden w-[min(512px,calc(54%+12px))] md:block"
-        style={gridStyle}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -right-3 -top-3 bottom-0 hidden w-[min(512px,calc(54%+12px))] md:block"
-        style={{
-          background: `radial-gradient(ellipse 85% 80% at 72% 42%, ${gridColor}55, transparent 72%)`,
-          WebkitMaskImage: HERO_GRID_MASK,
-          maskImage: HERO_GRID_MASK,
-        }}
-        aria-hidden
-      />
-    </>
+    <div
+      className="pointer-events-none absolute -right-3 -top-3 bottom-0 hidden w-[min(512px,calc(54%+12px))] md:block"
+      style={gridStyle}
+      aria-hidden
+    />
   );
 }
 
@@ -183,37 +62,15 @@ export function ReportHeroSummary({
   score = 0,
   verdict,
   summary,
-  breakdown,
-  confidence = 0,
-  keyObservation,
   previewImage,
-  metricObservations,
-  issues = [],
   onShare,
   onExport,
 }: ReportHeroSummaryProps) {
   const theme = getReportHeroTheme(score);
   const domain = formatReportDomain(url);
   const reportHref = formatReportHref(url);
-  const trust = Math.max(0, Math.min(100, Number(breakdown?.trust ?? 0)));
-  const clarity = Math.max(0, Math.min(100, Number(breakdown?.clarity ?? 0)));
-  const friction = Math.max(0, Math.min(100, getFrictionScore(breakdown)));
-  const visuals = Math.max(0, Math.min(100, Number(breakdown?.visuals ?? 0)));
-  const topIssueTitle = issues[0]?.title?.trim() || verdict?.trim();
   const overallScore = formatOverallScore(score);
-  const confidenceValue = Math.max(0, Math.min(100, Number(confidence)));
   const tierLabel = getTierLabel(theme.tier);
-  const trustDescription =
-    metricObservations?.trust?.trim() || getTrustDescription(trust);
-  const clarityDescription =
-    metricObservations?.clarity?.trim() || getClarityDescription(clarity);
-  const frictionDescription =
-    metricObservations?.friction?.trim() ||
-    getFrictionDescription(friction, breakdown);
-  const visualsDescription =
-    metricObservations?.visuals?.trim() || getVisualsDescription(visuals, breakdown);
-  const keyInsight = keyObservation?.trim() ?? "";
-  const showKeyInsight = isDistinctInsight(keyInsight, summary, verdict);
 
   return (
     <div
@@ -224,15 +81,7 @@ export function ReportHeroSummary({
           className="relative overflow-hidden px-5 pb-5 pt-5 md:px-[30px] md:pb-7 md:pt-6"
           style={{ backgroundColor: theme.heroBg }}
         >
-          <HeroRightPanel gridColor={theme.gridColor} />
-
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-10"
-            style={{
-              background: "linear-gradient(to bottom, transparent, #ffffff)",
-            }}
-            aria-hidden
-          />
+          <HeroGridPattern />
 
           <div className="relative z-[1]">
             <div className="relative min-h-9 sm:flex sm:min-h-0 sm:items-center sm:justify-between sm:gap-4">
@@ -290,7 +139,7 @@ export function ReportHeroSummary({
 
             <div className="mt-5 flex flex-col gap-5 md:mt-6 md:flex-row md:items-start md:justify-between md:gap-8">
               <div className="min-w-0 flex-1 md:max-w-[560px]">
-                <h1 className="text-[22px] font-bold leading-[1.25] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2]">
+                <h1 className="text-[22px] font-bold leading-[1.2] tracking-[-0.01em] text-black md:text-[26px] md:leading-[1.2] md:tracking-[-0.01em]">
                   {verdict || "UX assessment complete"}
                 </h1>
 
@@ -302,74 +151,14 @@ export function ReportHeroSummary({
                   />
                 </div>
 
-                <LabeledTakeaway label="Visitor takeaway" className="mt-4">
+                <p className="mt-3 max-w-[560px] text-[16px] leading-6 text-[rgba(6,28,47,0.5)]">
                   {summary || "No summary generated."}
-                </LabeledTakeaway>
-
-                {showKeyInsight && (
-                  <LabeledTakeaway label="Key insight">{keyInsight}</LabeledTakeaway>
-                )}
+                </p>
               </div>
 
               <div className="flex shrink-0 justify-center md:justify-end">
-                <ReportPagePreview
-                  domain={domain}
-                  previewImage={previewImage}
-                  topIssueTitle={topIssueTitle}
-                />
+                <ReportPagePreview domain={domain} previewImage={previewImage} />
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="relative bg-white px-5 pb-6 pt-5 md:px-[30px] md:pb-6 md:pt-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-6 xl:grid-cols-4">
-            <MetricCard
-              icon={RiShieldCheckLine}
-              label="Trust Signals"
-              value={trust}
-              description={trustDescription}
-            />
-            <MetricCard
-              icon={RiFocus3Line}
-              label="Decision Clarity"
-              value={clarity}
-              description={clarityDescription}
-            />
-            <MetricCard
-              icon={RiBrainLine}
-              label="Cognitive Friction"
-              value={friction}
-              description={frictionDescription}
-            />
-            <MetricCard
-              icon={RiLayoutGridLine}
-              label="Visual Hierarchy"
-              value={visuals}
-              description={visualsDescription}
-            />
-          </div>
-
-          <div className="mt-5 md:mt-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
-              <p className="min-w-0 text-[13px] leading-[18px]">
-                <span className="font-medium text-[var(--ink-primary)]">
-                  AI confidence: {confidenceValue}%
-                </span>
-                <span className="font-normal text-[rgba(6,28,47,0.5)]">
-                  {" "}
-                  – Based on visible UI structure, messaging clarity and conversion signals.
-                </span>
-              </p>
-              <a
-                href="https://klynt.one"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex shrink-0 items-center gap-1.5 self-start text-[13px] leading-[18px] font-normal text-[rgba(6,28,47,0.5)] transition-opacity hover:opacity-80 md:self-auto"
-              >
-                Generated with
-                <KlyntFooterLogo />
-              </a>
             </div>
           </div>
         </section>

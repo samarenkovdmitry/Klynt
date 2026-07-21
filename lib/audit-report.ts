@@ -114,6 +114,10 @@ export type ReportChecklistItem = {
     infers: string;
     decides: string;
   };
+  /** report-v2 schema: imperative fix sentence (from narrative.ts Finding.fix), shown in the expanded row. */
+  fix?: string;
+  /** report-v2 schema: deterministic score-point contribution for the "Close the gap" delta badge, set on the top-N highest-impact items only. */
+  delta?: number;
 };
 
 export type CopyVariant = {
@@ -176,6 +180,10 @@ export type ReportVisualFix = {
   recommendation: string;
   /** report-v2 schema: free-text label override, used instead of DIMENSION_LABELS[dimension] when present. */
   title?: string;
+  /** Model's own severity rating — independent of computeFixSeverityScore's checklist-derived ordering. */
+  impact?: "high" | "medium" | "low";
+  /** Free-text locator for the affected element, e.g. "hero CTA button". */
+  element?: string;
 };
 
 export type ReportVisualPass = {

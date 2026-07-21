@@ -22,7 +22,7 @@ export function LandingSectionHeader({
     <div
       className={`mx-auto max-w-[760px] text-center ${className}`.trim()}
     >
-      <div className="text-[17px] font-semibold text-[#2563EB]">{eyebrow}</div>
+      <div className="text-[17px] font-semibold text-[var(--brand-primary)]">{eyebrow}</div>
 
       <h2
         className={[

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { RiLink } from "@remixicon/react";
 
 import { BRAND_STAGE_OPTIONS, type BrandStage } from "@/lib/brand-stage";
+import { ANALYZE_CARD_CLASS } from "@/lib/analyze-page-styles";
 import type { AudienceType, TrafficSource } from "@/lib/audit-context";
 
 const STEPS = [
@@ -79,7 +80,7 @@ export function GeneratingReportLoader({
   const pills = [brandLabel, TRAFFIC_LABELS[trafficSource], AUDIENCE_LABELS[audienceType]];
 
   return (
-    <div className="mx-auto mt-5 w-full max-w-[500px] rounded-[32px] border border-[rgba(6,28,47,0.06)] bg-[#FAFBFC] px-10 py-8">
+    <div className={`${ANALYZE_CARD_CLASS} mx-auto mt-5 w-full max-w-[500px] px-10 py-8`}>
       {/* URL row */}
       <div className="flex items-center gap-2.5">
         <RiLink size={16} className="shrink-0 text-[#8E99A2]" aria-hidden />

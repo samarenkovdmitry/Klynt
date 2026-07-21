@@ -60,7 +60,7 @@ export function LandingReportMockup() {
                 >
                   Clarity Report
                 </h2>
-                <div className="shrink-0 rounded-full border border-[#DCE7F8] bg-[#F4F8FF] px-2.5 py-1 text-[11px] font-semibold text-[#2F6FED] md:px-3 md:text-[12px]">
+                <div className="shrink-0 rounded-full border border-[var(--nordic-border)] bg-[var(--nordic-bg)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-primary)] md:px-3 md:text-[12px]">
                   AI Generated
                 </div>
               </div>

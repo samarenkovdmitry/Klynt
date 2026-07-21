@@ -42,7 +42,7 @@ const CATEGORY_LABEL: Record<ChecklistCategory, string> = {
   structure: "Structure",
 };
 
-const BADGE_PILL_CLASS =
+export const BADGE_PILL_CLASS =
   "inline-flex h-[37px] shrink-0 items-center rounded-full border px-[15px] text-[13px] font-semibold leading-[19.5px]";
 
 const IMPACT_SCORE_BADGE_CLASS =

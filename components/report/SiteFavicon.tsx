@@ -20,7 +20,7 @@ export function SiteFavicon({ domain, size = 64, className = "" }: SiteFaviconPr
   if (!cleanDomain || failed) {
     return (
       <div
-        className={`flex items-center justify-center rounded-lg bg-[#E8EFFE] font-semibold text-[#2F6FED] ${className}`}
+        className={`flex items-center justify-center rounded-lg bg-[var(--nordic-bg)] font-semibold text-[var(--brand-primary)] ${className}`}
         style={{ fontSize: Math.round(size * 0.42) }}
       >
         {letter}

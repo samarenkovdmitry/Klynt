@@ -43,7 +43,7 @@ function IssueRow({
   onToggle: () => void;
 }) {
   const severity = getSeverity(item.status);
-  const score = impactScore(index, item.status);
+  const score = item.impact_score ?? impactScore(index, item.status);
   const expandable = Boolean(item.body);
 
   return (
@@ -83,6 +83,21 @@ function IssueRow({
         <p className="mt-3 ml-8 text-[13px] leading-[1.6] text-v2-ink-secondary">
           {item.body}
         </p>
+      )}
+
+      {expanded && item.why_it_matters_here && (
+        <p className="mt-2 ml-8 text-[13px] leading-[1.6] text-v2-ink-muted">
+          <span className="font-semibold text-v2-ink-secondary">Why it matters here: </span>
+          {item.why_it_matters_here}
+        </p>
+      )}
+
+      {expanded && item.reasoning_chain && (
+        <div className="mt-2 ml-8 flex flex-col gap-1 text-[13px] leading-[1.6] text-v2-ink-muted">
+          <span><span className="font-semibold text-v2-ink-secondary">Sees:</span> {item.reasoning_chain.sees}</span>
+          <span><span className="font-semibold text-v2-ink-secondary">Infers:</span> {item.reasoning_chain.infers}</span>
+          <span><span className="font-semibold text-v2-ink-secondary">Decides:</span> {item.reasoning_chain.decides}</span>
+        </div>
       )}
     </div>
   );

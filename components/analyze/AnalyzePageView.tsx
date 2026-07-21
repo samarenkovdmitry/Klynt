@@ -28,7 +28,6 @@ import {
   ANALYZE_CARD_CLASS,
   ANALYZE_INPUT_CLASS,
   ANALYZE_PAGE_CONTAINER_CLASS,
-  ANALYZE_URL_INPUT_CLASS,
   ANALYZE_PRIMARY_BUTTON_CLASS,
   ANALYZE_TAB_BUTTON_ACTIVE_CLASS,
   ANALYZE_TAB_BUTTON_INACTIVE_CLASS,
@@ -270,7 +269,7 @@ export function AnalyzePageView() {
                   <div className="group relative">
                     <RiLink
                       size={18}
-                      className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#8E99A2] transition-colors group-focus-within:text-[#646E76]"
+                      className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#8E99A2] transition-colors group-focus-within:text-brand-primary"
                       aria-hidden
                     />
                     <input
@@ -287,7 +286,7 @@ export function AnalyzePageView() {
                         error: showUrlError,
                         withClearButton: url.length > 0,
                         withMargin: false,
-                      })} ${ANALYZE_INPUT_CLASS} ${ANALYZE_URL_INPUT_CLASS}`}
+                      })} ${ANALYZE_INPUT_CLASS}`}
                     />
 
                     {url.length > 0 && (

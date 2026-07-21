@@ -12,7 +12,6 @@ import {
   type AuditReport,
   type ReportCopyVariants,
   type CopyVariantBlock,
-  type VisualFixDimension,
   type ReportChecklistItem,
   type ChecklistCategory,
   type ChecklistItemStatus,
@@ -21,6 +20,7 @@ import {
   type TrafficSource,
   type AudienceType,
 } from "@/lib/audit-report";
+import { normalizeVisualDimension } from "@/lib/report-visual-fixes";
 import { deriveRiskFromScore } from "@/lib/report-metrics";
 import { isValidReportId } from "@/lib/report-id";
 import { updateReportWithNarrativeInDb } from "@/lib/reports-db";
@@ -40,7 +40,7 @@ function adaptHeroSlot(
   extraction: ExtractionResult,
   copyVariants: NarrativeCopyVariant[]
 ): HeroSlot {
-  const { format, topIssue, score, lift, headline, subheadline } = hero;
+  const { format, topIssue, score, lift, headline } = hero;
 
   switch (format) {
     case "D_textual":
@@ -104,7 +104,7 @@ function adaptHeroSlot(
         score: Math.round((score / 10) * 10) / 10,
         score_label: `${lift}-point conversion lift possible`,
         title: headline,
-        description: subheadline,
+        description: topIssue.body,
         before_text: topIssue.body,
         after_text: topIssue.fix,
         section_label: "BEFORE & AFTER",
@@ -221,8 +221,35 @@ function adaptFindingsToChecklist(
       impact_score: Math.round((reach * f.drag_score) / 100),
       why_it_matters_here: f.why_it_matters_here,
       reasoning_chain: f.reasoning_chain,
+      fix: f.fix,
     };
   });
+}
+
+// Deterministic replacement for the old LLM-generated quickWins: splits the
+// hero's score lift across the top-3 highest-impact checklist items,
+// proportional to impact_score, so the sum of deltas never exceeds the
+// actual current -> potential gap shown in the hero.
+const TOP_OPPORTUNITY_COUNT = 3;
+
+function assignChecklistDeltas(
+  checklist: ReportChecklistItem[],
+  lift: number
+): ReportChecklistItem[] {
+  const candidates = checklist
+    .filter((item) => item.status !== "pass")
+    .sort((a, b) => (b.impact_score ?? 0) - (a.impact_score ?? 0))
+    .slice(0, TOP_OPPORTUNITY_COUNT);
+
+  const impactSum = candidates.reduce((sum, item) => sum + (item.impact_score ?? 0), 0);
+  if (impactSum > 0) {
+    const liftDisplay = lift / 10; // match the 0-10 score scale shown in the report
+    for (const item of candidates) {
+      item.delta = Math.round(liftDisplay * ((item.impact_score ?? 0) / impactSum) * 10) / 10;
+    }
+  }
+
+  return candidates;
 }
 
 // -----------------------------
@@ -297,6 +324,8 @@ export async function POST(req: Request) {
     const score = Math.max(0, Math.min(10, narrative.hero.score / 10));
     const hero_slot = adaptHeroSlot(narrative.hero, extraction, narrative.copy_variants ?? []);
     const copy_variants = adaptCopyVariants(narrative.copy_variants ?? []) ?? undefined;
+    const checklist = adaptFindingsToChecklist(narrative.findings, extraction);
+    const topOpportunities = assignChecklistDeltas(checklist, narrative.hero.lift);
 
     const reportPayload: AuditReport = {
       url,
@@ -304,8 +333,7 @@ export async function POST(req: Request) {
       viewport_width: extraction.viewport_width ?? 1280,
       risk: deriveRiskFromScore(score),
       summary: narrative.summary,
-      verdict: narrative.hero.topIssue?.title ?? "",
-      key_observation: narrative.hero.subheadline ?? "",
+      verdict: narrative.hero.title ?? "",
       confidence: 88,
       issues: narrative.findings.map((f) => ({
         category: f.type,
@@ -317,12 +345,12 @@ export async function POST(req: Request) {
         severity: f.severity === "critical" ? "high" : f.severity,
         bullets: [],
       })),
-      suggestions: narrative.quickWins.slice(0, 3).map((qw) => ({
-        recommendation: qw.text,
+      suggestions: topOpportunities.map((item) => ({
+        recommendation: item.fix ?? item.text,
         priority: "quick_win" as const,
       })),
       copy: [],
-      checklist: adaptFindingsToChecklist(narrative.findings, extraction),
+      checklist,
       breakdown: {
         clarity:  narrative.findings.some((f) => f.type === "clarity")  ? 55 : 80,
         trust:    narrative.findings.some((f) => f.type === "trust")    ? 55 : 80,
@@ -330,16 +358,30 @@ export async function POST(req: Request) {
         visuals:  75,
       },
       copy_variants,
-      visual_fixes: (narrative.visual_fixes ?? []).map((f) => ({
-        dimension: f.category as VisualFixDimension,
-        observation: f.observation,
-        recommendation: f.fix,
-      })),
+      meta: {
+        title_suggestion: narrative.meta.title_suggestion,
+        description_suggestion: narrative.meta.description_suggestion,
+        proof_suggestion: narrative.meta.proof_suggestion,
+      },
+      visual_fixes: (narrative.visual_fixes ?? []).flatMap((f) => {
+        const dimension = normalizeVisualDimension(f.category);
+        if (!dimension) {
+          console.warn("[visual_fixes] unmapped category:", f.category);
+          return [];
+        }
+        return [{
+          dimension,
+          observation: f.observation,
+          recommendation: f.fix,
+          impact: f.impact,
+          element: f.element,
+        }];
+      }),
       score_potential: {
         target: Math.min(9.4, (narrative.hero.scorePotential) / 10),
-        chips: narrative.quickWins.slice(0, 3).map((qw) => ({
-          label: qw.text,
-          delta: `+${qw.delta.toFixed(1)}`,
+        chips: topOpportunities.map((item) => ({
+          label: item.fix ?? item.text,
+          delta: `+${(item.delta ?? 0).toFixed(1)}`,
         })),
       },
       hero_slot,
