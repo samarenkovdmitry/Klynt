@@ -87,7 +87,7 @@ export function ReportHeadlineDirectionsCard({
 
               <p className={REPORT_CARD_TITLE_CLASS}>Hero headline</p>
               {brandStage ? (
-                <p className="mt-1 text-[13px] font-medium text-[#2563EB]">
+                <p className="mt-1 text-[13px] font-medium text-[var(--brand-primary)]">
                   Tailored for {getBrandStageLabel(brandStage)} brands
                 </p>
               ) : null}

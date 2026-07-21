@@ -7,7 +7,7 @@ export function LandingTestSocialProof() {
       <div className={`${LANDING_UPDATE_CONTAINER} text-center`}>
         <h2 className="mx-auto max-w-[860px] text-[40px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#061C2F] md:text-[44px] md:leading-[1.02]">
           Clarity problems are obvious once{" "}
-          <span className="text-[#2563EB]">you see them.</span>
+          <span className="text-[var(--brand-primary)]">you see them.</span>
         </h2>
 
         <p className="mb-20 mt-4 text-[16px] font-semibold text-[#6B7280] md:mt-5 md:text-[17px]">

@@ -15,6 +15,8 @@ import type { ReportVisualFix, ReportVisualPass, VisualFixDimension } from "@/li
 type Props = {
   fixes: ReportVisualFix[];
   passes: ReportVisualPass[];
+  lockedAfter?: number;
+  onUnlock?: () => void;
 };
 
 const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
@@ -53,7 +55,7 @@ function parseHex(text: string): { displayText: string; hexColor: string | null 
 }
 
 function FixCell({ fix }: { fix: ReportVisualFix }) {
-  const label = DIMENSION_LABELS[fix.dimension] ?? fix.dimension;
+  const label = fix.title ?? DIMENSION_LABELS[fix.dimension] ?? fix.dimension;
   const { displayText, hexColor } = parseHex(fix.recommendation);
 
   return (
@@ -84,10 +86,21 @@ function FixCell({ fix }: { fix: ReportVisualFix }) {
   );
 }
 
-export function ReportVisualFixesGrid({ fixes, passes }: Props) {
+function gridCellClasses(i: number, total: number): string {
+  return [
+    i % 2 === 0 && total > 1 ? "sm:border-r sm:border-v2-card-divider" : "",
+    i >= 2 ? "border-t border-v2-card-divider" : "",
+    i === 1 ? "border-t border-v2-card-divider sm:border-t-0" : "",
+    i === 1 && total % 2 === 1 ? "sm:border-b sm:border-v2-card-divider" : "",
+  ].filter(Boolean).join(" ");
+}
+
+export function ReportVisualFixesGrid({ fixes, passes, lockedAfter, onUnlock }: Props) {
   if (fixes.length === 0 && passes.length === 0) return null;
 
   const topFixes = fixes.slice(0, 4);
+  const visibleFixes = lockedAfter !== undefined ? topFixes.slice(0, lockedAfter) : topFixes;
+  const lockedFixes = lockedAfter !== undefined ? topFixes.slice(lockedAfter) : [];
 
   return (
     <section className="overflow-hidden rounded-[16px] border border-v2-card-border bg-v2-card shadow-[0_1px_2px_rgba(27,26,23,0.03)]">
@@ -101,25 +114,37 @@ export function ReportVisualFixesGrid({ fixes, passes }: Props) {
         )}
       </div>
 
-      {topFixes.length > 0 && (
+      {visibleFixes.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2">
-          {topFixes.map((fix, i) => (
-            <div
-              key={fix.dimension}
-              className={[
-                // right border on left-column cells — always, as long as layout is ≥2 cols
-                i % 2 === 0 && topFixes.length > 1 ? "sm:border-r sm:border-v2-card-divider" : "",
-                // top border for second-row cells
-                i >= 2 ? "border-t border-v2-card-divider" : "",
-                // mobile stacking border for second item
-                i === 1 ? "border-t border-v2-card-divider sm:border-t-0" : "",
-                // bottom border on top-right cell when the row below it is incomplete (odd count)
-                i === 1 && topFixes.length % 2 === 1 ? "sm:border-b sm:border-v2-card-divider" : "",
-              ].filter(Boolean).join(" ")}
-            >
+          {visibleFixes.map((fix, i) => (
+            <div key={fix.dimension} className={gridCellClasses(i, visibleFixes.length)}>
               <FixCell fix={fix} />
             </div>
           ))}
+        </div>
+      )}
+
+      {lockedFixes.length > 0 && (
+        <div className="relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 opacity-30 blur-sm pointer-events-none select-none">
+            {lockedFixes.map((fix, i) => {
+              const globalIndex = visibleFixes.length + i;
+              return (
+                <div key={fix.dimension} className={gridCellClasses(globalIndex, topFixes.length)}>
+                  <FixCell fix={fix} />
+                </div>
+              );
+            })}
+          </div>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-t from-white via-white/80 to-transparent">
+            <button
+              type="button"
+              onClick={onUnlock}
+              className="pointer-events-auto rounded-full border border-v2-card-border bg-v2-card px-5 py-2.5 text-[14px] font-semibold text-v2-ink shadow-sm transition-colors hover:bg-v2-card-inner"
+            >
+              See all visual fixes →
+            </button>
+          </div>
         </div>
       )}
 

@@ -146,7 +146,7 @@ export function V2WhatKlyntFinds() {
             className="inline-flex items-center gap-2 font-mono text-[11.5px] tracking-[.1em]"
             style={{ color: "#8C887D" }}
           >
-            <RiFocus2Line size={14} style={{ color: "#2348FF" }} aria-hidden />
+            <RiFocus2Line size={14} style={{ color: "var(--brand-primary)" }} aria-hidden />
             WHAT KLYNT FINDS
           </span>
           <div className="mt-[18px] flex flex-wrap items-end justify-between gap-8">
@@ -297,7 +297,7 @@ export function V2WhatKlyntFinds() {
                               <div className="flex items-center justify-between gap-3">
                                 <span
                                   className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[.12em]"
-                                  style={{ color: "#2348FF" }}
+                                  style={{ color: "var(--brand-primary)" }}
                                 >
                                   <RiRuler2Line size={13} aria-hidden />
                                   HOW IT&rsquo;S MEASURED
@@ -412,7 +412,7 @@ export function V2WhatKlyntFinds() {
                           <div className="flex items-center justify-between gap-3">
                             <span
                               className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[.12em]"
-                              style={{ color: "#2348FF" }}
+                              style={{ color: "var(--brand-primary)" }}
                             >
                               <RiRuler2Line size={13} aria-hidden />
                               HOW IT&rsquo;S MEASURED

@@ -7,8 +7,12 @@ import type {
   AudienceType,
   BrandStage,
   HeadlineDirections,
+  ReportCopyVariants,
+  ReportScorePotential,
+  ReportVisualFix,
   TrafficSource,
 } from "@/lib/audit-report";
+import type { HeroSlot } from "@/components/report-v2/ReportHero";
 import {
   DEFAULT_AUDIENCE_TYPE,
   DEFAULT_TRAFFIC_SOURCE,
@@ -23,17 +27,13 @@ import {
   writeStoredBrandStage,
 } from "@/lib/brand-stage";
 import { generateReportId } from "@/lib/report-id";
-import { toReportClientCachePayload } from "@/lib/report-api-payload";
-import { warmReportRouteCache } from "@/lib/report-prefetch";
 import { buildReportPath } from "@/lib/report-route";
-import { buildReportSlug } from "@/lib/report-slug";
 import {
   ANALYZE_CLIENT_RETRY_DELAY_MS,
   postAnalyzeRequest,
   warmAnalyzeRuntime,
 } from "@/lib/analyze-client-request";
 import { ANALYZE_FALLBACK_ERROR } from "@/lib/api-errors";
-import { saveReport } from "@/lib/report-storage";
 import { validateWebsiteUrl } from "@/lib/validate-website-url";
 
 type FlatIssue = {
@@ -93,6 +93,10 @@ type AuditResponseFlat = {
     trust: number;
     conversion: number;
   };
+  copy_variants?: ReportCopyVariants;
+  visual_fixes?: ReportVisualFix[];
+  score_potential?: ReportScorePotential;
+  hero_slot?: HeroSlot | null;
   generatedAt: string;
 };
 
@@ -334,67 +338,44 @@ export function useAnalyzePage() {
         return;
       }
 
-      const json = outcome.data as AuditResponseFlat & {
-        reportId?: string;
-        error?: string;
-      };
+      const json = outcome.data as { reportId?: string; reportSlug?: string };
 
       const reportId =
         typeof json.reportId === "string" && json.reportId.trim()
           ? json.reportId.trim()
-          : generateReportId();
+          : "";
 
-      const flat: AuditResponseFlat = {
-        url: json.url ?? activeUrl ?? "",
-        score: json.score ?? 0,
-        risk: json.risk === "medium" || json.risk === "high" ? json.risk : "low",
-        summary: json.summary ?? "",
-        verdict: json.verdict ?? "",
-        key_observation: json.key_observation ?? "",
-        confidence: json.confidence ?? 0,
-        previewImage: typeof json.previewImage === "string" ? json.previewImage : undefined,
-        metric_observations: json.metric_observations,
-        brand_stage: json.brand_stage ?? brandStage,
-        traffic_source: json.traffic_source ?? trafficSource,
-        audience_type: json.audience_type ?? audienceType,
-        headline_directions: json.headline_directions,
-        issues: json.issues ?? [],
-        suggestions: json.suggestions ?? [],
-        copy: json.copy ?? [],
-        breakdown: {
-          clarity: json.breakdown?.clarity ?? 0,
-          navigation: json.breakdown?.navigation ?? 0,
-          visuals: json.breakdown?.visuals ?? 0,
-          trust: json.breakdown?.trust ?? 0,
-          conversion: json.breakdown?.conversion ?? 0,
-        },
-        generatedAt:
-          typeof json.generatedAt === "string" ? json.generatedAt : new Date().toISOString(),
-      };
-
-      const reportPath = buildReportPath(reportId, flat.url);
-      const reportSlug = buildReportSlug(reportId, flat.url);
-      const cachePayload = toReportClientCachePayload(flat, reportSlug);
-
-      try {
-        saveReport(reportId, cachePayload);
-        saveReport(reportSlug, cachePayload);
-      } catch {
+      if (!reportId) {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
-        failAnalysis(
-          "storage",
-          "Could not save the report in this browser. Try again or free up storage."
-        );
+        failAnalysis(analysisFailureKind, ANALYZE_FALLBACK_ERROR);
+        return;
+      }
+
+      const narrativeRes = await fetch("/api/narrative", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reportId }),
+      });
+
+      if (!narrativeRes.ok) {
+        stopProgressTimer();
+        setProgress(0);
+        setLoading(false);
+        failAnalysis(analysisFailureKind, "Report generation failed. Please try again.");
         return;
       }
 
       stopProgressTimer();
       setProgress(100);
 
-      router.prefetch(reportPath);
-      void warmReportRouteCache(reportSlug, cachePayload);
+      const reportSlug =
+        typeof json.reportSlug === "string" && json.reportSlug.trim()
+          ? json.reportSlug.trim()
+          : null;
+      const reportPath = reportSlug ? `/report/${reportSlug}` : buildReportPath(reportId, activeUrl);
+
       router.push(reportPath);
     } catch (caught: unknown) {
       stopProgressTimer();

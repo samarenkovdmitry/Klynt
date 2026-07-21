@@ -20,6 +20,7 @@ export type ReportIssue = ImpactFields & {
   title?: string;
   bullets?: string[];
   why?: string;
+  evidence?: string;
   severity?: "low" | "medium" | "high";
 };
 
@@ -96,16 +97,38 @@ export type ReportChecklistItem = {
   text: string;
   /** Short label for Copy studio badges (3–5 words). */
   gap_label?: string;
-  /** Exact quote or specific visible element from the page — required for quality validation. */
+  /** One short fact from the page, max 50 chars (shown as subtitle). */
   evidence?: string;
+  /** Full description text shown when the row is expanded. */
+  body?: string;
   status: ChecklistItemStatus;
   link_to: ChecklistLinkTarget | null;
   category: ChecklistCategory;
+  /** report-v2 schema: overrides the client-side impact formula when present. */
+  impact_score?: number;
+  /** report-v2 schema: context on why this finding matters for this page/audience. */
+  why_it_matters_here?: string;
+  /** report-v2 schema: sees/infers/decides narrative behind the finding. */
+  reasoning_chain?: {
+    sees: string;
+    infers: string;
+    decides: string;
+  };
+  /** report-v2 schema: imperative fix sentence (from narrative.ts Finding.fix), shown in the expanded row. */
+  fix?: string;
+  /** report-v2 schema: deterministic score-point contribution for the "Close the gap" delta badge, set on the top-N highest-impact items only. */
+  delta?: number;
 };
 
 export type CopyVariant = {
   label: string;
   text: string;
+  /** Why this variant is recommended (from narrative.ts CopyVariant.rationale). */
+  rationale?: string;
+  /** Persuasion angle used in `text` (from narrative.ts CopyVariant.strategy). */
+  strategy?: "outcome_led" | "audience_led" | "urgency_led";
+  /** True for the single strongest variant within its section group. */
+  recommended?: boolean;
 };
 
 export type CopyVariantBlock = {
@@ -155,6 +178,12 @@ export type ReportVisualFix = {
   dimension: VisualFixDimension;
   observation: string;
   recommendation: string;
+  /** report-v2 schema: free-text label override, used instead of DIMENSION_LABELS[dimension] when present. */
+  title?: string;
+  /** Model's own severity rating — independent of computeFixSeverityScore's checklist-derived ordering. */
+  impact?: "high" | "medium" | "low";
+  /** Free-text locator for the affected element, e.g. "hero CTA button". */
+  element?: string;
 };
 
 export type ReportVisualPass = {
@@ -222,6 +251,8 @@ export type AuditReport = {
   suggestions?: ReportSuggestion[];
   /** @deprecated use copy_variants instead */
   copy?: ReportCopyItem[];
+  /** Viewport width (px) at which the page was captured. Used by ViewportScaleBar. */
+  viewport_width?: number;
   brand_stage?: BrandStage;
   traffic_source?: TrafficSource;
   audience_type?: AudienceType;

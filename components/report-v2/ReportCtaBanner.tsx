@@ -49,17 +49,17 @@ export function ReportCtaBanner() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} noValidate className="mx-auto max-w-[660px]">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <input
             type="url"
             value={url}
             onChange={(e) => { setUrl(e.target.value); setError(""); }}
             placeholder="https://yoursite.com"
-            className="h-[52px] w-full rounded-full bg-white px-6 text-[16px] text-[#1B1A17] placeholder:text-[#B0ABA0] outline-none"
+            className="min-h-[52px] w-full rounded-full bg-white px-6 text-[16px] text-[#1B1A17] placeholder:text-[#B0ABA0] outline-none sm:flex-1 sm:min-w-0"
           />
           <button
             type="submit"
-            className="inline-flex h-[64px] w-full items-center justify-center gap-2 rounded-[14px] bg-[#1B1A17] text-[17px] font-semibold text-white transition-opacity hover:opacity-90"
+            className="inline-flex min-h-[52px] w-full shrink-0 items-center justify-center gap-2 rounded-full bg-[#1B1A17] px-8 text-[17px] font-semibold text-white transition-opacity hover:opacity-90 sm:w-auto"
           >
             Analyse free
             <RiArrowRightLine size={18} />

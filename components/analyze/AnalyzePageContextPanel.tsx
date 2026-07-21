@@ -23,9 +23,38 @@ const AUDIENCE_COLLAPSED_LABELS: Record<AudienceType, string> = {
   both: "B2B/B2C",
 };
 
+const PAGE_CONTEXT_TOOLTIP =
+  "Tailors recommendations to your brand stage, traffic, and audience.";
+
+function PageContextHelpIcon() {
+  return (
+    <span
+      className="group/help relative inline-flex shrink-0"
+      onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
+    >
+      <button
+        type="button"
+        tabIndex={0}
+        aria-label="About page context"
+        className="inline-flex rounded-full text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <RiQuestionLine size={16} aria-hidden />
+      </button>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-20 w-[220px] -translate-x-1/2 rounded-xl border border-[rgba(6,28,47,0.08)] bg-[#061C2F] px-3 py-2 text-center text-[12px] leading-[1.45] text-white opacity-0 shadow-[0_8px_24px_rgba(6,28,47,0.18)] transition-opacity duration-150 group-hover/help:opacity-100 group-focus-within/help:opacity-100"
+      >
+        {PAGE_CONTEXT_TOOLTIP}
+      </span>
+    </span>
+  );
+}
+
 function CollapsedPill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex h-[24px] items-center rounded-full border border-[#DCD8CD] bg-white px-2.5 text-[13px] leading-none text-[#8C887D]">
+    <span className="inline-flex h-[24px] items-center rounded-full border border-[#DCE2E7] bg-white px-2.5 text-[13px] leading-none text-[#8E99A2]">
       {children}
     </span>
   );
@@ -46,7 +75,7 @@ function FilterGroup<T extends string>({
 }) {
   return (
     <div>
-      <p className="mb-2.5 text-[13px] text-[#8C887D]">{label}</p>
+      <p className="mb-2.5 text-[13px] text-[#8E99A2]">{label}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => (
           <button
@@ -57,8 +86,8 @@ function FilterGroup<T extends string>({
             className={[
               "inline-flex h-[28px] items-center rounded-full px-3 text-[13px] transition-[background-color,color]",
               value === option.id
-                ? "border border-[#DCD8CD] bg-white text-[#1B1A17]"
-                : "border border-transparent bg-[rgba(27,26,23,0.06)] text-[#8C887D] hover:text-[#1B1A17]",
+                ? "border border-[#DCE2E7] bg-white text-[var(--ink-primary)]"
+                : "border border-transparent bg-[rgba(6,28,47,0.06)] text-[#8E99A2] hover:text-[var(--ink-primary)]",
               disabled ? "cursor-not-allowed opacity-60" : "",
             ].join(" ")}
           >
@@ -108,13 +137,9 @@ export function AnalyzePageContextPanel({
           disabled ? "cursor-not-allowed opacity-60" : "",
         ].join(" ")}
       >
-        <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-[#8C887D]">
+        <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-[#8E99A2]">
           Page context
-          <RiQuestionLine
-            size={16}
-            className="text-[#8C887D]/50 transition-colors hover:text-[#8C887D]"
-            aria-hidden
-          />
+          <PageContextHelpIcon />
         </span>
 
         {!expanded ? (
@@ -136,9 +161,9 @@ export function AnalyzePageContextPanel({
         )}
 
         {expanded ? (
-          <RiArrowUpSLine size={18} className="shrink-0 text-[#8C887D]" aria-hidden />
+          <RiArrowUpSLine size={18} className="shrink-0 text-[#8E99A2]" aria-hidden />
         ) : (
-          <RiArrowDownSLine size={18} className="shrink-0 text-[#8C887D]" aria-hidden />
+          <RiArrowDownSLine size={18} className="shrink-0 text-[#8E99A2]" aria-hidden />
         )}
       </button>
 

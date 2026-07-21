@@ -89,7 +89,7 @@ function buildWaitlistEmailContent(reportUrl: string) {
                 <p style="margin:0 0 16px;">Your UX analysis is ready.</p>
                 <p style="margin:0 0 8px;">Open your full report here:</p>
                 <p style="margin:0 0 24px;">
-                  <a href="${safeReportUrl}" style="color:#2563EB;text-decoration:underline;">${safeReportUrl}</a>
+                  <a href="${safeReportUrl}" style="color:#4A4AFF;text-decoration:underline;">${safeReportUrl}</a>
                 </p>
                 <p style="margin:0 0 8px;font-weight:600;">What Klynt does:</p>
                 <p style="margin:0 0 4px;">→ detects UX friction points</p>

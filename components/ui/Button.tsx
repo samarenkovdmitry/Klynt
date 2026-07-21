@@ -24,7 +24,7 @@ const primaryStyles: Record<ButtonTone, string> = {
 };
 
 const accentStyles =
-  "border border-transparent bg-[var(--brand-primary)] text-white shadow-[0_10px_30px_rgba(37,99,235,0.22)] hover:-translate-y-px hover:bg-[var(--brand-primary-hover)] hover:shadow-[0_14px_34px_rgba(37,99,235,0.28)]";
+  "border border-transparent bg-[var(--brand-primary)] text-white shadow-[0_10px_30px_var(--brand-primary-shadow)] hover:-translate-y-px hover:bg-[var(--brand-primary-hover)] hover:shadow-[0_14px_34px_var(--brand-primary-shadow-strong)]";
 
 const secondaryStyles: Record<ButtonTone, string> = {
   light:

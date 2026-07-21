@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { CopyOptimizerPageView } from "@/components/landing-copy/CopyOptimizerPageView";
-import { absoluteUrl, DEFAULT_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { absoluteUrl, SITE_NAME } from "@/lib/site";
 
 const TITLE = "Free Landing Page Copy Optimizer";
 const DESCRIPTION =

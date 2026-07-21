@@ -27,7 +27,7 @@ export function ReportShareStrip({ onShare, onExport }: ReportShareStripProps) {
             <button
               type="button"
               onClick={onShare}
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#2563EB] px-4 text-[14px] font-semibold text-white transition hover:bg-[#1D4ED8]"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[var(--brand-primary)] px-4 text-[14px] font-semibold text-white transition hover:bg-[var(--brand-primary-hover)]"
             >
               <RiShare2Line size={16} aria-hidden />
               Share

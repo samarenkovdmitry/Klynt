@@ -1,6 +1,5 @@
 import type { HealthTier } from "@/lib/report-metrics";
-import { getScoreTier } from "@/lib/report-metrics";
-import { STATUS_COLORS } from "@/lib/status-colors";
+import { getScoreTier, getTierColor } from "@/lib/report-metrics";
 
 export type ReportHeroTheme = {
   tier: HealthTier;
@@ -9,21 +8,18 @@ export type ReportHeroTheme = {
   badgeBg: string;
 };
 
-const THEMES: Record<HealthTier, Omit<ReportHeroTheme, "tier">> = {
+const THEMES: Record<HealthTier, Omit<ReportHeroTheme, "tier" | "badgeBg">> = {
   healthy: {
     heroBg: "#E8FBF4",
     gridColor: "#C8F2E4",
-    badgeBg: STATUS_COLORS.good,
   },
   medium: {
     heroBg: "#FFF3EA",
     gridColor: "#F6E4D4",
-    badgeBg: STATUS_COLORS.weak,
   },
   critical: {
     heroBg: "#FFEFEF",
     gridColor: "#F9D5D5",
-    badgeBg: STATUS_COLORS.low,
   },
 };
 
@@ -32,6 +28,7 @@ export function getReportHeroTheme(score: number): ReportHeroTheme {
 
   return {
     tier,
+    badgeBg: getTierColor(tier),
     ...THEMES[tier],
   };
 }
@@ -94,9 +91,9 @@ export function formatReportHref(url?: string) {
 }
 
 export function getMetricBarColor(value: number) {
-  if (value >= 70) return STATUS_COLORS.good;
-  if (value >= 40) return STATUS_COLORS.medium;
-  return STATUS_COLORS.low;
+  if (value >= 70) return getTierColor("healthy");
+  if (value >= 40) return getTierColor("medium");
+  return getTierColor("critical");
 }
 
 export function getFrictionScore(breakdown?: {

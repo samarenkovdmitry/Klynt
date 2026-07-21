@@ -2,6 +2,7 @@ export const REPORT_SECTION_ANCHORS = {
   issues: "report-issues",
   improvements: "report-improvements",
   copy: "report-copy",
+  checklist: "report-checklist",
 } as const;
 
 export type ReportSectionKind = keyof typeof REPORT_SECTION_ANCHORS;
@@ -19,7 +20,11 @@ export const REPORT_SECTION_META: Record<
     lead: "Concrete changes to ship — ordered by expected UX lift.",
   },
   copy: {
-    title: "Copy Refinement",
-    lead: "Before and after text you can paste into your site.",
+    title: "Copy studio",
+    lead: "Ready-to-paste copy for your highest-traffic elements.",
+  },
+  checklist: {
+    title: "Checklist",
+    lead: "What's working, what needs fixing, and quick wins — all in one place.",
   },
 };

@@ -1,5 +1,6 @@
 import type { AuditReport } from "@/lib/audit-report";
 import { isAuditReport } from "@/lib/audit-report";
+import type { ExtractionResult } from "@/lib/analysis/extraction";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { isValidReportId } from "@/lib/report-id";
 import { slugifyReportDomain } from "@/lib/report-slug";
@@ -26,6 +27,46 @@ export async function saveReportToDb(payload: {
     audited_url: payload.auditedUrl.trim(),
     payload: payload.report,
   });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function saveExtractionToDb(
+  reportId: string,
+  extraction: ExtractionResult
+) {
+  if (!isSupabaseConfigured() || !isValidReportId(reportId)) {
+    return;
+  }
+
+  const supabase = createServerSupabase();
+
+  const { error } = await supabase
+    .from("reports")
+    .update({ extraction, status: "processing" })
+    .eq("id", reportId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function updateReportWithNarrativeInDb(
+  reportId: string,
+  report: AuditReport
+) {
+  if (!isSupabaseConfigured() || !isValidReportId(reportId)) {
+    return;
+  }
+
+  const supabase = createServerSupabase();
+
+  const { error } = await supabase
+    .from("reports")
+    .update({ payload: report, status: "ready" })
+    .eq("id", reportId);
 
   if (error) {
     throw new Error(error.message);
@@ -74,7 +115,7 @@ export async function loadReportFromDb(
 
   const { data, error } = await supabase
     .from("reports")
-    .select("payload")
+    .select("payload, status")
     .eq("id", reportId)
     .maybeSingle();
 
@@ -82,11 +123,31 @@ export async function loadReportFromDb(
     throw new Error(error.message);
   }
 
-  if (!data?.payload || !isAuditReport(data.payload)) {
-    return null;
-  }
+  if (!data) return null;
+  if (data.status === "processing") return null;
+  if (!data.payload || !isAuditReport(data.payload)) return null;
 
   return data.payload;
+}
+
+export async function getReportStatusFromDb(
+  reportId: string
+): Promise<"processing" | "ready" | "missing"> {
+  if (!isValidReportId(reportId) || !isSupabaseConfigured()) {
+    return "missing";
+  }
+
+  const supabase = createServerSupabase();
+
+  const { data, error } = await supabase
+    .from("reports")
+    .select("status")
+    .eq("id", reportId)
+    .maybeSingle();
+
+  if (error || !data) return "missing";
+  if (data.status === "processing") return "processing";
+  return "ready";
 }
 
 export async function findReportIdBySlugInDb(

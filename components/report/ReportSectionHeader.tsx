@@ -3,8 +3,8 @@ import {
   RiAlertLine,
   RiEdit2Line,
   RiLightbulbFlashLine,
+  RiListCheck2,
 } from "@remixicon/react";
-import type { RemixiconComponentType } from "@remixicon/react";
 import type { ReportSectionKind } from "@/lib/report-sections";
 import { REPORT_SECTION_META } from "@/lib/report-sections";
 
@@ -19,13 +19,18 @@ const VARIANT_STYLES: Record<
   },
   improvements: {
     icon: RiLightbulbFlashLine,
-    iconWrap: "bg-[#EFF6FF] border-[#BFDBFE]",
-    iconColor: "text-[#2563EB]",
+    iconWrap: "bg-[var(--nordic-bg)] border-[var(--nordic-border)]",
+    iconColor: "text-[var(--brand-primary)]",
   },
   copy: {
     icon: RiEdit2Line,
     iconWrap: "bg-[#ECFDF5] border-[#A7F3D0]",
-    iconColor: "text-status-good",
+    iconColor: "text-[#059669]",
+  },
+  checklist: {
+    icon: RiListCheck2,
+    iconWrap: "bg-[#FFF7ED] border-[#FED7AA]",
+    iconColor: "text-[#C2410C]",
   },
 };
 
@@ -79,31 +84,6 @@ export function ReportSectionHeader({
 
         {trailing ? <div className="shrink-0">{trailing}</div> : null}
       </div>
-    </div>
-  );
-}
-
-type SectionHeaderProps = {
-  icon: RemixiconComponentType;
-  title: string;
-  trailing?: ReactNode;
-};
-
-export function SectionHeader({ icon: Icon, title, trailing }: SectionHeaderProps) {
-  return (
-    <div className="mb-4 flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
-        <div
-          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#eef1f6]"
-          aria-hidden
-        >
-          <Icon size={18} className="text-[#5B6378]" />
-        </div>
-        <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
-          {title}
-        </span>
-      </div>
-      {trailing ?? null}
     </div>
   );
 }

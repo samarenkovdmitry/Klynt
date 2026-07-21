@@ -66,7 +66,7 @@ export function ReportPageStates({ loadState }: ReportPageStatesProps) {
             <div className="flex items-center justify-center gap-3">
               <RiLoader4Line
                 size={20}
-                className="shrink-0 animate-spin text-[#2563EB]"
+                className="shrink-0 animate-spin text-[var(--brand-primary)]"
                 aria-hidden
               />
               <p className="text-[15px] leading-5 text-[#8E99A2]">
@@ -86,8 +86,8 @@ export function ReportPageStates({ loadState }: ReportPageStatesProps) {
           className={`${REPORT_STATE_CARD_CLASS} px-6 py-8 text-center md:px-10 md:py-10`}
           role="alert"
         >
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(37,99,235,0.08)]">
-            <RiLinkUnlink size={22} className="text-[#2563EB]" aria-hidden />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--nordic-bg)]">
+            <RiLinkUnlink size={22} className="text-[var(--brand-primary)]" aria-hidden />
           </div>
 
           <p className="mt-5 text-[15px] font-normal leading-5 text-[#8E99A2]">

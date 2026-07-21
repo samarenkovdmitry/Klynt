@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AppHeader } from "@/components/AppHeader";
 import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
+import { FreemiumProModal } from "@/components/report/FreemiumProModal";
 import { useReportData } from "@/hooks/useReportData";
 import { finalizeReportChecklist } from "@/lib/normalize-report-checklist";
 import { normalizeReportCopyVariants } from "@/lib/normalize-report-copy-variants";
@@ -11,7 +11,7 @@ import { normalizeVisualSection } from "@/lib/report-visual-fixes";
 import { sanitizeLlmVisibleText } from "@/lib/llm-placeholder-text";
 import { formatReportDomain } from "@/lib/report-hero-theme";
 import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
-import { openReportPrintExport } from "@/lib/report-export";
+import { deriveHeroSlot } from "@/lib/report-hero-slot";
 import type {
   AuditReport,
   ReportIssue,
@@ -19,8 +19,9 @@ import type {
   ChecklistCategory,
   ChecklistItemStatus,
 } from "@/lib/audit-report";
+import type { ExportType } from "@/lib/report-export-content";
 import { ReportSourceRow } from "./ReportSourceRow";
-import { ReportHero } from "./ReportHero";
+import { ReportHeroFinding, pickHeroFinding } from "./ReportHeroFinding";
 import { ReportScorePanel } from "./ReportScorePanel";
 import { ReportPriorityQueue } from "./ReportPriorityQueue";
 import { ReportCopyStudioV2 } from "./ReportCopyStudioV2";
@@ -28,6 +29,7 @@ import { ReportVisualFixesGrid } from "./ReportVisualFixesGrid";
 import { ReportTrustMetaPanel } from "./ReportTrustMetaPanel";
 import { ReportMethodologyPanel } from "./ReportMethodologyPanel";
 import { ReportExportV2 } from "./ReportExportV2";
+import { ExportModal } from "./ExportModal";
 import { ReportCtaBanner } from "./ReportCtaBanner";
 
 const ISSUE_CATEGORY_MAP: Record<string, ChecklistCategory> = {
@@ -53,13 +55,11 @@ function adaptIssuesToChecklist(issues: ReportIssue[]): ReportChecklistItem[] {
       issue.severity === "high" ? "missing" :
       issue.severity === "low" ? "weak" : "weak";
 
-    const parts = [issue.why, issue.bullets?.join("\n")].filter(Boolean);
-    const evidence = parts.length > 0 ? parts.join("\n\n") : undefined;
-
     return {
       id: `issue-${i}`,
       text: issue.title || issue.category?.replace(/_/g, " ") || "Issue",
-      evidence,
+      evidence: issue.evidence,
+      body: issue.why,
       status,
       link_to: null,
       category,
@@ -71,20 +71,26 @@ type Props = {
   routeParam: string;
   initialData?: AuditReport | null;
   isUnlocked?: boolean;
+  reportId?: string | null;
 };
 
-export function ReportPageV2({ routeParam, initialData = null, isUnlocked = false }: Props) {
+export function ReportPageV2({ routeParam, initialData = null, isUnlocked = false, reportId = null }: Props) {
   const { data, loadState } = useReportData(routeParam, initialData);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
+  const [paywallOpen, setPaywallOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportType, setExportType] = useState<ExportType>("copy_deck");
 
   function handleShare() {
     setShareUrl(window.location.href);
     setShareOpen(true);
   }
 
-  function handleExport() {
-    openReportPrintExport(routeParam);
+  function handleExport(type: ExportType) {
+    if (!report) return;
+    setExportType(type);
+    setExportOpen(true);
   }
 
   const report = useMemo(() => {
@@ -147,28 +153,33 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
     ? report.checklist
     : adaptIssuesToChecklist(report.issues ?? []);
   const hasNewLayout = effectiveChecklist.length > 0;
+  const heroFindingId = pickHeroFinding(effectiveChecklist)?.finding.id;
 
   return (
     <>
-      <AppHeader />
-
       <main className="min-h-[calc(100dvh-68px)] bg-v2-surface px-4 pb-20 pt-8 text-v2-ink md:px-6 md:pt-[52px]">
         <div className="mx-auto flex w-full max-w-[920px] flex-col gap-7">
-          <ReportSourceRow
-            url={data.url}
-            domain={domain}
-            generatedAt={data.generatedAt}
-            checklistCount={report.checklist?.length}
-            previewSrc={previewSrc}
-            onShare={handleShare}
-            onExport={handleExport}
-          />
-
-          <ReportHero
-            slot={report.hero_slot ?? null}
-            report={report}
-            domain={domain}
-          />
+          {effectiveChecklist.length > 0 && (
+            <ReportHeroFinding
+              checklist={effectiveChecklist}
+              copyVariants={report.copy_variants}
+              viewportWidth={report.viewport_width ?? 1280}
+              heroSlot={report.hero_slot ?? deriveHeroSlot(report)}
+              domain={domain}
+              sourceRow={
+                <ReportSourceRow
+                  url={data.url}
+                  domain={domain}
+                  generatedAt={data.generatedAt}
+                  checklistCount={report.checklist?.length}
+                  isUnlocked={isUnlocked}
+                  onShare={handleShare}
+                  onExport={handleExport}
+                  onPaywall={() => setPaywallOpen(true)}
+                />
+              }
+            />
+          )}
 
           <ReportScorePanel
             score={report.score}
@@ -177,17 +188,28 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
           />
 
           {hasNewLayout && (
-            <ReportPriorityQueue checklist={effectiveChecklist} />
+            <ReportPriorityQueue
+              checklist={effectiveChecklist}
+              heroFindingId={heroFindingId}
+              lockedAfter={isUnlocked ? undefined : 2}
+              onUnlock={!isUnlocked && reportId ? () => setPaywallOpen(true) : undefined}
+            />
           )}
 
           {report.copy_variants && (
-            <ReportCopyStudioV2 copyVariants={report.copy_variants} />
+            <ReportCopyStudioV2
+              copyVariants={report.copy_variants}
+              lockedAfter={isUnlocked ? undefined : 1}
+              onUnlock={!isUnlocked && reportId ? () => setPaywallOpen(true) : undefined}
+            />
           )}
 
           {(report.visual_fixes?.length || report.visual_passes?.length) ? (
             <ReportVisualFixesGrid
               fixes={report.visual_fixes ?? []}
               passes={report.visual_passes ?? []}
+              lockedAfter={isUnlocked ? undefined : 2}
+              onUnlock={!isUnlocked && reportId ? () => setPaywallOpen(true) : undefined}
             />
           ) : null}
 
@@ -197,7 +219,7 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
 
           <ReportMethodologyPanel />
 
-          {report.copy_variants && report.meta && (
+          {isUnlocked && report.copy_variants && (
             <ReportExportV2 onExport={handleExport} />
           )}
 
@@ -215,6 +237,23 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
           verdict: data.verdict,
         }}
       />
+
+      {reportId && (
+        <FreemiumProModal
+          open={paywallOpen}
+          onClose={() => setPaywallOpen(false)}
+          reportId={reportId}
+        />
+      )}
+
+      {report && (
+        <ExportModal
+          open={exportOpen}
+          onClose={() => setExportOpen(false)}
+          type={exportType}
+          report={report}
+        />
+      )}
     </>
   );
 }

@@ -1,36 +1,55 @@
 import Link from "next/link";
-import Image from "next/image";
+import {
+  RiLinkedinBoxFill,
+  RiProductHuntFill,
+  RiReddit2Line,
+  RiTwitterXLine,
+} from "@remixicon/react";
+import type { RemixiconComponentType } from "@remixicon/react";
 
-const PRODUCT_LINKS = [
-  { href: "/landing-copy", label: "Hero copy" },
-  { href: "/", label: "UX audit" },
-  { href: "/report/demo", label: "Sample report" },
+import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
+
+const legalLinks = [
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/contact", label: "Contact" },
 ];
 
-const COMPANY_LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-  { href: "/privacy", label: "Privacy" },
+const socialLinks: {
+  href: string;
+  label: string;
+  icon: RemixiconComponentType;
+}[] = [
+  { href: "https://x.com/useklynt", label: "X", icon: RiTwitterXLine },
+  {
+    href: "https://www.linkedin.com/in/dmitry-samarenkov/",
+    label: "LinkedIn",
+    icon: RiLinkedinBoxFill,
+  },
+  {
+    href: "https://www.reddit.com/user/DmitryKlynt/",
+    label: "Reddit",
+    icon: RiReddit2Line,
+  },
+  {
+    href: "https://www.producthunt.com/@dmitry_klynt",
+    label: "Product Hunt",
+    icon: RiProductHuntFill,
+  },
 ];
 
 const variantStyles = {
   light: {
-    footer: "bg-white border-t border-[rgba(6,28,47,0.06)]",
-    tagline: "text-[#8E99A2]",
-    colHead: "text-[#B0BAC3]",
-    link: "text-[#4A5568] hover:text-[#061C2F]",
-    divider: "border-[rgba(6,28,47,0.08)]",
-    copyright: "text-[#B0BAC3]",
-    logo: "/klynt-logo-dark.svg",
+    footer: "border-t border-[rgba(6,28,47,0.06)] bg-white",
+    text: "text-[#8E99A2]",
+    link: "transition hover:text-[#061C2F]",
+    social: "text-[#8E99A2] transition hover:text-[#061C2F]",
   },
   dark: {
-    footer: "bg-[#1B1A17]",
-    tagline: "text-[rgba(245,242,234,0.45)]",
-    colHead: "text-[rgba(245,242,234,0.3)]",
-    link: "text-[rgba(245,242,234,0.7)] hover:text-[#F5F2EA]",
-    divider: "border-[rgba(245,242,234,0.08)]",
-    copyright: "text-[rgba(245,242,234,0.3)]",
-    logo: "/klynt-logo-light.svg",
+    footer: "border-t border-white/[0.06] bg-[#18181B]",
+    text: "text-white/40",
+    link: "transition hover:text-white/80",
+    social: "text-white/40 transition hover:text-white/75",
   },
 } as const;
 
@@ -40,64 +59,45 @@ type AppFooterProps = {
 };
 
 export function AppFooter({ variant = "light", containerClass }: AppFooterProps) {
-  const s = variantStyles[variant];
-  const maxW = containerClass ?? "mx-auto max-w-[1080px]";
+  const styles = variantStyles[variant];
+  const container = containerClass ?? LANDING_UPDATE_CONTAINER;
 
   return (
-    <footer className={`app-site-footer mt-auto w-full shrink-0 ${s.footer}`}>
-      {/* Main section */}
-      <div className={`${maxW} px-6 pb-10 pt-12`}>
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr_160px_160px]">
-          {/* Brand */}
-          <div>
-            <Image
-              src={s.logo}
-              alt="Klynt"
-              width={88}
-              height={24}
-              className="mb-4"
-            />
-            <p className={`max-w-[260px] text-[14px] leading-[1.6] ${s.tagline}`}>
-              Turn any landing page into a prioritised list of copy, UX and trust fixes.
-            </p>
-          </div>
-
-          {/* Product */}
-          <div>
-            <p className={`font-mono mb-4 text-[11px] tracking-[0.09em] ${s.colHead}`}>PRODUCT</p>
-            <ul className="flex flex-col gap-3">
-              {PRODUCT_LINKS.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className={`text-[15px] transition-colors ${s.link}`}>
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <p className={`font-mono mb-4 text-[11px] tracking-[0.09em] ${s.colHead}`}>COMPANY</p>
-            <ul className="flex flex-col gap-3">
-              {COMPANY_LINKS.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className={`text-[15px] transition-colors ${s.link}`}>
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Copyright bar */}
-      <div className={`border-t ${s.divider}`}>
-        <div className={`${maxW} px-6 py-5`}>
-          <p className={`font-mono text-[11px] tracking-[0.08em] ${s.copyright}`}>
-            © 2026 KLYNT · ALL RIGHTS RESERVED
+    <footer
+      className={`app-site-footer mt-auto w-full shrink-0 px-4 py-2 md:px-6 ${styles.footer}`}
+    >
+      <div
+        className={`${container} flex h-[68px] items-center justify-between gap-3 md:gap-4`}
+      >
+        <div
+          className={`flex min-w-0 items-center gap-3 text-[13px] md:gap-7 md:text-[14px] ${styles.text}`}
+        >
+          <p className="shrink-0 font-normal sm:hidden">© 2026 Klynt</p>
+          <p className="hidden shrink-0 font-normal sm:block">
+            © 2026 Klynt – Landing improvement kit
           </p>
+          {legalLinks.map((link) => (
+            <Link key={link.href} href={link.href} className={`shrink-0 font-medium ${styles.link}`}>
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          {socialLinks.map((link) => {
+            const Icon = link.icon;
+
+            return (
+              <a
+                key={link.label}
+                href={link.href}
+                className={`inline-flex h-10 w-10 items-center justify-center ${styles.social}`}
+                aria-label={link.label}
+              >
+                <Icon size={20} aria-hidden />
+              </a>
+            );
+          })}
         </div>
       </div>
     </footer>

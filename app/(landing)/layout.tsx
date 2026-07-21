@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 
 import { LandingJsonLd } from "@/components/landing-json-ld";
+import { LANDING_DARK_BG } from "@/components/landing-test/landingPageStyles";
 import { buildPageMetadata } from "@/lib/seo";
 import { DEFAULT_DESCRIPTION } from "@/lib/site";
-
-import { LandingBodyColor } from "./LandingBodyColor";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "AI UX review for landing pages",
@@ -25,8 +24,7 @@ export default function LandingLayout({
   return (
     <>
       <LandingJsonLd />
-      <LandingBodyColor />
-      {children}
+      <div className={`flex min-h-0 flex-1 flex-col ${LANDING_DARK_BG}`}>{children}</div>
     </>
   );
 }

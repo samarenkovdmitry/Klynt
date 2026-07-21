@@ -1,6 +1,5 @@
 "use client";
 
-import { AppHeader } from "@/components/AppHeader";
 import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
 import { ReportChecklist } from "@/components/report/ReportChecklist";
 import CopyStudio from "@/components/report/CopyStudio";
@@ -70,14 +69,8 @@ const PREVIEW_PASSES: ReportVisualPass[] = [
 export default function VisualFixesPreviewPage() {
   const demo = DEMO_REPORT;
 
-  const criticalCount = demo.checklist.filter((item) => item.status !== "pass").length;
-  const missingCount = demo.checklist.filter((item) => item.status === "missing").length;
-  const weakCount = demo.checklist.filter((item) => item.status === "weak").length;
-
   return (
     <>
-      <AppHeader />
-
       <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-[13px] text-amber-700">
         <span className="font-semibold">DEV PREVIEW</span>
         <span className="text-amber-500">·</span>
@@ -94,15 +87,7 @@ export default function VisualFixesPreviewPage() {
             score={demo.score}
             verdict={demo.verdict}
             summary={demo.summary}
-            risk={demo.risk}
-            breakdown={demo.breakdown}
-            confidence={demo.confidence}
-            keyObservation={demo.key_observation}
             previewImage={DEMO_REPORT_PREVIEW_IMAGE}
-            criticalCount={criticalCount}
-            missingCount={missingCount}
-            weakCount={weakCount}
-            scorePotential={demo.score_potential?.target}
             onShare={() => {}}
             onExport={() => {}}
           />

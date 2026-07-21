@@ -5,10 +5,6 @@ import type {
   ReportScorePotential,
   ReportChecklistItem,
 } from "@/lib/audit-report";
-import {
-  getScoreChipShortLabel,
-  resolveChipChecklistItem,
-} from "@/lib/normalize-report-checklist";
 import type { RequestProUpgrade } from "@/lib/freemium";
 import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
@@ -23,10 +19,6 @@ interface ScorePotentialCompactProps {
   onRequestProUpgrade?: RequestProUpgrade;
 }
 
-function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
 function formatScore(value: number) {
   return value % 1 === 0 ? value.toFixed(1) : String(value);
 }
@@ -34,20 +26,12 @@ function formatScore(value: number) {
 export default function ScorePotentialCompact({
   score,
   scorePotential,
-  checklist,
-  chipsLocked = false,
-  onRequestProUpgrade,
 }: ScorePotentialCompactProps) {
   const { target, chips } = scorePotential;
 
-  function handleChipClick(chipLabel: string, index: number) {
-    if (chipsLocked) {
-      onRequestProUpgrade?.("score-breakdown");
-      return;
-    }
-    const item = resolveChipChecklistItem(chipLabel, index, checklist);
-    if (item?.link_to) scrollTo(item.link_to);
-  }
+  const scorePct = Math.min(Math.max(score / 10, 0), 1);
+  const potentialPct = Math.min(Math.max(target / 10, 0), 1);
+  const showGauge = potentialPct > scorePct;
 
   const description =
     chips.length > 0
@@ -73,44 +57,65 @@ export default function ScorePotentialCompact({
 
         <div className="flex flex-col px-5 py-5 md:flex-row md:items-center">
           {/* Score values */}
-          <div className="flex shrink-0 items-center gap-3">
-            <div className="text-center">
+          <div className="flex shrink-0 flex-col gap-2">
+            <div className="flex items-center gap-3">
               <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-status-weak">
                 {formatScore(score)}
               </div>
-              <div className="mt-1 text-[13px] text-[#8E99A2]">now</div>
-            </div>
-            <RiArrowRightLine size={20} className="text-[#C0C0C0]" aria-hidden />
-            <div className="text-center">
+              <RiArrowRightLine size={20} className="text-[#C0C0C0]" aria-hidden />
               <div className="text-[40px] font-semibold leading-none tracking-[-0.04em] text-status-good">
                 {formatScore(target)}
               </div>
-              <div className="mt-1 text-[13px] text-[#8E99A2]">potential</div>
             </div>
+
+            {showGauge && (
+              <div>
+                <div className="relative h-[5px] w-full overflow-hidden rounded-full bg-[#F5F5F5]">
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-full"
+                    style={{
+                      width: `${scorePct * 100}%`,
+                      backgroundColor: "var(--color-status-weak)",
+                    }}
+                  />
+                  <div
+                    className="absolute inset-y-0 opacity-85"
+                    style={{
+                      left: `${scorePct * 100}%`,
+                      width: `${(potentialPct - scorePct) * 100}%`,
+                      background:
+                        "repeating-linear-gradient(45deg, var(--color-status-good) 0 2px, transparent 2px 6px)",
+                    }}
+                  />
+                </div>
+                <div className="mt-1 flex justify-between text-[11px] text-[#8E99A2]">
+                  <span>now {formatScore(score)}</span>
+                  <span>target {formatScore(target)}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Vertical divider — desktop only */}
           <div className="mx-6 hidden h-[60px] w-px shrink-0 bg-[rgba(6,28,47,0.06)] md:block" />
 
-          {/* Description + chips */}
+          {/* Description + quick-win list */}
           {chips.length > 0 ? (
             <div className="mt-4 min-w-0 flex-1 md:mt-0">
-              <p className="mb-2 text-[14px] leading-5 text-[#061C2F]">{description}</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="mb-3 text-[14px] leading-5 text-[#061C2F]">{description}</p>
+              <ul className="space-y-[6px]">
                 {chips.map((chip, index) => (
-                  <button
-                    key={`${chip.label}-${index}`}
-                    type="button"
-                    onClick={() => handleChipClick(chip.label, index)}
-                    className="inline-flex h-7 items-center rounded-[8px] border border-[#E5E5E5] bg-white px-3 text-[14px] transition-colors hover:border-[rgba(6,28,47,0.2)]"
-                  >
-                    <span className="text-[#061C2F]">
-                      {getScoreChipShortLabel(chip.label, checklist)}
-                    </span>
-                    <span className="ml-[4px] text-status-good">{chip.delta}</span>
-                  </button>
+                  <li key={`${chip.label}-${index}`} className="flex items-center gap-1">
+                    <span className="shrink-0 text-[13px] text-[#8E99A2]">•</span>
+                    <span className="text-[13px] leading-5 text-[#061C2F]">{chip.label}</span>
+                    <span
+                      className="mx-2 flex-1 self-center border-b border-dotted border-[#C0C0C0]"
+                      aria-hidden
+                    />
+                    <span className="shrink-0 text-[13px] font-medium text-status-good">{chip.delta}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ) : null}
         </div>

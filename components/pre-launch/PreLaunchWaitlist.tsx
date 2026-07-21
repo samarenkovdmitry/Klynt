@@ -5,7 +5,7 @@ import { RiCheckLine, RiProductHuntFill } from "@remixicon/react";
 
 import type { ReportWaitlistLockedSummary } from "@/lib/pre-launch";
 import { Button } from "@/components/ui/Button";
-import { inputFieldClass } from "@/components/ui/inputClasses";
+import { inputFieldClass, inputFieldSizeClass } from "@/components/ui/inputClasses";
 import {
   getDaysUntilProductHuntLaunch,
   getProductHuntCountdownLabel,
@@ -213,7 +213,7 @@ export function PreLaunchWaitlistCard({
           onChange={(e) => setEmail(e.target.value)}
           disabled={submitting}
           aria-invalid={error ? true : undefined}
-          className={`${inputFieldClass({ disabled: submitting, withMargin: false })} h-[52px] md:h-[54px]`}
+          className={`${inputFieldClass({ disabled: submitting, withMargin: false })} ${inputFieldSizeClass}`}
         />
 
         {error && (

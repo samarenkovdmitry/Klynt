@@ -191,8 +191,8 @@ function ScorePotential() {
           marginBottom: 6,
         }}
       >
-        <span style={{ fontSize: 12, color: "#8A7F72" }}>NOW 6.5</span>
-        <span style={{ fontSize: 12, color: "#639922" }}>TARGET 8.0</span>
+        <span style={{ fontSize: 12, color: "#8A7F72" }}>NOW 7.4</span>
+        <span style={{ fontSize: 12, color: "#639922" }}>TARGET 8.9</span>
       </div>
 
       {/* Progress bar */}
@@ -206,17 +206,17 @@ function ScorePotential() {
       >
         <div
           style={{
-            width: "65%",
+            width: "74%",
             height: "100%",
             background: "#639922",
             borderRadius: 3,
           }}
         />
-        {/* Target dot — at 80% position (TARGET 8.0 on a 10-pt scale) */}
+        {/* Target dot — at 89% position (TARGET 8.9 on a 10-pt scale) */}
         <div
           style={{
             position: "absolute",
-            left: "80%",
+            left: "89%",
             top: "50%",
             transform: "translate(-50%, -50%)",
             width: 10,
@@ -234,9 +234,9 @@ function ScorePotential() {
 
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 11, color: "#6B6358" }}>
         {[
-          { label: "Raise contrast", val: "+0.6" },
-          { label: "Add trial offer", val: "+0.5" },
-          { label: "Place logos", val: "+0.4" },
+          { label: "Add trust proof",      val: "+1.2" },
+          { label: "'Free forever' nudge", val: "+0.9" },
+          { label: "Rewrite subhead",      val: "+0.6" },
         ].map(({ label, val }) => (
           <span key={label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <span
@@ -398,7 +398,7 @@ function FormatBBody() {
             color: "#A09690",
           }}
         >
-          Get started
+          Get Loom for free
         </div>
         <div
           style={{
@@ -406,12 +406,12 @@ function FormatBBody() {
             background: "#1A5C1A",
             borderRadius: 7,
             padding: "9px 16px",
-            fontSize: 13,
+            fontSize: 12,
             color: "white",
             fontWeight: 600,
           }}
         >
-          Start free — 14 days, no card
+          Record your first video free — no card
         </div>
       </div>
 
@@ -425,7 +425,7 @@ function FormatBBody() {
           marginBottom: 14,
         }}
       >
-        vague CTA · no outcome stated
+        outcome unclear · no urgency
       </div>
     </div>
   );
@@ -455,7 +455,7 @@ function FormatCBody() {
           marginBottom: 12,
         }}
       >
-        trust signals above the fold
+        trust signals near the CTA
       </div>
 
       {/* Absent row */}
@@ -483,7 +483,7 @@ function FormatCBody() {
         </span>
         <span style={{ fontSize: 11, color: "#C8BFB4" }}>→</span>
         <span style={{ fontSize: 12, color: "#1A1814", fontWeight: 500 }}>
-          Customer logos · Ratings · Guarantees
+          User count · &apos;Free forever&apos; badge · Logos
         </span>
       </div>
     </div>
@@ -509,7 +509,7 @@ function FormatDBody() {
             Before
           </div>
           <div style={{ fontSize: 14, color: "#A09690", fontWeight: 400 }}>
-            The CRM that works for your team
+            One video is worth a thousand words
           </div>
         </div>
 
@@ -527,8 +527,8 @@ function FormatDBody() {
           >
             After
           </div>
-          <div style={{ fontSize: 14, color: "#1A1814", fontWeight: 700 }}>
-            Simple CRM for teams who outgrew spreadsheets
+          <div style={{ fontSize: 13, color: "#1A1814", fontWeight: 700 }}>
+            Replace back-and-forth emails with a 2-min video
           </div>
         </div>
       </div>
@@ -572,10 +572,10 @@ export function HeroFindingCard(props: HeroFindingCardProps) {
 type CardMeta = { badge: string; domain: string; subtitle?: string; pencil: boolean };
 
 const CARD_META: CardMeta[] = [
-  { badge: "CONTRAST",         domain: "linear.app", subtitle: "hero subhead", pencil: false },
-  { badge: "CTA COPY",         domain: "notion.com",                           pencil: false },
-  { badge: "TRUST",            domain: "vercel.com",                           pencil: false },
-  { badge: "AUDIENCE UNCLEAR", domain: "folk.app",                             pencil: true  },
+  { badge: "CONTRAST",  domain: "loom.com", subtitle: "hero subhead", pencil: false },
+  { badge: "CTA COPY",  domain: "loom.com",                           pencil: false },
+  { badge: "TRUST",     domain: "loom.com",                           pencil: false },
+  { badge: "HEADLINE",  domain: "loom.com",                           pencil: true  },
 ];
 
 function SlotContent({ idx }: { idx: number }) {
@@ -683,10 +683,10 @@ export function HeroFindingCardPreview() {
   const w = { style: { width: 280, flexShrink: 0 } } as const;
   return (
     <div style={{ display: "flex", gap: 16, padding: 32, background: "#F0EDE6", flexWrap: "wrap" }}>
-      <HeroFindingCard format="A" badge="CONTRAST" domain="linear.app" subtitle="hero subhead" dotIndex={0} dotCount={4} {...w} />
-      <HeroFindingCard format="B" badge="CTA COPY" domain="notion.com" dotIndex={1} dotCount={4} {...w} />
-      <HeroFindingCard format="C" badge="TRUST" domain="vercel.com" dotIndex={2} dotCount={4} {...w} />
-      <HeroFindingCard format="D" badge="AUDIENCE UNCLEAR" domain="folk.app" dotIndex={3} dotCount={4} {...w} />
+      <HeroFindingCard format="A" badge="CONTRAST" domain="loom.com" subtitle="hero subhead" dotIndex={0} dotCount={4} {...w} />
+      <HeroFindingCard format="B" badge="CTA COPY" domain="loom.com" dotIndex={1} dotCount={4} {...w} />
+      <HeroFindingCard format="C" badge="TRUST" domain="loom.com" dotIndex={2} dotCount={4} {...w} />
+      <HeroFindingCard format="D" badge="HEADLINE" domain="loom.com" dotIndex={3} dotCount={4} {...w} />
     </div>
   );
 }

@@ -1,6 +1,12 @@
+import { HEADER_HEIGHT_PX } from "@/lib/layout-constants";
+
 export function LandingPageAtmosphere() {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+    <div
+      className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden"
+      style={{ top: `calc(-1 * (${HEADER_HEIGHT_PX}px + env(safe-area-inset-top, 0px)))` }}
+      aria-hidden
+    >
       <div
         className="absolute inset-x-0 top-0 h-[100vh]"
         style={{

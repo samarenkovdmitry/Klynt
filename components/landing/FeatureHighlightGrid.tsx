@@ -13,7 +13,7 @@ export function FeatureHighlightGrid() {
               className="flex flex-col items-center text-center"
             >
               <div className="flex items-center justify-center gap-2">
-                <Icon size={18} className="shrink-0 text-[#2563EB]" />
+                <Icon size={18} className="shrink-0 text-[var(--brand-primary)]" />
                 <span className="text-[14px] font-semibold tracking-[-0.02em] text-[#061C2F] md:text-[15px]">
                   {item.title}
                 </span>

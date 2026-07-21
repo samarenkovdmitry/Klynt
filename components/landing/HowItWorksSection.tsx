@@ -17,7 +17,7 @@ export function HowItWorksSection() {
             key={step.title}
             className="rounded-[28px] bg-white p-6 md:p-7"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2563EB]/10 text-[15px] font-semibold text-[#2563EB]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--brand-primary)]/10 text-[15px] font-semibold text-[var(--brand-primary)]">
               {index + 1}
             </div>
 

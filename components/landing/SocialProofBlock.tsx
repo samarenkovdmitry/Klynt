@@ -36,7 +36,7 @@ export function SocialProofBlock() {
         ))}
       </div>
 
-      <p className="mt-6 text-[17px] font-medium text-[#2563EB]">
+      <p className="mt-6 text-[17px] font-medium text-[var(--brand-primary)]">
         Used by designers, founders and product teams
       </p>
 

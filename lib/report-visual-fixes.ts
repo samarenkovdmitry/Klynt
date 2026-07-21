@@ -40,7 +40,7 @@ const DIMENSION_LABELS: Record<VisualFixDimension, string> = {
   navigation: "Navigation complexity",
   social_proof: "Social proof",
   headline_formula: "Headline formula",
-  color_contrast: "Color contrast",
+  color_contrast: "Text contrast",
 };
 
 // Maps dimensions to the checklist link targets they correspond to — used for severity scoring.
@@ -777,10 +777,22 @@ function parseVisualFixItem(raw: unknown): ReportVisualFix | null {
     return null;
   }
 
+  const impactRaw = item.impact;
+  const impact =
+    impactRaw === "high" || impactRaw === "medium" || impactRaw === "low"
+      ? impactRaw
+      : undefined;
+
+  const element = sanitizeLlmVisibleText(String(item.element ?? "")).trim() || undefined;
+  const title = sanitizeLlmVisibleText(String(item.title ?? "")).trim() || undefined;
+
   return {
     dimension,
     observation: clampWords(observation, 14, true),
     recommendation: clampWords(recommendation, 18, true),
+    ...(impact ? { impact } : {}),
+    ...(element ? { element } : {}),
+    ...(title ? { title } : {}),
   };
 }
 

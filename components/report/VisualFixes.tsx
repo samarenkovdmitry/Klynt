@@ -23,8 +23,15 @@ import type {
 } from "@/lib/audit-report";
 import { getVisualFixDimensionLabel } from "@/lib/report-visual-fixes";
 import {
+  REPORT_NEW_SECTION_BODY_GAP_CLASS,
+  ReportNewSectionHeader,
+} from "@/components/report/ReportNewSectionHeader";
+import {
   REPORT_SECTION_SCROLL_MARGIN_CLASS,
   REPORT_SECTION_SPACING_CLASS,
+  REPORT_SURFACE_SHADOW_CLASS,
+  REPORT_SURFACE_BORDER_CLASS,
+  REPORT_HERO_RADIUS_CLASS,
 } from "@/components/report/reportStyles";
 
 type Props = {
@@ -36,6 +43,31 @@ type Props = {
   /** @deprecated Visual fixes are fully unlocked for now */
   onRequestProUpgrade?: () => void;
 };
+
+const IMPACT_LABEL: Record<NonNullable<ReportVisualFix["impact"]>, string> = {
+  high: "high",
+  medium: "medium",
+  low: "low",
+};
+
+const IMPACT_BADGE_CLASS: Record<NonNullable<ReportVisualFix["impact"]>, string> = {
+  high: "border-[#F9D5D5] bg-[#FDEAEA] text-[#FF5A4F]",
+  medium: "border-[#FCE664] bg-[#FEFCE8] text-[#D08700]",
+  low: "border-[rgba(6,28,47,0.10)] bg-white text-[#616C77]",
+};
+
+const FIX_CARD_CLASS = [
+  "overflow-hidden bg-white",
+  REPORT_HERO_RADIUS_CLASS,
+  REPORT_SURFACE_BORDER_CLASS,
+  REPORT_SURFACE_SHADOW_CLASS,
+].join(" ");
+
+const ALIGNED_PANEL_CLASS = [
+  "overflow-hidden bg-white rounded-[14px]",
+  REPORT_SURFACE_BORDER_CLASS,
+  REPORT_SURFACE_SHADOW_CLASS,
+].join(" ");
 
 const DIMENSION_ICONS: Record<VisualFixDimension, typeof RiPaletteLine> = {
   border_radius: RiRoundedCorner,
@@ -51,6 +83,9 @@ const DIMENSION_ICONS: Record<VisualFixDimension, typeof RiPaletteLine> = {
   color_contrast: RiContrastLine,
 };
 
+const INLINE_VALUE_CHIP_CLASS =
+  "inline-flex items-center rounded-md border border-[#E8EBF0] bg-white px-1.5 py-px font-mono text-[13.5px] leading-[19px] text-[#34405A] align-middle";
+
 function highlightVisualText(text: string): React.ReactNode {
   const PATTERN =
     /(#[0-9a-fA-F]{3,6}\b|\b\d+(?:\.\d+)?(?:[–-]\d+(?:\.\d+)?)?(?:px|rem|em|%)\b)/gi;
@@ -60,26 +95,11 @@ function highlightVisualText(text: string): React.ReactNode {
   return (
     <>
       {parts.map((part, i) => {
-        if (/^#[0-9a-fA-F]{3,6}$/i.test(part)) {
+        if (/^#[0-9a-fA-F]{3,6}$/i.test(part) || /^\d+(?:\.\d+)?(?:[–-]\d+(?:\.\d+)?)?(?:px|rem|em|%)$/i.test(part)) {
           return (
-            <span key={i} className="inline whitespace-nowrap align-middle">
-              <span
-                className="mr-1 inline-block h-3 w-3 shrink-0 rounded-full border border-black/10 align-middle"
-                style={{ backgroundColor: part }}
-                aria-hidden
-              />
-              <span className="font-mono text-[12px] align-middle">{part}</span>
-            </span>
-          );
-        }
-        if (/^\d+(?:\.\d+)?(?:[–-]\d+(?:\.\d+)?)?(?:px|rem|em|%)$/i.test(part)) {
-          return (
-            <code
-              key={i}
-              className="whitespace-nowrap rounded bg-[#ECF0F6] px-[5px] py-px font-mono text-[12px] text-[#4a5568] align-middle"
-            >
+            <span key={i} className={INLINE_VALUE_CHIP_CLASS}>
               {part}
-            </code>
+            </span>
           );
         }
         return part || null;
@@ -88,46 +108,58 @@ function highlightVisualText(text: string): React.ReactNode {
   );
 }
 
-function VisualFixColumn({
-  fix,
-  index,
-}: {
-  fix: ReportVisualFix;
-  index: number;
-}) {
+function VisualFixCard({ fix }: { fix: ReportVisualFix }) {
   const Icon = DIMENSION_ICONS[fix.dimension];
-  const label = getVisualFixDimensionLabel(fix.dimension);
+  const label = fix.title ?? getVisualFixDimensionLabel(fix.dimension);
 
   return (
-    <div
-      className={[
-        "p-6",
-        index >= 1 ? "border-t border-[#eef1f5]" : "",
-        index === 1 ? "md:border-t-0" : "",
-        index % 2 === 0 ? "md:border-r md:border-[#eef1f5]" : "",
-      ].filter(Boolean).join(" ")}
-    >
-      <div className="mb-2.5 flex items-center gap-2">
-        <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
-        <span className="text-[15px] font-semibold text-[#061C2F]">{label}</span>
-      </div>
-      <p className="mb-3 text-[14px] leading-5 text-[#8E99A2] break-words">
-        {highlightVisualText(fix.observation)}
-      </p>
-      <div className="rounded-[10px] bg-[#EFF3F6] px-[14px] py-3">
-        <div className="flex items-start gap-2">
-          <RiArrowRightLine
-            size={15}
-            className="mt-0.5 shrink-0 text-status-good"
-            aria-hidden
-          />
-          <p className="min-w-0 flex-1 text-[14px] leading-5 text-[#061C2F] break-words">
-            {highlightVisualText(fix.recommendation)}
-          </p>
+    <article className={FIX_CARD_CLASS}>
+      <div className="px-[25px] pb-[25px] pt-[23px]">
+        <div className="mb-2 flex items-center gap-2">
+          <Icon size={18} className="shrink-0 text-[#5B6378]" aria-hidden />
+          <span className="text-[15px] font-bold leading-[21px] text-[#061C2F]">{label}</span>
+          {fix.impact ? (
+            <span
+              className={`ml-auto inline-flex h-[27px] shrink-0 items-center rounded-full border px-3 text-[13px] font-bold ${IMPACT_BADGE_CLASS[fix.impact]}`}
+            >
+              {IMPACT_LABEL[fix.impact]}
+            </span>
+          ) : null}
+        </div>
+
+        {fix.element ? (
+          <p className="mb-2 text-[13.5px] leading-[17px] text-[#8B95A7]">on: {fix.element}</p>
+        ) : null}
+
+        <p className="mb-4 text-[15px] leading-[22.5px] text-[#6B7488]">
+          {highlightVisualText(fix.observation)}
+        </p>
+
+        <div className="rounded-[10px] bg-[#EFF2F6] px-[15px] py-3">
+          <div className="flex items-start gap-2">
+            <RiArrowRightLine
+              size={17}
+              className="mt-0.5 shrink-0 text-[#1D9E75]"
+              aria-hidden
+            />
+            <p className="min-w-0 flex-1 text-[14.5px] leading-[21px] text-[#061C2F]">
+              {highlightVisualText(fix.recommendation)}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </article>
   );
+}
+
+function formatPassText(pass: ReportVisualPass): string {
+  const note = pass.note.trim();
+  if (/^[A-Z]/.test(note)) {
+    return note;
+  }
+  const label = getVisualFixDimensionLabel(pass.dimension);
+  const shortLabel = label.split(/\s*[&·]\s*/)[0]?.trim() || label;
+  return `${shortLabel} ${note}`;
 }
 
 function VisualPassRow({
@@ -137,106 +169,92 @@ function VisualPassRow({
   pass: ReportVisualPass;
   isLast: boolean;
 }) {
-  const Icon = DIMENSION_ICONS[pass.dimension];
-  const label = getVisualFixDimensionLabel(pass.dimension);
+  const displayText = formatPassText(pass);
 
   return (
     <div
       className={[
-        "flex items-center gap-3 px-6 py-4",
-        isLast ? "" : "border-b border-[#eef1f5]",
+        "flex items-center gap-3 px-[25px] py-3.5",
+        isLast ? "" : "border-b border-[rgba(6,28,47,0.06)]",
       ].join(" ")}
     >
-      <Icon size={16} className="shrink-0 text-[#7D8C99]" aria-hidden />
-      <div className="min-w-0 flex-1">
-        <span className="text-[15px] font-medium text-[#061C2F]">{label}</span>
-        <span className="mx-2 text-[#7D8C99]">·</span>
-        <span className="text-[15px] text-[#7D8C99]">{pass.note}</span>
-      </div>
-      <span className="shrink-0 rounded-full bg-status-good/10 px-2.5 py-1 text-[13px] font-medium text-status-good">
-        Aligned
+      <span className="inline-flex h-[25px] shrink-0 items-center rounded-full bg-[#EEF1F5] px-[11px] text-[13px] font-bold text-[#8B95A7]">
+        aligned
       </span>
+      <p className="min-w-0 flex-1 text-[15px] leading-[19px] text-[#061C2F]">{displayText}</p>
     </div>
   );
 }
 
-export function VisualFixes({
-  visualFixes,
-  visualPasses,
-}: Props) {
+export function VisualFixes({ visualFixes, visualPasses }: Props) {
   const fixes = visualFixes ?? [];
   const passes = visualPasses ?? [];
-  const [passVisible, setPassVisible] = useState(fixes.length < 2);
+  const [passVisible, setPassVisible] = useState(false);
 
   if (fixes.length === 0 && passes.length === 0) return null;
-
-  const insightCount = fixes.length;
-  const checkCount = passes.length;
 
   return (
     <section
       id="visual-fixes"
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
-      {/* Outer card */}
       {fixes.length > 0 ? (
-        <div className="overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white">
-          {/* Header band */}
-          <div className="flex items-center gap-2 border-b border-[#eef1f5] bg-[#fafbfc] px-6 py-[18px]">
-            <div
-              className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-[#eef1f6]"
-              aria-hidden
-            >
-              <RiPaletteLine size={18} className="text-[#5B6378]" />
+        <>
+          <ReportNewSectionHeader
+            icon={<RiPaletteLine size={22} className="text-[#5B6378]" />}
+            title="Visual fixes"
+            suffix={String(fixes.length)}
+          />
+
+          <div className={`${REPORT_NEW_SECTION_BODY_GAP_CLASS} space-y-4`}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {fixes.map((fix, index) => (
+                <VisualFixCard key={`${fix.dimension}-${index}`} fix={fix} />
+              ))}
             </div>
-            <span className="text-[20px] font-semibold leading-7 tracking-[-0.02em] text-[#061C2F]">
-              Visual fixes
-            </span>
-            <span className="ml-auto text-[14px] leading-5 text-[#8E99A2]">
-              {insightCount} insight{insightCount !== 1 ? "s" : ""}
-            </span>
-          </div>
-          {/* 2-column content grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            {fixes.map((fix, index) => (
-              <VisualFixColumn key={fix.dimension} fix={fix} index={index} />
-            ))}
-          </div>
 
-          {passes.length > 0 ? (
-            <>
-              <button
-                type="button"
-                onClick={() => setPassVisible((value) => !value)}
-                className="flex w-full items-center gap-1.5 border-t border-[#eef1f5] px-6 pb-6 pt-[22px] text-[13px] text-[#8E99A2] transition-colors hover:text-[#061C2F]"
-              >
-                <RiArrowDownSLine
-                  size={16}
-                  aria-hidden
-                  className={`transition-transform duration-300 ${passVisible ? "rotate-180" : ""}`}
-                />
-                {passVisible
-                  ? "Hide aligned visual checks"
-                  : `Show ${passes.length} aligned visual check${passes.length !== 1 ? "s" : ""}`}
-              </button>
-
-              <div
-                className="overflow-hidden transition-[max-height] duration-300 ease-out"
-                style={{
-                  maxHeight: passVisible ? `${passes.length * 80 + 32}px` : "0px",
-                }}
-              >
-                {passes.map((pass, index) => (
-                  <VisualPassRow
-                    key={pass.dimension}
-                    pass={pass}
-                    isLast={index === passes.length - 1}
+            {passes.length > 0 ? (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => setPassVisible((value) => !value)}
+                  className="flex items-center gap-2 px-1 text-[14.5px] text-[#8B95A7] transition-colors hover:text-[#061C2F]"
+                >
+                  <RiArrowDownSLine
+                    size={16}
+                    aria-hidden
+                    className={`transition-transform duration-300 ${passVisible ? "rotate-180" : ""}`}
                   />
-                ))}
+                  {passVisible
+                    ? "Hide aligned visual checks"
+                    : `Show ${passes.length} aligned visual check${passes.length !== 1 ? "s" : ""}`}
+                </button>
+
+                <div
+                  className={[
+                    "overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-out",
+                    passVisible ? "mt-3 opacity-100" : "max-h-0 opacity-0",
+                  ].join(" ")}
+                  style={
+                    passVisible
+                      ? { maxHeight: `${passes.length * 56 + 16}px` }
+                      : undefined
+                  }
+                >
+                  <div className={ALIGNED_PANEL_CLASS}>
+                    {passes.map((pass, index) => (
+                      <VisualPassRow
+                        key={pass.dimension}
+                        pass={pass}
+                        isLast={index === passes.length - 1}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
-            </>
-          ) : null}
-        </div>
+            ) : null}
+          </div>
+        </>
       ) : null}
     </section>
   );
