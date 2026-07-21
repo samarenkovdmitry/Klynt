@@ -91,22 +91,22 @@ function CloseTheGap() {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/30">
                   Now
                 </p>
-                <p className="text-[44px] font-semibold leading-[0.9] tracking-[-0.04em] text-white/45">
+                <p className="text-[19px] font-semibold leading-[1.2] tracking-[-0.02em] text-white/45 md:text-[44px] md:leading-[0.9] md:tracking-[-0.04em]">
                   6.5
                 </p>
               </div>
-              <RiArrowRightLine size={20} className="mb-2.5 text-white/20" aria-hidden />
+              <RiArrowRightLine size={20} className="mb-0.5 text-white/20 md:mb-2.5" aria-hidden />
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/35">
                   Potential
                 </p>
-                <p className="text-[44px] font-semibold leading-[0.9] tracking-[-0.04em] text-white">
+                <p className={`text-[19px] font-semibold leading-[1.2] tracking-[-0.02em] md:text-[44px] md:leading-[0.9] md:tracking-[-0.04em] ${INDIGO_TEXT}`}>
                   8.9
                 </p>
               </div>
             </div>
             <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
-              <div className="h-full w-[89%] rounded-full bg-indigo-400/65" />
+              <div className="h-full w-[89%] rounded-full bg-gradient-to-r from-white/30 to-indigo-400/80" />
             </div>
             <p className="mt-2.5 text-[12px] text-white/35">+2.4 points if you fix the top 3</p>
           </div>
