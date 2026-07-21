@@ -38,11 +38,15 @@ export function LandingTestHowItWorks() {
   return (
     <section className={LANDING_SECTION} aria-labelledby="how-heading">
       <div className={LANDING_CONTAINER}>
-        <p className={LANDING_EYEBROW}>How it works</p>
-        <h2 id="how-heading" className={LANDING_TITLE}>
-          From URL to actionable report in minutes
-        </h2>
-        <p className={LANDING_LEAD}>No setup, no account. Most analyses finish in under a minute.</p>
+        <div className="mx-auto max-w-[640px] text-center">
+          <p className={LANDING_EYEBROW}>How it works</p>
+          <h2 id="how-heading" className={`${LANDING_TITLE} mx-auto max-w-[520px]`}>
+            From URL to actionable report in minutes
+          </h2>
+          <p className={`${LANDING_LEAD} mx-auto max-w-[540px]`}>
+            No setup, no account. Most analyses finish in under a minute.
+          </p>
+        </div>
 
         <ol className="mt-12 grid grid-cols-1 gap-0 lg:mt-16 lg:grid-cols-3 lg:items-stretch lg:gap-8">
           {STEPS.map((item, index) => {

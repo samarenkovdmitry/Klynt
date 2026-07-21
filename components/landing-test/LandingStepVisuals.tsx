@@ -1,18 +1,15 @@
-import { ScoreStatusChip } from "@/components/report/ScoreStatusChip";
+import { RiLinkM } from "@remixicon/react";
 
 import { LANDING_SURFACE_BG } from "./landingPageStyles";
 
 const UI_FRAME = `overflow-hidden rounded-[12px] border border-white/[0.08] ${LANDING_SURFACE_BG} shadow-[0_8px_32px_rgba(0,0,0,0.14)]`;
-
-const REPORT_FRAME =
-  "overflow-hidden rounded-[12px] border border-black/[0.06] bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)]";
 
 export function StepAddPageVisual() {
   return (
     <div className={UI_FRAME} aria-hidden>
       <div className="px-3.5 py-3">
         <div className="flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2.5">
-          <span className="h-2 w-2 shrink-0 rounded-full bg-indigo-400/70" />
+          <RiLinkM size={14} className="shrink-0 text-indigo-400/70" aria-hidden />
           <span className="truncate text-[12px] text-white/45">https://your-landing-page.com</span>
         </div>
         <div className="mt-3 flex items-center justify-between gap-2">
@@ -63,22 +60,35 @@ export function StepAnalyzeVisual() {
 
 export function StepReportVisual() {
   return (
-    <div className={REPORT_FRAME} aria-hidden>
+    <div className={UI_FRAME} aria-hidden>
       <div className="px-3.5 py-3">
-        <ScoreStatusChip score="6.5" tierLabel="At risk" badgeBg="#FF7A00" />
-        <ul className="mt-3 space-y-2 border-t border-black/[0.06] pt-3">
-          {[
-            "Hero headline lacks a clear first outcome",
-            "Multiple CTAs compete above the fold",
-          ].map((line) => (
-            <li key={line} className="flex gap-2 text-[11px] leading-[15px] text-[#18181B]/55">
-              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#18181B]/25" />
-              <span className="line-clamp-2">{line}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-3 inline-flex rounded-md border border-black/[0.06] bg-[#F4F4F5] px-2 py-1 text-[10px] text-[#18181B]/50">
-          Copy refinement
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[10px] font-semibold text-white/45">Close the gap</span>
+          <span className="text-[11px] font-semibold tabular-nums tracking-[-0.02em]">
+            <span className="text-white/40">6.5</span>
+            <span className="text-white/20"> → </span>
+            <span className="text-indigo-300">8.9</span>
+          </span>
+        </div>
+        <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.06]">
+          <div className="h-full w-[89%] rounded-full bg-gradient-to-r from-white/30 to-indigo-400/80" />
+        </div>
+        <div className="mt-3 flex items-center justify-between gap-2 rounded-lg bg-white/[0.04] px-2 py-1.5">
+          <span className="truncate text-[11px] text-white/55">Headline lacks a use-case</span>
+          <span className="inline-flex shrink-0 items-center rounded-full bg-indigo-400/15 px-1.5 py-0.5 text-[10px] font-bold text-indigo-300">
+            ↑0.8
+          </span>
+        </div>
+        <div className="mt-3 border-t border-white/[0.06] pt-3">
+          <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-white/25">
+            Copy studio
+          </p>
+          <p className="mt-1 truncate text-[11px] text-white/35 line-through decoration-white/15">
+            The all-in-one platform for modern teams
+          </p>
+          <p className="truncate text-[11px] font-medium text-white/75">
+            Ship landing pages that convert — without a designer
+          </p>
         </div>
       </div>
     </div>
