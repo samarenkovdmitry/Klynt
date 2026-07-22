@@ -65,16 +65,16 @@ export function StepReportVisual() {
         <div className="flex items-center justify-between gap-2">
           <span className="text-[10px] font-semibold text-white/45">Close the gap</span>
           <span className="text-[11px] font-semibold tabular-nums tracking-[-0.02em]">
-            <span className="text-white/40">6.5</span>
+            <span className="text-white/40">6.1</span>
             <span className="text-white/20"> → </span>
-            <span className="text-indigo-300">8.9</span>
+            <span className="text-indigo-300">8.3</span>
           </span>
         </div>
         <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.06]">
-          <div className="h-full w-[89%] rounded-full bg-gradient-to-r from-white/30 to-indigo-400/80" />
+          <div className="h-full w-[83%] rounded-full bg-gradient-to-r from-white/30 to-indigo-400/80" />
         </div>
         <div className="mt-3 flex items-center justify-between gap-2 rounded-lg bg-white/[0.04] px-2 py-1.5">
-          <span className="truncate text-[11px] text-white/55">Headline lacks a use-case</span>
+          <span className="truncate text-[11px] text-white/55">Primary CTA trial unclear</span>
           <span className="inline-flex shrink-0 items-center rounded-full bg-indigo-400/15 px-1.5 py-0.5 text-[10px] font-bold text-indigo-300">
             ↑0.8
           </span>
@@ -84,10 +84,10 @@ export function StepReportVisual() {
             Copy studio
           </p>
           <p className="mt-1 truncate text-[11px] text-white/35 line-through decoration-white/15">
-            The all-in-one platform for modern teams
+            The CRM that works for your team
           </p>
           <p className="truncate text-[11px] font-medium text-white/75">
-            Ship landing pages that convert — without a designer
+            Close more deals without the CRM busywork
           </p>
         </div>
       </div>

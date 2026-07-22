@@ -27,9 +27,14 @@ const CARD_CLASS =
 
 const textClamp2 = "line-clamp-2";
 
-/** Complete sentences for mockup — avoids mid-sentence clamp cuts */
-const MOCK_SUMMARY =
-  "Visitors can't tell who the product is for in the first few seconds. Without proof near the CTA, the pitch reads as marketing.";
+function getMockVisualFix(data: typeof DEMO_REPORT) {
+  const fixes = data.visual_fixes ?? [];
+  return (
+    fixes.find((fix) => fix.dimension === "social_proof") ??
+    fixes.find((fix) => fix.dimension === "navigation") ??
+    fixes[0]
+  );
+}
 
 function sortByImpact(items: ReportChecklistItem[]) {
   return [...items].sort((a, b) => (b.impact_score ?? 0) - (a.impact_score ?? 0));
@@ -107,16 +112,14 @@ export function LandingTestMockup() {
   const domain = formatReportDomain(data.url);
   const overallScore = formatOverallScore(score);
   const tierLabel = getTierLabel(theme.tier);
-  const potentialTarget = 8.9;
+  const potentialTarget = data.score_potential?.target ?? 8.3;
   const potentialScore = formatOverallScore(potentialTarget);
   const scoreDelta = Math.max(0, potentialTarget - score);
   const progressPct = Math.min(100, Math.round((potentialTarget / 10) * 100));
-  const criticalItems = getCriticalItems(data.checklist ?? []).slice(0, 2);
+  const criticalItems = getCriticalItems(data.checklist ?? []).slice(0, 3);
   const headlineCurrent = data.copy_variants?.headline?.current ?? "";
   const headlineRecommended = getRecommendedHeadline(data);
-  const topVisualFix =
-    data.visual_fixes?.find((fix) => fix.dimension === "color_contrast") ??
-    data.visual_fixes?.[0];
+  const topVisualFix = getMockVisualFix(data);
   const visualFixTitle = topVisualFix
     ? getVisualFixDimensionLabel(topVisualFix.dimension)
     : "";
@@ -164,8 +167,9 @@ export function LandingTestMockup() {
                   />
                 </div>
 
-                <p className="mt-2.5 text-[14px] leading-[1.45] text-[rgba(6,28,47,0.5)] md:leading-[20px]">
-                  {MOCK_SUMMARY}
+                <p className="mt-2.5 line-clamp-3 text-[14px] leading-[1.45] text-[rgba(6,28,47,0.5)] md:leading-[20px]">
+                  {data.summary ??
+                    "Clear fundamentals with fixable conversion gaps ranked by impact."}
                 </p>
               </div>
 

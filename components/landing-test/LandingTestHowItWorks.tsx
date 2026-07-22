@@ -15,14 +15,14 @@ const STEPS = [
   {
     step: "1",
     title: "Add your page",
-    description: "Paste a URL or upload a screenshot — any landing or marketing page.",
+    description: "Paste a URL or upload a screenshot, any landing or marketing page.",
     Visual: StepAddPageVisual,
   },
   {
     step: "2",
     title: "Klynt analyzes UX",
     description:
-      "Layout, messaging, trust signals, and conversion flow — only from what's visible on screen.",
+      "Layout, messaging, trust signals, and conversion flow, only from what's visible on screen.",
     Visual: StepAnalyzeVisual,
   },
   {
