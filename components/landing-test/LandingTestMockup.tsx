@@ -126,7 +126,7 @@ export function LandingTestMockup() {
     <Link
       href={DEMO_REPORT_PATH}
       id="report"
-      className="group relative mx-auto block max-w-[560px] lg:max-w-none"
+      className="group relative mx-auto block w-full min-w-0 max-w-full sm:max-w-[560px] lg:max-w-none"
       aria-label={`View sample UX report for ${domain}`}
     >
       <div className={CARD_CLASS} onCopy={(event) => event.preventDefault()}>
@@ -148,7 +148,7 @@ export function LandingTestMockup() {
               </span>
             </div>
 
-            <div className="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_200px] md:grid-cols-[minmax(0,1fr)_220px] md:gap-5">
+            <div className="grid min-w-0 items-start gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,200px)] md:grid-cols-[minmax(0,1fr)_minmax(0,220px)] md:gap-5">
               <div className="min-w-0">
                 <h2
                   className={`text-[19px] font-bold leading-[1.25] tracking-[-0.01em] text-[#061C2F] md:text-[20px] ${textClamp2}`}
@@ -196,11 +196,11 @@ export function LandingTestMockup() {
 
           {/* Close the gap teaser */}
           <div className="border-t border-[rgba(32,52,94,0.08)] bg-white px-4 py-4 md:px-5 md:pb-5">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-[12px] font-semibold text-[#061C2F] md:text-[13px]">
+            <div className="flex min-w-0 items-center justify-between gap-3">
+              <p className="shrink-0 text-[12px] font-semibold text-[#061C2F] md:text-[13px]">
                 Close the gap
               </p>
-              <div className="flex items-center gap-1.5 text-[13px] font-semibold tabular-nums tracking-[-0.02em] md:text-[14px]">
+              <div className="flex shrink-0 items-center gap-1.5 text-[13px] font-semibold tabular-nums tracking-[-0.02em] md:text-[14px]">
                 <span className="text-[rgba(6,28,47,0.45)]">{overallScore}</span>
                 <RiArrowRightLine size={14} className="text-[rgba(6,28,47,0.25)]" aria-hidden />
                 <span className="text-indigo-600">{potentialScore}</span>
@@ -219,7 +219,7 @@ export function LandingTestMockup() {
 
             <ul className="mt-3 space-y-2">
               {criticalItems.map((item, index) => (
-                <li key={item.id} className="flex items-center justify-between gap-3">
+                <li key={item.id} className="flex min-w-0 items-center justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-2">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FAFBFC] text-[10px] font-medium tabular-nums text-[rgba(6,28,47,0.4)] ring-1 ring-[rgba(6,28,47,0.08)]">
                       {index + 1}
@@ -231,19 +231,14 @@ export function LandingTestMockup() {
               ))}
             </ul>
 
-            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[rgba(32,52,94,0.06)] pt-3">
+            <div className="mt-3 grid min-w-0 grid-cols-1 gap-2 border-t border-[rgba(32,52,94,0.06)] pt-3 sm:grid-cols-2">
               <SectionTeaser label="Copy studio">
                 <p className="line-clamp-2 text-[11px] leading-[15px] text-[rgba(6,28,47,0.35)] line-through decoration-[rgba(6,28,47,0.15)]">
                   {headlineCurrent}
                 </p>
-                <div className="mt-2">
-                  <p className="text-[9px] font-medium uppercase tracking-[0.08em] text-[rgba(6,28,47,0.45)]">
-                    Recommended
-                  </p>
-                  <p className="mt-0.5 line-clamp-2 text-[11px] font-medium leading-[15px] text-[#061C2F]">
-                    {headlineRecommended}
-                  </p>
-                </div>
+                <p className="mt-0.5 line-clamp-2 text-[11px] font-medium leading-[15px] text-[#061C2F]">
+                  {headlineRecommended}
+                </p>
               </SectionTeaser>
 
               {topVisualFix ? (
