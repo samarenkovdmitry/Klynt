@@ -1,6 +1,7 @@
 import { callLLM } from "../models/client";
 import type { ExtractionResult, PageMetaSnapshot } from "./extraction";
 import type { PageComputedValues } from "@/lib/audit-report";
+import { extractJsonFromLlmText } from "./parse-llm-json";
 
 export interface Finding {
   type: "clarity" | "cta" | "trust" | "friction" | "performance";
@@ -142,7 +143,13 @@ Meta rules:
 - "description_suggestion": SEO meta description, max ~155 characters. Third person, first-time visitor perspective — what the page is and who it's for.
 - "proof_suggestion": one specific trust element to add on THIS page, max 10 words (e.g. "Add customer logos below CTA").
 
-Output ONLY valid JSON. No markdown, no commentary.`;
+OUTPUT BUDGET (critical — response must be complete valid JSON):
+- findings: max 4 items (highest severity only)
+- copy_variants: max 3 items total (one per section: headline, subheadline if present, cta)
+- visual_fixes: max 2 items (DOM-derived fixes are added server-side)
+- Keep reasoning_chain fields to max 10 words each
+
+Output ONLY valid JSON. No markdown fences, no commentary.`;
 
 const FORMAT_MAP: Record<string, NarrativeResult["hero"]["format"]> = {
   clarity: "D_textual",
@@ -152,14 +159,51 @@ const FORMAT_MAP: Record<string, NarrativeResult["hero"]["format"]> = {
   performance: "A_numeric",
 };
 
-export async function generateNarrative(
+function slimComputedValuesForNarrative(
+  computedValues: PageComputedValues
+): Record<string, unknown> {
+  return {
+    hero_h1_to_sub_gap: computedValues.hero_h1_to_sub_gap,
+    hero_sub_to_cta_gap: computedValues.hero_sub_to_cta_gap,
+    h1_text: computedValues.h1_text,
+    h1_font_size: computedValues.h1_font_size,
+    h1_font_weight: computedValues.h1_font_weight,
+    sub_text: computedValues.sub_text,
+    sub_font_size: computedValues.sub_font_size,
+    sub_font_weight: computedValues.sub_font_weight,
+    sub_color: computedValues.sub_color,
+    cta_text: computedValues.cta_text,
+    cta_bg: computedValues.cta_bg,
+    cta_font_weight: computedValues.cta_font_weight,
+    nav_link_count: computedValues.nav_link_count,
+    nav_link_labels: computedValues.nav_link_labels,
+    social_proof_found: computedValues.social_proof_found,
+    social_proof_above_fold: computedValues.social_proof_above_fold,
+  };
+}
+
+function normalizeNarrativeResult(raw: NarrativeResult): NarrativeResult {
+  const topType = raw.hero.topIssue?.type;
+  if (topType && FORMAT_MAP[topType]) {
+    raw.hero.format = FORMAT_MAP[topType];
+  }
+
+  raw.hero.score = Math.max(0, Math.min(100, raw.hero.score));
+  raw.hero.scorePotential = Math.max(0, Math.min(94, raw.hero.scorePotential));
+  raw.hero.lift = raw.hero.scorePotential - raw.hero.score;
+
+  return raw;
+}
+
+async function requestNarrativeOnce(
   extraction: ExtractionResult,
   url: string,
-  pageContext?: PageContextInput,
-  enrichments?: {
+  pageContext: PageContextInput | undefined,
+  enrichments: {
     computedValues?: PageComputedValues | null;
     pageMeta?: PageMetaSnapshot;
-  }
+  } | undefined,
+  opts: { concise?: boolean; maxTokens?: number }
 ) {
   const pageContextBlock = pageContext
     ? `\n\nPAGE CONTEXT:\n${JSON.stringify(pageContext, null, 2)}`
@@ -170,37 +214,56 @@ export async function generateNarrative(
     : "";
 
   const computedValuesBlock = enrichments?.computedValues
-    ? `\n\nPAGE COMPUTED VALUES (from DOM — cite exact px/color values in visual_fixes observations):\n${JSON.stringify(enrichments.computedValues, null, 2)}`
+    ? `\n\nPAGE COMPUTED VALUES (from DOM — cite exact px/color values in visual_fixes observations):\n${JSON.stringify(slimComputedValuesForNarrative(enrichments.computedValues), null, 2)}`
+    : "";
+
+  const conciseBlock = opts.concise
+    ? "\n\nIMPORTANT: Prior attempt exceeded output budget. Return shorter strings and at most 3 findings, 2 copy_variants, 1 visual_fix. JSON only."
     : "";
 
   const { text, usage } = await callLLM({
     role: "narrative",
     systemPrompt: NARRATIVE_SYSTEM,
-    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}${pageMetaBlock}${computedValuesBlock}${pageContextBlock}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "title": string, "headline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "copy_variants": CopyVariant[], "visual_fixes": VisualFix[], "meta": { "title_suggestion": string, "description_suggestion": string, "proof_suggestion": string } }\n\nWhere Finding = { "type": "clarity"|"cta"|"trust"|"friction"|"performance", "severity": "critical"|"high"|"medium"|"low", "element": string, "title": string, "body": string, "fix": string, "evidence": string, "why_it_matters_here": string, "reasoning_chain": { "sees": string, "infers": string, "decides": string }, "drag_score": number }\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string, "strategy": "outcome_led"|"audience_led"|"urgency_led", "recommended": boolean }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
-    // 4000 was too tight: a real run with 4 findings (each carrying body,
-    // fix, evidence, why_it_matters_here, reasoning_chain) plus copy_variants
-    // and visual_fixes hit the cap ~2700-3600 tokens in, truncating mid-JSON
-    // before "meta" was ever written. maxTokens is a ceiling billed only on
-    // actual usage, not a floor, so headroom here is free unless needed.
-    maxTokens: 8000,
+    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}${pageMetaBlock}${computedValuesBlock}${pageContextBlock}${conciseBlock}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "title": string, "headline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "copy_variants": CopyVariant[], "visual_fixes": VisualFix[], "meta": { "title_suggestion": string, "description_suggestion": string, "proof_suggestion": string } }\n\nWhere Finding = { "type": "clarity"|"cta"|"trust"|"friction"|"performance", "severity": "critical"|"high"|"medium"|"low", "element": string, "title": string, "body": string, "fix": string, "evidence": string, "why_it_matters_here": string, "reasoning_chain": { "sees": string, "infers": string, "decides": string }, "drag_score": number }\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string, "strategy": "outcome_led"|"audience_led"|"urgency_led", "recommended": boolean }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
+    maxTokens: opts.maxTokens ?? 12_000,
     cacheSystem: true,
   });
 
-  let result: NarrativeResult;
-  try {
-    result = JSON.parse(text.replace(/```json|```/g, "").trim());
-  } catch {
-    throw new Error(`Narrative parse failed: ${text.slice(0, 300)}`);
+  const parsed = extractJsonFromLlmText(text) as NarrativeResult;
+
+  if (!parsed?.hero || !Array.isArray(parsed.findings) || !parsed.meta) {
+    throw new Error(`Narrative JSON incomplete: ${text.slice(0, 300)}`);
   }
 
-  // Enforce format routing (don't trust LLM's choice)
-  const topType = result.hero.topIssue?.type;
-  if (topType && FORMAT_MAP[topType]) result.hero.format = FORMAT_MAP[topType];
+  return { result: normalizeNarrativeResult(parsed), usage };
+}
 
-  // Clamp scores
-  result.hero.score = Math.max(0, Math.min(100, result.hero.score));
-  result.hero.scorePotential = Math.max(0, Math.min(94, result.hero.scorePotential));
-  result.hero.lift = result.hero.scorePotential - result.hero.score;
+export async function generateNarrative(
+  extraction: ExtractionResult,
+  url: string,
+  pageContext?: PageContextInput,
+  enrichments?: {
+    computedValues?: PageComputedValues | null;
+    pageMeta?: PageMetaSnapshot;
+  }
+) {
+  let lastError: unknown;
 
-  return { result, usage };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await requestNarrativeOnce(extraction, url, pageContext, enrichments, {
+        concise: attempt > 0,
+        maxTokens: attempt > 0 ? 16_000 : 12_000,
+      });
+    } catch (error) {
+      lastError = error;
+
+      if (attempt === 0) {
+        console.warn("[narrative] generation failed; retrying with concise budget", error);
+        await new Promise((resolve) => setTimeout(resolve, 900));
+      }
+    }
+  }
+
+  throw lastError;
 }
