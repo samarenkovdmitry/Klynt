@@ -24,6 +24,7 @@ import {
   ANALYZE_STALL_LABEL,
   getStallLoadingLabel,
 } from "@/lib/loading-progress";
+import { ANALYZE_FALLBACK_ERROR } from "@/lib/api-errors";
 import {
   ANALYZE_CARD_CLASS,
   ANALYZE_INPUT_CLASS,
@@ -57,7 +58,9 @@ function AnalyzeErrorAlert({ errorKind, error }: AnalyzeErrorAlertProps) {
 
   const body =
     errorKind === "url_analysis"
-      ? "The site may block automated access, require login, or load too slowly. Upload a screenshot instead — you'll get the same UX report."
+      ? error && error !== ANALYZE_FALLBACK_ERROR
+        ? error
+        : "The site may block automated access, require login, or load too slowly. Upload a screenshot instead — you'll get the same UX report."
       : errorKind === "screenshot_analysis"
         ? error ||
           "Something went wrong while reading your image. Try a PNG or JPG under 10 MB."

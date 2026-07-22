@@ -363,7 +363,12 @@ export function useAnalyzePage() {
         stopProgressTimer();
         setProgress(0);
         setLoading(false);
-        failAnalysis(analysisFailureKind, "Report generation failed. Please try again.");
+        const narrativeError = await narrativeRes.json().catch(() => null);
+        const message =
+          typeof narrativeError?.error === "string" && narrativeError.error.trim()
+            ? narrativeError.error.trim()
+            : "Report generation failed. Please try again.";
+        failAnalysis(analysisFailureKind, message);
         return;
       }
 
