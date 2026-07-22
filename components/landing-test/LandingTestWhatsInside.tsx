@@ -145,9 +145,9 @@ function CopyCompareRow({
 
 function CloseTheGapVisual() {
   const CHECKLIST: { text: string; delta: number }[] = [
-    { text: "Pricing hidden until signup", delta: 0.8 },
-    { text: "Trust proof missing", delta: 0.8 },
-    { text: "Headline lacks a use-case", delta: 0.6 },
+    { text: "Primary CTA trial unclear", delta: 0.8 },
+    { text: "Pricing hidden in nav", delta: 0.6 },
+    { text: "Subheadline clipped", delta: 0.5 },
   ];
 
   return (
@@ -159,7 +159,7 @@ function CloseTheGapVisual() {
               Now
             </p>
             <p className="text-[19px] font-semibold leading-[1.2] tracking-[-0.02em] text-white/45 md:text-[44px] md:leading-[0.9] md:tracking-[-0.04em]">
-              6.5
+              6.1
             </p>
           </div>
           <RiArrowRightLine size={20} className="mb-0.5 text-white/20 md:mb-2.5" aria-hidden />
@@ -170,14 +170,14 @@ function CloseTheGapVisual() {
             <p
               className={`text-[19px] font-semibold leading-[1.2] tracking-[-0.02em] md:text-[44px] md:leading-[0.9] md:tracking-[-0.04em] ${INDIGO_TEXT}`}
             >
-              8.9
+              8.3
             </p>
           </div>
         </div>
         <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
-          <div className="h-full w-[89%] rounded-full bg-gradient-to-r from-white/30 to-indigo-400/80" />
+          <div className="h-full w-[83%] rounded-full bg-gradient-to-r from-white/30 to-indigo-400/80" />
         </div>
-        <p className="mt-2.5 text-[12px] text-white/35">+2.4 points if you fix the top 3</p>
+        <p className="mt-2.5 text-[12px] text-white/35">+2.2 points if you fix the top 3</p>
       </div>
 
       <ul className={`${UI_FRAME} h-full space-y-0.5 p-2`}>
@@ -206,8 +206,8 @@ function CopyStudioVisual() {
   return (
     <div className={`${UI_FRAME} flex h-full flex-col p-3.5`}>
       <CopyCompareRow
-        before="The all-in-one platform for modern teams"
-        recommended="Ship landing pages that convert — without a designer"
+        before="The CRM that works for your team"
+        recommended="Close more deals without the CRM busywork"
         recommendedLarge
       />
 
@@ -237,35 +237,31 @@ function VisualFixesVisual() {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <span
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[#E8A849]"
-            style={{ backgroundColor: AMBER_BG }}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[#FF5A4F]"
+            style={{ backgroundColor: "rgba(255,90,79,0.12)" }}
           >
             <RiContrast2Line size={17} aria-hidden />
           </span>
-          <p className="text-[14px] font-semibold text-white">Text contrast</p>
+          <p className="text-[14px] font-semibold text-white">CTA hierarchy</p>
         </div>
         <span
           className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase ${INDIGO_BG} ${INDIGO_TEXT}`}
         >
-          Medium
+          High
         </span>
       </div>
 
-      <div className="mt-3 flex items-center gap-2.5">
-        <span className="flex items-center gap-1.5 rounded-lg bg-white/[0.04] px-2.5 py-1.5">
-          <span className="h-4 w-4 rounded bg-white/20" />
-          <span className="text-[11px] font-semibold text-[#E8A849]/70">3.2:1</span>
-        </span>
-        <RiArrowRightLine size={14} className="text-white/20" aria-hidden />
-        <span className="flex items-center gap-1.5 rounded-lg bg-white/[0.04] px-2.5 py-1.5">
-          <span className="h-4 w-4 rounded bg-white/80" />
-          <span className="text-[11px] font-semibold text-white/75">4.5:1</span>
-        </span>
-        <span className="ml-auto text-[11px] text-white/40">passes AA</span>
+      <div className="mt-3 space-y-2">
+        <p className="text-[11px] leading-[16px] text-white/35 line-through decoration-white/15">
+          Start for free
+        </p>
+        <p className="text-[12px] font-semibold leading-[16px] text-white/80">
+          Start your free trial, no credit card needed
+        </p>
       </div>
 
       <p className="mt-3 text-[11px] leading-[16px] text-white/30">
-        Also checks visual hierarchy, proof placement, and CTA prominence
+        Also checks social proof placement, navigation, and headline formula
       </p>
     </div>
   );
@@ -273,9 +269,9 @@ function VisualFixesVisual() {
 
 function TrustMetaVisual() {
   const NOTES = [
-    "Add customer logos near the CTA",
-    "Include testimonials above the fold",
-    "Clarify the free trial terms",
+    "Add 3–5 recognizable customer logos",
+    "Clarify free trial terms near the CTA",
+    "Surface pricing anchor above the footer",
   ];
 
   return (
@@ -286,10 +282,10 @@ function TrustMetaVisual() {
           Search preview
         </div>
         <p className="mt-2.5 text-[14px] font-medium leading-[1.35] text-white/75">
-          Fix Your Landing Page — Free UX Audit
+          folk CRM · AI-powered relationships for your team
         </p>
         <p className="mt-1 line-clamp-2 text-[13px] leading-5 text-white/40">
-          Get a prioritized UX report with copy rewrites and visual fixes in under a minute.
+          folk CRM captures every contact, email, and deal in one place. Join 5,000+ teams. Free trial.
         </p>
       </div>
 
@@ -327,13 +323,13 @@ const FEATURES = [
   {
     step: "3",
     title: "Visual fixes",
-    subtitle: "Exact UI issues — not vague advice.",
+    subtitle: "Exact UI issues, not vague advice.",
     Visual: VisualFixesVisual,
   },
   {
     step: "4",
     title: "Trust & discoverability",
-    subtitle: "How you look in search — and to visitors.",
+    subtitle: "How you look in search and to visitors.",
     Visual: TrustMetaVisual,
   },
 ] as const;
@@ -362,7 +358,7 @@ export function LandingTestWhatsInside() {
             One report. Four ways to lift conversion.
           </h2>
           <p className={`${LANDING_LEAD} mx-auto mt-4 max-w-[540px] text-center`}>
-            Every audit follows the same structure — so you always know what to fix next.
+            Every audit follows the same structure, so you always know what to fix next.
           </p>
         </div>
 
@@ -400,7 +396,7 @@ export function LandingTestWhatsInside() {
             Open sample report
             <RiArrowRightLine size={17} aria-hidden />
           </Link>
-          <p className="text-[13px] text-white/40">See a real audit — no signup</p>
+          <p className="text-[13px] text-white/40">See a real audit, no signup</p>
         </div>
       </div>
     </section>

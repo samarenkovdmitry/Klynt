@@ -130,7 +130,7 @@ export function AppHeader() {
           <Link
             href="/"
             className="flex min-w-0 items-center gap-3.5 sm:gap-4 md:gap-5"
-            aria-label="Klynt — home"
+            aria-label="Klynt home"
             onClick={() => setMenuOpen(false)}
           >
             <img

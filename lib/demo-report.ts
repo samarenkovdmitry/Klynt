@@ -1,9 +1,10 @@
 import type { AuditReport } from "@/lib/audit-report";
 import { buildReportSlug } from "@/lib/report-slug";
 
-export const DEMO_REPORT_ID = "kjnhvbk4df";
+/** Matches live folk.app audit at /report/folk-k5qz (July 2026 model). */
+export const DEMO_REPORT_ID = "k5qz8f2a1b0";
 
-export const DEMO_REPORT_URL = "https://www.folk.app/";
+export const DEMO_REPORT_URL = "https://folk.app/";
 
 export const DEMO_REPORT_SLUG = buildReportSlug(DEMO_REPORT_ID, DEMO_REPORT_URL);
 
@@ -12,263 +13,161 @@ export const DEMO_REPORT_PATH = `/report/${DEMO_REPORT_SLUG}`;
 export const DEMO_REPORT_PREVIEW_IMAGE = "/demo/folk-preview.jpg";
 
 export const DEMO_REPORT = {
-  "url": "https://www.folk.app/",
-  "copy": [] as AuditReport["copy"],
-  "meta": {
-    "trust_notes": [
-      "Include testimonials to enhance credibility.",
-      "Clarify the trial period to reduce perceived risk."
+  url: "https://folk.app/",
+  copy: [] as AuditReport["copy"],
+  meta: {
+    proof_suggestion: "Trusted by 5,000+ teams worldwide",
+    title_suggestion: "folk CRM — AI-powered relationships for your team",
+    description_suggestion:
+      "folk CRM captures every contact, email, and deal in one place. AI Assistants do the busywork so your team can focus on closing. Join 5,000+ teams. Free trial.",
+  },
+  risk: "medium",
+  score: 6.1,
+  issues: [] as AuditReport["issues"],
+  summary:
+    "folk's landing page carries strong fundamentals: clear headline, above-fold social proof from 5,000 users, and a defined value proposition. But the primary CTA doesn't signal a trial or next step, which suppresses signup conversion. Hidden pricing adds friction for B2B evaluators. Fixing the CTA alone could recover most of the estimated score gap.",
+  verdict: "CTA mismatch dilutes primary conversion intent",
+  key_observation:
+    "The hero CTA reads 'Start for free' without trial length or next-step clarity, while pricing stays in nav only. B2B evaluators can't self-qualify before clicking.",
+  breakdown: {
+    trust: 80,
+    clarity: 55,
+    visuals: 75,
+    friction: 55,
+  },
+  checklist: [
+    {
+      id: "finding-0",
+      text: "Primary CTA doesn't clarify what 'free' means",
+      evidence: "CTA text: 'Start for free'",
+      body: "The above-fold CTA reads 'Start for free' with no trial length, no credit-card note, and no hint of what happens after the click. Visitors must infer whether they are signing up for a time-limited trial, a freemium tier, or a sales call.",
+      why_it_matters_here:
+        "B2B visitors with purchase intent abandon when the primary action doesn't match their goal.",
+      fix: "Replace the hero CTA with 'Start your free trial' linked directly to the signup flow.",
+      status: "missing",
+      link_to: "copy-cta",
+      category: "copy",
+      gap_label: "Trial unclear",
+      impact_score: 88,
+      delta: 0.8,
+    },
+    {
+      id: "finding-1",
+      text: "Pricing hidden behind navigation click",
+      evidence: "pricingVisible: false; pricingAboveFold: false",
+      body: "Pricing is listed in the nav but absent from the page body, forcing evaluation-stage B2B buyers to leave the conversion flow before they can self-qualify.",
+      why_it_matters_here:
+        "B2B buyers who can't find pricing self-disqualify early, suppressing demo and trial requests.",
+      fix: "Add a condensed pricing tier summary or 'Plans start at $X/user/mo' anchor above the footer CTA.",
+      status: "missing",
+      link_to: "structure-nav",
+      category: "structure",
+      gap_label: "Pricing hidden",
+      impact_score: 72,
+      delta: 0.6,
+    },
+    {
+      id: "finding-2",
+      text: "Subheadline truncated mid-sentence in extraction",
+      evidence: "sub_text ends: '…learn from this da'",
+      body: "The subheadline text ends abruptly, suggesting a render or truncation issue that breaks the value proposition before the AI differentiator lands.",
+      why_it_matters_here:
+        "An incomplete sentence undermines credibility and leaves the AI differentiator unexplained for first-time visitors.",
+      fix: "Audit the subheadline render across viewports and ensure the full sentence displays without clipping.",
+      status: "weak",
+      link_to: "copy-headline",
+      category: "copy",
+      gap_label: "Subheadline clipped",
+      impact_score: 65,
+      delta: 0.5,
+    },
+  ],
+  confidence: 88,
+  generatedAt: "2026-07-22T09:05:53.870Z",
+  suggestions: [] as AuditReport["suggestions"],
+  copy_variants: {
+    cta: {
+      current: "Start for free",
+      variants: [
+        {
+          text: "Start your free trial, no credit card needed",
+          label: "Trial-focused primary CTA",
+          recommended: true,
+          rationale:
+            "Names the offer explicitly and lowers perceived commitment at the exact moment of decision.",
+        },
+      ],
+    },
+    headline: {
+      current: "The CRM that works for your team",
+      variants: [
+        {
+          text: "Close more deals without the CRM busywork",
+          label: "Outcome-led team headline",
+          recommended: true,
+          rationale:
+            "Names the outcome (more deals) and removes the friction narrative (busywork), directly matching B2B evaluator intent.",
+        },
+      ],
+    },
+    subheadline: {
+      current:
+        "folk CRM captures the full context of your relationships in one beautifully simple CRM. AI Assistants learn from this da",
+      variants: [
+        {
+          text: "folk captures every relationship's full context (emails, notes, deals), then AI Assistants surface what to do next, so your team spends time selling, not logging.",
+          label: "AI + relationship context value prop",
+          recommended: true,
+          rationale:
+            "Completes the AI value story, names concrete data types, and ends on a benefit for the buyer's team.",
+        },
+      ],
+    },
+  },
+  score_potential: {
+    chips: [
+      { delta: "+0.8", label: "CTA trial unclear" },
+      { delta: "+0.6", label: "Pricing hidden" },
+      { delta: "+0.5", label: "Subheadline clipped" },
     ],
-    "proof_suggestion": "Add customer logos below CTA",
-    "title_suggestion": "Folk CRM: Simple CRM for Teams",
-    "description_suggestion": "Folk is a simple CRM designed for teams to manage relationships effortlessly."
+    target: 8.3,
   },
-  "risk": "medium",
-  "score": 6.5,
-  "issues": [] as AuditReport["issues"],
-  "summary": "A first-time visitor reads a polished team-CRM pitch and feels mildly interested but not yet ready to commit, because the page offers no customer logos, user counts, or testimonials to validate that real teams have already made this switch — and without that third-party confirmation, the generic headline and vague \"Start for free\" CTA read as marketing rather than an established product.",
-  "verdict": "Ambiguous audience targeting in headline",
-  "breakdown": {
-    "trust": 50,
-    "clarity": 70,
-    "visuals": 80,
-    "friction": 60
-  },
-  "checklist": [
+  visual_fixes: [
     {
-      "id": "headline-category",
-      "text": "Headline doesn't name a role, industry, or use-case.",
-      "evidence": "'The CRM that works for your team' — no audience signal beyond 'team'; cold visitors can't self-qualify",
-      "body": "The hero headline speaks to 'your team' without naming who that team is — sales, recruiting, agencies, or founders. A first-time visitor comparing CRMs cannot tell in the first three seconds whether folk is built for them or for everyone.",
-      "why_it_matters_here": "Cold traffic from search or ads has no prior context — vague audience framing makes folk feel like one of many generic CRMs.",
-      "fix": "Name a specific audience or use case in the headline, e.g. 'Simple CRM for teams who outgrew spreadsheets.'",
-      "status": "missing",
-      "link_to": "copy-headline",
-      "category": "copy",
-      "gap_label": "Audience unclear",
-      "impact_score": 88,
-      "delta": 0.5
+      dimension: "cta_hierarchy",
+      impact: "high",
+      element: "Hero primary CTA button",
+      observation:
+        "The hero CTA lacks trial length and next-step clarity, sitting above the fold without reducing commitment anxiety.",
+      recommendation:
+        "Replace with a high-contrast trial signup button and add a one-line reassurance beneath it.",
     },
     {
-      "id": "cta-trial",
-      "text": "CTA doesn't clarify what 'free' means — trial or freemium.",
-      "evidence": "'Start for free' button has no duration, no plan mention, no outcome after click",
-      "body": "The primary CTA says 'Start for free' with no trial length, no credit-card note, and no hint of what happens after the click. Visitors must infer whether they are signing up for a time-limited trial, a freemium tier, or a sales call.",
-      "why_it_matters_here": "Ambiguous CTAs raise perceived commitment at the exact moment of decision — especially for cold visitors evaluating multiple tools.",
-      "fix": "Change the button to 'Start free 14-day trial' or add a one-line reassurance directly beneath it.",
-      "status": "missing",
-      "link_to": "copy-cta",
-      "category": "copy",
-      "gap_label": "Trial unclear",
-      "impact_score": 76,
-      "delta": 0.5
+      dimension: "social_proof",
+      impact: "medium",
+      element: "Trusted-by count + rating display",
+      observation:
+        "Social proof (5,000 users, rating reviews) is above fold but no named logos or pull-quotes.",
+      recommendation:
+        "Add 3–5 recognizable company logos or a pull-quote directly beneath the hero headline.",
     },
     {
-      "id": "trust",
-      "text": "No logos, stats, or testimonials visible above the fold.",
-      "evidence": "Hero section shows headline, subheadline, and CTA only — zero credibility signals above fold",
-      "body": "The hero presents product claims without any third-party validation — no customer logos, user counts, ratings, or testimonials within the first screen. A visitor evaluating a CRM switch has nothing to corroborate that real teams already rely on folk.",
-      "why_it_matters_here": "For a just-launched brand, unverified claims read as marketing — peer proof is what converts skeptical first-time visitors.",
-      "fix": "Add 3–5 customer logos or one concrete stat (e.g. 'Used by 3,000+ teams') directly below the hero CTA.",
-      "status": "missing",
-      "link_to": "trust",
-      "category": "trust",
-      "gap_label": "Trust missing above fold",
-      "impact_score": 72,
-      "delta": 0.5
+      dimension: "navigation",
+      impact: "medium",
+      element: "Header navigation",
+      observation: "Pricing lives in nav only—absent from the page body for evaluators.",
+      recommendation: "Add sticky nav with primary CTA button visible at all scroll depths.",
     },
     {
-      "id": "subheadline-clarity",
-      "text": "Subheadline typography too light to scan quickly.",
-      "evidence": "'folk CRM captures the full context of your relationships...' rendered in light gray weight — reads as caption",
-      "body": "The subheadline uses a lighter weight and lower contrast than the headline, so it reads as supporting caption text rather than a scannable value statement. On a quick scroll, visitors may skip the line that explains what folk actually does.",
-      "why_it_matters_here": "When the headline is generic, the subheadline must carry the product definition — weak typography makes that job harder.",
-      "fix": "Increase subheadline font weight to medium and darken the color so it scans at the same priority as the headline.",
-      "status": "weak",
-      "link_to": "visual-fixes",
-      "category": "visual",
-      "gap_label": "Weak typography"
+      dimension: "headline_formula",
+      impact: "low",
+      element: "Hero headline",
+      observation: "Headline names team but not a specific use case in the first line.",
+      recommendation: "Add an audience qualifier or use case in the first line of the hero headline.",
     },
-    {
-      "id": "nav-structure",
-      "text": "Header nav shows Product, Features, Pricing, Blog, Login.",
-      "evidence": "Five top-level nav links visible in header — clear structure for warm traffic exploration",
-      "status": "pass",
-      "link_to": null,
-      "category": "structure",
-      "gap_label": "Nav clear"
-    },
-    {
-      "id": "footer-structure",
-      "text": "Footer contains Product, Company, and Resources columns.",
-      "evidence": "Three-column footer with labelled link groups — supports deeper exploration and SEO",
-      "status": "pass",
-      "link_to": null,
-      "category": "structure",
-      "gap_label": "Footer links clear"
-    },
-    {
-      "id": "visuals-clarity",
-      "text": "Single primary CTA above fold — no competing hero buttons.",
-      "evidence": "'Start for free' orange pill is the only hero CTA; no secondary button creates decision friction",
-      "status": "pass",
-      "link_to": null,
-      "category": "visual",
-      "gap_label": "CTA hierarchy clean"
-    },
-    {
-      "id": "cta-visibility",
-      "text": "Hero headline is large and immediately readable.",
-      "evidence": "'The CRM that works for your team' in ~48px weight-700 — dominant above fold, no contrast issues",
-      "status": "pass",
-      "link_to": null,
-      "category": "structure",
-      "gap_label": "H1 prominent"
-    }
   ],
-  "confidence": 85,
-  "brand_stage": "just_launched",
-  "generatedAt": "2026-06-11T16:14:32.880Z",
-  "suggestions": [] as AuditReport["suggestions"],
-  "audience_type": "both",
-  "copy_variants": {
-    "cta": {
-      "current": "Start for free",
-      "variants": [
-        {
-          "text": "Start free trial",
-          "label": "Trial explicit",
-          "recommended": true,
-          "rationale":
-            "Names the offer explicitly — a trial — so visitors know what happens after the click instead of guessing whether “free” means a demo, freemium, or time-limited access.",
-        },
-        {
-          "text": "Try it free",
-          "label": "Risk-free",
-          "rationale":
-            "Softens commitment with “try,” but leaves trial length and next steps unstated — weaker for cold traffic evaluating multiple CRMs.",
-        },
-        {
-          "text": "Get started free",
-          "label": "Direct action",
-          "rationale":
-            "Action-oriented, yet “get started” can imply setup work before value — less reassuring than a named trial for first-time visitors.",
-        },
-      ],
-    },
-    "headline": {
-      "current": "The CRM that works for your team",
-      "variants": [
-        {
-          "text": "CRM for teams that want simplicity and efficiency.",
-          "label": "Category + audience",
-          "recommended": true,
-          "rationale":
-            "Names category and audience in the first line so a cold visitor immediately knows what folk is and who it is for — the current headline could apply to any team tool.",
-        },
-        {
-          "text": "Tired of complex CRMs? Simplify your workflow with folk.",
-          "label": "Problem + solution",
-          "rationale":
-            "Leads with pain, which can resonate with switchers, but the question format adds friction before the value prop lands.",
-        },
-        {
-          "text": "Simple CRM for teams who outgrew spreadsheets.",
-          "label": "Outcome + audience",
-          "rationale":
-            "Strong upgrade story for spreadsheet users, but narrows the audience — teams already on another CRM may bounce before reading further.",
-        },
-      ],
-    },
-    "subheadline": {
-      "current": "folk CRM captures the full context of your relationships in one beautifully simple CRM.",
-      "variants": [
-        {
-          "text": "Manage every relationship in one simple CRM — free 14-day trial.",
-          "label": "Value proposition",
-          "recommended": true,
-          "rationale":
-            "States the core benefit in plain language and adds trial length above the fold — reduces ambiguity after the headline and lowers perceived risk at decision time.",
-        },
-        {
-          "text": "Full relationship context in one place, built for growing teams.",
-          "label": "Specificity",
-          "rationale":
-            "More specific than the current line, but repeats “relationship” without a concrete proof point or trial cue to nudge the click.",
-        },
-        {
-          "text": "Less busywork, more time on the relationships that matter.",
-          "label": "Outcome",
-          "rationale":
-            "Outcome-led and emotional, yet abstract — visitors may want one tangible feature or number before trusting the claim.",
-        },
-      ],
-    },
-  },
-  "traffic_source": "mixed",
-  "key_observation": "Audience split — works for warm or cold traffic only",
-  "score_potential": {
-    "chips": [
-      {
-        "delta": "+0.5",
-        "label": "Audience unclear"
-      },
-      {
-        "delta": "+0.5",
-        "label": "Trial unclear"
-      },
-      {
-        "delta": "+0.5",
-        "label": "Trust signals missing"
-      }
-    ],
-    "target": 8
-  },
-  "visual_fixes": [
-    {
-      "dimension": "border_radius",
-      "impact": "high",
-      "element": "cards & primary button",
-      "observation": "Large 16px+ rounding signals consumer-playful, not team CRM — it undercuts the B2B credibility the copy is working for.",
-      "recommendation": "Tighten card and button radius to 8px"
-    },
-    {
-      "dimension": "color_contrast",
-      "impact": "medium",
-      "element": "hero subheadline",
-      "observation": "Light gray subheadline sits below 4.5:1 contrast — hard to scan above fold",
-      "recommendation": "Darken to #4A5568 at minimum 18px"
-    },
-    {
-      "dimension": "depth",
-      "impact": "medium",
-      "element": "hero section",
-      "observation": "Flat white hero lacks depth and rhythm — feels unfinished vs product shots",
-      "recommendation": "Add a #F8F8F6 section tint behind the hero"
-    },
-    {
-      "dimension": "cta_hierarchy",
-      "impact": "low",
-      "element": "hero buttons",
-      "observation": "\"Start for free\" and \"Book a demo\" carry equal weight — splits attention",
-      "recommendation": "Demote \"Book a demo\" to a ghost / text-link style"
-    }
-  ],
-  "visual_passes": [
-    {
-      "dimension": "spacing",
-      "note": "follows a consistent 8px scale"
-    },
-    {
-      "dimension": "color_tone",
-      "note": "Single accent color used consistently for actions"
-    },
-    {
-      "dimension": "social_proof",
-      "note": "Favicon and social share image present"
-    }
-  ],
-  "previewImage": "/demo/folk-preview.jpg"
+  visual_passes: [] as AuditReport["visual_passes"],
+  previewImage: DEMO_REPORT_PREVIEW_IMAGE,
 } satisfies AuditReport;
 
 export function getDemoReportJson(): string {
