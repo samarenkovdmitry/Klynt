@@ -8,15 +8,35 @@ let browserPromise: Promise<Browser> | null = null;
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 let activePages = 0;
 
+async function resolveExecutablePath(): Promise<string> {
+  if (process.env.CHROME_PATH?.trim()) {
+    return process.env.CHROME_PATH.trim();
+  }
+
+  if (process.platform === "darwin") {
+    return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+  }
+
+  return chromium.executablePath();
+}
+
+function launchArgs(): string[] {
+  if (process.platform === "linux" && !process.env.CHROME_PATH) {
+    return chromium.args;
+  }
+
+  return ["--no-sandbox", "--disable-setuid-sandbox"];
+}
+
 async function launchBrowser(): Promise<Browser> {
   const browser = await puppeteer.launch({
-    args: chromium.args,
+    args: launchArgs(),
     defaultViewport: {
       width: 1280,
       height: 1200,
       deviceScaleFactor: 1,
     },
-    executablePath: await chromium.executablePath(),
+    executablePath: await resolveExecutablePath(),
     headless: true,
   });
 
