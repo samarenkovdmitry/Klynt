@@ -13,10 +13,12 @@ import {
 import { preparePageForHeroScreenshot, preparePageForLowerScreenshot } from "@/lib/page-screenshot";
 import { retryAsync } from "@/lib/retry-async";
 import type { PageComputedValues } from "@/lib/audit-report";
+import type { PageMetaSnapshot } from "@/lib/analysis/extraction";
 
 export type CaptureWebsiteResult = {
   screenshots: string[];
   computedValues: PageComputedValues | null;
+  pageMeta: PageMetaSnapshot;
   bodyText: string;
 };
 
@@ -42,6 +44,32 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
 
     let computedValues: PageComputedValues | null = null;
     let bodyText = "";
+    let pageMeta: PageMetaSnapshot = {
+      title: "",
+      description: "",
+      hasMobileViewportMeta: false,
+    };
+    try {
+      pageMeta = await page.evaluate(() => {
+        const description =
+          document.querySelector('meta[name="description"]')?.getAttribute("content")?.trim() ||
+          document
+            .querySelector('meta[property="og:description"]')
+            ?.getAttribute("content")
+            ?.trim() ||
+          "";
+        const viewportContent =
+          document.querySelector('meta[name="viewport"]')?.getAttribute("content") ?? "";
+
+        return {
+          title: document.title?.trim() ?? "",
+          description,
+          hasMobileViewportMeta: /width\s*=\s*device-width/i.test(viewportContent),
+        };
+      });
+    } catch {
+      // Continue without page meta
+    }
     try {
       bodyText = await page.evaluate(() =>
         document.body.innerText.trim().slice(0, 16000)
@@ -276,6 +304,7 @@ async function captureWebsiteScreenshotsOnce(url: string): Promise<CaptureWebsit
         Buffer.from(lower as Buffer).toString("base64"),
       ],
       computedValues,
+      pageMeta,
       bodyText,
     };
   } catch (error) {

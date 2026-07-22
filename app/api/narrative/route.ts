@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 
 import { generateNarrative } from "@/lib/analysis/narrative";
-import type { ExtractionResult, StoredExtraction } from "@/lib/analysis/extraction";
+import type { StoredExtraction } from "@/lib/analysis/extraction";
 import type { CopyVariant as NarrativeCopyVariant } from "@/lib/analysis/narrative";
 import type { Finding } from "@/lib/analysis/narrative";
 import type { PageContextInput } from "@/lib/analysis/narrative";
 import type { HeroSlot } from "@/components/report-v2/ReportHero";
 import type { NarrativeResult } from "@/lib/analysis/narrative";
+import {
+  assembleReportVisuals,
+  enrichCopyVariants,
+  filterFalseFindings,
+  splitStoredExtraction,
+} from "@/lib/analysis/report-enrichment";
 
 import {
   type AuditReport,
@@ -20,7 +26,6 @@ import {
   type TrafficSource,
   type AudienceType,
 } from "@/lib/audit-report";
-import { normalizeVisualDimension } from "@/lib/report-visual-fixes";
 import { deriveRiskFromScore } from "@/lib/report-metrics";
 import { isValidReportId } from "@/lib/report-id";
 import { updateReportWithNarrativeInDb } from "@/lib/reports-db";
@@ -37,7 +42,7 @@ export const maxDuration = 90;
 // -----------------------------
 function adaptHeroSlot(
   hero: NarrativeResult["hero"],
-  extraction: ExtractionResult,
+  extraction: import("@/lib/analysis/extraction").ExtractionResult,
   copyVariants: NarrativeCopyVariant[]
 ): HeroSlot {
   const { format, topIssue, score, lift, headline } = hero;
@@ -189,7 +194,7 @@ const REACH_BASE: Record<Finding["type"], number> = {
 
 const REACH_FOLD_ADJUSTMENT = 12;
 
-function computeReach(type: Finding["type"], extraction: ExtractionResult): number {
+function computeReach(type: Finding["type"], extraction: import("@/lib/analysis/extraction").ExtractionResult): number {
   let reach = REACH_BASE[type];
 
   if (type === "cta") {
@@ -203,7 +208,7 @@ function computeReach(type: Finding["type"], extraction: ExtractionResult): numb
 
 function adaptFindingsToChecklist(
   findings: Finding[],
-  extraction: ExtractionResult
+  extraction: import("@/lib/analysis/extraction").ExtractionResult
 ): ReportChecklistItem[] {
   return findings.map((f, i) => {
     const status: ChecklistItemStatus =
@@ -301,10 +306,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const extractionRaw = data.extraction as StoredExtraction;
-    const { previewImage: storedPreviewImage, viewport_width, ...extractionFields } =
-      extractionRaw;
-    const extraction = extractionFields as ExtractionResult;
+    const stored = splitStoredExtraction(data.extraction as StoredExtraction);
+    const { extraction, previewImage: storedPreviewImage, viewport_width, computed_values, page_meta } =
+      stored;
     const url = (data.audited_url as string) ?? "";
 
     const brandStage = data.brand_stage as BrandStage | null | undefined;
@@ -319,21 +323,61 @@ export async function POST(req: Request) {
           }
         : undefined;
 
-    const { result: narrative, usage } = await generateNarrative(extraction, url, pageContext);
+    const { result: narrativeRaw, usage } = await generateNarrative(
+      extraction,
+      url,
+      pageContext,
+      { computedValues: computed_values, pageMeta: page_meta }
+    );
+    const narrative = {
+      ...narrativeRaw,
+      findings: filterFalseFindings(
+        narrativeRaw.findings ?? [],
+        page_meta,
+        computed_values
+      ),
+    };
     console.log(
       `[narrative] score=${narrative.hero.score} visual_fixes=${narrative.visual_fixes?.length} copy_variants=${narrative.copy_variants?.length} cost=$${usage.estimatedCostUsd.toFixed(5)}`
     );
 
     const score = Math.max(0, Math.min(10, narrative.hero.score / 10));
-    const hero_slot = adaptHeroSlot(narrative.hero, extraction, narrative.copy_variants ?? []);
-    const copy_variants = adaptCopyVariants(narrative.copy_variants ?? []) ?? undefined;
+    const rawCopyVariants = narrative.copy_variants ?? [];
+    const adaptedCopyVariants = adaptCopyVariants(rawCopyVariants);
+    const meta = {
+      title_suggestion: narrative.meta.title_suggestion,
+      description_suggestion: narrative.meta.description_suggestion,
+      proof_suggestion: narrative.meta.proof_suggestion,
+    };
+    const copy_variants = enrichCopyVariants(
+      adaptedCopyVariants,
+      extraction,
+      rawCopyVariants,
+      meta
+    );
+    const hero_slot = adaptHeroSlot(narrative.hero, extraction, rawCopyVariants);
     const checklist = adaptFindingsToChecklist(narrative.findings, extraction);
     const topOpportunities = assignChecklistDeltas(checklist, narrative.hero.lift);
+    const visualSection = assembleReportVisuals(
+      {
+        extraction,
+        stored,
+        narrative,
+        rawCopyVariants,
+        brandStage: brandStage ?? undefined,
+        trafficSource: trafficSource ?? undefined,
+        audienceType: audienceType ?? undefined,
+      },
+      checklist,
+      copy_variants,
+      meta
+    );
 
     const reportPayload: AuditReport = {
       url,
       score,
       viewport_width: viewport_width ?? 1280,
+      computed_values,
       risk: deriveRiskFromScore(score),
       summary: narrative.summary,
       verdict: narrative.hero.title ?? "",
@@ -362,25 +406,9 @@ export async function POST(req: Request) {
         visuals:  75,
       },
       copy_variants,
-      meta: {
-        title_suggestion: narrative.meta.title_suggestion,
-        description_suggestion: narrative.meta.description_suggestion,
-        proof_suggestion: narrative.meta.proof_suggestion,
-      },
-      visual_fixes: (narrative.visual_fixes ?? []).flatMap((f) => {
-        const dimension = normalizeVisualDimension(f.category);
-        if (!dimension) {
-          console.warn("[visual_fixes] unmapped category:", f.category);
-          return [];
-        }
-        return [{
-          dimension,
-          observation: f.observation,
-          recommendation: f.fix,
-          impact: f.impact,
-          element: f.element,
-        }];
-      }),
+      meta,
+      visual_fixes: visualSection.fixes,
+      visual_passes: visualSection.passes,
       score_potential: {
         target: Math.min(9.4, (narrative.hero.scorePotential) / 10),
         chips: topOpportunities.map((item) => ({

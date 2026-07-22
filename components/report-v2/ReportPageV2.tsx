@@ -129,7 +129,14 @@ export function ReportPageV2({ routeParam, initialData = null, isUnlocked = fals
       data.score,
       data.checklist ?? undefined,
       data.breakdown,
-      { copyVariants, meta, checklist }
+      {
+        copyVariants,
+        meta,
+        checklist,
+        computedValues: data.computed_values ?? null,
+        audienceType: data.audience_type,
+        trafficSource: data.traffic_source,
+      }
     );
 
     return {

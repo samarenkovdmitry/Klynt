@@ -1,5 +1,6 @@
 import { callLLM } from "../models/client";
-import type { ExtractionResult } from "./extraction";
+import type { ExtractionResult, PageMetaSnapshot } from "./extraction";
+import type { PageComputedValues } from "@/lib/audit-report";
 
 export interface Finding {
   type: "clarity" | "cta" | "trust" | "friction" | "performance";
@@ -122,14 +123,18 @@ Copy variants rules:
 - "before_text" must be the EXACT text from the page (quote from extraction)
 - "after_text" must be specific, concrete, outcome-focused — not generic
 - section "headline" and "cta" are mandatory if they have issues
+- section "subheadline" is mandatory when extraction.subheadline is non-empty
 - "label" format: "[SECTION] OPPORTUNITY" e.g. "HEADLINE OPPORTUNITY"
 - "strategy": one of "outcome_led" | "audience_led" | "urgency_led" — classify the persuasion angle "after_text" actually uses.
 - "recommended": boolean. Within each group of variants sharing the same "section", exactly ONE must be true — the single strongest replacement. All others in that group must be false.
 
 Visual fixes rules:
-- Generate 2-4 visual_fixes for layout/design issues visible in extraction data
-- Focus on: missing social proof placement, CTA visibility, mobile viewport issues
+- Generate 2-4 visual_fixes for layout/design issues visible in extraction data and PAGE COMPUTED VALUES
+- Use exact px values from PAGE COMPUTED VALUES in spacing observations when available
+- Focus on: missing social proof placement, CTA visibility, typography/contrast, spacing rhythm
 - Always generate 2-4 visual_fixes. If no obvious visual issues exist, find the weakest visual elements and recommend improvements.
+- Use only these category values: depth, typography, spacing, contrast, color_tone, cta_hierarchy, social_proof, navigation, density, headline_formula, color_contrast, border_radius
+- Do NOT duplicate checklist findings about meta tags, capture viewport width, or missing load-time data
 - "observation" is factual, "fix" is imperative
 
 Meta rules:
@@ -150,16 +155,28 @@ const FORMAT_MAP: Record<string, NarrativeResult["hero"]["format"]> = {
 export async function generateNarrative(
   extraction: ExtractionResult,
   url: string,
-  pageContext?: PageContextInput
+  pageContext?: PageContextInput,
+  enrichments?: {
+    computedValues?: PageComputedValues | null;
+    pageMeta?: PageMetaSnapshot;
+  }
 ) {
   const pageContextBlock = pageContext
     ? `\n\nPAGE CONTEXT:\n${JSON.stringify(pageContext, null, 2)}`
     : "";
 
+  const pageMetaBlock = enrichments?.pageMeta
+    ? `\n\nPAGE META (from DOM):\n${JSON.stringify(enrichments.pageMeta, null, 2)}`
+    : "";
+
+  const computedValuesBlock = enrichments?.computedValues
+    ? `\n\nPAGE COMPUTED VALUES (from DOM — cite exact px/color values in visual_fixes observations):\n${JSON.stringify(enrichments.computedValues, null, 2)}`
+    : "";
+
   const { text, usage } = await callLLM({
     role: "narrative",
     systemPrompt: NARRATIVE_SYSTEM,
-    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}${pageContextBlock}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "title": string, "headline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "copy_variants": CopyVariant[], "visual_fixes": VisualFix[], "meta": { "title_suggestion": string, "description_suggestion": string, "proof_suggestion": string } }\n\nWhere Finding = { "type": "clarity"|"cta"|"trust"|"friction"|"performance", "severity": "critical"|"high"|"medium"|"low", "element": string, "title": string, "body": string, "fix": string, "evidence": string, "why_it_matters_here": string, "reasoning_chain": { "sees": string, "infers": string, "decides": string }, "drag_score": number }\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string, "strategy": "outcome_led"|"audience_led"|"urgency_led", "recommended": boolean }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
+    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}${pageMetaBlock}${computedValuesBlock}${pageContextBlock}\n\nGenerate NarrativeResult JSON: { "hero": { "format": string, "title": string, "headline": string, "score": number, "scorePotential": number, "lift": number, "topIssue": Finding }, "findings": Finding[], "summary": string, "copy_variants": CopyVariant[], "visual_fixes": VisualFix[], "meta": { "title_suggestion": string, "description_suggestion": string, "proof_suggestion": string } }\n\nWhere Finding = { "type": "clarity"|"cta"|"trust"|"friction"|"performance", "severity": "critical"|"high"|"medium"|"low", "element": string, "title": string, "body": string, "fix": string, "evidence": string, "why_it_matters_here": string, "reasoning_chain": { "sees": string, "infers": string, "decides": string }, "drag_score": number }\nWhere CopyVariant = { "section": string, "label": string, "before_text": string, "after_text": string, "rationale": string, "strategy": "outcome_led"|"audience_led"|"urgency_led", "recommended": boolean }\nWhere VisualFix = { "category": string, "element": string, "observation": string, "fix": string, "impact": string }`,
     // 4000 was too tight: a real run with 4 findings (each carrying body,
     // fix, evidence, why_it_matters_here, reasoning_chain) plus copy_variants
     // and visual_fixes hit the cap ~2700-3600 tokens in, truncating mid-JSON

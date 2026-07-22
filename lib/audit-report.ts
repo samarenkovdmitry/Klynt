@@ -253,6 +253,8 @@ export type AuditReport = {
   copy?: ReportCopyItem[];
   /** Viewport width (px) at which the page was captured. Used by ViewportScaleBar. */
   viewport_width?: number;
+  /** DOM metrics captured during analyze — powers visual fixes fallbacks. */
+  computed_values?: PageComputedValues | null;
   brand_stage?: BrandStage;
   traffic_source?: TrafficSource;
   audience_type?: AudienceType;
