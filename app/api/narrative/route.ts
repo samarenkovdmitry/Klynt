@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { generateNarrative } from "@/lib/analysis/narrative";
-import type { ExtractionResult } from "@/lib/analysis/extraction";
+import type { ExtractionResult, StoredExtraction } from "@/lib/analysis/extraction";
 import type { CopyVariant as NarrativeCopyVariant } from "@/lib/analysis/narrative";
 import type { Finding } from "@/lib/analysis/narrative";
 import type { PageContextInput } from "@/lib/analysis/narrative";
@@ -301,7 +301,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const extraction = data.extraction as ExtractionResult & { viewport_width?: number };
+    const extractionRaw = data.extraction as StoredExtraction;
+    const { previewImage: storedPreviewImage, viewport_width, ...extractionFields } =
+      extractionRaw;
+    const extraction = extractionFields as ExtractionResult;
     const url = (data.audited_url as string) ?? "";
 
     const brandStage = data.brand_stage as BrandStage | null | undefined;
@@ -330,11 +333,12 @@ export async function POST(req: Request) {
     const reportPayload: AuditReport = {
       url,
       score,
-      viewport_width: extraction.viewport_width ?? 1280,
+      viewport_width: viewport_width ?? 1280,
       risk: deriveRiskFromScore(score),
       summary: narrative.summary,
       verdict: narrative.hero.title ?? "",
       confidence: 88,
+      ...(storedPreviewImage ? { previewImage: storedPreviewImage } : {}),
       issues: narrative.findings.map((f) => ({
         category: f.type,
         title: f.title,

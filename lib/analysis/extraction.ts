@@ -1,4 +1,5 @@
-import { callLLM } from "../models/client";
+import { callLLM, callLLMWithImage } from "../models/client";
+import { cropHeroScreenshotBase64 } from "@/lib/report-preview";
 
 export interface PageData {
   url: string;
@@ -39,6 +40,11 @@ export interface ExtractionResult {
   }>;
 }
 
+export type StoredExtraction = ExtractionResult & {
+  viewport_width?: number;
+  previewImage?: string;
+};
+
 const EXTRACTION_SYSTEM = `You are a structured data extractor for landing page analysis.
 Output ONLY valid JSON matching the schema. No markdown fences, no commentary.
 Rules:
@@ -49,7 +55,66 @@ Rules:
 
 Schema: { "headline": string, "subheadline": string, "valuePropositionClear": boolean, "targetAudienceMentioned": boolean, "primaryCta": { "text": string, "aboveFold": boolean, "specificity": "generic"|"specific"|"none" }, "ctaCount": number, "socialProofAboveFold": boolean, "socialProofTypes": array, "trustedByCount": number, "formFieldCount": number, "emailOnlySignup": boolean, "pricingVisible": boolean, "pricingAboveFold": boolean, "loadTimeMs": number, "hasMobileViewport": boolean, "issues": [{ "type": string, "severity": string, "element": string, "observation": string }] }`;
 
-export async function extractPageData(page: PageData) {
+const VISION_EXTRACTION_SYSTEM = `${EXTRACTION_SYSTEM}
+
+You are analyzing a screenshot of a landing page (hero / above-the-fold region).
+Read visible text, CTAs, logos, forms, and trust signals directly from the image.
+If the screenshot shows a full-page capture, focus on the top portion visible in the image.`;
+
+function parseExtractionJson(text: string): ExtractionResult {
+  try {
+    return JSON.parse(text.replace(/```json|```/g, "").trim());
+  } catch {
+    throw new Error(`Extraction parse failed: ${text.slice(0, 200)}`);
+  }
+}
+
+function shouldUseVisionExtraction(page: PageData): boolean {
+  const hasScreenshot = Boolean(page.screenshot?.trim());
+  const hasText = Boolean(page.html?.trim());
+  const hasPuppeteer = Boolean(
+    page.puppeteerExtracted.headlineText?.trim() ||
+      page.puppeteerExtracted.subheadlineText?.trim() ||
+      page.puppeteerExtracted.ctaText.some((cta) => cta.trim())
+  );
+
+  return hasScreenshot && !hasText && !hasPuppeteer;
+}
+
+export function isExtractionEmpty(extraction: ExtractionResult): boolean {
+  const headline = extraction.headline?.trim() ?? "";
+  const subheadline = extraction.subheadline?.trim() ?? "";
+  const cta = extraction.primaryCta?.text?.trim() ?? "";
+
+  return !headline && !subheadline && !cta;
+}
+
+async function extractPageDataFromScreenshot(page: PageData) {
+  const heroBase64 = await cropHeroScreenshotBase64(page.screenshot);
+  const urlLine = page.url?.trim() ? `URL (if known): ${page.url}` : "URL: unknown (screenshot upload)";
+
+  const userPrompt = `${urlLine}
+
+Analyze the screenshot and extract landing page signals from the visible hero / above-the-fold content.
+META:\n${JSON.stringify(page.meta, null, 2)}`;
+
+  const { text, usage } = await callLLMWithImage({
+    role: "extraction",
+    systemPrompt: VISION_EXTRACTION_SYSTEM,
+    userPrompt,
+    imageBase64: heroBase64,
+    imageMediaType: "image/jpeg",
+    maxTokens: 900,
+    cacheSystem: true,
+  });
+
+  const result = parseExtractionJson(text);
+  result.hasMobileViewport = page.puppeteerExtracted.mobileViewportWidth > 0;
+
+  return { result, usage };
+}
+
+async function extractPageDataFromText(page: PageData) {
   const userPrompt = `URL: ${page.url}\n\nPUPPETEER:\n${JSON.stringify(page.puppeteerExtracted, null, 2)}\n\nMETA:\n${JSON.stringify(page.meta, null, 2)}\n\nPAGE TEXT:\n${page.html.slice(0, 8000)}`;
 
   const { text, usage } = await callLLM({
@@ -60,12 +125,7 @@ export async function extractPageData(page: PageData) {
     cacheSystem: true,
   });
 
-  let result: ExtractionResult;
-  try {
-    result = JSON.parse(text.replace(/```json|```/g, "").trim());
-  } catch {
-    throw new Error(`Extraction parse failed: ${text.slice(0, 200)}`);
-  }
+  const result = parseExtractionJson(text);
 
   // Override with puppeteer ground-truth (more reliable than LLM)
   result.socialProofAboveFold = page.puppeteerExtracted.socialProofAboveFold;
@@ -73,4 +133,12 @@ export async function extractPageData(page: PageData) {
   result.hasMobileViewport = page.puppeteerExtracted.mobileViewportWidth > 0;
 
   return { result, usage };
+}
+
+export async function extractPageData(page: PageData) {
+  if (shouldUseVisionExtraction(page)) {
+    return extractPageDataFromScreenshot(page);
+  }
+
+  return extractPageDataFromText(page);
 }
