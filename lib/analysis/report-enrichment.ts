@@ -18,6 +18,11 @@ import type {
   TrafficSource,
 } from "@/lib/audit-report";
 import {
+  isLegalBoilerplate,
+  sanitizeCtaText,
+  sanitizeSubheadlineText,
+} from "@/lib/hero-dom-signals";
+import {
   normalizeVisualDimension,
   normalizeVisualSection,
   type NormalizedVisualSection,
@@ -52,13 +57,21 @@ export function applyDomGroundTruth(
     next.headline = computedValues.h1_text.trim();
   }
 
-  if (computedValues?.sub_text?.trim()) {
-    next.subheadline = computedValues.sub_text.trim();
+  const domSub = sanitizeSubheadlineText(computedValues?.sub_text);
+  if (domSub) {
+    next.subheadline = domSub;
+  } else if (isLegalBoilerplate(next.subheadline)) {
+    next.subheadline = "";
+  } else {
+    next.subheadline = sanitizeSubheadlineText(next.subheadline) ?? next.subheadline.trim();
   }
 
-  if (computedValues?.cta_text?.trim()) {
-    next.primaryCta.text = computedValues.cta_text.trim();
+  const domCta = sanitizeCtaText(computedValues?.cta_text);
+  if (domCta) {
+    next.primaryCta.text = domCta;
     next.primaryCta.aboveFold = true;
+  } else {
+    next.primaryCta.text = sanitizeCtaText(next.primaryCta.text) ?? "";
   }
 
   if (computedValues) {
