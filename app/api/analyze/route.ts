@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 
-import { extractPageData } from "@/lib/analysis/extraction";
-import type { PageData } from "@/lib/analysis/extraction";
+import { extractPageData, isExtractionEmpty } from "@/lib/analysis/extraction";
+import type { PageData, StoredExtraction } from "@/lib/analysis/extraction";
 import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
+import { buildReportPreviewImage } from "@/lib/report-preview";
 
 import { createAnalyzeTiming } from "@/lib/analyze-timing";
 import {
@@ -164,6 +165,10 @@ export async function POST(req: Request) {
 
     const rawHeroBase64 = screenshotsBase64[0];
 
+    const previewImage = rawHeroBase64
+      ? await timing.measure("preview_ms", () => buildReportPreviewImage(rawHeroBase64))
+      : undefined;
+
     screenshotsBase64 = await timing.measure("optimize_ms", () =>
       optimizeScreenshots(screenshotsBase64)
     );
@@ -188,6 +193,20 @@ export async function POST(req: Request) {
       () => extractPageData(pageData)
     );
 
+    if (isExtractionEmpty(extraction)) {
+      timing.log({ outcome: "empty_extraction", captureMode });
+
+      return NextResponse.json(
+        {
+          error:
+            captureMode === "upload"
+              ? "Could not read text from the screenshot. Try a clearer hero capture or analyze by URL."
+              : "Could not extract page content. The site may block automated access — try uploading a screenshot.",
+        },
+        { status: 422, headers: rateLimitHeaders }
+      );
+    }
+
     console.log(
       `[analyze] Extraction done: ${extraction.issues.length} issues, $${extractionUsage.estimatedCostUsd.toFixed(5)}`
     );
@@ -196,14 +215,23 @@ export async function POST(req: Request) {
     const auditedUrl = url;
     const reportSlug = buildReportSlug(reportId, auditedUrl);
 
+    const storedExtraction: StoredExtraction = {
+      ...extraction,
+      viewport_width: computedValues?.viewport_width ?? 1280,
+      ...(previewImage ? { previewImage } : {}),
+    };
+
     if (isSupabaseConfigured()) {
       const supabase = createServerSupabase();
       const { error } = await supabase.from("reports").insert({
         id: reportId,
         audited_url: auditedUrl,
         payload: {},
-        extraction: { ...extraction, viewport_width: computedValues?.viewport_width ?? 1280 },
+        extraction: storedExtraction,
         status: "processing",
+        brand_stage: brandStage,
+        traffic_source: trafficSource,
+        audience_type: audienceType,
       });
 
       if (error) {
