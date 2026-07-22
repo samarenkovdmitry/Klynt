@@ -43,8 +43,8 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
   return (
     <section className="relative overflow-hidden">
       <div className={`relative z-10 ${LANDING_CONTAINER} px-5 pb-14 pt-8 md:px-6 md:pb-20 md:pt-12`}>
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,556px)] lg:gap-12 xl:gap-16">
-          <div className="mx-auto max-w-[640px] text-center lg:mx-0 lg:-mt-4 lg:max-w-none lg:text-left">
+        <div className="grid min-w-0 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,556px)] lg:gap-12 xl:gap-16">
+          <div className="mx-auto min-w-0 max-w-[640px] text-center lg:mx-0 lg:-mt-4 lg:max-w-none lg:text-left">
             <h1 className="max-w-[560px] text-[36px] font-semibold leading-[1.06] tracking-[-0.02em] text-white md:text-[48px] md:leading-[1.06] lg:max-w-none xl:text-[52px] xl:leading-[1.06] xl:tracking-[-0.02em]">
               Instant UX reviews
               <br />
@@ -87,7 +87,7 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
             </div>
           </div>
 
-          <div className="relative lg:pt-2">
+          <div className="relative min-w-0 w-full lg:pt-2">
             <LandingTestMockup />
           </div>
         </div>
