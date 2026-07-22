@@ -40,9 +40,17 @@ export interface ExtractionResult {
   }>;
 }
 
+export type PageMetaSnapshot = {
+  title: string;
+  description: string;
+  hasMobileViewportMeta: boolean;
+};
+
 export type StoredExtraction = ExtractionResult & {
   viewport_width?: number;
   previewImage?: string;
+  computed_values?: import("@/lib/audit-report").PageComputedValues | null;
+  page_meta?: PageMetaSnapshot;
 };
 
 const EXTRACTION_SYSTEM = `You are a structured data extractor for landing page analysis.
@@ -52,6 +60,10 @@ Rules:
 - "element" must name the actual HTML element (e.g. "H1 headline", "hero CTA button").
 - "observation" is one factual sentence, not advice.
 - Null for unknown values.
+- hasMobileViewport means the page HTML includes <meta name="viewport" content="width=device-width"> — NOT the browser capture width.
+- If META.title or META.description are non-empty, do NOT report missing/empty meta tags.
+- Do NOT treat a desktop capture width (e.g. 1280px) as a mobile viewport misconfiguration.
+- If loadTimeMs is 0, omit performance issues about load time.
 
 Schema: { "headline": string, "subheadline": string, "valuePropositionClear": boolean, "targetAudienceMentioned": boolean, "primaryCta": { "text": string, "aboveFold": boolean, "specificity": "generic"|"specific"|"none" }, "ctaCount": number, "socialProofAboveFold": boolean, "socialProofTypes": array, "trustedByCount": number, "formFieldCount": number, "emailOnlySignup": boolean, "pricingVisible": boolean, "pricingAboveFold": boolean, "loadTimeMs": number, "hasMobileViewport": boolean, "issues": [{ "type": string, "severity": string, "element": string, "observation": string }] }`;
 

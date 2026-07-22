@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import sharp from "sharp";
 
 import { extractPageData, isExtractionEmpty } from "@/lib/analysis/extraction";
-import type { PageData, StoredExtraction } from "@/lib/analysis/extraction";
+import type { PageData, PageMetaSnapshot, StoredExtraction } from "@/lib/analysis/extraction";
+import { applyDomGroundTruth } from "@/lib/analysis/report-enrichment";
 import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
 import { buildReportPreviewImage } from "@/lib/report-preview";
 
@@ -133,6 +134,7 @@ export async function POST(req: Request) {
 
     let screenshotsBase64: string[] = [];
     let computedValues: import("@/lib/audit-report").PageComputedValues | null = null;
+    let pageMeta: PageMetaSnapshot | undefined;
     let bodyText = "";
 
     // PRIORITY #1 — uploaded screenshot
@@ -153,6 +155,7 @@ export async function POST(req: Request) {
       );
       screenshotsBase64 = captureResult.screenshots;
       computedValues = captureResult.computedValues;
+      pageMeta = captureResult.pageMeta;
       bodyText = captureResult.bodyText;
     }
 
@@ -177,14 +180,17 @@ export async function POST(req: Request) {
       url,
       html: bodyText,
       screenshot: rawHeroBase64 ?? "",
-      meta: { title: "", description: "" },
+      meta: {
+        title: pageMeta?.title ?? "",
+        description: pageMeta?.description ?? "",
+      },
       puppeteerExtracted: {
         ctaText: computedValues?.cta_text ? [computedValues.cta_text] : [],
         headlineText: computedValues?.h1_text ?? "",
         subheadlineText: computedValues?.sub_text ?? "",
         socialProofAboveFold: computedValues?.social_proof_above_fold ?? false,
         loadTimeMs: 0,
-        mobileViewportWidth: computedValues?.viewport_width ?? 390,
+        mobileViewportWidth: pageMeta?.hasMobileViewportMeta ? 390 : 0,
       },
     };
 
@@ -193,7 +199,9 @@ export async function POST(req: Request) {
       () => extractPageData(pageData)
     );
 
-    if (isExtractionEmpty(extraction)) {
+    const enrichedExtraction = applyDomGroundTruth(extraction, computedValues, pageMeta);
+
+    if (isExtractionEmpty(enrichedExtraction)) {
       timing.log({ outcome: "empty_extraction", captureMode });
 
       return NextResponse.json(
@@ -208,7 +216,7 @@ export async function POST(req: Request) {
     }
 
     console.log(
-      `[analyze] Extraction done: ${extraction.issues.length} issues, $${extractionUsage.estimatedCostUsd.toFixed(5)}`
+      `[analyze] Extraction done: ${enrichedExtraction.issues.length} issues, $${extractionUsage.estimatedCostUsd.toFixed(5)}`
     );
 
     const reportId = generateReportId();
@@ -216,8 +224,10 @@ export async function POST(req: Request) {
     const reportSlug = buildReportSlug(reportId, auditedUrl);
 
     const storedExtraction: StoredExtraction = {
-      ...extraction,
+      ...enrichedExtraction,
       viewport_width: computedValues?.viewport_width ?? 1280,
+      computed_values: computedValues,
+      ...(pageMeta ? { page_meta: pageMeta } : {}),
       ...(previewImage ? { previewImage } : {}),
     };
 
