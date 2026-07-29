@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { RiArrowRightLine } from "@remixicon/react";
 
-import { Button } from "@/components/ui/Button";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 import {
-  LANDING_BUTTON,
+  LANDING_BUTTON_PRIMARY,
+  LANDING_BUTTON_SECONDARY,
   LANDING_LEAD,
-  LANDING_LINK,
   LANDING_SECTION,
   LANDING_TITLE,
 } from "./landingPageStyles";
@@ -21,18 +20,16 @@ export function LandingTestCtaSection() {
           Run a free UX analysis, no signup, results in about a minute.
         </p>
 
-        <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5 md:mt-10">
-          <Button
-            href="/analyze"
-            tone="dark"
-            icon={<RiArrowRightLine size={18} aria-hidden />}
-            fullWidth={false}
-            className={LANDING_BUTTON}
-          >
+        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-center md:mt-10">
+          <Link href="/analyze" className={`${LANDING_BUTTON_PRIMARY} w-full sm:w-auto`}>
+            <RiArrowRightLine size={18} aria-hidden />
             Start free audit
-          </Button>
+          </Link>
 
-          <Link href={DEMO_REPORT_PATH} className={LANDING_LINK}>
+          <Link
+            href={DEMO_REPORT_PATH}
+            className={`${LANDING_BUTTON_SECONDARY} w-full sm:w-auto`}
+          >
             View sample report
           </Link>
         </div>

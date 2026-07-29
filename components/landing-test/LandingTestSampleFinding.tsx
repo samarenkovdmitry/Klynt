@@ -10,16 +10,15 @@ import {
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 import {
+  LANDING_BORDER_LINK,
   LANDING_CONTAINER,
   LANDING_DARK_BG,
   LANDING_EYEBROW,
   LANDING_LEAD,
   LANDING_SECTION,
   LANDING_SURFACE_BG,
+  LANDING_TITLE,
 } from "./landingPageStyles";
-
-const SAMPLE_BUTTON =
-  "inline-flex h-[50px] items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-transparent px-7 text-[15px] font-semibold text-white transition-colors hover:border-white/25 hover:bg-white/[0.04]";
 
 /** Curated finding — sharper than raw demo JSON, same shape as a real report hero card */
 const HERO_FINDING = {
@@ -215,7 +214,7 @@ export function LandingTestSampleFinding() {
           <p className={LANDING_EYEBROW}>Real example</p>
           <h2
             id="sample-finding-heading"
-            className="mt-3 text-[28px] font-semibold leading-[1.1] tracking-[-0.03em] text-white md:text-[36px] md:leading-[1.08]"
+            className={`${LANDING_TITLE} mx-auto text-center`}
           >
             What Klynt actually finds
           </h2>
@@ -259,14 +258,11 @@ export function LandingTestSampleFinding() {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-2.5 md:mt-12">
-          <Link href={DEMO_REPORT_PATH} className={SAMPLE_BUTTON}>
+        <div className="mt-10 flex justify-center md:mt-12">
+          <Link href={DEMO_REPORT_PATH} className={LANDING_BORDER_LINK}>
             See full report
-            <RiArrowRightLine size={17} aria-hidden />
+            <RiArrowRightLine size={18} aria-hidden />
           </Link>
-          <p className="text-[13px] text-white/40">
-            {HERO_FINDING.domain} audit · copy rewrites, visual fixes, score impact
-          </p>
         </div>
       </div>
     </section>

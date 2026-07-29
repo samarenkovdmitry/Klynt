@@ -10,12 +10,14 @@ import {
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
 
 import {
+  LANDING_BORDER_LINK,
   LANDING_CONTAINER,
   LANDING_DARK_BG,
   LANDING_EYEBROW,
   LANDING_LEAD,
   LANDING_SECTION,
   LANDING_SURFACE_BG,
+  LANDING_TITLE,
 } from "./landingPageStyles";
 
 /** Brand indigo — matches How it works / landing accent */
@@ -31,9 +33,6 @@ const UI_FRAME = [
   LANDING_SURFACE_BG,
   "shadow-[0_8px_32px_rgba(0,0,0,0.14)]",
 ].join(" ");
-
-const SAMPLE_BUTTON =
-  "inline-flex h-[50px] items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-transparent px-7 text-[15px] font-semibold text-white transition-colors hover:border-white/25 hover:bg-white/[0.04]";
 
 /** Column span per bento cell — mobile stack only */
 const MOBILE_CELL =
@@ -353,7 +352,7 @@ export function LandingTestWhatsInside() {
           <p className={LANDING_EYEBROW}>Inside the report</p>
           <h2
             id="whats-inside-heading"
-            className="mt-3 text-[28px] font-semibold leading-[1.1] tracking-[-0.03em] text-white md:text-[36px] md:leading-[1.08]"
+            className={`${LANDING_TITLE} mx-auto text-center`}
           >
             One report. Four ways to lift conversion.
           </h2>
@@ -391,12 +390,11 @@ export function LandingTestWhatsInside() {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-2.5 md:mt-12">
-          <Link href={DEMO_REPORT_PATH} className={SAMPLE_BUTTON}>
+        <div className="mt-10 flex justify-center md:mt-12">
+          <Link href={DEMO_REPORT_PATH} className={LANDING_BORDER_LINK}>
             Open sample report
-            <RiArrowRightLine size={17} aria-hidden />
+            <RiArrowRightLine size={18} aria-hidden />
           </Link>
-          <p className="text-[13px] text-white/40">See a real audit, no signup</p>
         </div>
       </div>
     </section>
