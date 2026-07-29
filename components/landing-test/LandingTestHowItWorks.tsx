@@ -40,7 +40,7 @@ export function LandingTestHowItWorks() {
       <div className={LANDING_CONTAINER}>
         <div className="mx-auto max-w-[640px] text-center">
           <p className={LANDING_EYEBROW}>How it works</p>
-          <h2 id="how-heading" className={`${LANDING_TITLE} mx-auto max-w-[520px]`}>
+          <h2 id="how-heading" className={`${LANDING_TITLE} mx-auto max-w-[640px] text-center`}>
             From URL to actionable report in minutes
           </h2>
           <p className={`${LANDING_LEAD} mx-auto max-w-[540px]`}>

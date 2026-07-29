@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  RiArrowRightLine,
   RiBrainLine,
   RiFilePdfLine,
   RiFlashlightLine,
@@ -18,7 +19,7 @@ import {
   LANDING_DARK_BG,
   LANDING_EYEBROW,
   LANDING_LEAD,
-  LANDING_LINK,
+  LANDING_BORDER_LINK,
   LANDING_SECTION,
   LANDING_TITLE,
 } from "./landingPageStyles";
@@ -111,8 +112,9 @@ export function LandingTestReportScope() {
         <div className="mt-14 border-t border-white/[0.06] pt-10 md:mt-16 md:pt-12">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <p className={LANDING_EYEBROW}>Included in every report</p>
-            <Link href={DEMO_REPORT_PATH} className={`${LANDING_LINK} shrink-0`}>
-              View sample report →
+            <Link href={DEMO_REPORT_PATH} className={`${LANDING_BORDER_LINK} shrink-0`}>
+              View sample report
+              <RiArrowRightLine size={18} aria-hidden />
             </Link>
           </div>
 

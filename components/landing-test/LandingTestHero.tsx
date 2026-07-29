@@ -10,7 +10,7 @@ import type { RemixiconComponentType } from "@remixicon/react";
 
 import { LandingTestMockup } from "./LandingTestMockup";
 import { DEMO_REPORT_PATH } from "@/lib/demo-report";
-import { LANDING_BUTTON, LANDING_CONTAINER } from "./landingPageStyles";
+import { LANDING_BUTTON_PRIMARY, LANDING_BUTTON_SECONDARY, LANDING_CONTAINER } from "./landingPageStyles";
 
 const FALLBACK_AUDITED_COUNT = 469;
 
@@ -20,15 +20,7 @@ const HERO_FEATURES: { icon: RemixiconComponentType; label: string }[] = [
   { icon: RiFilePdf2Line, label: "Shareable PDF" },
 ];
 
-const HERO_PRIMARY_BUTTON_CLASS = [
-  LANDING_BUTTON,
-  "inline-flex items-center justify-center gap-2 bg-white text-[#18181B] transition-opacity hover:opacity-90",
-].join(" ");
-
-const HERO_SECONDARY_BUTTON_CLASS = [
-  LANDING_BUTTON,
-  "inline-flex items-center justify-center border border-white/[0.12] bg-transparent text-white transition-colors hover:border-white/25 hover:bg-white/[0.04]",
-].join(" ");
+const HERO_PRIMARY_BUTTON_CLASS = `${LANDING_BUTTON_PRIMARY} w-full sm:w-auto`;
 
 type LandingTestHeroProps = {
   auditedCount?: number | null;
@@ -64,12 +56,15 @@ export function LandingTestHero({ auditedCount = null }: LandingTestHeroProps) {
               ))}
             </ul>
 
-            <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
+            <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
               <Link href="/analyze" className={HERO_PRIMARY_BUTTON_CLASS}>
-                Start free audit
                 <RiArrowRightLine size={18} aria-hidden />
+                Start free audit
               </Link>
-              <Link href={DEMO_REPORT_PATH} className={HERO_SECONDARY_BUTTON_CLASS}>
+              <Link
+                href={DEMO_REPORT_PATH}
+                className={`${LANDING_BUTTON_SECONDARY} w-full sm:w-auto`}
+              >
                 View sample report
               </Link>
             </div>
