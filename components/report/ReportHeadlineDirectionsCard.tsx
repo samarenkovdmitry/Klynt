@@ -73,48 +73,39 @@ export function ReportHeadlineDirectionsCard({
 
   return (
     <ReportVariantCard variant="copy">
-      <div className="flex flex-col gap-5 md:flex-row md:gap-6">
-        <div className="hidden items-start justify-center pt-0.5 md:flex">
-          <ReportIndexBadge index={cardIndex} />
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 gap-y-4 md:gap-x-4">
+        <ReportIndexBadge index={cardIndex} className="row-start-1 self-start mt-1" />
+        <div className="col-start-2 row-start-1 min-w-0">
+          <p className={REPORT_CARD_TITLE_CLASS}>Hero headline</p>
+          {brandStage ? (
+            <p className="mt-1 text-[13px] font-medium text-[var(--brand-primary)]">
+              Tailored for {getBrandStageLabel(brandStage)} brands
+            </p>
+          ) : null}
         </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="mb-4 flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="mb-3 flex items-start justify-between gap-3 md:hidden">
-                <ReportIndexBadge index={cardIndex} />
-              </div>
+        {directions.context ? (
+          <div ref={contextRef} className="relative col-start-3 row-start-1 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowContext((open) => !open)}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(6,28,47,0.08)] text-[#8E99A2] transition hover:border-[#8E99A2] hover:text-[var(--ink-primary)]"
+              aria-label="Why these directions"
+              aria-expanded={showContext}
+            >
+              <RiInformationLine size={16} aria-hidden />
+            </button>
 
-              <p className={REPORT_CARD_TITLE_CLASS}>Hero headline</p>
-              {brandStage ? (
-                <p className="mt-1 text-[13px] font-medium text-[var(--brand-primary)]">
-                  Tailored for {getBrandStageLabel(brandStage)} brands
-                </p>
-              ) : null}
-            </div>
-
-            {directions.context ? (
-              <div ref={contextRef} className="relative shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setShowContext((open) => !open)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(6,28,47,0.08)] text-[#8E99A2] transition hover:border-[#8E99A2] hover:text-[var(--ink-primary)]"
-                  aria-label="Why these directions"
-                  aria-expanded={showContext}
-                >
-                  <RiInformationLine size={16} aria-hidden />
-                </button>
-
-                {showContext ? (
-                  <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-[min(260px,calc(100vw-48px))] rounded-[12px] border border-[rgba(6,28,47,0.08)] bg-white p-2.5 text-[12px] leading-5 text-[#6B7280] shadow-[0_8px_24px_rgba(6,28,47,0.08)]">
-                    {directions.context}
-                  </div>
-                ) : null}
+            {showContext ? (
+              <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-[min(260px,calc(100vw-48px))] rounded-[12px] border border-[rgba(6,28,47,0.08)] bg-white p-2.5 text-[12px] leading-5 text-[#6B7280] shadow-[0_8px_24px_rgba(6,28,47,0.08)]">
+                {directions.context}
               </div>
             ) : null}
           </div>
+        ) : null}
 
-          {before ? (
+        <div className="col-start-2 row-start-2 min-w-0">
+      {before ? (
             <p className={BEFORE_LINE_CLASS}>
               <span>Before:</span>{" "}
               <span className="text-neutral-600">{before}</span>

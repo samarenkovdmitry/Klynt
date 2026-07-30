@@ -1,7 +1,20 @@
-export function ReportIndexBadge({ index }: { index: number }) {
+export function ReportIndexBadge({
+  index,
+  className,
+}: {
+  index: number;
+  className?: string;
+}) {
   return (
-    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[rgba(6,28,47,0.08)] bg-white text-[16px] font-medium leading-5 text-[#616C77]">
+    <span
+      className={[
+        "w-5 shrink-0 text-[16px] font-medium tabular-nums leading-5 text-[#B0B8C4]",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {index + 1}
-    </div>
+    </span>
   );
 }

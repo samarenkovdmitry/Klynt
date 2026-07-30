@@ -48,7 +48,7 @@ function ChecklistRow({
 
   return (
     <div
-      className={`px-5 py-5 md:px-6 ${expandable ? "cursor-pointer" : ""}`}
+      className={`px-[21px] py-5 md:px-[33px] md:py-5 ${expandable ? "cursor-pointer" : ""}`}
       onClick={() => expandable && onToggle()}
     >
       <div className="flex items-center gap-3 md:gap-4">
@@ -85,13 +85,13 @@ function ChecklistRow({
       </div>
 
       {expanded && explanation ? (
-        <p className="mt-3 pl-8 text-[15px] leading-[21px] text-[rgba(6,28,47,0.6)]">
+        <p className="mt-3 pl-8 text-[15px] leading-[21px] text-[rgba(6,28,47,0.6)] md:pl-9">
           {explanation}
         </p>
       ) : null}
 
       {expanded && item.fix ? (
-        <p className="mt-2 pl-8 text-[15px] leading-[21px] text-[#061C2F]">
+        <p className="mt-2 pl-8 text-[15px] leading-[21px] text-[#061C2F] md:pl-9">
           <span className="font-semibold">Fix: </span>
           {item.fix}
         </p>
