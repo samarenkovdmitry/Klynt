@@ -50,7 +50,7 @@ export function HelpTooltipIcon({
       <span
         role="tooltip"
         className={[
-          "pointer-events-none absolute z-30 w-[240px] rounded-xl border border-[rgba(6,28,47,0.08)] bg-[#061C2F] px-3 py-2 text-center text-[12px] leading-[1.45] text-white opacity-0 shadow-[0_8px_24px_rgba(6,28,47,0.18)] transition-opacity duration-150 group-hover/help:opacity-100 group-focus-within/help:opacity-100",
+          "pointer-events-none absolute z-30 w-[min(240px,calc(100vw-48px))] rounded-xl border border-[rgba(6,28,47,0.08)] bg-[#061C2F] px-3 py-2 text-center text-[12px] leading-[1.45] text-white opacity-0 shadow-[0_8px_24px_rgba(6,28,47,0.18)] transition-opacity duration-150 group-hover/help:opacity-100 group-focus-within/help:opacity-100",
           tooltipVerticalClass,
           tooltipHorizontalClass,
         ].join(" ")}

@@ -111,19 +111,25 @@ function metricCellBorderClass(index: number): string {
     .join(" ");
 }
 
-function MetricCompactCell({ row }: { row: PerformanceMetricRow }) {
+function MetricCompactCell({
+  row,
+  tooltipAlign,
+}: {
+  row: PerformanceMetricRow;
+  tooltipAlign: "start" | "end";
+}) {
   const styles = STATUS_STYLES[row.status];
   const measured = row.value != null;
 
   return (
-    <div className="px-5 py-4">
+    <div className="min-w-0 px-5 py-4">
       <div className="flex items-center gap-2">
         <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">{row.spec.shortLabel}</p>
         <HelpTooltipIcon
           label={`About ${row.spec.shortLabel}`}
           text={row.spec.tooltip}
           tooltipPlacement="bottom"
-          tooltipAlign="start"
+          tooltipAlign={tooltipAlign}
         />
       </div>
       <p
@@ -180,22 +186,25 @@ export function ReportPerformancePanel({ metrics, benchmark }: Props) {
         title="Load speed"
       />
 
-      <div className={`${REPORT_NEW_SECTION_BODY_GAP_CLASS} ${REPORT_SURFACE_CARD_CLASS} !overflow-visible`}>
+      <div className={`${REPORT_NEW_SECTION_BODY_GAP_CLASS} ${REPORT_SURFACE_CARD_CLASS}`}>
         <div className="px-6 py-5">
           <p className={BODY_CLASS}>{conversionHint(rows)}</p>
         </div>
 
-        <div className={`grid grid-cols-2 overflow-visible border-t sm:grid-cols-4 ${PANEL_DIVIDER_CLASS}`}>
+        <div className={`grid min-w-0 grid-cols-2 border-t sm:grid-cols-4 ${PANEL_DIVIDER_CLASS}`}>
           {rows.map((row, index) => (
-            <div key={row.spec.id} className={metricCellBorderClass(index)}>
-              <MetricCompactCell row={row} />
+            <div key={row.spec.id} className={`min-w-0 ${metricCellBorderClass(index)}`}>
+              <MetricCompactCell
+                row={row}
+                tooltipAlign={index % 2 === 1 ? "end" : "start"}
+              />
             </div>
           ))}
         </div>
 
         {benchmarkSuffix || captureMeta ? (
           <div className={`border-t px-6 py-3.5 ${PANEL_DIVIDER_CLASS}`}>
-            <p className="text-[13px] leading-5">
+            <p className="break-words text-[13px] leading-5">
               {benchmarkSuffix ? (
                 <span className="font-medium text-[#616C77]">{benchmarkSuffix}</span>
               ) : null}
