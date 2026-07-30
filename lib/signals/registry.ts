@@ -5,7 +5,7 @@ import {
   parseFontWeight,
   suggestAaForeground,
 } from "./wcag-contrast";
-import { mobileElementMissing } from "./mobile-comparison";
+import { mobileElementMissing, mobilePrimaryCtaRegression } from "./mobile-comparison";
 
 const GENERIC_CTA =
   /^(get\s+started|started|learn\s+more|click\s+here|sign\s+up(\s+free)?|submit|continue|explore|discover|try\s+now|try\s+free|try\s+it(\s+free)?|register|join(\s+now)?|start\s+free|start\s+now|book\s+demo|see\s+demo)$/i;
@@ -555,6 +555,36 @@ export const SIGNAL_REGISTRY: SignalDefinition[] = [
         status: "missing",
         evidence: "CTA on desktop only",
         impact_score: 88,
+      };
+    },
+  },
+  {
+    id: "mobile_primary_cta_regression",
+    methodologyCategory: "conversion_friction",
+    checklistCategory: "copy",
+    link_to: "copy-cta",
+    failTitle: "Primary signup CTA not above the fold on mobile",
+    fix: "Keep the main signup button visible in the first 390px screen — lead forms without a visible submit action increase drop-off on mobile.",
+    why: "Mobile visitors need the same primary action as desktop; promo pills or nav CTAs are not a substitute.",
+    evaluate(ctx) {
+      const desktop = ctx.computedValues;
+      const mobile = ctx.mobileComputedValues;
+      const regression = mobilePrimaryCtaRegression(desktop, mobile);
+      if (regression == null) return null;
+      if (!regression) {
+        return { status: "pass", evidence: "primary CTA aligned on mobile" };
+      }
+
+      const desktopCta = desktop?.cta_text?.trim() ?? "";
+      const mobileCta = mobile?.cta_text?.trim();
+      const evidence = mobileCta
+        ? `Desktop: “${desktopCta}” · Mobile hero: “${mobileCta}”`
+        : `Desktop: “${desktopCta}” · not detected at 390px`;
+
+      return {
+        status: "missing",
+        evidence,
+        impact_score: 86,
       };
     },
   },

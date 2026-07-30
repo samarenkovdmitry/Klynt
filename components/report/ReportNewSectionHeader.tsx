@@ -8,7 +8,7 @@ type Props = {
 };
 
 const ICON_BOX_CLASS =
-  "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[rgba(6,28,47,0.08)] bg-white";
+  "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[rgba(6,28,47,0.08)] bg-white [&_svg]:text-[#061C2F]";
 
 const SECTION_TITLE_SUFFIX_SEPARATOR_CLASS =
   "mx-2.5 inline-block font-normal text-[#C5CDD6]";

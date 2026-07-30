@@ -6,6 +6,14 @@ export const REPORT_PREVIEW_DISPLAY_HEIGHT = 190;
 export const REPORT_PREVIEW_WIDTH = 620;
 export const REPORT_PREVIEW_HEIGHT = 380;
 
+/** Mobile hero preview — preserves narrow viewport aspect (390 CSS px wide). */
+export const REPORT_MOBILE_PREVIEW_WIDTH = 390;
+/** Above-the-fold crop — shorter than full 844px device height. */
+export const REPORT_MOBILE_PREVIEW_HEIGHT = 520;
+
+/** Phone frame display width in ReportMobileSection. */
+export const REPORT_MOBILE_PREVIEW_DISPLAY_WIDTH = 168;
+
 export const REPORT_OG_WIDTH = 1200;
 export const REPORT_OG_HEIGHT = 630;
 

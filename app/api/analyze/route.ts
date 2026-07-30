@@ -6,7 +6,7 @@ import type { PageData, PageMetaSnapshot, StoredExtraction, StoredCompetitorSnap
 import { applyDomGroundTruth, applyPerformanceGroundTruth } from "@/lib/analysis/report-enrichment";
 import { captureCompetitorSnapshot } from "@/lib/analysis/capture-competitor";
 import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
-import { buildReportPreviewImage } from "@/lib/report-preview";
+import { buildMobilePreviewImage, buildReportPreviewImage } from "@/lib/report-preview";
 
 import { createAnalyzeTiming } from "@/lib/analyze-timing";
 import {
@@ -195,7 +195,7 @@ export async function POST(req: Request) {
 
     const mobilePreviewImage = mobileHeroScreenshotBase64
       ? await timing.measure("mobile_preview_ms", () =>
-          buildReportPreviewImage(mobileHeroScreenshotBase64!)
+          buildMobilePreviewImage(mobileHeroScreenshotBase64!)
         )
       : undefined;
 

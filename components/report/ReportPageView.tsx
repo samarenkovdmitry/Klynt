@@ -7,6 +7,7 @@ import { ReportCloseTheGap } from "@/components/report/ReportCloseTheGap";
 import { ReportCopyStudioSection } from "@/components/report/ReportCopyStudioSection";
 import { ReportCtaSection } from "@/components/report/ReportCtaSection";
 import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
+import { ReportMobileSection } from "@/components/report/ReportMobileSection";
 import { ReportPerformancePanel } from "@/components/report/ReportPerformancePanel";
 import { ReportTrustMetaSection } from "@/components/report/ReportTrustMetaSection";
 import { VisualFixes } from "@/components/report/VisualFixes";
@@ -15,6 +16,7 @@ import { ReportPageStates } from "@/components/report/ReportPageStates";
 import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
 import type { AuditReport } from "@/lib/audit-report";
 import { openReportPrintExport } from "@/lib/report-export";
+import { formatReportDomain } from "@/lib/report-hero-theme";
 import { resolveReportPreviewSrc } from "@/lib/report-preview-url";
 import { useReportData } from "@/hooks/useReportData";
 
@@ -94,6 +96,15 @@ export function ReportPageView({
           />
 
           <VisualFixes visualFixes={data.visual_fixes} visualPasses={data.visual_passes} />
+
+          <ReportMobileSection
+            routeParam={routeParam}
+            checklist={data.checklist}
+            computedValues={data.computed_values}
+            mobileComputedValues={data.mobile_computed_values}
+            mobilePreviewImage={data.mobile_preview_image}
+            domain={formatReportDomain(data.url)}
+          />
 
           <ReportPerformancePanel
             metrics={data.performance_metrics}

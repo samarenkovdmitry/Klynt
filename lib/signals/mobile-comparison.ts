@@ -10,7 +10,38 @@ export type MobileDesktopComparison = {
   cta_contrast_regression: boolean;
   nav_link_count_desktop: number;
   nav_link_count_mobile: number;
+  /** Desktop primary-action CTA replaced or absent on mobile (e.g. promo pill vs signup). */
+  primary_cta_regression: boolean;
 };
+
+const PRIMARY_ACTION_CTA_PATTERN =
+  /free|trial|start|get started|sign up|signup|try|demo|join|register|book/i;
+
+export function isPrimaryActionCta(text: string | null | undefined): boolean {
+  if (!text?.trim()) return false;
+  return PRIMARY_ACTION_CTA_PATTERN.test(text.trim());
+}
+
+/** Desktop has a primary-action CTA but mobile does not show the same intent above the fold. */
+export function mobilePrimaryCtaRegression(
+  desktop: PageComputedValues | null,
+  mobile: PageComputedValues | null
+): boolean | null {
+  const desktopCta = desktop?.cta_text?.trim();
+  const mobileCta = mobile?.cta_text?.trim();
+  if (!desktop || !mobile || !desktopCta || !isPrimaryActionCta(desktopCta)) {
+    return null;
+  }
+
+  if (!mobileCta) return true;
+
+  const sameLabel = desktopCta.toLowerCase() === mobileCta.toLowerCase();
+  if (sameLabel) return false;
+
+  if (!isPrimaryActionCta(mobileCta)) return true;
+
+  return false;
+}
 
 function textField(
   values: PageComputedValues | null,
@@ -82,6 +113,7 @@ export function buildMobileDesktopComparison(
       ctaDesktopContrast === true && ctaMobileContrast === false,
     nav_link_count_desktop: desktop.nav_link_count,
     nav_link_count_mobile: mobile.nav_link_count,
+    primary_cta_regression: mobilePrimaryCtaRegression(desktop, mobile) === true,
   };
 }
 
