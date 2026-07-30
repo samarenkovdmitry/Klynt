@@ -46,10 +46,25 @@ export type PageMetaSnapshot = {
   hasMobileViewportMeta: boolean;
 };
 
+export type StoredCompetitorSnapshot = {
+  url: string;
+  extraction: ExtractionResult;
+  computed_values?: import("@/lib/audit-report").PageComputedValues | null;
+  mobile_computed_values?: import("@/lib/audit-report").PageComputedValues | null;
+  previewImage?: string;
+  page_meta?: PageMetaSnapshot;
+};
+
 export type StoredExtraction = ExtractionResult & {
   viewport_width?: number;
   previewImage?: string;
+  lowerPreviewImage?: string;
+  lower_fold?: import("./lower-fold").LowerFoldSnapshot;
   computed_values?: import("@/lib/audit-report").PageComputedValues | null;
+  performance_metrics?: import("@/lib/audit-report").PagePerformanceMetrics | null;
+  mobile_computed_values?: import("@/lib/audit-report").PageComputedValues | null;
+  mobile_preview_image?: string;
+  competitor?: StoredCompetitorSnapshot;
   page_meta?: PageMetaSnapshot;
 };
 

@@ -220,6 +220,22 @@ export type PageComputedValues = {
   viewport_height: number;
 };
 
+/** Core Web Vitals + transfer size collected during Puppeteer capture. */
+export type PagePerformanceMetrics = {
+  lcp_ms: number | null;
+  cls: number | null;
+  ttfb_ms: number | null;
+  page_weight_kb: number | null;
+  request_count: number;
+  dom_content_loaded_ms: number | null;
+  load_event_ms: number | null;
+};
+
+export type ReportSignalSummary = {
+  total: number;
+  passed: number;
+};
+
 export type AuditRisk = "low" | "medium" | "high";
 
 export type AuditReport = {
@@ -255,6 +271,18 @@ export type AuditReport = {
   viewport_width?: number;
   /** DOM metrics captured during analyze — powers visual fixes fallbacks. */
   computed_values?: PageComputedValues | null;
+  /** CDP + Web Vitals metrics from capture. */
+  performance_metrics?: PagePerformanceMetrics | null;
+  /** Hero DOM metrics at 390px mobile viewport. */
+  mobile_computed_values?: PageComputedValues | null;
+  /** Mobile hero preview (data URL). */
+  mobile_preview_image?: string;
+  /** Percentile rank vs recent reports in the database. */
+  benchmark?: import("@/lib/benchmark/report-benchmark").ReportBenchmark | null;
+  /** Deterministic signal pass/fail counts for this audit. */
+  signal_summary?: ReportSignalSummary;
+  /** Side-by-side comparison when a competitor URL was audited. */
+  competitor_comparison?: import("@/lib/analysis/competitor-comparison").CompetitorComparison | null;
   brand_stage?: BrandStage;
   traffic_source?: TrafficSource;
   audience_type?: AudienceType;

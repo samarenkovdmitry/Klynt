@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { RiArrowDownSLine, RiArrowUpSLine, RiQuestionLine } from "@remixicon/react";
+import { RiArrowDownSLine, RiArrowUpSLine } from "@remixicon/react";
+
+import { HelpTooltipIcon } from "@/components/ui/HelpTooltipIcon";
 
 import { BRAND_STAGE_OPTIONS, type BrandStage } from "@/lib/brand-stage";
 import {
@@ -27,29 +29,7 @@ const PAGE_CONTEXT_TOOLTIP =
   "Tailors recommendations to your brand stage, traffic, and audience.";
 
 function PageContextHelpIcon() {
-  return (
-    <span
-      className="group/help relative inline-flex shrink-0"
-      onClick={(event) => event.stopPropagation()}
-      onMouseDown={(event) => event.stopPropagation()}
-    >
-      <button
-        type="button"
-        tabIndex={0}
-        aria-label="About page context"
-        className="inline-flex rounded-full text-[#8E99A2]/50 transition-colors hover:text-[#8E99A2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <RiQuestionLine size={16} aria-hidden />
-      </button>
-      <span
-        role="tooltip"
-        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-20 w-[220px] -translate-x-1/2 rounded-xl border border-[rgba(6,28,47,0.08)] bg-[#061C2F] px-3 py-2 text-center text-[12px] leading-[1.45] text-white opacity-0 shadow-[0_8px_24px_rgba(6,28,47,0.18)] transition-opacity duration-150 group-hover/help:opacity-100 group-focus-within/help:opacity-100"
-      >
-        {PAGE_CONTEXT_TOOLTIP}
-      </span>
-    </span>
-  );
+  return <HelpTooltipIcon label="About page context" text={PAGE_CONTEXT_TOOLTIP} />;
 }
 
 function CollapsedPill({ children }: { children: React.ReactNode }) {

@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import sharp from "sharp";
 
 import { extractPageData, isExtractionEmpty } from "@/lib/analysis/extraction";
-import type { PageData, PageMetaSnapshot, StoredExtraction } from "@/lib/analysis/extraction";
-import { applyDomGroundTruth } from "@/lib/analysis/report-enrichment";
+import type { PageData, PageMetaSnapshot, StoredExtraction, StoredCompetitorSnapshot } from "@/lib/analysis/extraction";
+import { applyDomGroundTruth, applyPerformanceGroundTruth } from "@/lib/analysis/report-enrichment";
+import { captureCompetitorSnapshot } from "@/lib/analysis/capture-competitor";
 import { captureWebsiteScreenshots } from "@/lib/capture-website-screenshots";
 import { buildReportPreviewImage } from "@/lib/report-preview";
 
@@ -27,7 +28,7 @@ import {
 } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
-export const maxDuration = 90;
+export const maxDuration = 120;
 
 const ANALYZE_RATE_LIMIT = Number(process.env.ANALYZE_RATE_LIMIT) || 8;
 const ANALYZE_RATE_WINDOW_MS =
@@ -102,6 +103,7 @@ export async function POST(req: Request) {
     const formData = await req.formData();
 
     const rawUrl = (formData.get("url") as string) ?? "";
+    const rawCompetitorUrl = (formData.get("competitorUrl") as string) ?? "";
     const uploadedScreenshot = formData.get("screenshot") as Blob | null;
     const brandStage = parseBrandStage(formData.get("brandStage"));
     const trafficSource = parseTrafficSource(formData.get("trafficSource"));
@@ -111,6 +113,13 @@ export async function POST(req: Request) {
       const urlError = validateAuditUrl(rawUrl);
       if (urlError) {
         return NextResponse.json({ error: urlError }, { status: 400 });
+      }
+    }
+
+    if (rawCompetitorUrl.trim()) {
+      const competitorUrlError = validateAuditUrl(rawCompetitorUrl);
+      if (competitorUrlError) {
+        return NextResponse.json({ error: `Competitor URL: ${competitorUrlError}` }, { status: 400 });
       }
     }
 
@@ -131,9 +140,13 @@ export async function POST(req: Request) {
     }
 
     const url = normalizeUrl(rawUrl);
+    const competitorUrl = rawCompetitorUrl.trim() ? normalizeUrl(rawCompetitorUrl) : "";
 
     let screenshotsBase64: string[] = [];
     let computedValues: import("@/lib/audit-report").PageComputedValues | null = null;
+    let performanceMetrics: import("@/lib/audit-report").PagePerformanceMetrics | null = null;
+    let mobileComputedValues: import("@/lib/audit-report").PageComputedValues | null = null;
+    let mobileHeroScreenshotBase64: string | null = null;
     let pageMeta: PageMetaSnapshot | undefined;
     let bodyText = "";
 
@@ -155,6 +168,9 @@ export async function POST(req: Request) {
       );
       screenshotsBase64 = captureResult.screenshots;
       computedValues = captureResult.computedValues;
+      performanceMetrics = captureResult.performanceMetrics;
+      mobileComputedValues = captureResult.mobileComputedValues;
+      mobileHeroScreenshotBase64 = captureResult.mobileHeroScreenshotBase64;
       pageMeta = captureResult.pageMeta;
       bodyText = captureResult.bodyText;
     }
@@ -167,9 +183,20 @@ export async function POST(req: Request) {
     }
 
     const rawHeroBase64 = screenshotsBase64[0];
+    const rawLowerBase64 = screenshotsBase64[1];
 
     const previewImage = rawHeroBase64
       ? await timing.measure("preview_ms", () => buildReportPreviewImage(rawHeroBase64))
+      : undefined;
+
+    const lowerPreviewImage = rawLowerBase64
+      ? await timing.measure("lower_preview_ms", () => buildReportPreviewImage(rawLowerBase64))
+      : undefined;
+
+    const mobilePreviewImage = mobileHeroScreenshotBase64
+      ? await timing.measure("mobile_preview_ms", () =>
+          buildReportPreviewImage(mobileHeroScreenshotBase64!)
+        )
       : undefined;
 
     screenshotsBase64 = await timing.measure("optimize_ms", () =>
@@ -199,7 +226,10 @@ export async function POST(req: Request) {
       () => extractPageData(pageData)
     );
 
-    const enrichedExtraction = applyDomGroundTruth(extraction, computedValues, pageMeta);
+    const enrichedExtraction = applyPerformanceGroundTruth(
+      applyDomGroundTruth(extraction, computedValues, pageMeta),
+      performanceMetrics
+    );
 
     if (isExtractionEmpty(enrichedExtraction)) {
       timing.log({ outcome: "empty_extraction", captureMode });
@@ -219,6 +249,25 @@ export async function POST(req: Request) {
       `[analyze] Extraction done: ${enrichedExtraction.issues.length} issues, $${extractionUsage.estimatedCostUsd.toFixed(5)}`
     );
 
+    let competitor: StoredCompetitorSnapshot | undefined;
+    if (
+      competitorUrl &&
+      url &&
+      captureMode === "url" &&
+      competitorUrl.replace(/\/$/, "") !== url.replace(/\/$/, "")
+    ) {
+      try {
+        competitor =
+          (await timing.measure("competitor_capture_ms", () =>
+            captureCompetitorSnapshot(competitorUrl)
+          )) ?? undefined;
+      } catch (error) {
+        console.warn("[analyze] competitor capture failed — continuing without comparison", error);
+      }
+    } else if (competitorUrl && competitorUrl.replace(/\/$/, "") === url.replace(/\/$/, "")) {
+      console.warn("[analyze] competitor URL matches primary URL — skipping comparison");
+    }
+
     const reportId = generateReportId();
     const auditedUrl = url;
     const reportSlug = buildReportSlug(reportId, auditedUrl);
@@ -227,8 +276,13 @@ export async function POST(req: Request) {
       ...enrichedExtraction,
       viewport_width: computedValues?.viewport_width ?? 1280,
       computed_values: computedValues,
+      ...(performanceMetrics ? { performance_metrics: performanceMetrics } : {}),
+      ...(mobileComputedValues ? { mobile_computed_values: mobileComputedValues } : {}),
+      ...(mobilePreviewImage ? { mobile_preview_image: mobilePreviewImage } : {}),
       ...(pageMeta ? { page_meta: pageMeta } : {}),
       ...(previewImage ? { previewImage } : {}),
+      ...(lowerPreviewImage ? { lowerPreviewImage } : {}),
+      ...(competitor ? { competitor } : {}),
     };
 
     if (isSupabaseConfigured()) {

@@ -11,6 +11,7 @@ import type {
   BrandStage,
   CopyVariantBlock,
   PageComputedValues,
+  PagePerformanceMetrics,
   ReportChecklistItem,
   ReportCopyVariants,
   ReportMeta,
@@ -31,8 +32,14 @@ import {
 export function splitStoredExtraction(raw: StoredExtraction) {
   const {
     previewImage,
+    lowerPreviewImage,
+    lower_fold,
     viewport_width,
     computed_values,
+    performance_metrics,
+    mobile_computed_values,
+    mobile_preview_image,
+    competitor,
     page_meta,
     ...extraction
   } = raw;
@@ -40,9 +47,34 @@ export function splitStoredExtraction(raw: StoredExtraction) {
   return {
     extraction: extraction as ExtractionResult,
     previewImage,
+    lowerPreviewImage,
+    lower_fold,
     viewport_width,
     computed_values: computed_values ?? null,
+    performance_metrics: performance_metrics ?? null,
+    mobile_computed_values: mobile_computed_values ?? null,
+    mobile_preview_image,
+    competitor: competitor ?? null,
     page_meta,
+  };
+}
+
+export function applyPerformanceGroundTruth(
+  extraction: ExtractionResult,
+  performanceMetrics?: PagePerformanceMetrics | null
+): ExtractionResult {
+  if (!performanceMetrics) return extraction;
+
+  const loadMs =
+    performanceMetrics.load_event_ms ??
+    performanceMetrics.dom_content_loaded_ms ??
+    performanceMetrics.ttfb_ms;
+
+  if (loadMs == null || loadMs <= 0) return extraction;
+
+  return {
+    ...extraction,
+    loadTimeMs: loadMs,
   };
 }
 

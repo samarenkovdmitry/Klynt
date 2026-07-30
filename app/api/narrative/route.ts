@@ -1,6 +1,20 @@
 import { NextResponse } from "next/server";
 
-import { generateNarrative } from "@/lib/analysis/narrative";
+import {
+  applyLowerFoldGroundTruth,
+  extractLowerFoldSnapshot,
+  type LowerFoldSnapshot,
+} from "@/lib/analysis/lower-fold";
+import {
+  buildCompetitorComparison,
+  competitorComparisonToChecklistItems,
+  deriveScoreFromSignals,
+} from "@/lib/analysis/competitor-comparison";
+import {
+  benchmarkToChecklistItems,
+  computeReportBenchmark,
+} from "@/lib/benchmark/report-benchmark";
+import { generateNarrative, resolveHeroScreenshotBase64 } from "@/lib/analysis/narrative";
 import type { StoredExtraction } from "@/lib/analysis/extraction";
 import type { CopyVariant as NarrativeCopyVariant } from "@/lib/analysis/narrative";
 import type { Finding } from "@/lib/analysis/narrative";
@@ -12,8 +26,20 @@ import {
   enrichCopyVariants,
   filterFalseFindings,
   splitStoredExtraction,
+  applyDomGroundTruth,
+  applyPerformanceGroundTruth,
 } from "@/lib/analysis/report-enrichment";
-
+import {
+  deriveHeroSlotWithSignals,
+  mergeChecklistWithSignals,
+  runDeterministicSignals,
+  signalResultsToChecklistItems,
+  signalResultsToVisualContrastFixes,
+  blendScoreWithSignals,
+  deriveBreakdownFromSignals,
+  deriveConfidenceFromSignals,
+  getSignalPassCount,
+} from "@/lib/signals";
 import {
   type AuditReport,
   type ReportCopyVariants,
@@ -28,7 +54,7 @@ import {
 } from "@/lib/audit-report";
 import { deriveRiskFromScore } from "@/lib/report-metrics";
 import { isValidReportId } from "@/lib/report-id";
-import { updateReportWithNarrativeInDb } from "@/lib/reports-db";
+import { updateReportWithNarrativeInDb, fetchBenchmarkCohort } from "@/lib/reports-db";
 import {
   createServerSupabase,
   isSupabaseConfigured,
@@ -284,8 +310,36 @@ export async function POST(req: Request) {
     }
 
     const stored = splitStoredExtraction(data.extraction as StoredExtraction);
-    const { extraction, previewImage: storedPreviewImage, viewport_width, computed_values, page_meta } =
-      stored;
+    const {
+      previewImage: storedPreviewImage,
+      lowerPreviewImage,
+      lower_fold,
+      viewport_width,
+      computed_values,
+      performance_metrics,
+      mobile_computed_values,
+      mobile_preview_image,
+      competitor,
+      page_meta,
+    } = stored;
+    let { extraction } = stored;
+    extraction = applyDomGroundTruth(extraction, computed_values, page_meta);
+    extraction = applyPerformanceGroundTruth(extraction, performance_metrics);
+
+    let lowerFold: LowerFoldSnapshot | null = lower_fold ?? null;
+    if (!lowerFold && lowerPreviewImage) {
+      const lowerScreenshotBase64 = await resolveHeroScreenshotBase64(lowerPreviewImage);
+      if (lowerScreenshotBase64) {
+        try {
+          lowerFold = await extractLowerFoldSnapshot(lowerScreenshotBase64);
+        } catch (error) {
+          console.warn("[narrative] lower-fold extraction failed", error);
+        }
+      }
+    }
+    if (lowerFold) {
+      extraction = applyLowerFoldGroundTruth(extraction, lowerFold);
+    }
     const url = (data.audited_url as string) ?? "";
 
     const brandStage = data.brand_stage as BrandStage | null | undefined;
@@ -300,11 +354,51 @@ export async function POST(req: Request) {
           }
         : undefined;
 
+    const heroScreenshotBase64 = await resolveHeroScreenshotBase64(storedPreviewImage);
+
+    const signalResults = runDeterministicSignals({
+      computedValues: computed_values,
+      mobileComputedValues: mobile_computed_values,
+      pageMeta: page_meta ?? null,
+      extraction,
+      performanceMetrics: performance_metrics,
+    });
+
+    let competitorComparison = null;
+    if (competitor) {
+      const competitorSignals = runDeterministicSignals({
+        computedValues: competitor.computed_values ?? null,
+        mobileComputedValues: competitor.mobile_computed_values ?? null,
+        pageMeta: competitor.page_meta ?? null,
+        extraction: applyDomGroundTruth(
+          competitor.extraction,
+          competitor.computed_values,
+          competitor.page_meta
+        ),
+        performanceMetrics: null,
+      });
+      competitorComparison = buildCompetitorComparison({
+        competitorUrl: competitor.url,
+        competitorPreviewImage: competitor.previewImage,
+        primarySignals: signalResults,
+        competitorSignals,
+        primaryScore: deriveScoreFromSignals(signalResults),
+      });
+    }
+
     const { result: narrativeRaw, usage } = await generateNarrative(
       extraction,
       url,
       pageContext,
-      { computedValues: computed_values, pageMeta: page_meta }
+      {
+        computedValues: computed_values,
+        pageMeta: page_meta,
+        heroScreenshotBase64,
+        lowerFold,
+        performanceMetrics: performance_metrics,
+        mobileComputedValues: mobile_computed_values,
+        competitorComparison,
+      }
     );
     const narrative = {
       ...narrativeRaw,
@@ -318,7 +412,6 @@ export async function POST(req: Request) {
       `[narrative] score=${narrative.hero.score} visual_fixes=${narrative.visual_fixes?.length} copy_variants=${narrative.copy_variants?.length} cost=$${usage.estimatedCostUsd.toFixed(5)}`
     );
 
-    const score = Math.max(0, Math.min(10, narrative.hero.score / 10));
     const rawCopyVariants = narrative.copy_variants ?? [];
     const adaptedCopyVariants = adaptCopyVariants(rawCopyVariants);
     const meta = {
@@ -333,14 +426,63 @@ export async function POST(req: Request) {
       meta
     );
     const hero_slot = adaptHeroSlot(narrative.hero, extraction, rawCopyVariants);
-    const checklist = adaptFindingsToChecklist(narrative.findings, extraction);
+    const llmChecklist = adaptFindingsToChecklist(narrative.findings, extraction);
+
+    const score = blendScoreWithSignals(
+      Math.max(0, Math.min(10, narrative.hero.score / 10)),
+      signalResults
+    );
+
+    const benchmark = computeReportBenchmark({
+      score,
+      signalResults,
+      performanceMetrics: performance_metrics,
+      cohort: await fetchBenchmarkCohort(reportId),
+    });
+
+    if (competitorComparison) {
+      competitorComparison = {
+        ...competitorComparison,
+        primary_score: score,
+        score_delta: Math.round((score - competitorComparison.competitor_score) * 10) / 10,
+      };
+    }
+
+    const signalChecklistItems = signalResultsToChecklistItems(signalResults);
+    const benchmarkChecklistItems = benchmarkToChecklistItems(benchmark);
+    const competitorChecklistItems = competitorComparisonToChecklistItems(competitorComparison);
+    const checklist = [
+      ...benchmarkChecklistItems,
+      ...competitorChecklistItems,
+      ...mergeChecklistWithSignals(llmChecklist, signalChecklistItems, signalResults),
+    ].sort((a, b) => {
+      const statusRank = (status: ReportChecklistItem["status"]) =>
+        status === "missing" ? 0 : status === "weak" ? 1 : 2;
+      const rankDiff = statusRank(a.status) - statusRank(b.status);
+      if (rankDiff !== 0) return rankDiff;
+      return (b.impact_score ?? 0) - (a.impact_score ?? 0);
+    });
     const checklistWithDeltas = assignChecklistDeltasFromHeroLift(checklist, narrative.hero.lift);
     const topOpportunities = topOpportunityItems(checklistWithDeltas);
+
+    const contrastFixes = signalResultsToVisualContrastFixes(signalResults);
     const visualSection = assembleReportVisuals(
       {
         extraction,
         stored,
-        narrative,
+        narrative: {
+          ...narrative,
+          visual_fixes: [
+            ...contrastFixes.map((fix) => ({
+              category: fix.dimension as import("@/lib/analysis/narrative").VisualFix["category"],
+              observation: fix.observation,
+              fix: fix.recommendation,
+              impact: fix.impact ?? ("medium" as const),
+              element: fix.element ?? "",
+            })),
+            ...(narrative.visual_fixes ?? []),
+          ],
+        },
         rawCopyVariants,
         brandStage: brandStage ?? undefined,
         trafficSource: trafficSource ?? undefined,
@@ -356,11 +498,20 @@ export async function POST(req: Request) {
       score,
       viewport_width: viewport_width ?? 1280,
       computed_values,
+      performance_metrics,
+      mobile_computed_values,
+      benchmark,
+      signal_summary: {
+        total: signalResults.length,
+        passed: getSignalPassCount(signalResults),
+      },
+      competitor_comparison: competitorComparison,
       risk: deriveRiskFromScore(score),
       summary: narrative.summary,
       verdict: narrative.hero.title ?? "",
-      confidence: 88,
+      confidence: deriveConfidenceFromSignals(signalResults),
       ...(storedPreviewImage ? { previewImage: storedPreviewImage } : {}),
+      ...(mobile_preview_image ? { mobile_preview_image } : {}),
       issues: narrative.findings.map((f) => ({
         category: f.type,
         title: f.title,
@@ -377,12 +528,7 @@ export async function POST(req: Request) {
       })),
       copy: [],
       checklist: checklistWithDeltas,
-      breakdown: {
-        clarity:  narrative.findings.some((f) => f.type === "clarity")  ? 55 : 80,
-        trust:    narrative.findings.some((f) => f.type === "trust")    ? 55 : 80,
-        friction: narrative.findings.some((f) => f.type === "friction") ? 55 : 80,
-        visuals:  75,
-      },
+      breakdown: deriveBreakdownFromSignals(signalResults, narrative.findings),
       copy_variants,
       meta,
       visual_fixes: visualSection.fixes,
@@ -394,7 +540,17 @@ export async function POST(req: Request) {
           delta: `+${(item.delta ?? 0).toFixed(1)}`,
         })),
       },
-      hero_slot,
+      hero_slot: deriveHeroSlotWithSignals(
+        {
+          url,
+          score,
+          checklist: checklistWithDeltas,
+          copy_variants,
+          summary: narrative.summary,
+        } as AuditReport,
+        signalResults,
+        () => hero_slot
+      ),
       generatedAt: new Date().toISOString(),
     };
 

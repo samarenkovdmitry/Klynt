@@ -168,6 +168,30 @@ export const DEMO_REPORT = {
   ],
   visual_passes: [] as AuditReport["visual_passes"],
   previewImage: DEMO_REPORT_PREVIEW_IMAGE,
+  performance_metrics: {
+    lcp_ms: 3180,
+    cls: 0.07,
+    ttfb_ms: 620,
+    page_weight_kb: 1840,
+    request_count: 52,
+    dom_content_loaded_ms: 1650,
+    load_event_ms: 2310,
+  },
+  benchmark: {
+    sample_size: 42,
+    score_percentile: 58,
+    issues_percentile: 52,
+    signal_pass_percentile: 61,
+    cohort_median_score: 6.4,
+    cohort_avg_score: 6.2,
+    cohort_median_issues: 8,
+    performance: {
+      lcp_percentile: 44,
+      page_weight_percentile: 55,
+    },
+    summary:
+      "Score 6.1/10 is near the middle of 42 recent landing pages (median 6.4).",
+  },
 } satisfies AuditReport;
 
 export function getDemoReportJson(): string {
