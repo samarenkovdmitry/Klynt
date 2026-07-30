@@ -1,6 +1,6 @@
 "use client";
 
-import { RiSpeedLine } from "@remixicon/react";
+import { RiDashboard3Line } from "@remixicon/react";
 
 import { HelpTooltipIcon } from "@/components/ui/HelpTooltipIcon";
 
@@ -218,7 +218,7 @@ export function ReportPerformancePanel({ metrics, benchmark }: Props) {
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
       <ReportNewSectionHeader
-        icon={<RiSpeedLine size={22} className="text-[#061C2F]" />}
+        icon={<RiDashboard3Line size={22} />}
         title="Load speed"
         suffix={loadSpeedHeaderSuffix(rows)}
       />

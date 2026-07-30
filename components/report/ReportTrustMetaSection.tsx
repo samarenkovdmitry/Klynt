@@ -60,7 +60,7 @@ export function ReportTrustMetaSection({ meta, checklist = [] }: Props) {
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
       <ReportNewSectionHeader
-        icon={<RiShieldCheckLine size={22} className="text-[#5B6378]" />}
+        icon={<RiShieldCheckLine size={22} />}
         title="Trust & meta"
         suffix={String(trustGaps.length || 1)}
       />

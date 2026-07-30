@@ -127,7 +127,7 @@ export function ReportCloseTheGap({
   return (
     <section className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}>
       <ReportNewSectionHeader
-        icon={<RiBarChartLine size={22} className="text-[#5B6378]" />}
+        icon={<RiBarChartLine size={22} />}
         title="Close the gap"
         suffix={`${formatScore(score)} → ${formatScore(target)}`}
       />

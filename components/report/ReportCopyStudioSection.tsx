@@ -183,7 +183,7 @@ export function ReportCopyStudioSection({
       className={`${REPORT_SECTION_SPACING_CLASS} ${REPORT_SECTION_SCROLL_MARGIN_CLASS}`}
     >
       <ReportNewSectionHeader
-        icon={<RiEdit2Line size={22} className="text-[#5B6378]" />}
+        icon={<RiEdit2Line size={22} />}
         title="Copy studio"
         suffix={String(sectionCount)}
       />

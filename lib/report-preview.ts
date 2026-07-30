@@ -1,11 +1,16 @@
 import sharp from "sharp";
 
 import {
+  REPORT_MOBILE_PREVIEW_HEIGHT,
+  REPORT_MOBILE_PREVIEW_WIDTH,
   REPORT_PREVIEW_HEIGHT,
   REPORT_PREVIEW_WIDTH,
 } from "@/lib/report-preview-size";
 
 export {
+  REPORT_MOBILE_PREVIEW_DISPLAY_WIDTH,
+  REPORT_MOBILE_PREVIEW_HEIGHT,
+  REPORT_MOBILE_PREVIEW_WIDTH,
   REPORT_PREVIEW_DISPLAY_HEIGHT,
   REPORT_PREVIEW_DISPLAY_WIDTH,
   REPORT_PREVIEW_HEIGHT,
@@ -34,6 +39,20 @@ export async function cropHeroScreenshotBase64(base64: string): Promise<string> 
 export async function buildReportPreviewImage(base64: string): Promise<string> {
   const optimized = await sharp(Buffer.from(base64, "base64"))
     .resize(REPORT_PREVIEW_WIDTH, REPORT_PREVIEW_HEIGHT, {
+      fit: "cover",
+      position: "top",
+    })
+    .sharpen({ sigma: 0.35 })
+    .jpeg({ quality: 84, mozjpeg: true })
+    .toBuffer();
+
+  return `data:image/jpeg;base64,${optimized.toString("base64")}`;
+}
+
+/** Mobile hero preview — keeps 390px-wide aspect instead of desktop 620×380. */
+export async function buildMobilePreviewImage(base64: string): Promise<string> {
+  const optimized = await sharp(Buffer.from(base64, "base64"))
+    .resize(REPORT_MOBILE_PREVIEW_WIDTH, REPORT_MOBILE_PREVIEW_HEIGHT, {
       fit: "cover",
       position: "top",
     })

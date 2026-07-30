@@ -201,7 +201,7 @@ export function VisualFixes({ visualFixes, visualPasses }: Props) {
       {fixes.length > 0 ? (
         <>
           <ReportNewSectionHeader
-            icon={<RiPaletteLine size={22} className="text-[#5B6378]" />}
+            icon={<RiPaletteLine size={22} />}
             title="Visual fixes"
             suffix={String(fixes.length)}
           />
