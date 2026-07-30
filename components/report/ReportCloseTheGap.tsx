@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { RiArrowDownLine, RiArrowDownSLine, RiArrowUpLine, RiBarChartLine } from "@remixicon/react";
 import type { ReportChecklistItem, ReportScorePotential } from "@/lib/audit-report";
+import { enrichChecklistWithDeltas } from "@/lib/checklist-deltas";
 import {
   REPORT_NEW_SECTION_BODY_GAP_CLASS,
   ReportNewSectionHeader,
@@ -107,10 +108,12 @@ export function ReportCloseTheGap({
 }: ReportCloseTheGapProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  const issues = sortChecklistByImpact(checklist).filter((item) => item.status !== "pass");
-  if (issues.length === 0) return null;
-
   const { target } = scorePotential;
+
+  const issues = sortChecklistByImpact(
+    enrichChecklistWithDeltas(checklist, score, target)
+  ).filter((item) => item.status !== "pass");
+  if (issues.length === 0) return null;
 
   function toggle(id: string) {
     setExpandedIds((prev) => {

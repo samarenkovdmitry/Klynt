@@ -231,33 +231,10 @@ function adaptFindingsToChecklist(
   });
 }
 
-// Deterministic replacement for the old LLM-generated quickWins: splits the
-// hero's score lift across the top-3 highest-impact checklist items,
-// proportional to impact_score, so the sum of deltas never exceeds the
-// actual current -> potential gap shown in the hero.
-const TOP_OPPORTUNITY_COUNT = 3;
-
-function assignChecklistDeltas(
-  checklist: ReportChecklistItem[],
-  lift: number
-): ReportChecklistItem[] {
-  const candidates = checklist
-    .filter((item) => item.status !== "pass")
-    .sort((a, b) => (b.impact_score ?? 0) - (a.impact_score ?? 0))
-    .slice(0, TOP_OPPORTUNITY_COUNT);
-
-  const impactSum = candidates.reduce((sum, item) => sum + (item.impact_score ?? 0), 0);
-  if (impactSum > 0) {
-    const liftDisplay = lift / 10; // match the 0-10 score scale shown in the report
-    for (const item of candidates) {
-      item.delta = Math.round(liftDisplay * ((item.impact_score ?? 0) / impactSum) * 10) / 10;
-    }
-  }
-
-  return candidates;
-}
-
-// -----------------------------
+import {
+  assignChecklistDeltasFromHeroLift,
+  topOpportunityItems,
+} from "@/lib/checklist-deltas";
 // ROUTE
 // -----------------------------
 export async function POST(req: Request) {
@@ -357,7 +334,8 @@ export async function POST(req: Request) {
     );
     const hero_slot = adaptHeroSlot(narrative.hero, extraction, rawCopyVariants);
     const checklist = adaptFindingsToChecklist(narrative.findings, extraction);
-    const topOpportunities = assignChecklistDeltas(checklist, narrative.hero.lift);
+    const checklistWithDeltas = assignChecklistDeltasFromHeroLift(checklist, narrative.hero.lift);
+    const topOpportunities = topOpportunityItems(checklistWithDeltas);
     const visualSection = assembleReportVisuals(
       {
         extraction,
@@ -368,7 +346,7 @@ export async function POST(req: Request) {
         trafficSource: trafficSource ?? undefined,
         audienceType: audienceType ?? undefined,
       },
-      checklist,
+      checklistWithDeltas,
       copy_variants,
       meta
     );
@@ -398,7 +376,7 @@ export async function POST(req: Request) {
         priority: "quick_win" as const,
       })),
       copy: [],
-      checklist,
+      checklist: checklistWithDeltas,
       breakdown: {
         clarity:  narrative.findings.some((f) => f.type === "clarity")  ? 55 : 80,
         trust:    narrative.findings.some((f) => f.type === "trust")    ? 55 : 80,
