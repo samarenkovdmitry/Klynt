@@ -52,7 +52,16 @@ const STATUS_STYLES: Record<PerformanceMetricStatus, { text: string; bar: string
 const BODY_CLASS = "text-[15px] leading-[22.5px] text-[#061C2F]";
 const CAPTION_CLASS = "text-[13px] leading-[1.45] text-[#7D8C99]";
 const FOOTER_META_CLASS = "text-[13px] leading-5 text-[#8E99A2]";
+const FOOTER_SEPARATOR_CLASS = "mx-2 inline-block text-[12px] font-semibold text-[#C5CDD6]";
 const PANEL_DIVIDER_CLASS = "border-[rgba(6,28,47,0.06)]";
+
+function FooterMetaSeparator() {
+  return (
+    <span className={FOOTER_SEPARATOR_CLASS} aria-hidden>
+      ·
+    </span>
+  );
+}
 
 function barFillPct(
   spec: (typeof PERFORMANCE_METRIC_SPECS)[number],
@@ -99,6 +108,18 @@ function conversionHint(rows: PerformanceMetricRow[]): string {
   return "Load speed looks healthy — visitors should see content quickly.";
 }
 
+function loadSpeedHeaderSuffix(rows: PerformanceMetricRow[]): string {
+  const issueCount = rows.filter(
+    (row) => row.value != null && (row.status === "weak" || row.status === "missing")
+  ).length;
+
+  if (issueCount > 0) {
+    return issueCount === 1 ? "1 needs work" : `${issueCount} need work`;
+  }
+
+  return "Good";
+}
+
 function metricCellBorderClass(index: number): string {
   const divider = PANEL_DIVIDER_CLASS;
 
@@ -130,6 +151,7 @@ function MetricCompactCell({
           text={row.spec.tooltip}
           tooltipPlacement="bottom"
           tooltipAlign={tooltipAlign}
+          className="-translate-x-0.5 translate-y-px"
         />
       </div>
       <p
@@ -163,18 +185,32 @@ export function ReportPerformancePanel({ metrics, benchmark }: Props) {
 
   const benchmarkSuffix = compactBenchmarkSuffix(benchmark);
   const measuredCount = rows.filter((row) => row.value != null).length;
-  const captureMeta =
+  const footerItems = [
+    benchmarkSuffix
+      ? { key: "benchmark", label: benchmarkSuffix, className: "font-medium text-[#616C77]" }
+      : null,
     measuredCount > 0
-      ? [
-          `${measuredCount} Web Vitals via CDP`,
-          (metrics?.request_count ?? 0) > 0 ? `${metrics!.request_count} requests` : null,
-          metrics?.dom_content_loaded_ms
-            ? `DCL ${Math.round(metrics.dom_content_loaded_ms)} ms`
-            : null,
-        ]
-          .filter(Boolean)
-          .join(" · ")
-      : null;
+      ? {
+          key: "vitals",
+          label: `${measuredCount} Web Vitals via CDP`,
+          className: FOOTER_META_CLASS,
+        }
+      : null,
+    (metrics?.request_count ?? 0) > 0
+      ? {
+          key: "requests",
+          label: `${metrics!.request_count} requests`,
+          className: FOOTER_META_CLASS,
+        }
+      : null,
+    metrics?.dom_content_loaded_ms
+      ? {
+          key: "dcl",
+          label: `DCL ${Math.round(metrics.dom_content_loaded_ms)} ms`,
+          className: FOOTER_META_CLASS,
+        }
+      : null,
+  ].filter((item): item is { key: string; label: string; className: string } => item != null);
 
   return (
     <section
@@ -184,6 +220,7 @@ export function ReportPerformancePanel({ metrics, benchmark }: Props) {
       <ReportNewSectionHeader
         icon={<RiSpeedLine size={22} className="text-[#061C2F]" />}
         title="Load speed"
+        suffix={loadSpeedHeaderSuffix(rows)}
       />
 
       <div className={`${REPORT_NEW_SECTION_BODY_GAP_CLASS} ${REPORT_SURFACE_CARD_CLASS}`}>
@@ -202,16 +239,15 @@ export function ReportPerformancePanel({ metrics, benchmark }: Props) {
           ))}
         </div>
 
-        {benchmarkSuffix || captureMeta ? (
-          <div className={`border-t px-6 py-3.5 ${PANEL_DIVIDER_CLASS}`}>
+        {footerItems.length > 0 ? (
+          <div className={`border-t px-6 pt-3 pb-[15px] ${PANEL_DIVIDER_CLASS}`}>
             <p className="break-words text-[13px] leading-5">
-              {benchmarkSuffix ? (
-                <span className="font-medium text-[#616C77]">{benchmarkSuffix}</span>
-              ) : null}
-              {benchmarkSuffix && captureMeta ? (
-                <span className="text-[#8E99A2]"> · </span>
-              ) : null}
-              {captureMeta ? <span className={FOOTER_META_CLASS}>{captureMeta}</span> : null}
+              {footerItems.map((item, index) => (
+                <span key={item.key}>
+                  {index > 0 ? <FooterMetaSeparator /> : null}
+                  <span className={item.className}>{item.label}</span>
+                </span>
+              ))}
             </p>
           </div>
         ) : null}

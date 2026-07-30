@@ -10,6 +10,20 @@ type Props = {
 const ICON_BOX_CLASS =
   "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[rgba(6,28,47,0.08)] bg-white";
 
+const SECTION_TITLE_SUFFIX_SEPARATOR_CLASS =
+  "mx-2.5 inline-block font-normal text-[#C5CDD6]";
+
+export function ReportSectionTitleSuffix({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <span className={SECTION_TITLE_SUFFIX_SEPARATOR_CLASS} aria-hidden>
+        ·
+      </span>
+      <span className="font-normal text-[#7D8C99]">{children}</span>
+    </>
+  );
+}
+
 export function ReportNewSectionHeader({ icon, title, suffix }: Props) {
   return (
     <div className="flex items-center gap-4">
@@ -18,7 +32,7 @@ export function ReportNewSectionHeader({ icon, title, suffix }: Props) {
       </div>
       <h3 className="text-[22px] font-bold leading-[30px] tracking-[-0.02em] text-[#061C2F] md:text-[23px]">
         {title}
-        {suffix ? <span className="font-normal text-[#7D8C99]"> · {suffix}</span> : null}
+        {suffix ? <ReportSectionTitleSuffix>{suffix}</ReportSectionTitleSuffix> : null}
       </h3>
     </div>
   );

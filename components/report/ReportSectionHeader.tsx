@@ -7,6 +7,7 @@ import {
 } from "@remixicon/react";
 import type { ReportSectionKind } from "@/lib/report-sections";
 import { REPORT_SECTION_META } from "@/lib/report-sections";
+import { ReportSectionTitleSuffix } from "@/components/report/ReportNewSectionHeader";
 
 const VARIANT_STYLES: Record<
   ReportSectionKind,
@@ -74,7 +75,7 @@ export function ReportSectionHeader({
           <div className="min-w-0 pt-0.5">
             <h3 className="text-[22px] font-bold leading-tight tracking-[-0.02em] text-[#061C2F] md:text-[24px]">
               {displayTitle}
-              <span className="font-normal text-[#7D8C99]"> · {count}</span>
+              <ReportSectionTitleSuffix>{count}</ReportSectionTitleSuffix>
             </h3>
             <p className="mt-1 max-w-[560px] text-[14px] leading-[21px] text-[rgba(6,28,47,0.5)] md:text-[15px] md:leading-[22px]">
               {displayLead}
