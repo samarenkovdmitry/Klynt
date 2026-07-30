@@ -64,8 +64,8 @@ export function ReportPageView({
 
   return (
     <>
-      <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pt-4 pb-12 text-[var(--ink-primary)] md:px-6 md:pt-6">
-        <div className={REPORT_PAGE_CONTAINER_CLASS}>
+      <main className="min-h-[calc(100dvh-68px)] overflow-x-hidden bg-white px-4 pt-4 pb-12 text-[var(--ink-primary)] md:px-6 md:pt-6">
+        <div className={`${REPORT_PAGE_CONTAINER_CLASS} min-w-0`}>
           <ReportHeroSummary
             url={data.url}
             generatedAt={data.generatedAt}
