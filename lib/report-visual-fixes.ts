@@ -788,8 +788,8 @@ function parseVisualFixItem(raw: unknown): ReportVisualFix | null {
 
   return {
     dimension,
-    observation: clampWords(observation, 14, true),
-    recommendation: clampWords(recommendation, 18, true),
+    observation,
+    recommendation,
     ...(impact ? { impact } : {}),
     ...(element ? { element } : {}),
     ...(title ? { title } : {}),
