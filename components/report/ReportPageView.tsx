@@ -7,6 +7,7 @@ import { ReportCloseTheGap } from "@/components/report/ReportCloseTheGap";
 import { ReportCopyStudioSection } from "@/components/report/ReportCopyStudioSection";
 import { ReportCtaSection } from "@/components/report/ReportCtaSection";
 import { ReportHeroSummary } from "@/components/report/ReportHeroSummary";
+import { ReportPerformancePanel } from "@/components/report/ReportPerformancePanel";
 import { ReportTrustMetaSection } from "@/components/report/ReportTrustMetaSection";
 import { VisualFixes } from "@/components/report/VisualFixes";
 import { ShareReportDialog } from "@/components/report/ShareReportDialog";
@@ -93,6 +94,11 @@ export function ReportPageView({
           />
 
           <VisualFixes visualFixes={data.visual_fixes} visualPasses={data.visual_passes} />
+
+          <ReportPerformancePanel
+            metrics={data.performance_metrics}
+            benchmark={data.benchmark}
+          />
 
           <ReportTrustMetaSection meta={data.meta} checklist={data.checklist} />
 

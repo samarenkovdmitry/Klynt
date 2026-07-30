@@ -1,7 +1,17 @@
-import { callLLM, type LLMResult } from "../models/client";
+import { callLLM, callLLMWithImage, type LLMResult } from "../models/client";
 import type { ExtractionResult, PageMetaSnapshot } from "./extraction";
-import type { PageComputedValues } from "@/lib/audit-report";
+import type { PageComputedValues, PagePerformanceMetrics } from "@/lib/audit-report";
 import { extractJsonFromLlmText } from "./parse-llm-json";
+import type { LowerFoldSnapshot } from "./lower-fold";
+import { cropHeroScreenshotBase64 } from "@/lib/report-preview";
+import {
+  measureContrast,
+  parseFontSizePx,
+  parseFontWeight,
+} from "@/lib/signals/wcag-contrast";
+import { buildMobileDesktopComparison } from "@/lib/signals/mobile-comparison";
+import type { CompetitorComparison } from "@/lib/analysis/competitor-comparison";
+import type { ReportBenchmark } from "@/lib/benchmark/report-benchmark";
 
 export interface Finding {
   type: "clarity" | "cta" | "trust" | "friction" | "performance";
@@ -104,6 +114,7 @@ VisualFix = { "category": "depth"|"typography"|"spacing"|"contrast"|"color_tone"
 Rules:
 - copy_variants: exactly 1 per section present in extraction (headline, subheadline if non-empty, cta). before_text = exact page copy.
 - visual_fixes: 0-2 items only (server adds DOM-derived fixes). Use allowed category values only.
+- When a hero screenshot is attached, ground visual_fixes in visible UI (layout, hierarchy, tone). Do NOT restate WCAG contrast ratios already listed under PAGE COMPUTED VALUES.
 - meta.title_suggestion ~60 chars; meta.description_suggestion ~155 chars; meta.proof_suggestion max 10 words.`;
 
 const FORMAT_MAP: Record<string, NarrativeResult["hero"]["format"]> = {
@@ -117,22 +128,105 @@ const FORMAT_MAP: Record<string, NarrativeResult["hero"]["format"]> = {
 type NarrativeEnrichments = {
   computedValues?: PageComputedValues | null;
   pageMeta?: PageMetaSnapshot;
+  /** Cropped hero JPEG base64 — vision used only for supplement pass. */
+  heroScreenshotBase64?: string | null;
+  lowerFold?: LowerFoldSnapshot | null;
+  performanceMetrics?: PagePerformanceMetrics | null;
+  mobileComputedValues?: PageComputedValues | null;
+  competitorComparison?: CompetitorComparison | null;
+  benchmark?: ReportBenchmark | null;
 };
+
+function contrastSummary(
+  fg: string | null,
+  bg: string | null,
+  opts: { element: string; fontSize: string | null; fontWeight: string | null }
+) {
+  const measurement = measureContrast(fg, bg, {
+    element: opts.element,
+    fontSizePx: parseFontSizePx(opts.fontSize),
+    fontWeight: parseFontWeight(opts.fontWeight),
+  });
+  if (!measurement) return null;
+  return {
+    ratio: measurement.ratioLabel,
+    passes_aa: measurement.passes,
+    threshold: `${measurement.threshold}:1`,
+  };
+}
 
 function slimComputedValuesForNarrative(
   computedValues: PageComputedValues
 ): Record<string, unknown> {
   return {
+    hero_bg: computedValues.hero_bg,
+    hero_padding_top: computedValues.hero_padding_top,
     hero_h1_to_sub_gap: computedValues.hero_h1_to_sub_gap,
     hero_sub_to_cta_gap: computedValues.hero_sub_to_cta_gap,
-    h1_text: computedValues.h1_text,
-    sub_text: computedValues.sub_text,
-    sub_font_weight: computedValues.sub_font_weight,
-    cta_text: computedValues.cta_text,
-    nav_link_count: computedValues.nav_link_count,
-    social_proof_found: computedValues.social_proof_found,
-    social_proof_above_fold: computedValues.social_proof_above_fold,
+    h1: {
+      text: computedValues.h1_text,
+      font_size: computedValues.h1_font_size,
+      font_weight: computedValues.h1_font_weight,
+      color: computedValues.h1_color,
+      contrast: contrastSummary(computedValues.h1_color, computedValues.hero_bg, {
+        element: "H1",
+        fontSize: computedValues.h1_font_size,
+        fontWeight: computedValues.h1_font_weight,
+      }),
+    },
+    subheadline: {
+      text: computedValues.sub_text,
+      font_size: computedValues.sub_font_size,
+      font_weight: computedValues.sub_font_weight,
+      color: computedValues.sub_color,
+      contrast: contrastSummary(computedValues.sub_color, computedValues.hero_bg, {
+        element: "Subheadline",
+        fontSize: computedValues.sub_font_size,
+        fontWeight: computedValues.sub_font_weight,
+      }),
+    },
+    cta: {
+      text: computedValues.cta_text,
+      bg: computedValues.cta_bg,
+      color: computedValues.cta_color,
+      border_radius: computedValues.cta_border_radius,
+      font_weight: computedValues.cta_font_weight,
+      contrast: contrastSummary(computedValues.cta_color, computedValues.cta_bg, {
+        element: "Primary CTA",
+        fontSize: null,
+        fontWeight: computedValues.cta_font_weight,
+      }),
+    },
+    nav: {
+      link_count: computedValues.nav_link_count,
+      labels: computedValues.nav_link_labels.slice(0, 6),
+      sticky: computedValues.nav_has_sticky,
+    },
+    social_proof: {
+      found: computedValues.social_proof_found,
+      above_fold: computedValues.social_proof_above_fold,
+    },
+    card_border_radius: computedValues.card_border_radius,
+    viewport: {
+      width: computedValues.viewport_width,
+      height: computedValues.viewport_height,
+    },
   };
+}
+
+/** Resolve stored preview image to cropped hero base64 for supplement vision. */
+export async function resolveHeroScreenshotBase64(
+  previewImage?: string | null
+): Promise<string | null> {
+  if (!previewImage?.trim()) return null;
+
+  if (previewImage.startsWith("data:image")) {
+    const match = previewImage.match(/^data:image\/[\w+.-]+;base64,(.+)$/);
+    if (!match?.[1]) return null;
+    return cropHeroScreenshotBase64(match[1]);
+  }
+
+  return null;
 }
 
 function buildContextBlocks(
@@ -151,7 +245,40 @@ function buildContextBlocks(
     ? `\n\nPAGE COMPUTED VALUES:\n${JSON.stringify(slimComputedValuesForNarrative(enrichments.computedValues), null, 2)}`
     : "";
 
-  return { pageContextBlock, pageMetaBlock, computedValuesBlock };
+  const lowerFoldBlock = enrichments?.lowerFold
+    ? `\n\nBELOW-THE-FOLD SNAPSHOT:\n${JSON.stringify(enrichments.lowerFold, null, 2)}`
+    : "";
+
+  const performanceBlock = enrichments?.performanceMetrics
+    ? `\n\nPERFORMANCE METRICS (CDP + Web Vitals):\n${JSON.stringify(enrichments.performanceMetrics, null, 2)}`
+    : "";
+
+  const mobileComparison = buildMobileDesktopComparison(
+    enrichments?.computedValues ?? null,
+    enrichments?.mobileComputedValues ?? null
+  );
+  const mobileComparisonBlock = mobileComparison
+    ? `\n\nMOBILE VS DESKTOP (390px capture):\n${JSON.stringify(mobileComparison, null, 2)}`
+    : "";
+
+  const competitorBlock = enrichments?.competitorComparison
+    ? `\n\nCOMPETITOR COMPARISON:\n${JSON.stringify(enrichments.competitorComparison, null, 2)}`
+    : "";
+
+  const benchmarkBlock = enrichments?.benchmark
+    ? `\n\nBENCHMARK VS RECENT AUDITS:\n${JSON.stringify(enrichments.benchmark, null, 2)}`
+    : "";
+
+  return {
+    pageContextBlock,
+    pageMetaBlock,
+    computedValuesBlock,
+    lowerFoldBlock,
+    performanceBlock,
+    mobileComparisonBlock,
+    competitorBlock,
+    benchmarkBlock,
+  };
 }
 
 function normalizeFinding(raw: Partial<Finding> & { type: Finding["type"]; title: string }): Finding {
@@ -211,15 +338,21 @@ async function requestNarrativeCore(
   pageContext: PageContextInput | undefined,
   enrichments: NarrativeEnrichments | undefined
 ) {
-  const { pageContextBlock, pageMetaBlock, computedValuesBlock } = buildContextBlocks(
-    pageContext,
-    enrichments
-  );
+  const {
+    pageContextBlock,
+    pageMetaBlock,
+    computedValuesBlock,
+    lowerFoldBlock,
+    performanceBlock,
+    mobileComparisonBlock,
+    competitorBlock,
+    benchmarkBlock,
+  } = buildContextBlocks(pageContext, enrichments);
 
   const { text, usage } = await callLLM({
     role: "narrative",
     systemPrompt: CORE_SYSTEM,
-    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}${pageMetaBlock}${computedValuesBlock}${pageContextBlock}`,
+    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}${pageMetaBlock}${computedValuesBlock}${lowerFoldBlock}${performanceBlock}${mobileComparisonBlock}${competitorBlock}${benchmarkBlock}${pageContextBlock}`,
     maxTokens: 4096,
     cacheSystem: true,
   });
@@ -257,10 +390,16 @@ async function requestNarrativeSupplement(
   pageContext: PageContextInput | undefined,
   enrichments: NarrativeEnrichments | undefined
 ) {
-  const { pageContextBlock, pageMetaBlock, computedValuesBlock } = buildContextBlocks(
-    pageContext,
-    enrichments
-  );
+  const {
+    pageContextBlock,
+    pageMetaBlock,
+    computedValuesBlock,
+    lowerFoldBlock,
+    performanceBlock,
+    mobileComparisonBlock,
+    competitorBlock,
+    benchmarkBlock,
+  } = buildContextBlocks(pageContext, enrichments);
 
   const coreContext = {
     hero_title: core.hero.title,
@@ -269,13 +408,25 @@ async function requestNarrativeSupplement(
     summary: core.summary,
   };
 
-  const { text, usage } = await callLLM({
-    role: "narrative",
-    systemPrompt: SUPPLEMENT_SYSTEM,
-    userPrompt: `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}\n\nCORE REPORT:\n${JSON.stringify(coreContext, null, 2)}${pageMetaBlock}${computedValuesBlock}${pageContextBlock}`,
-    maxTokens: 3072,
-    cacheSystem: true,
-  });
+  const userPrompt = `Landing page: ${url}\n\nEXTRACTION:\n${JSON.stringify(extraction, null, 2)}\n\nCORE REPORT:\n${JSON.stringify(coreContext, null, 2)}${pageMetaBlock}${computedValuesBlock}${lowerFoldBlock}${performanceBlock}${mobileComparisonBlock}${competitorBlock}${benchmarkBlock}${pageContextBlock}`;
+
+  const heroScreenshotBase64 = enrichments?.heroScreenshotBase64?.trim();
+  const { text, usage } = heroScreenshotBase64
+    ? await callLLMWithImage({
+        role: "narrative",
+        systemPrompt: SUPPLEMENT_SYSTEM,
+        userPrompt,
+        imageBase64: heroScreenshotBase64,
+        maxTokens: 3072,
+        cacheSystem: true,
+      })
+    : await callLLM({
+        role: "narrative",
+        systemPrompt: SUPPLEMENT_SYSTEM,
+        userPrompt,
+        maxTokens: 3072,
+        cacheSystem: true,
+      });
 
   const parsed = extractJsonFromLlmText(text) as {
     copy_variants?: CopyVariant[];

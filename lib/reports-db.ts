@@ -1,6 +1,7 @@
 import type { AuditReport } from "@/lib/audit-report";
 import { isAuditReport } from "@/lib/audit-report";
 import type { ExtractionResult } from "@/lib/analysis/extraction";
+import type { BenchmarkCohortSample } from "@/lib/benchmark/report-benchmark";
 import { DEMO_REPORT_ID } from "@/lib/demo-report";
 import { isValidReportId } from "@/lib/report-id";
 import { slugifyReportDomain } from "@/lib/report-slug";
@@ -242,4 +243,53 @@ export async function getAuditedPagesCount(): Promise<number | null> {
   }
 
   return count ?? 0;
+}
+
+export async function fetchBenchmarkCohort(
+  excludeReportId: string,
+  limit = 150
+): Promise<BenchmarkCohortSample[]> {
+  if (!isSupabaseConfigured()) {
+    return [];
+  }
+
+  const supabase = createServerSupabase();
+
+  const { data, error } = await supabase
+    .from("reports")
+    .select("id, payload")
+    .eq("status", "ready")
+    .neq("id", excludeReportId)
+    .neq("id", DEMO_REPORT_ID)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    console.warn("[reports] fetchBenchmarkCohort failed:", error?.message);
+    return [];
+  }
+
+  return data
+    .map((row) => {
+      const report = row.payload as AuditReport;
+      if (!isAuditReport(report)) return null;
+
+      const checklist = report.checklist ?? [];
+      const issueCount = checklist.filter((item) => item.status !== "pass").length;
+      const signalSummary = report.signal_summary;
+      const signalPassRate =
+        signalSummary && signalSummary.total > 0
+          ? signalSummary.passed / signalSummary.total
+          : null;
+
+      return {
+        report_id: row.id as string,
+        score: report.score,
+        issue_count: issueCount,
+        signal_pass_rate: signalPassRate,
+        lcp_ms: report.performance_metrics?.lcp_ms ?? null,
+        page_weight_kb: report.performance_metrics?.page_weight_kb ?? null,
+      } satisfies BenchmarkCohortSample;
+    })
+    .filter((sample): sample is BenchmarkCohortSample => sample != null);
 }
