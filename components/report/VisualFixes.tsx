@@ -51,9 +51,9 @@ const IMPACT_LABEL: Record<NonNullable<ReportVisualFix["impact"]>, string> = {
 };
 
 const IMPACT_BADGE_CLASS: Record<NonNullable<ReportVisualFix["impact"]>, string> = {
-  high: "border-[#F9D5D5] bg-[#FDEAEA] text-[#FF5A4F]",
-  medium: "border-[#FCE664] bg-[#FEFCE8] text-[#D08700]",
-  low: "border-[rgba(6,28,47,0.10)] bg-white text-[#616C77]",
+  high: "bg-[#FDEAEA] text-[#FF5A4F]",
+  medium: "bg-[#FFF5DC] text-[#D08700]",
+  low: "bg-[#EEF1F5] text-[#8B95A7]",
 };
 
 const FIX_CARD_CLASS = [
@@ -120,7 +120,7 @@ function VisualFixCard({ fix }: { fix: ReportVisualFix }) {
           <span className="text-[15px] font-bold leading-[21px] text-[#061C2F]">{label}</span>
           {fix.impact ? (
             <span
-              className={`ml-auto inline-flex h-[27px] shrink-0 items-center rounded-full border px-3 text-[13px] font-bold ${IMPACT_BADGE_CLASS[fix.impact]}`}
+              className={`ml-auto inline-flex h-[27px] shrink-0 items-center rounded-full px-3 text-[13px] font-bold ${IMPACT_BADGE_CLASS[fix.impact]}`}
             >
               {IMPACT_LABEL[fix.impact]}
             </span>

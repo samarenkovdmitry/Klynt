@@ -37,6 +37,11 @@ type ReportCopyStudioSectionProps = {
 
 type CopyRowKey = "headline" | "subheadline" | "cta";
 
+const COPY_STUDIO_TITLE_GRID_CLASS =
+  "grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 md:gap-x-4";
+
+const COPY_STUDIO_BODY_COLUMN_CLASS = "col-start-2 min-w-0";
+
 const COPY_FIELD_HEADER_BAND_CLASS = "mb-3 flex min-h-9 items-center";
 
 const COPY_FIELD_LABEL_CLASS =
@@ -66,19 +71,11 @@ function CopyCard({
   return (
     <div className={REPORT_SURFACE_CARD_CLASS}>
       <div className="px-[21px] py-[21px] md:px-[33px] md:py-[25px]">
-        <div className="flex flex-col gap-5 md:flex-row md:gap-6">
-          <div className="hidden items-start justify-center pt-0.5 md:flex">
-            <ReportIndexBadge index={cardIndex} />
-          </div>
+        <div className={`${COPY_STUDIO_TITLE_GRID_CLASS} gap-y-4`}>
+          <ReportIndexBadge index={cardIndex} className="row-start-1 self-center" />
+          <p className={`${REPORT_CARD_TITLE_CLASS} row-start-1 min-w-0`}>{label}</p>
 
-          <div className="min-w-0 flex-1">
-            <div className="mb-4 flex items-start gap-3 md:hidden">
-              <ReportIndexBadge index={cardIndex} />
-              <p className={`${REPORT_CARD_TITLE_CLASS} min-w-0 flex-1`}>{label}</p>
-            </div>
-
-            <p className={`${REPORT_CARD_TITLE_CLASS} mb-4 hidden md:block`}>{label}</p>
-
+          <div className={`${COPY_STUDIO_BODY_COLUMN_CLASS} row-start-2 space-y-3`}>
             <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
             <div className={COPY_FIELD_HEADER_BAND_CLASS}>
@@ -133,13 +130,11 @@ function CopyCard({
           </div>
         </div>
 
-        {rationale ? (
-          <p
-            className={[REPORT_WHY_BODY_CLASS, REPORT_WHY_BODY_MEASURE_CLASS, "mt-3"].join(" ")}
-          >
-            {rationale}
-          </p>
-        ) : null}
+            {rationale ? (
+              <p className={[REPORT_WHY_BODY_CLASS, REPORT_WHY_BODY_MEASURE_CLASS].join(" ")}>
+                {rationale}
+              </p>
+            ) : null}
           </div>
         </div>
       </div>
