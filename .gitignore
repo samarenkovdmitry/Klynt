@@ -49,6 +49,8 @@ debug_*
 !app/opengraph-image.jpg
 !app/twitter-image.jpg
 !public/og-fallback.jpg
+!beeline-test/**/*.jpg
+!beeline-test/**/*.jpeg
 *.png
 !public/favicon-16x16.png
 !public/favicon-32x32.png
@@ -56,6 +58,7 @@ debug_*
 !public/bg.png
 !app/icon.png
 !app/apple-icon.png
+!beeline-test/**/*.png
 *.bin
 *.webp
 *.heic
