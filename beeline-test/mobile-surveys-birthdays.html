@@ -14,13 +14,17 @@
     --bg: #f5f6f8;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 390px;
+    margin: 0;
+    padding: 0;
+  }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
     background: var(--bg);
     color: var(--text);
-    width: 390px;
-    margin: 0 auto;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   img { display: block; max-width: 100%; }
 
@@ -252,13 +256,17 @@
   }
 
   .tabbar {
-    margin-top: 20px;
+    width: 100%;
+    margin: 20px 0 0;
     height: 64px;
     background: var(--blue-deep);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     align-items: center;
-    padding: 0 6px;
+    padding: 0;
+    position: relative;
+    left: 0;
+    right: 0;
   }
   .tab {
     display: grid;
