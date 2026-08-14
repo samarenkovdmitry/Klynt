@@ -56,6 +56,10 @@ debug_*
 !public/bg.png
 !app/icon.png
 !app/apple-icon.png
+!gran-test/**/*.jpg
+!gran-test/**/*.jpeg
+!gran-test/**/*.png
+gran-test/exports/slices/
 *.bin
 *.webp
 *.heic

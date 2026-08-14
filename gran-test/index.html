@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ГРАНЬ — тестовое, Яндекс Крауд / KIT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root { --ink:#1a1814; --paper:#e9e1d2; --muted:#6d655a; --line:rgba(26,24,20,.14); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "IBM Plex Sans", sans-serif;
+    background: #d8d0c3;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  a { color: inherit; }
+  .top {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    padding: 12px 20px;
+    background: rgba(232,225,210,.92);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(8px);
+    font-size: 13px;
+  }
+  .top b { font-family: Unbounded, sans-serif; letter-spacing: .18em; font-weight: 600; margin-right: 12px; }
+  .top a {
+    padding: 6px 10px; border: 1px solid var(--ink); text-decoration: none;
+    background: #fff; font-size: 12px;
+  }
+  .canvas { padding: 48px 32px 80px; display: grid; gap: 48px; justify-items: start; }
+  .board { background: #cfc6b6; padding: 28px; }
+  .label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+  }
+  iframe {
+    border: 0; background: #fff; display: block;
+    box-shadow: 0 18px 50px rgba(26,24,20,.18);
+  }
+  .desk { width: min(960px, 100%); height: 620px; }
+  .mob { width: 390px; height: 844px; }
+  .cover {
+    width: min(720px, 100%);
+    background: var(--ink); color: #f4eee3;
+    padding: 48px 40px;
+  }
+  .cover h1 { font-family: Unbounded, sans-serif; font-size: 42px; letter-spacing: .16em; margin: 12px 0 8px; }
+  .cover p { max-width: 440px; color: rgba(244,238,227,.75); }
+  .mark { width: 36px; height: 36px; }
+  .row { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+  .note {
+    width: 280px; background: #fff; padding: 18px;
+    font-size: 13px; line-height: 1.45;
+    border: 1px solid var(--ink);
+  }
+  .note h3 { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; color: var(--muted); }
+</style>
+</head>
+<body>
+  <nav class="top">
+    <b>ГРАНЬ</b>
+    <a href="desktop-wireframe.html">Desktop wireframe 1920</a>
+    <a href="mobile-home.html">Mobile visual 390</a>
+    <a href="PROCESS.md">Процесс</a>
+    <a href="exports/01-desktop-wireframe.png">PNG desktop</a>
+    <a href="exports/02-mobile-home.png">PNG mobile</a>
+  </nav>
+
+  <div class="canvas">
+    <div>
+      <div class="label">Cover · 01</div>
+      <section class="cover">
+        <svg class="mark" viewBox="0 0 28 28" fill="none"><path d="M14 2.2 24.4 8.2v11.6L14 25.8 3.6 19.8V8.2L14 2.2Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/><path d="M14 2.2 24.4 8.2 14 14.2 3.6 8.2 14 2.2Z" fill="currentColor"/><path d="M14 14.2V25.8" stroke="currentColor" stroke-width="1.1"/></svg>
+        <h1>ГРАНЬ</h1>
+        <p>Серебро, сделанное руками. Главная интернет-магазина для Яндекс KIT. Тестовое · Яндекс Крауд · веб-дизайнер.</p>
+        <p style="margin-top:16px">Desktop — вайрфрейм. Mobile — визуал к запуску.</p>
+      </section>
+    </div>
+
+    <div>
+      <div class="label">Desktop · Home · Wireframe · 1920×full · content 1440</div>
+      <div class="row">
+        <iframe class="desk" src="desktop-wireframe.html" title="Desktop wireframe"></iframe>
+        <aside class="note">
+          <h3>Что смотреть</h3>
+          Откройте фрейм в полном размере. Это структура: шапка, два слайдшоу, две фиксированные «Коллекции и категории», две полки, подвал. Без цвета и графики — как в ТЗ.
+        </aside>
+      </div>
+    </div>
+
+    <div>
+      <div class="label">Mobile · Home · Visual · 390×full</div>
+      <div class="row">
+        <iframe class="mob" src="mobile-home.html" title="Mobile home"></iframe>
+        <aside class="note">
+          <h3>Что смотреть</h3>
+          Запускной визуал. Бумага / графит, знак-грань, 3:4 витрина, промо без бейджей, двери «готовые / на заказ». Адаптация вайрфрейма и fixed-секций под 390 и поля 16.
+        </aside>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
