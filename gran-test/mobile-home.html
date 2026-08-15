@@ -172,15 +172,21 @@
     grid-template-columns: 1fr 1fr;
     gap: var(--gap);
   }
+  /* Collection title: same token in both KIT «Коллекции и категории» */
+  .label-col {
+    font-family: Manrope, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    display: inline-block;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+    line-height: 1.2;
+  }
   .cat figcaption {
     margin-top: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    display: inline-block;
-    border-bottom: 1px solid var(--ink);
-    padding-bottom: 1px;
+    color: var(--ink);
   }
   .thumb {
     aspect-ratio: 3/4;
@@ -191,7 +197,7 @@
   .thumb img { filter: saturate(0.88) contrast(1.04); }
 
   .card .meta { padding: 8px 2px 10px; }
-  .card .t { font-size: 13px; font-weight: 500; }
+  .card .t { font-size: 14px; font-weight: 600; }
   .card .sub { font-size: 11px; color: var(--mute); margin-top: 1px; }
   .card .p { font-size: 13px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
 
@@ -240,11 +246,8 @@
     background: linear-gradient(180deg, transparent 40%, rgba(26,24,20,0.7) 100%);
   }
   .path span {
-    position: absolute; left: 14px; bottom: 12px;
-    font-family: Unbounded, sans-serif;
-    font-size: 18px; font-weight: 500; color: #f4eee3;
-    border-bottom: 1px solid #f4eee3;
-    padding-bottom: 2px;
+    position: absolute; left: 14px; bottom: 14px;
+    color: #f4eee3;
   }
 
   .quiet {
@@ -340,19 +343,19 @@
     <div class="grid-2">
       <figure class="cat">
         <div class="thumb"><img src="assets/img/cat-grunge.jpg" alt="Кольцо, коллекция Гранж" /></div>
-        <figcaption>Гранж</figcaption>
+        <figcaption class="label-col">Гранж</figcaption>
       </figure>
       <figure class="cat">
         <div class="thumb"><img src="assets/img/cat-gothic.jpg" alt="Кольцо, коллекция Готика" /></div>
-        <figcaption>Готика</figcaption>
+        <figcaption class="label-col">Готика</figcaption>
       </figure>
       <figure class="cat">
         <div class="thumb"><img src="assets/img/cat-cute.jpg" alt="Кольцо, коллекция Милые" /></div>
-        <figcaption>Милые</figcaption>
+        <figcaption class="label-col">Милые</figcaption>
       </figure>
       <figure class="cat">
         <div class="thumb"><img src="assets/img/cat-abstract.jpg" alt="Кольцо, коллекция Абстракт" /></div>
-        <figcaption>Абстракт</figcaption>
+        <figcaption class="label-col">Абстракт</figcaption>
       </figure>
     </div>
   </section>
@@ -418,12 +421,12 @@
     <a class="path" href="#">
       <img src="assets/img/col-ready.jpg" alt="Готовые кольца" />
       <div class="veil"></div>
-      <span>Готовые</span>
+      <span class="label-col">Готовые</span>
     </a>
     <a class="path" href="#">
       <img src="assets/img/col-custom.jpg" alt="Работа на заказ" />
       <div class="veil"></div>
-      <span>На заказ</span>
+      <span class="label-col">На заказ</span>
     </a>
   </section>
 
