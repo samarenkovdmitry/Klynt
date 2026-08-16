@@ -83,6 +83,8 @@
   --brand-primary-hover: #3838EB;
   --brand-primary-shadow: rgba(74, 74, 255, 0.22);
   --brand-primary-shadow-strong: rgba(74, 74, 255, 0.28);
+  --brand-primary-glow: rgba(74, 74, 255, 0.75);
+  --brand-primary-glow-soft: rgba(74, 74, 255, 0.4);
   --surface-dark: #0e1b36;
 
   --nordic: #10a6da;
@@ -115,12 +117,29 @@ body {
 }
 
 @keyframes pulse-segment {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%, 100% {
+    opacity: 1;
+    box-shadow:
+      0 0 6px 1px var(--brand-primary-glow),
+      0 0 14px 3px var(--brand-primary-glow-soft);
+  }
+  50% {
+    opacity: 0.75;
+    box-shadow:
+      0 0 10px 2px var(--brand-primary),
+      0 0 22px 6px var(--brand-primary-glow);
+  }
 }
 
 @utility animate-pulse-segment {
   animation: pulse-segment 1.2s ease-in-out infinite;
+}
+
+@utility segment-glow {
+  background-color: var(--brand-primary);
+  box-shadow:
+    0 0 8px 1px var(--brand-primary-glow),
+    0 0 16px 3px var(--brand-primary-glow-soft);
 }
 
 @keyframes share-backdrop-in {
