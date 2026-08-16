@@ -146,7 +146,7 @@ function AnalyzeFormActions({
           type="button"
           variant="secondary"
           onClick={handleAnalyze}
-          className="!rounded-2xl"
+          className={ANALYZE_PRIMARY_BUTTON_CLASS}
         >
           Try again
         </Button>

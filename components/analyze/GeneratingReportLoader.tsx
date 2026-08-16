@@ -100,7 +100,7 @@ export function GeneratingReportLoader({
       </div>
 
       {/* Segments */}
-      <div className="mt-3 flex gap-[6px]" role="progressbar" aria-valuenow={currentStep + 1} aria-valuemax={STEPS.length}>
+      <div className="mt-2 flex gap-[6px] py-1.5" role="progressbar" aria-valuenow={currentStep + 1} aria-valuemax={STEPS.length}>
         {STEPS.map((_, i) => {
           const isDone = i < currentStep;
           const isActive = i === currentStep;
@@ -108,11 +108,11 @@ export function GeneratingReportLoader({
             <div
               key={i}
               className={[
-                "h-[3px] flex-1 rounded-[2px] transition-colors duration-300",
+                "h-[3px] flex-1 rounded-[2px] transition-[background-color,box-shadow] duration-300",
                 isDone
-                  ? "bg-[var(--ink-primary)]"
+                  ? "segment-glow"
                   : isActive
-                    ? "animate-pulse-segment bg-[var(--ink-secondary)]"
+                    ? "segment-glow animate-pulse-segment"
                     : "bg-[rgba(6,28,47,0.10)]",
               ].join(" ")}
             />
