@@ -36,6 +36,9 @@ async function shot(file, width, name) {
 (async () => {
   await shot("desktop-wireframe.html", 1920, "01-desktop-wireframe.png");
   await shot("mobile-home.html", 390, "02-mobile-home.png");
+  await shot("v2-desktop-wireframe.html", 1920, "03-v2-desktop-wireframe.png");
+  await shot("v2-mobile.html", 390, "04-v2-mobile.png");
+  await shot("v2-logos.html", 1200, "05-v2-logos.png");
 })().catch((err) => {
   console.error(err);
   process.exit(1);

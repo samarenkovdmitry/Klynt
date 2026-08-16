@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>ГРАНЬ — 3 знака · v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root { --ink:#1a1814; --paper:#e9e1d2; --paper2:#f4eee3; --mute:#6d655a; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200px; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: Manrope, sans-serif;
+    background-image: url("assets/img/tex-paper.jpg");
+    background-size: 420px;
+  }
+  .page { width: 1200px; padding: 48px 56px 64px; }
+  .kicker {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--mute); margin-bottom: 10px;
+  }
+  h1 {
+    font-family: Unbounded, sans-serif;
+    font-weight: 500; font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .lead { max-width: 640px; color: #3a342c; margin-bottom: 36px; font-size: 15px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .card { border: 1px solid var(--ink); background: rgba(244,238,227,.55); }
+  .card h2 {
+    font-family: Unbounded, sans-serif;
+    font-size: 16px; font-weight: 500;
+    padding: 16px 18px 0;
+  }
+  .card p { font-size: 13px; color: #3a342c; padding: 8px 18px 16px; min-height: 72px; }
+  .show {
+    height: 220px;
+    display: grid; place-items: center;
+    border-bottom: 1px solid rgba(26,24,20,.14);
+  }
+  .show svg { width: 96px; height: 96px; color: var(--ink); }
+  .show.dark { background: var(--ink); color: #f4eee3; }
+  .show.dark svg { color: #f4eee3; }
+  .word {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    height: 88px;
+    font-family: Unbounded, sans-serif;
+    font-weight: 600; letter-spacing: 0.2em; font-size: 22px;
+  }
+  .word svg { width: 28px; height: 28px; }
+  .word.cut {
+    position: relative;
+    letter-spacing: 0.18em;
+  }
+  .word.cut .ghost {
+    position: absolute;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    color: transparent;
+    -webkit-text-stroke: 1.2px var(--ink);
+  }
+  .word.cut .fill {
+    clip-path: polygon(0 0, 62% 0, 38% 100%, 0 100%);
+  }
+  .word.ring .a {
+    display: inline-grid; place-items: center;
+    width: 22px; height: 22px;
+    border: 2.2px solid var(--ink);
+    border-radius: 50%;
+    letter-spacing: 0;
+    font-size: 0;
+    position: relative;
+    top: -1px;
+  }
+  .word.ring .a:after {
+    content: "";
+    width: 8px; height: 8px;
+    border: 1.4px solid var(--ink);
+    border-radius: 50%;
+  }
+  .foot { margin-top: 28px; font-size: 12px; color: var(--mute); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="kicker">v2 · не основной макет · только знаки</div>
+  <h1>Три знака вместо одного гексагона</h1>
+  <p class="lead">Текущий кристалл спокойный и верный, но легко теряется среди «ювелирных» ромбов. Ниже — три более цепких направления. В шапке KIT лучше знак + короткое ГРАНЬ.</p>
+
+  <div class="grid">
+    <article class="card">
+      <div class="show">
+        <svg viewBox="0 0 64 64" fill="none"><rect x="6" y="6" width="52" height="52" stroke="currentColor" stroke-width="2"/><path d="M6 6h52L6 58V6Z" fill="currentColor"/><line x1="8" y1="56" x2="56" y2="8" stroke="currentColor" stroke-width="2"/></svg>
+      </div>
+      <div class="word">
+        <svg viewBox="0 0 64 64" fill="none" width="28" height="28"><rect x="6" y="6" width="52" height="52" stroke="currentColor" stroke-width="4"/><path d="M6 6h52L6 58V6Z" fill="currentColor"/><line x1="8" y1="56" x2="56" y2="8" stroke="currentColor" stroke-width="4"/></svg>
+        ГРАНЬ
+      </div>
+      <h2>1. Срез</h2>
+      <p>Квадрат пилется по диагонали — буквально грань. Знак читается как клеймо и как жест работы. Хорошо уменьшается в шапку.</p>
+    </article>
+
+    <article class="card">
+      <div class="show dark">
+        <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="1.5"/><circle cx="32" cy="32" r="26" stroke="currentColor" stroke-width="0.7"/><path d="M32 16 39.4 20.2v9.4L32 33.8l-7.4-4.2v-9.4L32 16Z" fill="currentColor"/><text x="32" y="47.5" text-anchor="middle" fill="currentColor" font-family="Unbounded, sans-serif" font-size="8" font-weight="600" letter-spacing="1.6">925</text></svg>
+      </div>
+      <div class="word">
+        <svg viewBox="0 0 64 64" fill="none" width="28" height="28"><circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="1.5"/><circle cx="32" cy="32" r="26" stroke="currentColor" stroke-width="0.7"/><path d="M32 16 39.4 20.2v9.4L32 33.8l-7.4-4.2v-9.4L32 16Z" fill="currentColor"/></svg>
+        ГРАНЬ
+      </div>
+      <h2>2. Проба</h2>
+      <p>Круглое клеймо, как пробирное. 925 вписан в знак, не в подпись. Память: «это мастерская серебра», не бренд-ромб.</p>
+    </article>
+
+    <article class="card">
+      <div class="show">
+        <svg viewBox="0 0 64 64" fill="none"><circle cx="34" cy="32" r="20" stroke="currentColor" stroke-width="3.2"/><circle cx="34" cy="32" r="13.2" stroke="currentColor" stroke-width="1.2"/><path d="M14 14h16v4.2H18.4V50H14V14Z" fill="currentColor"/><path d="M14 14h22" stroke="currentColor" stroke-width="4.2" stroke-linecap="square"/></svg>
+      </div>
+      <div class="word ring">ГРА<span class="a">о</span>НЬ</div>
+      <h2>3. Кольцо</h2>
+      <p>Г врезается в кольцо — буква и вещь в одном знаке. В слове А заменена на кольцо: ГР○НЬ. Самый предметный и самый рискованный.</p>
+    </article>
+  </div>
+
+  <p class="foot">Для сдачи в KIT: SVG в настройки организации. Если брать один — «Срез»: он рифмуется с блоком уникальности на v2-главной и с моделью «Срез».</p>
+</div>
+</body>
+</html>
