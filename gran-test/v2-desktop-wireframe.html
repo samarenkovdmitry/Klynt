@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920" />
+<title>ГРАНЬ — v2 Desktop wireframe 1920 · срез</title>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+
+  :root {
+    --ink: #1c1c1c;
+    --muted: #6b6b6b;
+    --line: #bdbdbd;
+    --fill: #ececec;
+    --paper: #f6f6f4;
+    --note: #2f6fed;
+    --wrap: 1440px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; background: #fff; color: var(--ink); }
+  body {
+    font-family: "IBM Plex Sans", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.35;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { display: block; max-width: 100%; }
+  button { font: inherit; background: none; border: 0; padding: 0; color: inherit; }
+  a { color: inherit; text-decoration: none; }
+
+  .page { width: 1920px; background: #fff; position: relative; }
+  .wrap { width: var(--wrap); margin: 0 auto; }
+  .mono {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sec-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0 8px;
+    border-bottom: 1px dashed var(--line);
+    margin-bottom: 16px;
+  }
+  .sec-label b { color: var(--note); font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 11px; }
+  .ph {
+    background:
+      linear-gradient(to bottom right, transparent calc(50% - 0.5px), var(--line) calc(50% - 0.5px), var(--line) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+      linear-gradient(to top right, transparent calc(50% - 0.5px), var(--line) calc(50% - 0.5px), var(--line) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+      var(--fill);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #8a8a8a;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 12px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .btn-fill { background: var(--ink); color: #fff; }
+  .icon {
+    width: 24px; height: 24px; border: 1px solid var(--ink);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+
+  /* Extra menu */
+  .extra {
+    height: 36px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+  }
+  .extra .wrap { display: flex; justify-content: space-between; align-items: center; }
+  .extra span { font-size: 13px; color: var(--muted); }
+
+  /* Header */
+  .header {
+    height: 72px;
+    border-bottom: 1px solid var(--ink);
+    display: flex;
+    align-items: center;
+  }
+  .header .wrap { display: grid; grid-template-columns: 180px 1fr 220px; align-items: center; gap: 24px; }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; font-size: 22px; letter-spacing: 0.18em;
+  }
+  .logo-mark {
+    width: 28px; height: 28px; border: 1.5px solid var(--ink);
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    background: var(--ink);
+  }
+  .nav { display: flex; gap: 28px; font-size: 15px; }
+  .nav span { position: relative; }
+  .nav span.u:after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: var(--ink);
+  }
+  .h-actions { display: flex; justify-content: flex-end; align-items: center; gap: 16px; }
+  .search {
+    width: 160px; height: 36px; border: 1px solid var(--line);
+    display: flex; align-items: center; padding: 0 10px; color: var(--muted); font-size: 13px;
+  }
+
+  /* Slideshow */
+  .slide {
+    width: 1920px; height: 768px; /* 5:2 */
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  .slide .ph { width: 100%; height: 100%; border: 0; }
+  .slide-copy {
+    position: absolute; left: 240px; bottom: 64px; width: 560px;
+  }
+  .slide-copy h1 { font-size: 48px; font-weight: 600; line-height: 1.1; margin: 0 0 12px; }
+  .slide-copy p { font-size: 18px; color: var(--muted); margin-bottom: 24px; }
+  .dots { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; gap: 8px; }
+  .dots i { width: 8px; height: 8px; border: 1px solid var(--ink); border-radius: 50%; display: block; }
+  .dots i.on { background: var(--ink); }
+
+  .slide.short { height: 549px; } /* 7:2 alternative labeled in second slideshow as 5:2 too — keep 5:2 */
+  .slide.s2 { height: 768px; }
+
+  /* Collections */
+  .block { padding: 48px 0 40px; }
+  .h-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; }
+  .h-row h2 { font-size: 32px; font-weight: 600; }
+  .h-row a { font-size: 14px; border-bottom: 1px solid var(--ink); }
+
+  .cats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .cat .ph { aspect-ratio: 3/4; }
+  .cat .name {
+    margin-top: 12px; font-size: 18px; font-weight: 500;
+    display: inline-block; border-bottom: 1px solid var(--ink);
+  }
+
+  .paths {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .path { position: relative; }
+  .path .ph { aspect-ratio: 2/1; }
+  .path .name {
+    position: absolute; left: 32px; bottom: 28px;
+    font-size: 28px; font-weight: 600;
+    background: #fff; padding: 4px 0; border-bottom: 1px solid var(--ink);
+  }
+
+  /* Shelf */
+  .shelf {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .card .ph { aspect-ratio: 3/4; }
+  .card .meta { padding-top: 12px; }
+  .card .t { font-size: 16px; margin-bottom: 4px; }
+  .card .p { font-size: 16px; font-weight: 500; }
+
+  /* Image + text */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .split .ph { aspect-ratio: 4/3; }
+  .split h2 { font-size: 36px; font-weight: 600; margin-bottom: 16px; }
+  .split p { font-size: 16px; color: #333; margin-bottom: 12px; max-width: 480px; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin: 24px 0 28px; }
+  .facts div { border-top: 1px solid var(--line); padding-top: 8px; font-size: 14px; }
+  .facts b { display: block; font-weight: 600; margin-bottom: 2px; }
+
+  /* Text / loyalty */
+  .loyalty {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 24px;
+  }
+  .loyal-box { border: 1px solid var(--ink); padding: 28px; min-height: 180px; }
+  .loyal-box h3 { font-size: 22px; margin-bottom: 10px; }
+  .loyal-box p { color: #333; }
+
+  /* News */
+  .news { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .news .ph { aspect-ratio: 16/10; }
+  .news .t { margin-top: 12px; font-size: 16px; font-weight: 500; }
+
+  /* Footer */
+  .footer { border-top: 1px solid var(--ink); padding: 48px 0 24px; }
+  .f-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 40px; }
+  .f-grid h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; color: var(--muted); }
+  .f-grid ul { list-style: none; display: grid; gap: 8px; font-size: 15px; }
+  .legal {
+    border-top: 1px solid var(--line); padding-top: 16px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--muted);
+  }
+
+  .frame-meta {
+    position: absolute; top: 8px; right: 16px; z-index: 5;
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--note);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="frame-meta">FRAME 1920 · CONTENT 1440 · GRID 8 · WIREFRAME · NO VISUAL STYLING</div>
+
+  <!-- Extra menu (KIT: дополнительное меню) -->
+  <div class="extra">
+    <div class="wrap">
+      <span>Первый заказ −5% · кольцо в подарок от 20 000 ₽</span>
+      <span>+7 900 000-00-00 · Москва, мастерская · Пн–Сб 12:00–20:00</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="wrap">
+      <div class="logo"><i class="logo-mark"></i>ГРАНЬ</div>
+      <nav class="nav">
+        <span class="u">Каталог</span>
+        <span>Коллекции</span>
+        <span>На заказ</span>
+        <span>Мастерская</span>
+        <span>Журнал</span>
+      </nav>
+      <div class="h-actions">
+        <div class="search">поиск кольца / размера</div>
+        <div class="icon" title="Войти / лояльность">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5" r="2.2" stroke="#1c1c1c" stroke-width="1.2"/><path d="M3.2 13c.8-2.4 2.4-3.6 4.8-3.6s4 1.2 4.8 3.6" stroke="#1c1c1c" stroke-width="1.2"/></svg>
+        </div>
+        <div class="icon" title="Избранное">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13.2 3.6 9A2.6 2.6 0 1 1 8 5.6 2.6 2.6 0 1 1 12.4 9L8 13.2Z" stroke="#1c1c1c" stroke-width="1.2"/></svg>
+        </div>
+        <div class="icon" title="Корзина">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.2h11l-.9 8.2H3.4L2.5 4.2Z" stroke="#1c1c1c" stroke-width="1.2"/><path d="M5.2 4.2V3.4a2.8 2.8 0 0 1 5.6 0v.8" stroke="#1c1c1c" stroke-width="1.2"/></svg>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="wrap"><div class="sec-label mono"><span>Секция <b>Шапка</b> · логотип слева · меню «ссылки» · поиск компактный · шапка непрозрачная, закреплена</span><span>обязательная</span></div></div>
+
+  <!-- Slideshow 1 -->
+  <section class="slide">
+    <div class="ph">Slideshow 1 · слайд A · 5:2 full-bleed · затемнение снизу · фото мастерской<br>контент загружается картинкой (desktop 5:2 / mobile 4:3)</div>
+    <div class="slide-copy">
+      <h1>Серебро,<br>сделанное руками</h1>
+      <p>Кольца 925. Каждое — одно. Литьё и ковка вдвоём в мастерской.</p>
+      <div class="btn btn-fill">Смотреть кольца</div>
+    </div>
+    <div class="dots"><i class="on"></i><i></i><i></i></div>
+  </section>
+  <div class="wrap"><div class="sec-label mono"><span>Секция <b>Слайдшоу</b> ×1 · 3 слайда · 5:2 (моб. 4:3) · текст слева снизу · кнопка на слайде · автопрокрутка выкл</span><span>обязательная</span></div></div>
+
+  <!-- Collections 1 FIXED -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>Коллекции и категории</b> ×1 · фиксированная · плитка · 4 в ряду · 3:4 · заголовок под фото · без затемнения</span><span>fixed-section</span></div>
+      <div class="h-row">
+        <h2>Четыре характера</h2>
+        <a>Все коллекции</a>
+      </div>
+      <div class="cats">
+        <div class="cat"><div class="ph">3:4 · Гранж<br>молотковая фактура</div><div class="name">Гранж</div></div>
+        <div class="cat"><div class="ph">3:4 · Готика<br>архитектурный вырез</div><div class="name">Готика</div></div>
+        <div class="cat"><div class="ph">3:4 · Милые<br>органика, капля</div><div class="name">Милые</div></div>
+        <div class="cat"><div class="ph">3:4 · Абстракт<br>грань / срез</div><div class="name">Абстракт</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shelf 1 -->
+  <section class="block" style="padding-top: 8px;">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>Полка товаров</b> ×1 · плитка · 4 в ряду · 3:4 как в теме · бейджи скидок выкл · сплит/пэй выкл · кнопка «в корзину» выкл</span><span>обязательная</span></div>
+      <div class="h-row">
+        <h2>В наличии сегодня</h2>
+        <a>Каталог</a>
+      </div>
+      <div class="shelf">
+        <div class="card"><div class="ph">фото · Шрам</div><div class="meta"><div class="t">Шрам</div><div class="p">6 900 ₽</div></div></div>
+        <div class="card"><div class="ph">фото · Неф</div><div class="meta"><div class="t">Неф</div><div class="p">9 200 ₽</div></div></div>
+        <div class="card"><div class="ph">фото · Капля</div><div class="meta"><div class="t">Капля</div><div class="p">5 400 ₽</div></div></div>
+        <div class="card"><div class="ph">фото · Срез</div><div class="meta"><div class="t">Срез</div><div class="p">8 800 ₽</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- v2 unique: one uploaded composition -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>изображение (загрузка целиком)</b> · не стандартная полка · диагональный срез двух фото одной модели · пробирная шапка</span><span>v2 · уникальный блок</span></div>
+      <div class="ph" style="height: 420px; margin-bottom: 20px;">композиция «Срез» · 2 фото одной модели · диагональный разрез · № 0147 / 0148<br>в KIT уходит одной картинкой (fixed / слайд / кастом)</div>
+      <h2 style="font-size:32px;font-weight:600;margin-bottom:12px;">Одно имя. Две грани.</h2>
+      <p style="max-width:560px;margin-bottom:16px;">Два «Среза» с одной модели. Парных не бывает — поэтому у нас нет размера «для пары».</p>
+      <div class="btn">Смотреть срезы</div>
+    </div>
+  </section>
+
+  <!-- Image + text -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>Изображение и текст</b> · картинка слева · текст справа · кнопка</span><span>опциональная</span></div>
+      <div class="split">
+        <div class="ph">4:3 · двое в мастерской<br>документальный кадр, без стоковой улыбки</div>
+        <div>
+          <h2>Двое в мастерской</h2>
+          <p>Мы — муж и жена. Литьё, ковка, опиловка — руками, без серии. Два одинаковых кольца у нас не получаются, и мы так хотим.</p>
+          <p>Готовое можно забрать из наличия. Свою модель — заказать. Долго, зато ваше.</p>
+          <div class="facts">
+            <div><b>Подгонка размера</b>по оттиску или линейке</div>
+            <div><b>Гравировка</b>с внутренней стороны</div>
+            <div><b>Гарантия</b>на пайку и замок фактуры</div>
+            <div><b>Упаковка</b>коробка и льняной мешочек</div>
+          </div>
+          <div class="btn">Как мы делаем</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slideshow 2 -->
+  <section class="slide s2">
+    <div class="ph">Slideshow 2 · слайд A · 5:2 full-bleed · упаковка: коробка + лён<br>слайд B: на заказ / воск и гравировка</div>
+    <div class="slide-copy">
+      <h1>Уже упаковано<br>как подарок</h1>
+      <p>Коробка и льняной мешочек в каждом заказе. От 20 000 ₽ — второе кольцо в подарок, на выбор.</p>
+      <div class="btn btn-fill">Выбрать кольцо</div>
+    </div>
+    <div class="dots"><i class="on"></i><i></i></div>
+  </section>
+  <div class="wrap"><div class="sec-label mono"><span>Секция <b>Слайдшоу</b> ×2 · 2 слайда · 5:2 · текст слева снизу · промо без «SALE»-плашек</span><span>обязательная</span></div></div>
+
+  <!-- Collections 2 FIXED -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>Коллекции и категории</b> ×2 · фиксированная · плитка · 2 в ряду · фото 2:1 · заголовок на фото снизу слева</span><span>fixed-section</span></div>
+      <div class="h-row">
+        <h2>Как берёте кольцо</h2>
+      </div>
+      <div class="paths">
+        <div class="path">
+          <div class="ph">2:1 · лоток готовых колец</div>
+          <div class="name">Готовые →</div>
+        </div>
+        <div class="path">
+          <div class="ph">2:1 · гравировка / на заказ</div>
+          <div class="name">На заказ →</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shelf 2 -->
+  <section class="block" style="padding-top: 8px;">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>Полка товаров</b> ×2 · плитка · 4 в ряду · «Новая партия» · лояльность даёт 24ч ранний доступ — на сайте это спокойная полка, не бейдж</span><span>обязательная</span></div>
+      <div class="h-row">
+        <h2>Новая партия</h2>
+        <a>Смотреть все</a>
+      </div>
+      <div class="shelf">
+        <div class="card"><div class="ph">фото · Сажа</div><div class="meta"><div class="t">Сажа</div><div class="p">7 400 ₽</div></div></div>
+        <div class="card"><div class="ph">фото · Крипта</div><div class="meta"><div class="t">Крипта</div><div class="p">11 500 ₽</div></div></div>
+        <div class="card"><div class="ph">фото · Зерно</div><div class="meta"><div class="t">Зерно</div><div class="p">6 200 ₽</div></div></div>
+        <div class="card"><div class="ph">фото · Плоскость</div><div class="meta"><div class="t">Плоскость</div><div class="p">10 200 ₽</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loyalty / services text -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>Текст</b> · три колонки через сетку карточек (контент — текст, без промо-наклеек)</span><span>опциональная</span></div>
+      <div class="loyalty">
+        <div class="loyal-box">
+          <h3>Со второго заказа</h3>
+          <p>Ранний доступ к новым партиям на 24 часа и другие тихие бонусы. Вход — через «Войти» в шапке, без отдельной кричащей плашки.</p>
+        </div>
+        <div class="loyal-box">
+          <h3>Размер и гравировка</h3>
+          <p>Подгоняем по оттиску. Гравировка с внутренней стороны — после примерки, чтобы не гадать.</p>
+        </div>
+        <div class="loyal-box">
+          <h3>Гарантия мастерской</h3>
+          <p>На пайку и целостность фактуры. Если село не так — переделаем, не «обменяем на скидку».</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Journal -->
+  <section class="block" style="padding-top: 8px;">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>Последние новости</b> / карточки журнала · 3 в ряду · ссылки на Дзен</span><span>опциональная</span></div>
+      <div class="h-row">
+        <h2>Из мастерской</h2>
+        <a>Дзен →</a>
+      </div>
+      <div class="news">
+        <div><div class="ph">16:10</div><div class="t">Как окисляем серебро, чтобы не «классика»</div></div>
+        <div><div class="ph">16:10</div><div class="t">Почему кольцо не должно быть парным</div></div>
+        <div><div class="ph">16:10</div><div class="t">Коробка, лён, и зачем это не люкс</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="sec-label mono"><span>Секция <b>Подвал</b> · логотип + описание · контакты · меню · соцсети (Дзен) · юр. информация</span><span>обязательная</span></div>
+      <div class="f-grid">
+        <div>
+          <div class="logo" style="margin-bottom:12px"><i class="logo-mark"></i>ГРАНЬ</div>
+          <p style="max-width:320px;color:#333">Серебро 925, сделанное руками. Маленькая мастерская, не витрина и не маркетплейс.</p>
+        </div>
+        <div>
+          <h4>Магазин</h4>
+          <ul>
+            <li>Каталог</li>
+            <li>Готовые</li>
+            <li>На заказ</li>
+            <li>Подарок</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Мастерская</h4>
+          <ul>
+            <li>Как делаем</li>
+            <li>Размер</li>
+            <li>Гарантия</li>
+            <li>Журнал / Дзен</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Контакты</h4>
+          <ul>
+            <li>+7 900 000-00-00</li>
+            <li>hello@gran.silver</li>
+            <li>Москва, мастерская</li>
+            <li>Пн–Сб 12:00–20:00</li>
+          </ul>
+        </div>
+      </div>
+      <div class="legal">
+        <span>© 2026 ГРАНЬ. Серебро, сделанное руками.</span>
+        <span>Оферта · Конфиденциальность · Реквизиты</span>
+      </div>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
