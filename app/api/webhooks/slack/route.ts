@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     // Handle URL verification (Slack sends this when webhook is created)
     if (body.type === 'url_verification') {
-      return NextResponse.json({ challenge: body.challenge });
+      return NextResponse.json({ challenge: (body as any).challenge });
     }
 
     // Extract the actual event

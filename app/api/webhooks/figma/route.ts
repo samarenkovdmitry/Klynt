@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle PING event (Figma sends this when webhook is created)
-    if (body.event_type === 'PING') {
+    if ((body as any).event_type === 'PING') {
       console.log('Figma webhook PING received');
       return NextResponse.json({ received: true });
     }

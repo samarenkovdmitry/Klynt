@@ -164,7 +164,7 @@ async function runPipeline() {
     // Mock AI Interpretation
     console.log('\n🤖 AI Interpretation (Mock)...');
     const interpretation = mockInterpretEvent(rawEvent, {
-      previousEvents: mockRawEvents.slice(0, i),
+      previousEvents: mockRawEvents.slice(0, i) as RawEvent[],
       projectFacts,
     });
 

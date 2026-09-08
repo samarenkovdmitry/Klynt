@@ -73,7 +73,7 @@ async function runPipeline() {
     // AI Interpretation
     console.log('\n🤖 AI Interpretation...');
     const interpretation = await interpretEvent(rawEvent, {
-      previousEvents: mockRawEvents.slice(0, i),
+      previousEvents: mockRawEvents.slice(0, i) as RawEvent[],
       projectFacts,
     });
 
