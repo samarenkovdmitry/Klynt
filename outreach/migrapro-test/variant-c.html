@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>МиграПро — вариант C (Outline)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #cc0a0a;
+      --red-hover: #b00909;
+      --blue: #1a4fb0;
+      --blue-sky: #50b3ff;
+      --blue-dark: #1a4694;
+      --blue-mute: #265f91;
+      --ink: #2c3e5a;
+      --bg: #eaf1f6;
+      --text: #1a1b1d;
+      --text-soft: #4a5560;
+      --green: #62c584;
+      --line: #d7e2ec;
+      --white: #ffffff;
+      --radius: 18px;
+      --shadow: 0 10px 32px rgba(26, 79, 176, 0.09);
+      --shadow-soft: 0 3px 12px rgba(26, 27, 29, 0.04);
+      --container: 1180px;
+      --font: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: #fff;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; border: 0; cursor: pointer; background: none; }
+    img { display: block; max-width: 100%; }
+    ul { list-style: none; }
+
+    .switcher {
+      position: sticky; top: 0; z-index: 80;
+      background: #122a5c; color: #fff; font-size: 13px;
+    }
+    .switcher-inner {
+      width: min(100% - 32px, var(--container));
+      margin: 0 auto; min-height: 42px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; padding: 8px 0;
+    }
+    .switcher span { opacity: 0.75; }
+    .switcher-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .switcher a {
+      padding: 6px 12px; border-radius: 8px; font-weight: 600;
+      background: rgba(255,255,255,0.08); color: #fff;
+    }
+    .switcher a.is-active { background: #fff; color: #122a5c; }
+    .switcher a:hover { background: rgba(255,255,255,0.18); }
+    .switcher a.is-active:hover { background: #fff; }
+
+    .page { max-width: 1440px; margin: 0 auto; background: #fff; }
+    .container { width: min(100% - 48px, var(--container)); margin-inline: auto; }
+
+    /* Full-bleed blue from page top: header sits on it as white card */
+    .top-band {
+      position: relative;
+      padding: 14px 0 96px;
+      overflow: hidden;
+      background:
+        radial-gradient(900px 420px at 92% 12%, rgba(80, 179, 255, 0.32), transparent 60%),
+        radial-gradient(700px 380px at 0% 100%, rgba(26, 70, 148, 0.4), transparent 55%),
+        linear-gradient(145deg, #163f96 0%, #1a4fb0 48%, #2a6fd4 100%);
+    }
+    .top-band::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, #000 35%, transparent 92%);
+      pointer-events: none;
+    }
+    .after-hero {
+      background: #fff;
+      padding-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 48px; padding: 0 22px; border-radius: 12px;
+      font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+      transition: .2s ease; white-space: nowrap;
+    }
+    .btn-primary { background: var(--red); color: #fff; }
+    .btn-primary:hover { background: var(--red-hover); }
+    .btn-secondary {
+      background: #fff; color: var(--blue);
+      border: 1.5px solid rgba(26, 79, 176, 0.22);
+    }
+    .btn-secondary:hover { border-color: var(--blue); background: var(--bg); }
+    .btn-sm { min-height: 38px; padding: 0 14px; font-size: 13px; border-radius: 10px; }
+    .link-arrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--blue); font-weight: 600; font-size: 15px;
+    }
+    .link-arrow:hover { color: var(--blue-mute); }
+    .link-arrow svg { transition: transform .2s; }
+    .link-arrow:hover svg { transform: translateX(3px); }
+
+    .header {
+      position: relative;
+      z-index: 50;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 28px rgba(10, 30, 80, 0.16);
+      overflow: hidden;
+    }
+    .header-top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; min-height: 58px; padding: 8px 18px;
+    }
+    .logo img { width: 168px; height: auto; }
+    .header-meta { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+    .rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .rating-stars { color: #f5b400; font-size: 13px; letter-spacing: 1px; line-height: 1; }
+    .rating-text { font-size: 13px; line-height: 1.2; color: var(--text-soft); }
+    .rating-score { font-weight: 700; color: var(--text); }
+    .socials { display: flex; gap: 6px; }
+    .social {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: grid; place-items: center; background: #f3f6f9;
+    }
+    .social:hover { outline: 1px solid var(--blue-sky); background: #fff; }
+    .social img, .social svg { width: 18px; height: 18px; }
+    .phone-block { text-align: right; }
+    .phone-block a { display: block; font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+    .phone-block a:hover { color: var(--blue); }
+    .phone-block span { display: block; margin-top: 1px; font-size: 11px; color: var(--text-soft); }
+    .header-nav {
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 40px;
+      padding: 0 14px 0 10px;
+    }
+    .nav-list { display: flex; align-items: center; gap: 4px; min-height: 40px; flex-wrap: wrap; }
+    .nav-list a {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 10px; border-radius: 8px; font-size: 14px; font-weight: 500;
+    }
+    .nav-list a:hover { background: #f3f6f9; color: var(--blue); }
+    .chev { width: 10px; height: 10px; opacity: 0.55; }
+    .burger {
+      display: none; width: 44px; height: 44px; border-radius: 10px;
+      border: 1px solid var(--line); place-items: center; gap: 5px; flex-direction: column;
+    }
+    .burger span { display: block; width: 18px; height: 2px; background: var(--text); border-radius: 2px; }
+    .mobile-nav { display: none; border-top: 1px solid var(--line); padding: 8px 18px 16px; }
+    .mobile-nav.open { display: block; }
+    .mobile-nav a {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0; border-bottom: 1px solid var(--line); font-weight: 500;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 36px 0 0;
+      color: #fff;
+    }
+    .hero-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1.15fr);
+      gap: 16px 24px;
+      align-items: center;
+    }
+    .hero-copy { padding: 12px 0 8px; }
+    .hero-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: rgba(255,255,255,0.78);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+    .hero-meta svg,
+    .hero-meta img {
+      width: 16px; height: 16px; flex-shrink: 0;
+      opacity: 0.95;
+    }
+    .hero h1 {
+      font-size: clamp(34px, 4vw, 46px);
+      line-height: 1.1; letter-spacing: -0.03em;
+      color: #fff; margin-bottom: 14px; max-width: 22ch;
+      font-weight: 700;
+    }
+    .hero-lead {
+      font-size: clamp(16px, 1.25vw, 18px);
+      color: rgba(255,255,255,0.9);
+      line-height: 1.55;
+      max-width: 54ch;
+      margin-bottom: 0;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+    .hero-art {
+      position: relative;
+      min-height: 430px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      margin-right: -12px;
+    }
+    .hero-art::before {
+      content: "";
+      position: absolute;
+      width: 410px; height: 410px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 68%);
+      pointer-events: none;
+    }
+    .hero-art img {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 605px);
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 36px rgba(0,0,0,0.2));
+    }
+
+    /* Path cards overlap blue band */
+    .path-overlap {
+      position: relative;
+      z-index: 3;
+      margin-top: -64px;
+      margin-bottom: 68px;
+    }
+    .path-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 16px;
+    }
+    .path-card {
+      border-radius: 18px;
+      padding: 28px 26px;
+      border: none;
+      outline: none;
+      background: #fff;
+      box-shadow: 0 18px 44px rgba(26, 70, 148, 0.18);
+      display: flex; flex-direction: column; min-height: 100%;
+    }
+    .path-card--accent {
+      background: #fff;
+    }
+    .path-card h2 { font-size: 22px; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .path-sub { font-size: 15px; font-weight: 600; color: var(--blue); margin-bottom: 10px; }
+    .path-card p {
+      font-size: 15px; color: var(--text-soft); line-height: 1.55;
+      margin-bottom: 20px; flex: 1;
+    }
+    .path-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    /* Stats — from Variant B */
+    .stats {
+      margin-top: 4px;
+      margin-bottom: 8px;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .stat {
+      padding: 22px 18px;
+      border-right: 1px solid var(--line);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .stat:last-child { border-right: 0; }
+    .stat-ico {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      background: linear-gradient(180deg, #eff7ff, #e3f1ff);
+      display: grid; place-items: center;
+    }
+    .stat-ico img { width: 26px; height: 26px; }
+    .stat-value {
+      font-size: 24px; font-weight: 700; letter-spacing: -0.03em;
+      color: var(--blue); margin-bottom: 4px;
+    }
+    .stat-label { font-size: 13px; color: var(--text-soft); line-height: 1.4; }
+
+    .section { padding: 64px 0; background: #fff; }
+    .section--white { background: #fff; }
+    #start { background: #f0f4f8; }
+    #uslugi { background: #f7f8fa; }
+    .section-head { max-width: 640px; margin-bottom: 28px; }
+    .section-head h2 {
+      font-size: clamp(28px, 3vw, 34px);
+      letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 10px;
+    }
+    .section-head p { font-size: 17px; color: var(--text-soft); }
+
+    /* Start: illustrations in all three cards */
+    .start-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+    .start-card {
+      background: #fff;
+      border: 1px solid rgba(26, 79, 176, 0.1);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(26, 70, 148, 0.08);
+      display: flex; flex-direction: column;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .start-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(26, 79, 176, 0.2);
+      box-shadow: 0 14px 32px rgba(26, 70, 148, 0.12);
+    }
+    .start-illu {
+      height: 220px;
+      display: grid; place-items: center;
+      background: linear-gradient(180deg, #f7fbff 0%, #eef4fb 100%);
+      border-bottom: 1px solid rgba(26, 79, 176, 0.06);
+      padding: 16px 18px 12px;
+    }
+    .start-illu--b,
+    .start-illu--c {
+      background: linear-gradient(180deg, #f7fbff 0%, #eef4fb 100%);
+    }
+    .start-illu img {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      object-position: center;
+    }
+    .start-body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
+    .start-body h3 { font-size: 20px; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .start-body p {
+      font-size: 15px; color: var(--text-soft); line-height: 1.55;
+      margin-bottom: 18px; flex: 1;
+    }
+
+    .services-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin-bottom: 18px;
+    }
+    .service-card {
+      background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow-soft);
+      display: flex; flex-direction: column; min-height: 100%;
+    }
+    .service-card:hover { border-color: rgba(26,79,176,0.25); box-shadow: var(--shadow); }
+    .service-ico {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(180deg, #eff7ff, #e3f1ff);
+      color: var(--blue);
+      display: grid; place-items: center; margin-bottom: 16px;
+      box-shadow: inset 0 0 0 1px rgba(26, 79, 176, 0.08);
+    }
+    .service-ico img { width: 26px; height: 26px; }
+    .service-card h3 { font-size: 22px; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .service-card p {
+      font-size: 15px; color: var(--text-soft); line-height: 1.55;
+      margin-bottom: 18px; flex: 1;
+    }
+    .service-foot {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding-top: 16px; border-top: 1px solid var(--line);
+    }
+    .price span { display: block; font-size: 12px; color: var(--text-soft); }
+    .price strong { font-size: 20px; letter-spacing: -0.02em; }
+    .services-more {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 10px;
+      padding: 18px 20px; border-radius: 14px;
+      background: #fff; border: 1px solid var(--line);
+      font-size: 14px; color: var(--text-soft);
+    }
+    .services-more strong { color: var(--text); }
+    .services-more a { color: var(--blue); font-weight: 500; }
+    .services-more a:hover { text-decoration: underline; }
+
+    .process-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 14px; margin-bottom: 18px;
+    }
+    #how {
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      background:
+        radial-gradient(800px 360px at 88% 0%, rgba(80, 179, 255, 0.28), transparent 58%),
+        radial-gradient(640px 320px at 8% 100%, rgba(14, 40, 100, 0.45), transparent 55%),
+        linear-gradient(145deg, #163f96 0%, #1a4fb0 48%, #2a6fd4 100%);
+    }
+    #how::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, #000 20%, transparent 95%);
+      pointer-events: none;
+    }
+    #how > .container { position: relative; z-index: 1; }
+    #how .section-head h2 { color: #fff; }
+    #how .section-head p { color: rgba(255,255,255,0.78); }
+    .step {
+      background: rgba(255,255,255,0.97);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      box-shadow: 0 12px 28px rgba(8, 28, 72, 0.18);
+      min-height: 100%;
+      color: var(--text);
+    }
+    .step-num {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--blue); color: #fff;
+      display: grid; place-items: center;
+      font-size: 14px; font-weight: 700; margin-bottom: 14px;
+    }
+    .step h3 { font-size: 17px; letter-spacing: -0.01em; margin-bottom: 8px; line-height: 1.3; color: var(--text); }
+    .step p { font-size: 14px; color: var(--text-soft); line-height: 1.5; }
+    .pay-note {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 18px 20px; border-radius: 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.28);
+      backdrop-filter: blur(6px);
+      color: #fff;
+    }
+    .pay-note-icon {
+      width: 36px; height: 36px; border-radius: 50%; background: #fff;
+      display: grid; place-items: center; color: var(--green); flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .pay-note p { font-size: 15px; line-height: 1.5; color: rgba(255,255,255,0.92); }
+    .pay-note strong { font-weight: 600; color: #fff; }
+
+    @media (max-width: 1100px) {
+      .hero-top { grid-template-columns: 1fr; }
+      .hero-art { min-height: 240px; order: -1; }
+      .hero-copy { max-width: none; }
+      .hero h1 { max-width: none; }
+      .top-band { padding-bottom: 88px; }
+      .path-overlap { margin-top: -56px; }
+      .path-grid { grid-template-columns: 1fr; }
+      .process-grid { grid-template-columns: repeat(2, 1fr); }
+      .rating { display: none; }
+    }
+    @media (max-width: 860px) {
+      .container { width: min(100% - 32px, var(--container)); }
+      .switcher { position: relative; }
+      .top-band { padding: 10px 0 80px; }
+      .header { border-radius: 14px; }
+      .header-top { min-height: 56px; }
+      .logo img { width: 148px; }
+      .phone-block, .header-cta-desktop, .header-nav, .socials { display: none; }
+      .burger { display: grid; }
+      .hero { padding-top: 22px; }
+      .hero-copy { padding: 0; max-width: none; }
+      .hero h1 { font-size: 30px; max-width: none; }
+      .hero-lead { font-size: 16px; max-width: none; }
+      .path-overlap { margin-top: -48px; }
+      .path-actions { flex-direction: column; }
+      .path-actions .btn { width: 100%; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .stat { border-right: 0; border-bottom: 1px solid var(--line); }
+      .stat:nth-child(odd) { border-right: 1px solid var(--line); }
+      .stat:nth-last-child(-n+2) { border-bottom: 0; }
+      .section { padding: 48px 0; }
+      .start-grid, .services-grid, .process-grid { grid-template-columns: 1fr; }
+      .services-more { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="switcher">
+    <div class="switcher-inner">
+      <span>Тестовое · три отдельных варианта</span>
+      <div class="switcher-links">
+        <a href="index.html">A — спокойный</a>
+        <a href="variant-b.html">B — визуальный</a>
+        <a class="is-active" href="variant-c.html">C — Outline</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="top-band">
+      <div class="container">
+        <header class="header">
+          <div class="header-top">
+            <a class="logo" href="#" aria-label="МИГРАПРО">
+              <img src="assets/logo.webp" alt="МИГРАПРО — Российское миграционное агентство" width="168" height="43" />
+            </a>
+            <div class="header-meta">
+              <div class="socials">
+                <a class="social" href="#" aria-label="MAX">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#1a4fb0"/><path d="M8 13.2c1.5 1.7 3 2.6 4 2.6s2.5-.9 4-2.6" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="10" r="1.1" fill="#fff"/><circle cx="15" cy="10" r="1.1" fill="#fff"/></svg>
+                </a>
+                <a class="social" href="#" aria-label="Telegram">
+                  <img src="assets/tg.svg" alt="" width="18" height="18" />
+                </a>
+              </div>
+              <div class="phone-block">
+                <a href="tel:+74958590051">+7 (495) 859-00-51</a>
+                <span>Пн–Пт: 09:00–18:00</span>
+              </div>
+              <a class="btn btn-primary btn-sm header-cta-desktop" href="#consult">Бесплатная консультация</a>
+              <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false">
+                <span></span><span></span><span></span>
+              </button>
+            </div>
+          </div>
+          <nav class="header-nav" aria-label="Основное меню">
+            <ul class="nav-list">
+              <li><a href="#uslugi">Услуги <svg class="chev" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></li>
+              <li><a href="/rnr">Работодателям</a></li>
+              <li><a href="/about">О нас</a></li>
+              <li><a href="/informaciya">База знаний</a></li>
+              <li><a href="#otzyvy">Отзывы</a></li>
+              <li><a href="#contacts">Контакты</a></li>
+            </ul>
+            <div class="rating" aria-label="Рейтинг 4,8">
+              <span class="rating-stars" aria-hidden="true">★★★★★</span>
+              <span class="rating-text"><span class="rating-score">4,8</span> на Яндекс.Картах и 2ГИС</span>
+            </div>
+          </nav>
+          <div class="mobile-nav" id="mobileNav">
+            <a href="#uslugi">Услуги <span>▾</span></a>
+            <a href="/rnr">Работодателям</a>
+            <a href="/about">О нас</a>
+            <a href="/informaciya">База знаний</a>
+            <a href="#otzyvy">Отзывы</a>
+            <a href="#contacts">Контакты</a>
+            <div style="padding-top:16px">
+              <a class="btn btn-primary" href="#consult" style="width:100%">Бесплатная консультация</a>
+              <div style="margin-top:12px;text-align:center;font-size:14px;color:var(--text-soft)">
+                <a href="tel:+74958590051" style="font-weight:700;color:var(--text);font-size:18px">+7 (495) 859-00-51</a><br />
+                Пн–Пт: 09:00–18:00
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container">
+          <div class="hero-top">
+            <div class="hero-copy">
+              <p class="hero-meta">
+                <img src="assets/iconoir/map-pin-sky.svg" alt="" width="16" height="16" />
+                Офисы в Подольске и Одинцово
+              </p>
+              <h1 id="hero-title">Миграционные услуги в Москве и Московской области</h1>
+              <p class="hero-lead">
+                РВП, ВНЖ, гражданство РФ: собираем полный пакет документов и ведём дело до результата.
+                Компаниям — легальное оформление иностранных сотрудников. Выберите свой путь.
+              </p>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+              <img src="assets/hero-citizenship.png?v=3" alt="" width="605" height="440" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="after-hero">
+      <div class="container path-overlap">
+        <div class="path-grid">
+          <article class="path-card path-card--accent">
+            <h2>Иностранным гражданам</h2>
+            <p class="path-sub">Оформляю статус себе или семье</p>
+            <p>
+              РВП, ВНЖ, гражданство РФ. Проверим основание, соберём документы, подадим без ошибок.
+              Не знаете, с чего начать — начните с консультации.
+            </p>
+            <div class="path-actions">
+              <a class="btn btn-primary" href="#consult">Бесплатная консультация</a>
+              <a class="btn btn-secondary" href="#uslugi">Смотреть услуги и цены</a>
+            </div>
+          </article>
+          <article class="path-card">
+            <h2>Работодателям</h2>
+            <p class="path-sub">Оформляю иностранных сотрудников</p>
+            <p>
+              Разрешения на работу, ВКС, кадровые уведомления в МВД. Более 10 лет в миграционном праве,
+              работаем с компаниями Москвы и области.
+            </p>
+            <div class="path-actions">
+              <a class="btn btn-primary" href="/rnr">Решения для работодателей</a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="stats" aria-label="Ключевые показатели">
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-ico"><img src="assets/iconoir/clock-blue.svg" alt="" /></div>
+              <div>
+                <div class="stat-value">Более 10 лет</div>
+                <div class="stat-label">помогаем с миграционными документами</div>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-ico"><img src="assets/iconoir/clipboard-check-blue.svg" alt="" /></div>
+              <div>
+                <div class="stat-value">6 000+</div>
+                <div class="stat-label">оформлений по РВП, ВНЖ и гражданству</div>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-ico"><img src="assets/iconoir/building-blue.svg" alt="" /></div>
+              <div>
+                <div class="stat-value">2 офиса</div>
+                <div class="stat-label">Подольск и Одинцово: приём рядом с домом, без поездки в центр</div>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-ico"><img src="assets/iconoir/star-blue.svg" alt="" /></div>
+              <div>
+                <div class="stat-value">4,8</div>
+                <div class="stat-label">рейтинг на Яндекс.Картах и 2ГИС</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section section--white" id="start" aria-labelledby="start-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="start-title">С чего начать прямо сейчас</h2>
+          <p>Выберите удобный способ разобраться в своей ситуации.</p>
+        </div>
+        <div class="start-grid">
+          <article class="start-card">
+            <div class="start-illu" aria-hidden="true">
+              <img src="assets/start-consult.png?v=4" alt="" width="180" height="180" />
+            </div>
+            <div class="start-body">
+              <h3>Бесплатная консультация</h3>
+              <p>Юрист разберёт вашу ситуацию: какое основание подходит, какие документы нужны и в каком порядке действовать. В чате или по видео, можно анонимно.</p>
+              <a class="link-arrow" href="#consult">Записаться
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="start-card">
+            <div class="start-illu start-illu--b" aria-hidden="true">
+              <img src="assets/start-ai.png?v=4" alt="" width="180" height="180" />
+            </div>
+            <div class="start-body">
+              <h3>ИИ-юрист</h3>
+              <p>Ответ на миграционный вопрос за минуту — бесплатно и в любое время суток.</p>
+              <a class="link-arrow" href="#">Открыть чат
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="start-card">
+            <div class="start-illu start-illu--c" aria-hidden="true">
+              <img src="assets/start-test.png?v=4" alt="" width="180" height="180" />
+            </div>
+            <div class="start-body">
+              <h3>Тест за 2 минуты</h3>
+              <p>Подберём подходящее вам основание и пришлём пошаговый план действий.</p>
+              <a class="link-arrow" href="#">Пройти тест
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="uslugi" aria-labelledby="services-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="services-title">Услуги для иностранных граждан</h2>
+          <p>Выберите свой статус. В карточке — что входит и от какой суммы, полный прайс — на странице услуги.</p>
+        </div>
+        <div class="services-grid">
+          <article class="service-card">
+            <div class="service-ico" aria-hidden="true" title="Временный статус">
+              <img src="assets/iconoir/hourglass-blue.svg" alt="" width="26" height="26" />
+            </div>
+            <h3>РВП</h3>
+            <p>По квоте, браку, детям и другим основаниям. Проверим право на подачу до сбора документов.</p>
+            <div class="service-foot">
+              <div class="price"><span>Стоимость</span><strong>от 14 000 ₽</strong></div>
+              <a class="link-arrow" href="#">Подробнее
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+          <article class="service-card">
+            <div class="service-ico" aria-hidden="true" title="Постоянное проживание">
+              <img src="assets/iconoir/home-simple-blue.svg" alt="" width="26" height="26" />
+            </div>
+            <h3>ВНЖ</h3>
+            <p>Документы, экзамен, подтверждение дохода, подача и контроль этапов.</p>
+            <div class="service-foot">
+              <div class="price"><span>Стоимость</span><strong>от 14 000 ₽</strong></div>
+              <a class="link-arrow" href="#">Подробнее
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+          <article class="service-card">
+            <div class="service-ico" aria-hidden="true" title="Паспорт / гражданство">
+              <img src="assets/iconoir/medal-blue.svg" alt="" width="26" height="26" />
+            </div>
+            <h3>Гражданство РФ</h3>
+            <p>Общий и упрощённый порядок, по браку, детям, указ №11. Подберём основание и подготовим пакет.</p>
+            <div class="service-foot">
+              <div class="price"><span>Стоимость</span><strong>от 14 000 ₽</strong></div>
+              <a class="link-arrow" href="#">Подробнее
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+        </div>
+        <div class="services-more">
+          <strong>Все услуги →</strong>
+          <a href="#">квота на РВП</a>,
+          <a href="#">разрешение на работу</a>,
+          <a href="#">временное убежище</a>,
+          <a href="#">репатриация</a>,
+          <a href="#">обжалование запрета и депортации</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="how-title">Как мы работаем</h2>
+          <p>Понятный порядок: вы всегда знаете, на каком этапе находитесь.</p>
+        </div>
+        <div class="process-grid">
+          <article class="step">
+            <div class="step-num">1</div>
+            <h3>Бесплатная консультация</h3>
+            <p>Разбираем ситуацию и определяем основание, по которому вам подходит подача.</p>
+          </article>
+          <article class="step">
+            <div class="step-num">2</div>
+            <h3>Договор с фиксированной ценой</h3>
+            <p>Стоимость и состав работ фиксируются в договоре и не меняются по ходу дела.</p>
+          </article>
+          <article class="step">
+            <div class="step-num">3</div>
+            <h3>Подготовка документов</h3>
+            <p>Собираем и проверяем каждую справку и заявление, чтобы не получить отказ из-за формальной ошибки. Типовой срок подготовки пакета — 7 дней.</p>
+          </article>
+          <article class="step">
+            <div class="step-num">4</div>
+            <h3>Подача и сопровождение</h3>
+            <p>Сопровождаем на этапах подачи, отслеживаем статус заявления и консультируем до получения статуса.</p>
+          </article>
+        </div>
+        <div class="pay-note">
+          <div class="pay-note-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3.5 9.5l3.2 3.2L14.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p>
+            <strong>Оплата 50/50:</strong> половина при заключении договора, половина — по готовности пакета документов.
+            Цена зафиксирована в договоре и не растёт по ходу дела.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const burger = document.getElementById('burger');
+    const mobileNav = document.getElementById('mobileNav');
+    if (burger && mobileNav) {
+      burger.addEventListener('click', () => {
+        const open = mobileNav.classList.toggle('open');
+        burger.setAttribute('aria-expanded', String(open));
+      });
+    }
+  </script>
+</body>
+</html>

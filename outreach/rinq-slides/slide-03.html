@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>rinq pitch — slide 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F9FAFB;
+    --surface: #FFFFFF;
+    --ink: #0F172A;
+    --ink-2: #475569;
+    --line: #E2E8F0;
+    --blue: #2563EB;
+    --blue-soft: #EFF6FF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: var(--bg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    padding: 56px 0 0 96px;
+    display: grid;
+    grid-template-columns: 820px 1fr;
+    position: relative;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: 40%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .logo {
+    position: absolute;
+    top: 56px;
+    left: 96px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    color: var(--ink);
+  }
+
+  .logo-word {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .left {
+    padding-top: 100px;
+    padding-right: 40px;
+    padding-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  h1 {
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+    max-width: 760px;
+  }
+
+  h1 .brand {
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .feature {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 28px 24px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .feature h2 {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+
+  .feature ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .feature li {
+    font-size: 15.5px;
+    line-height: 1.45;
+    color: var(--ink-2);
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .feature li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+  }
+
+  .visual {
+    position: relative;
+    overflow: hidden;
+    align-self: stretch;
+  }
+
+  .visual img {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-48%);
+    width: 980px;
+    height: auto;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 24px 48px rgba(15, 23, 42, 0.12));
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="logo">
+    <svg class="logo-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M16 2L18.8 11.2L28 14L18.8 16.8L16 26L13.2 16.8L4 14L13.2 11.2L16 2Z" fill="currentColor"/>
+    </svg>
+    <span class="logo-word">rinq</span>
+  </div>
+
+  <div class="left">
+    <h1><span class="brand">rinq</span> turns financial chaos into a seamless workflow</h1>
+
+    <div class="feature">
+      <h2>Corporate Credit Card</h2>
+      <ul>
+        <li>Higher credit limits than traditional banks</li>
+        <li>Cashback on every transaction</li>
+        <li>Unlimited employee cards – eliminate personal-card expenses</li>
+        <li>No business risk in emergencies – the issuing bank is responsible for the credit card funds.</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h2>Business Account</h2>
+      <ul>
+        <li>Free local and international payments (ACH, Wire)</li>
+        <li>Bill pay with BNPL option</li>
+        <li>On-demand reimbursements</li>
+        <li>2.5% interest on the card balance</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h2>Expense Management</h2>
+      <ul>
+        <li>Card-level limits by amount, time, and merchant category</li>
+        <li>Payment approvals by designated employees</li>
+        <li>Automatic card blocking for suspicious transactions</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="visual">
+    <img src="laptop-mockup.png" alt="" />
+  </div>
+</div>
+</body>
+</html>

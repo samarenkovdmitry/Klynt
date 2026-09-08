@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>КТК — талантливым детям 2026 · афиша 16:9</title>
+<link rel="stylesheet" href="./fonts/fonts.css">
+<style>
+  :root{
+    --ink:#03060F;
+    --night:#0A1330;
+    --deep:#0C1E4E;
+    --ktk-blue:#1B4B9B;
+    --azure:#3E7BF0;
+    --ktk-red:#E8232A;
+    --coral:#FF5A3C;
+    --amber:#FFB259;
+    --ivory:#EEF3FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#000;width:100%;height:100%;overflow:hidden}
+  body{display:flex;align-items:center;justify-content:center}
+  .fit{transform-origin:center center}
+
+  .poster{
+    position:relative;width:1920px;height:1080px;overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 62% 34%, #16306E 0%, #0B1740 38%, #050A1E 70%, #03060F 100%);
+    font-family:'Golos Text',-apple-system,sans-serif;
+    color:var(--ivory);
+    isolation:isolate;
+  }
+
+  /* ── свет сцены ─────────────────────────────────────────── */
+  .beam{position:absolute;top:-320px;width:520px;height:1500px;filter:blur(90px);opacity:.5;
+        background:linear-gradient(180deg,rgba(120,170,255,.55),rgba(120,170,255,0) 72%);
+        transform-origin:top center;pointer-events:none}
+  .beam.b1{left:180px;transform:rotate(14deg);opacity:.30}
+  .beam.b2{left:900px;transform:rotate(-7deg);opacity:.40}
+  .beam.b3{left:1420px;transform:rotate(-19deg);
+           background:linear-gradient(180deg,rgba(255,150,110,.45),rgba(255,150,110,0) 70%);opacity:.34}
+
+  .floor{position:absolute;left:0;right:0;bottom:-260px;height:620px;filter:blur(70px);opacity:.55;
+         background:radial-gradient(60% 100% at 58% 100%, rgba(62,123,240,.45), rgba(10,19,48,0) 72%)}
+
+  .vignette{position:absolute;inset:0;pointer-events:none;
+            background:radial-gradient(78% 74% at 50% 46%, rgba(0,0,0,0) 42%, rgba(2,5,14,.72) 100%)}
+
+  .grain{position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay}
+
+  svg.art{position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none}
+  svg.art.props{z-index:4}
+  svg.art.front{z-index:6}
+
+  /* ── контент ────────────────────────────────────────────── */
+  .layer{position:absolute;inset:0;z-index:5}
+
+  .logo-main{position:absolute;left:120px;top:78px;height:158px;
+             filter:brightness(1.22) saturate(1.04) drop-shadow(0 0 26px rgba(30,80,180,.45))}
+  .light .logo-main{filter:none}
+  .logo-corp{position:absolute;right:120px;top:96px;display:flex;align-items:center;gap:34px}
+  .logo-corp img.c{height:44px}
+  .logo-corp img.y{height:88px}
+  .logo-corp .div{width:1px;height:74px;background:linear-gradient(180deg,rgba(238,243,255,0),rgba(238,243,255,.34),rgba(238,243,255,0))}
+
+  .stack{position:absolute;left:120px;top:328px;width:1180px}
+
+  .stack::before{content:'';display:block;width:132px;height:1px;margin-bottom:26px;
+                 background:rgba(238,243,255,.4)}
+  .light .stack::before{background:rgba(158,116,48,.7)}
+
+  .eyebrow{display:flex;align-items:center;gap:20px;
+           font-size:19px;font-weight:600;letter-spacing:.34em;text-transform:uppercase;
+           color:rgba(238,243,255,.72)}
+  .eyebrow .dot{width:9px;height:9px;border-radius:50%;background:var(--ktk-red);
+                box-shadow:0 0 18px 4px rgba(232,35,42,.6)}
+
+  h1{font-family:'Unbounded',sans-serif;font-weight:800;font-size:106px;line-height:1.2;
+     letter-spacing:-.035em;text-transform:uppercase;margin-top:30px;
+     text-shadow:0 0 90px rgba(90,150,255,.28)}
+  h1 .ln{display:block}
+
+  .rule{width:700px;height:1px;margin-top:38px;
+        background:linear-gradient(90deg,rgba(238,243,255,.55),rgba(238,243,255,.06))}
+
+  .name{margin-top:26px;font-size:25px;line-height:1.44;letter-spacing:.005em;
+        color:rgba(238,243,255,.66);max-width:800px}
+  .name b{display:block;font-weight:600;font-size:29px;color:var(--ivory);letter-spacing:.004em}
+
+  /* паспарту: двойная линейка с угловыми засечками */
+  .frame{position:absolute;inset:44px;border:1px solid rgba(238,243,255,.16);pointer-events:none}
+  .frame::after{content:'';position:absolute;inset:7px;border:1px solid rgba(238,243,255,.07)}
+  .tick{position:absolute;width:22px;height:22px;pointer-events:none}
+  .tick i{position:absolute;background:rgba(238,243,255,.42)}
+  .tick i:first-child{left:0;top:10px;width:22px;height:1px}
+  .tick i:last-child{left:10px;top:0;width:1px;height:22px}
+  .tick.tl{left:33px;top:33px}.tick.tr{right:33px;top:33px}
+  .tick.bl{left:33px;bottom:33px}.tick.br{right:33px;bottom:33px}
+
+  .foot{position:absolute;left:120px;right:120px;bottom:76px;
+        display:grid;grid-template-columns:1fr auto auto;gap:96px;align-items:end;
+        padding-top:26px;border-top:1px solid rgba(238,243,255,.16)}
+  .when{font-size:23px;font-weight:500;line-height:1.5;color:rgba(238,243,255,.84)}
+  .when span{display:block;font-size:15px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;
+             color:rgba(238,243,255,.42);margin-bottom:10px}
+  .org{font-size:15px;line-height:1.72;color:rgba(238,243,255,.5);text-align:right;width:640px}
+  .org b{font-weight:600;color:rgba(238,243,255,.72)}
+  .org u{display:inline-block;text-decoration:none;letter-spacing:.2em;text-transform:uppercase;
+         font-size:12px;color:rgba(238,243,255,.34);margin-right:10px}
+  .age{font-family:'Unbounded',sans-serif;font-weight:600;font-size:19px;
+       color:rgba(238,243,255,.45);border:1px solid rgba(238,243,255,.22);
+       border-radius:6px;padding:7px 12px 6px}
+
+  /* ── светлая версия ─────────────────────────────────────── */
+  .poster.light{
+    background:radial-gradient(120% 92% at 60% 32%, #FFFFFF 0%, #EEF3FC 40%, #DCE6F7 74%, #CBD9F0 100%);
+    color:#0B1B3D;
+  }
+  .light .beam{opacity:.22;mix-blend-mode:multiply;
+               background:linear-gradient(180deg,rgba(90,140,230,.30),rgba(90,140,230,0) 70%)}
+  .light .beam.b3{background:linear-gradient(180deg,rgba(232,90,60,.26),rgba(232,90,60,0) 70%)}
+  .light .floor{background:radial-gradient(60% 100% at 58% 100%, rgba(120,165,255,.38), rgba(255,255,255,0) 72%)}
+  .light .vignette{background:radial-gradient(80% 76% at 50% 44%, rgba(255,255,255,0) 44%, rgba(120,145,190,.24) 100%)}
+  .light h1{text-shadow:0 0 80px rgba(255,255,255,.9)}
+  .light .eyebrow{color:rgba(11,27,61,.62)}
+  .light .rule{background:linear-gradient(90deg,rgba(11,27,61,.5),rgba(11,27,61,.05))}
+  .light .name{color:rgba(11,27,61,.66)}
+  .light .name b{color:#0B1B3D}
+  .light .when{color:rgba(11,27,61,.84)}
+  .light .when span{color:rgba(11,27,61,.45)}
+  .light .org{color:rgba(11,27,61,.55)}
+  .light .org b{color:rgba(11,27,61,.78)}
+  .light .org u{color:rgba(11,27,61,.38)}
+  .light .age{color:rgba(11,27,61,.5);border-color:rgba(11,27,61,.22)}
+  .light .foot{border-top-color:rgba(11,27,61,.16)}
+  .light .frame{border-color:rgba(11,27,61,.16)}
+  .light .frame::after{border-color:rgba(11,27,61,.08)}
+  .light .tick i{background:rgba(158,116,48,.6)}
+  .light .logo-corp .div{background:linear-gradient(180deg,rgba(11,27,61,0),rgba(11,27,61,.28),rgba(11,27,61,0))}
+</style>
+</head>
+<body>
+<div class="fit" id="fit">
+<div class="poster" id="poster">
+  <div class="beam b1"></div><div class="beam b2"></div><div class="beam b3"></div>
+  <div class="floor"></div>
+
+  <svg class="art back" id="artBack" viewBox="0 0 1920 1080"></svg>
+  <svg class="art props" id="artProps" viewBox="0 0 1920 1080"></svg>
+
+  <div class="layer">
+    <img class="logo-main" id="logoMain" src="./logos/ktk-talent-rgba.png" alt="КТК — талантливым детям">
+    <div class="logo-corp">
+      <img class="c" id="logoCorp" src="./logos/ktk-white-rgba.png" alt="Каспийский трубопроводный консорциум">
+      <div class="div"></div>
+      <img class="y" id="logo30" src="./logos/ktk30-white.png" alt="30 лет КТК">
+    </div>
+
+    <div class="stack">
+      <div class="eyebrow"><i class="dot"></i>III этап&nbsp;&nbsp;·&nbsp;&nbsp;Гала-концерт</div>
+      <h1><span class="ln" id="ln1">Искусство</span><span class="ln" id="ln2">объединяет</span></h1>
+      <div class="rule"></div>
+      <div class="name">
+        Международный конкурс детского и юношеского творчества
+        <b>«КТК&nbsp;– талантливым детям 2026»</b>
+      </div>
+
+    </div>
+
+    <div class="foot">
+        <div class="when">12 апреля 2026 · Ставрополь<br>Дворец культуры и спорта</div>
+      <div class="org">
+        <u>Организатор</u><b>АО «Каспийский трубопроводный консорциум»</b><br>
+        <u>Оператор</u>АНО «Академия культурных и образовательных инноваций»
+      </div>
+      <div class="age">0+</div>
+    </div>
+  </div>
+
+  <svg class="art front" id="artFront" viewBox="0 0 1920 1080"></svg>
+
+  <div class="frame"></div>
+  <div class="tick tl"><i></i><i></i></div><div class="tick tr"><i></i><i></i></div>
+  <div class="tick bl"><i></i><i></i></div><div class="tick br"><i></i><i></i></div>
+
+  <div class="vignette"></div>
+  <svg class="grain"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+</div>
+</div>
+
+<script src="./art.js"></script>
+
+</body>
+</html>

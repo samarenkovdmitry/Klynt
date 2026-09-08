@@ -64,6 +64,9 @@ export function ReportPrintPageView({
     ...data,
     previewImage: resolveReportPreviewSrc(routeParam, data.previewImage),
   };
+  const mobilePreviewImage = data.mobile_preview_image
+    ? resolveReportPreviewSrc(routeParam, data.mobile_preview_image)
+    : undefined;
 
   return (
     <>
@@ -90,7 +93,11 @@ export function ReportPrintPageView({
         </p>
       </div>
 
-      <ReportPrintDocument data={printData} reportId={routeParam} />
+      <ReportPrintDocument
+        data={printData}
+        reportId={routeParam}
+        mobilePreviewImage={mobilePreviewImage}
+      />
     </>
   );
 }

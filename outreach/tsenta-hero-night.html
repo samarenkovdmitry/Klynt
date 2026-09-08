@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tsenta — hero concept · Night Shift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#0A0C11;
+    --surface:#12161E;
+    --surface-2:#151A23;
+    --line-d:#1F2530;
+    --line-d2:#272E3A;
+    --ink-d:#F2F0EC;
+    --dim:#8A919E;
+    --dimmer:#565D69;
+    --acc:#34D399;
+    --acc-deep:#0F5237;
+    --paper:#FAFAF8;
+    --ink:#0B0B0C;
+    --muted:#6B6B70;
+    --line:#E7E4DE;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  html{background:#FAFAF8;}
+  body{
+    min-width:1440px;
+    background:var(--paper);
+    font-family:'Inter',-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* =========== NIGHT SECTION =========== */
+  .night{
+    width:100%;
+    background:linear-gradient(100deg,#07090D 0%,#090C12 36%,#0C1119 66%,#11161F 100%);
+    padding-bottom:56px;
+    position:relative;
+    overflow:hidden;
+  }
+  /* deep night pooling in the top-left */
+  .glow-night{
+    position:absolute;top:-160px;left:-140px;width:900px;height:700px;
+    background:radial-gradient(closest-side, rgba(58,86,172,0.14), rgba(58,86,172,0) 100%);
+    pointer-events:none;
+  }
+  /* the sun still below the horizon, bottom-right — clipped by the section edge */
+  .glow-dawn{
+    position:absolute;right:-280px;bottom:-250px;width:1120px;height:780px;
+    background:radial-gradient(closest-side, rgba(255,168,88,0.22), rgba(255,146,84,0.085) 46%, rgba(255,140,80,0) 100%);
+    pointer-events:none;
+  }
+  .glow-dawn-core{
+    position:absolute;right:-60px;bottom:-180px;width:620px;height:430px;
+    background:radial-gradient(closest-side, rgba(255,206,138,0.20), rgba(255,206,138,0) 100%);
+    pointer-events:none;
+  }
+
+  .wrap{width:1200px;margin:0 auto;position:relative;}
+
+  /* nav */
+  .nav{height:88px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-left{display:flex;align-items:center;gap:40px;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-mark{
+    width:26px;height:26px;border-radius:7px;background:var(--acc);
+    display:flex;align-items:center;justify-content:center;
+    color:#06210F;font-family:'Instrument Sans';font-weight:700;font-size:14px;
+  }
+  .logo-word{font-family:'Instrument Sans';font-weight:600;font-size:19px;letter-spacing:-0.02em;color:var(--ink-d);}
+  .nav-links{display:flex;align-items:center;gap:28px;}
+  .nav-links a{font-size:15px;color:var(--dim);text-decoration:none;font-weight:450;}
+  .nav-right{display:flex;align-items:center;gap:20px;}
+  .nav-login{font-size:15px;color:var(--dim);text-decoration:none;font-weight:450;}
+  .nav-cta{
+    background:rgba(255,255,255,.07);border:1px solid var(--line-d2);
+    color:var(--ink-d);text-decoration:none;
+    font-size:15px;font-weight:550;padding:10px 20px;border-radius:9px;
+  }
+
+  /* hero top */
+  .hero-top{display:flex;align-items:flex-end;justify-content:space-between;padding-top:76px;}
+
+  .eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:30px;}
+  .chip{
+    display:flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:999px;
+    border:1px solid var(--line-d2);background:rgba(255,255,255,.04);
+    font-size:13px;font-weight:500;color:var(--dim);letter-spacing:-0.005em;
+  }
+  .chip-yc-mark{
+    width:15px;height:15px;border-radius:3px;background:#FF6B00;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:10px;font-weight:700;font-family:'Instrument Sans';
+  }
+  .chip-live{border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.09);color:#7FE9BB;font-weight:550;}
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px rgba(52,211,153,.18);}
+
+  h1{
+    font-family:'Instrument Sans';
+    font-size:70px;line-height:1.03;letter-spacing:-0.038em;font-weight:600;
+    color:var(--ink-d);
+  }
+  h1 .asleep{color:#4A515D;}
+  h1 .num{color:var(--acc);}
+
+  .right-block{width:392px;flex:none;padding-bottom:8px;}
+  .sub{
+    font-size:17.5px;line-height:1.55;letter-spacing:-0.011em;color:var(--dim);
+    margin-bottom:28px;
+  }
+  .sub strong{color:var(--ink-d);font-weight:600;}
+  .btn-primary{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    height:56px;border-radius:12px;
+    background:var(--acc);color:#06210F;text-decoration:none;
+    font-size:17px;font-weight:600;letter-spacing:-0.012em;
+    box-shadow:0 10px 30px rgba(52,211,153,.22);
+    margin-bottom:12px;
+  }
+  .micro{font-size:13.5px;color:var(--dimmer);letter-spacing:-0.004em;text-align:center;}
+
+  /* =========== TIMELINE =========== */
+  .tl{position:relative;width:1200px;height:286px;margin-top:78px;}
+
+  .tl-cap{
+    position:absolute;top:-30px;left:0;
+    font-size:11.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:var(--dimmer);
+  }
+
+  /* event cards */
+  .ev{
+    position:absolute;width:218px;height:76px;
+    background:var(--surface);border:1px solid var(--line-d);border-radius:12px;
+    padding:12px 14px;
+  }
+  .ev-top{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+  .ev-av{
+    width:20px;height:20px;border-radius:5px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Instrument Sans';font-weight:600;font-size:11px;color:#fff;
+  }
+  .ev-co{font-size:13px;font-weight:600;color:var(--ink-d);letter-spacing:-0.008em;}
+  .ev-t{
+    margin-left:auto;font-family:'JetBrains Mono';font-size:11px;font-weight:500;color:var(--dimmer);
+  }
+  .ev-role{font-size:12px;color:var(--dim);letter-spacing:-0.005em;margin-bottom:5px;}
+  .ev-delta{
+    font-family:'JetBrains Mono';font-size:11px;font-weight:600;color:var(--acc);letter-spacing:0;
+  }
+
+  /* connectors */
+  .conn{position:absolute;width:1px;background:var(--line-d2);}
+  .node{
+    position:absolute;width:9px;height:9px;border-radius:50%;
+    background:var(--acc);box-shadow:0 0 0 4px rgba(52,211,153,.14);
+  }
+
+  /* sleep bar */
+  .sleep{
+    position:absolute;left:0;top:214px;width:1200px;height:44px;
+    background:var(--surface-2);border:1px solid var(--line-d);border-radius:10px;
+    display:flex;align-items:center;padding:0 16px;
+  }
+  .sleep-l{display:flex;align-items:center;gap:9px;}
+  .moon{width:15px;height:15px;flex:none;}
+  .sleep-txt{font-size:13.5px;font-weight:550;color:var(--dim);letter-spacing:-0.008em;}
+  .sleep-dur{font-family:'JetBrains Mono';font-size:12px;color:var(--dimmer);margin-left:4px;}
+  .sleep-r{margin-left:auto;display:flex;align-items:center;gap:16px;}
+  .sleep-stat{font-size:13.5px;font-weight:600;color:var(--acc);letter-spacing:-0.008em;}
+  .sleep-stat span{color:var(--dim);font-weight:450;}
+
+  /* channel strip — hero footer band */
+  .ch-strip{
+    display:flex;align-items:center;gap:26px;
+    margin-top:52px;padding-top:26px;border-top:1px solid var(--line-d);
+  }
+  .ch-strip-label{
+    font-size:11.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;
+    color:var(--dimmer);flex:none;
+  }
+  .ch-d{
+    display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;
+    background:rgba(255,255,255,.035);border:1px solid var(--line-d2);
+    font-size:14px;font-weight:500;color:#B6BCC6;letter-spacing:-0.006em;
+  }
+  .ch-row{display:flex;gap:8px;}
+
+  /* axis labels */
+  .ax{position:absolute;top:268px;font-family:'JetBrains Mono';font-size:11px;color:#454C57;}
+  .ax-dawn{color:#E0A76A;}
+  .dawn-tick{position:absolute;left:1199px;top:214px;width:1px;height:44px;background:linear-gradient(180deg,rgba(224,167,106,0),rgba(224,167,106,.55));}
+
+  /* =========== DAY SECTION =========== */
+  .day{width:100%;background:var(--paper);padding:56px 0 88px;}
+  .day-wrap{width:1200px;margin:0 auto;}
+
+  .channels-label{
+    font-size:11.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;
+    color:#8E8E93;margin-bottom:15px;
+  }
+  .channels{display:flex;gap:8px;margin-bottom:56px;}
+  .ch{
+    display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;
+    background:#fff;border:1px solid var(--line);
+    font-size:14px;font-weight:500;color:#3A3A3E;letter-spacing:-0.006em;
+  }
+  .ch-ico{width:16px;height:16px;flex:none;}
+
+  .proof{display:flex;}
+  .stat{flex:1;padding-right:40px;}
+  .stat-n{
+    font-family:'Instrument Sans';font-size:42px;font-weight:600;
+    letter-spacing:-0.03em;line-height:1;margin-bottom:10px;color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .stat-l{font-size:14.5px;color:var(--muted);line-height:1.45;letter-spacing:-0.008em;}
+</style>
+</head>
+<body>
+
+<section class="night">
+  <div class="glow-night"></div>
+  <div class="glow-dawn"></div>
+  <div class="glow-dawn-core"></div>
+  <div class="wrap">
+
+    <nav class="nav">
+      <div class="nav-left">
+        <div class="logo">
+          <div class="logo-mark">T</div>
+          <div class="logo-word">Tsenta</div>
+        </div>
+        <div class="nav-links">
+          <a href="#">How it works</a>
+          <a href="#">Platforms</a>
+          <a href="#">Pricing</a>
+          <a href="#">Blog</a>
+        </div>
+      </div>
+      <div class="nav-right">
+        <a class="nav-login" href="#">Log in</a>
+        <a class="nav-cta" href="#">Start free</a>
+      </div>
+    </nav>
+
+    <div class="hero-top">
+
+      <div class="left-block">
+        <div class="eyebrow">
+          <div class="chip"><span class="chip-yc-mark">Y</span> Backed by Y Combinator</div>
+          <div class="chip chip-live"><span class="pulse"></span> Watching 50,000+ career pages</div>
+        </div>
+        <h1>
+          <span class="asleep">You were asleep.</span><br>
+          You still applied to<br>
+          <span class="num">nine</span> jobs.
+        </h1>
+      </div>
+
+      <div class="right-block">
+        <p class="sub">
+          Tsenta watches every career page across <strong>19 ATSes</strong> around the clock
+          and submits a tailored résumé the minute a role that fits you goes live —
+          while the other applicants are still asleep.
+        </p>
+        <a class="btn-primary" href="#">
+          Start applying tonight
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="#06210F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <p class="micro">First 25 applications free. No card required.</p>
+      </div>
+
+    </div>
+
+    <!-- ===== night timeline ===== -->
+    <div class="tl">
+      <div class="tl-cap">Last night · 23:00 → 07:30</div>
+
+      <!-- event 1 -->
+      <div class="ev" style="left:60px;top:0;">
+        <div class="ev-top"><div class="ev-av" style="background:#635BFF;">S</div><div class="ev-co">Stripe</div><div class="ev-t">23:41</div></div>
+        <div class="ev-role">Software Engineer, Payments</div>
+        <div class="ev-delta">+2m after posting</div>
+      </div>
+      <div class="conn" style="left:96px;top:76px;height:140px;"></div>
+      <div class="node" style="left:92px;top:212px;"></div>
+
+      <!-- event 2 -->
+      <div class="ev" style="left:263px;top:100px;">
+        <div class="ev-top"><div class="ev-av" style="background:#0B0B0C;">V</div><div class="ev-co">Vercel</div><div class="ev-t">01:07</div></div>
+        <div class="ev-role">Backend Engineer I</div>
+        <div class="ev-delta">+6m after posting</div>
+      </div>
+      <div class="conn" style="left:299px;top:176px;height:40px;"></div>
+      <div class="node" style="left:295px;top:212px;"></div>
+
+      <!-- event 3 -->
+      <div class="ev" style="left:477px;top:0;">
+        <div class="ev-top"><div class="ev-av" style="background:#2E2E32;">N</div><div class="ev-co">Notion</div><div class="ev-t">02:38</div></div>
+        <div class="ev-role">Senior Frontend Engineer</div>
+        <div class="ev-delta">+4m after posting</div>
+      </div>
+      <div class="conn" style="left:513px;top:76px;height:140px;"></div>
+      <div class="node" style="left:509px;top:212px;"></div>
+
+      <!-- event 4 -->
+      <div class="ev" style="left:698px;top:100px;">
+        <div class="ev-top"><div class="ev-av" style="background:#0052CC;">A</div><div class="ev-co">Atlassian</div><div class="ev-t">04:12</div></div>
+        <div class="ev-role">Product Engineer, Platform</div>
+        <div class="ev-delta">+3m after posting</div>
+      </div>
+      <div class="conn" style="left:734px;top:176px;height:40px;"></div>
+      <div class="node" style="left:730px;top:212px;"></div>
+
+      <!-- event 5 -->
+      <div class="ev" style="left:943px;top:0;">
+        <div class="ev-top"><div class="ev-av" style="background:#1E9E5A;">L</div><div class="ev-co">Linktree</div><div class="ev-t">05:56</div></div>
+        <div class="ev-role">Full-Stack Engineer</div>
+        <div class="ev-delta">+2m after posting</div>
+      </div>
+      <div class="conn" style="left:979px;top:76px;height:140px;"></div>
+      <div class="node" style="left:975px;top:212px;"></div>
+
+      <!-- sleep bar -->
+      <div class="sleep">
+        <div class="sleep-l">
+          <svg class="moon" viewBox="0 0 16 16" fill="none">
+            <path d="M13.2 9.9A5.8 5.8 0 016.1 2.8a5.8 5.8 0 107.1 7.1z" stroke="#8A919E" stroke-width="1.3" stroke-linejoin="round"/>
+          </svg>
+          <span class="sleep-txt">You — asleep</span>
+          <span class="sleep-dur">8h 12m</span>
+        </div>
+        <div class="sleep-r">
+          <span class="sleep-stat">9 applications sent <span>overnight</span></span>
+          <span class="sleep-stat">2 recruiter replies <span>waiting for you</span></span>
+        </div>
+      </div>
+
+      <!-- axis -->
+      <div class="ax" style="left:0;">23:00</div>
+      <div class="ax" style="left:207px;">00:00</div>
+      <div class="ax" style="left:348px;">01:00</div>
+      <div class="ax" style="left:489px;">02:00</div>
+      <div class="ax" style="left:630px;">03:00</div>
+      <div class="ax" style="left:771px;">04:00</div>
+      <div class="ax" style="left:912px;">05:00</div>
+      <div class="ax" style="left:1053px;">06:00</div>
+      <div class="dawn-tick"></div>
+      <div class="ax ax-dawn" style="left:1155px;">07:30</div>
+    </div>
+
+    <div class="ch-strip">
+      <div class="ch-strip-label">Approve from anywhere</div>
+      <div class="ch-row">
+        <div class="ch-d"><svg class="ch-ico" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2.5" width="13" height="9.5" rx="3" stroke="#B6BCC6" stroke-width="1.3"/><path d="M4.5 12v2.2L7.2 12" stroke="#B6BCC6" stroke-width="1.3" stroke-linejoin="round"/></svg> iMessage</div>
+        <div class="ch-d"><svg class="ch-ico" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.4" stroke="#B6BCC6" stroke-width="1.3"/><path d="M5.6 6.2c0 2.6 1.6 4.2 4.2 4.2l.8-1-1.5-.7-.7.6c-.6-.3-1.2-.9-1.5-1.5l.6-.7-.7-1.5-1.2.6z" fill="#B6BCC6"/></svg> WhatsApp</div>
+        <div class="ch-d"><svg class="ch-ico" viewBox="0 0 16 16" fill="none"><path d="M8 1.8l1.7 4.5 4.5 1.7-4.5 1.7L8 14.2l-1.7-4.5L1.8 8l4.5-1.7L8 1.8z" stroke="#B6BCC6" stroke-width="1.3" stroke-linejoin="round"/></svg> Claude</div>
+        <div class="ch-d"><svg class="ch-ico" viewBox="0 0 16 16" fill="none"><path d="M6 5L3 8l3 3M10 5l3 3-3 3" stroke="#B6BCC6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Codex</div>
+        <div class="ch-d"><svg class="ch-ico" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.4" stroke="#B6BCC6" stroke-width="1.3"/><circle cx="8" cy="8" r="2.4" stroke="#B6BCC6" stroke-width="1.3"/><path d="M10.1 6.1L14.3 5" stroke="#B6BCC6" stroke-width="1.3"/></svg> Chrome</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="day">
+  <div class="day-wrap">
+
+    <div class="proof">
+      <div class="stat">
+        <div class="stat-n">50,000+</div>
+        <div class="stat-l">Company career pages watched<br>around the clock</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">19</div>
+        <div class="stat-l">Applicant tracking systems<br>covered end to end</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">Top 100</div>
+        <div class="stat-l">Where you land in the pile<br>when you apply first</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">25</div>
+        <div class="stat-l">Free applications before<br>you pay anything</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
