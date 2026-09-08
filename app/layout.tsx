@@ -3,8 +3,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Familjen_Grotesk } from "next/font/google";
 import { GeistMono } from "geist/font/mono";
-import { AppHeader } from "@/components/AppHeader";
-import { AppFooterWrapper } from "@/components/AppFooterWrapper";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
 
@@ -32,9 +30,7 @@ export default function RootLayout({
       className={`${familjen.variable} ${familjen.className} ${GeistMono.variable} antialiased bg-white`}
     >
       <body className="flex min-h-screen flex-col bg-white">
-        <AppHeader />
         <div className="flex flex-1 flex-col">{children}</div>
-        <AppFooterWrapper />
         <Analytics />
         <SpeedInsights />
       </body>
