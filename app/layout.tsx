@@ -1,7 +1,7 @@
 import type { Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Familjen_Grotesk } from "next/font/google";
+import { Instrument_Sans } from "next/font/google";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
@@ -13,9 +13,9 @@ export const viewport: Viewport = {
   themeColor: "#FFFFFF",
 };
 
-const familjen = Familjen_Grotesk({
+const instrument = Instrument_Sans({
   subsets: ["latin"],
-  variable: "--font-familjen",
+  variable: "--font-instrument",
   weight: ["400", "500", "600", "700"],
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${familjen.variable} ${familjen.className} ${GeistMono.variable} antialiased bg-white`}
+      className={`${instrument.variable} ${instrument.className} ${GeistMono.variable} antialiased bg-white`}
     >
       <body className="flex min-h-screen flex-col bg-white">
         <div className="flex flex-1 flex-col">{children}</div>

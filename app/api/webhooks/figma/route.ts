@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { FigmaWebhookEvent, RawEvent } from '@/lib/types/events';
+import { FigmaWebhookEvent } from '@/lib/types/events';
+import { createRawEvent, getIntegrationByFileKey } from '@/lib/db/queries';
 
 // Figma webhook passcode should be stored in environment variables
 const FIGMA_WEBHOOK_PASSCODE = process.env.FIGMA_WEBHOOK_PASSCODE;
@@ -20,9 +21,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
+    // Find project by Figma file key via integration config
+    const integration = await getIntegrationByFileKey(body.file_key, 'figma');
+    if (!integration) {
+      console.error('No Figma integration found for file key:', body.file_key);
+      return NextResponse.json({ error: 'Integration not found' }, { status: 400 });
+    }
+
+    const projectId = integration.project_id;
+
     // Transform Figma event to RawEvent
-    const rawEvent: Omit<RawEvent, 'id' | 'project_id' | 'created_at'> = {
-      source: 'figma',
+    const rawEventData = {
+      project_id: projectId,
+      source: 'figma' as const,
       source_event_id: `${body.file_key}_${body.timestamp}`,
       event_type: mapFigmaEventType(body.event_type),
       author_id: extractAuthorId(body),
@@ -31,18 +42,21 @@ export async function POST(request: NextRequest) {
       metadata: body,
     };
 
-    // TODO: Store raw event in database
-    // For now, just log it
-    console.log('Figma event received:', {
+    // Store raw event in database
+    const rawEvent = await createRawEvent(rawEventData);
+
+    console.log('Figma event received and stored:', {
       type: body.event_type,
       file: body.file_name,
       timestamp: body.timestamp,
+      event_id: rawEvent.id,
     });
 
     // Queue event for AI processing
     // TODO: Implement background job queue
+    // For now, events will be processed by a separate endpoint/cron job
 
-    return NextResponse.json({ received: true, event_id: rawEvent.source_event_id });
+    return NextResponse.json({ received: true, event_id: rawEvent.id });
 
   } catch (error) {
     console.error('Error processing Figma webhook:', error);

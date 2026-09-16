@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SlackWebhookEvent, RawEvent } from '@/lib/types/events';
+import { SlackWebhookEvent } from '@/lib/types/events';
+import { createRawEvent, getIntegrationByTeamId } from '@/lib/db/queries';
 
 // Slack signing secret should be stored in environment variables
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 
+// TODO: Implement Slack request signature verification using SLACK_SIGNING_SECRET,
+// X-Slack-Signature and X-Slack-Request-Timestamp. Skipped for the prototype.
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as SlackWebhookEvent;
-
-    // Verify Slack signature (TODO: implement proper signature verification)
-    // For now, we'll skip this in the prototype
 
     // Handle URL verification (Slack sends this when webhook is created)
     if (body.type === 'url_verification') {
@@ -32,13 +33,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
+    // Find the integration by team ID
+    const integration = await getIntegrationByTeamId(body.team_id);
+    if (!integration) {
+      console.error('No Slack integration found for team:', body.team_id);
+      return NextResponse.json({ error: 'Integration not found' }, { status: 400 });
+    }
+
+    const projectId = integration.project_id;
+
     // Transform Slack event to RawEvent
-    const rawEvent: Omit<RawEvent, 'id' | 'project_id' | 'created_at'> = {
-      source: 'slack',
+    const rawEventData = {
+      project_id: projectId,
+      source: 'slack' as const,
       source_event_id: slackEvent.ts,
-      event_type: 'message',
+      event_type: 'message' as const,
       author_id: slackEvent.user,
-      timestamp: new Date(parseFloat(slackEvent.ts) * 1000),
+      timestamp: new Date(parseFloat(slackEvent.ts) * 1000).toISOString(),
       content: slackEvent.text,
       metadata: {
         channel: slackEvent.channel,
@@ -50,19 +61,22 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // TODO: Store raw event in database
-    // For now, just log it
-    console.log('Slack message received:', {
+    // Store raw event in database
+    const rawEvent = await createRawEvent(rawEventData);
+
+    console.log('Slack message received and stored:', {
       user: slackEvent.user,
       text: slackEvent.text,
       channel: slackEvent.channel,
       timestamp: slackEvent.ts,
+      event_id: rawEvent.id,
     });
 
     // Queue event for AI processing
     // TODO: Implement background job queue
+    // For now, events will be processed by a separate endpoint/cron job
 
-    return NextResponse.json({ received: true, event_id: rawEvent.source_event_id });
+    return NextResponse.json({ received: true, event_id: rawEvent.id });
 
   } catch (error) {
     console.error('Error processing Slack webhook:', error);

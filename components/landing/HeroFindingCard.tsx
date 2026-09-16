@@ -260,7 +260,7 @@ function FormatABody() {
       <div style={{ display: "flex", alignItems: "baseline", gap: 0 }}>
         <span
           style={{
-            fontFamily: "var(--font-familjen, 'Familjen Grotesk', sans-serif)",
+            fontFamily: "var(--font-instrument, 'Instrument Sans', sans-serif)",
             fontSize: 52,
             fontWeight: 700,
             color: "#1A1814",
@@ -272,7 +272,7 @@ function FormatABody() {
         </span>
         <span
           style={{
-            fontFamily: "var(--font-familjen, 'Familjen Grotesk', sans-serif)",
+            fontFamily: "var(--font-instrument, 'Instrument Sans', sans-serif)",
             fontSize: 52,
             fontWeight: 400,
             color: "#CBBDAF",
@@ -437,7 +437,7 @@ function FormatCBody() {
       {/* Big zero */}
       <div
         style={{
-          fontFamily: "var(--font-familjen, 'Familjen Grotesk', sans-serif)",
+          fontFamily: "var(--font-instrument, 'Instrument Sans', sans-serif)",
           fontSize: 52,
           fontWeight: 700,
           color: "#1A1814",

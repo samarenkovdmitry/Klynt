@@ -13,6 +13,7 @@ CREATE TABLE projects (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   description TEXT,
+  owner_id UUID REFERENCES auth.users(id), -- user who owns this project
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );

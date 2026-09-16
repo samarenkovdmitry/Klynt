@@ -1,7 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-familjen), sans-serif;
+  --font-sans: var(--font-instrument), sans-serif;
+
+  /* Brand surfaces */
+  --color-cream:           #F5F3ED;
+  --color-app-bg:          #F8F7F4;
+  --color-line:            #E5E1D8;
+  --color-line-soft:       #EDEAE2;
+  --color-line-strong:     #D8D3C7;
+  --color-fill:            #F0EEE8;
+  --color-fill-soft:       #F5F4EF;
+  --color-field:           #FBFAF7;
+  --color-ink:             #151A23;
+  --color-ink-secondary:   #57544C;
+  --color-ink-muted:       #8C887D;
+  --color-ink-faint:       #A39E90;
+  --color-ink-ghost:       #B7B2A4;
 
   --color-status-good:     #1D9E75;
   --color-status-weak:     #BA7517;
@@ -89,11 +104,23 @@
   --nordic-text: #4A4AFF;
   --nordic-border: rgba(74, 74, 255, 0.28);
   --nordic-bg: rgba(74, 74, 255, 0.08);
+
+  /* Klynt accent — Forest + butter.
+     accent/accent-fg — тёмная плашка и кремовый текст на ней.
+     accent-link — читаемый на белом оттенок для ссылок, фокуса и мелких подписей.
+     accent-tint/tint-fg — светлая кнопка. accent-surface — пастельная подложка. */
+  --accent: #0F3D2E;
+  --accent-hover: #164F3C;
+  --accent-fg: #FFE79A;
+  --accent-link: #0F6B4F;
+  --accent-tint: #E9F3EC;
+  --accent-tint-fg: #0F3D2E;
+  --accent-surface: #F4F9F5;
 }
 
-/* Убираем принудительный шрифт — теперь Tailwind font-sans = Familjen Grotesk */
+/* Убираем принудительный шрифт — теперь Tailwind font-sans = Instrument Sans */
 html {
-  font-family: var(--font-familjen);
+  font-family: var(--font-instrument);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -217,4 +244,23 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Override browser autofill to keep Klynt input background. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: inset 0 0 0 1000px #FAFBFC !important;
+  -webkit-text-fill-color: #061C2F !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* On focus the autofill fill would otherwise override the 2px accent edge,
+   so the accent ring is layered on top of the background fill. */
+input:-webkit-autofill:focus {
+  -webkit-box-shadow:
+    inset 0 0 0 1px var(--accent-link),
+    inset 0 0 0 1000px #fff !important;
+  -webkit-text-fill-color: #061C2F !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
