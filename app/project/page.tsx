@@ -107,6 +107,9 @@ const ACTION_ICONS: Record<string, ReactNode> = {
 };
 const DEFAULT_ACTION_ICON = <RiEditLine size={14} />;
 
+// Raw external IDs (e.g. Figma user "1624093726897831277") aren't meaningful to show
+const isRawExternalId = (s: string) => /^[0-9_-]{10,}$/.test(s);
+
 const CONFLICT_TYPE_LABELS: Record<string, string> = {
   state_change: 'No final decision',
   contradiction: 'Decision conflict',
@@ -527,12 +530,12 @@ function ProjectStatePageInner() {
                           </p>
                         </div>
                         <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
-                          {event.author && (
+                          {event.author && !isRawExternalId(event.author) && (
                             <span className="flex items-center gap-1">
-                              <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
+                              <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
                                 <Avatar name={event.author} email={event.author} className="text-[8px]" />
                               </span>
-                              {event.author}
+                              <span className="max-w-[84px] truncate">{event.author}</span>
                             </span>
                           )}
                           {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
@@ -574,7 +577,7 @@ function ProjectStatePageInner() {
                   </a>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+                <div className="-mx-3 flex snap-x snap-mandatory gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:px-0 sm:pb-0">
                   {state.currentState.slice().sort((a: any, b: any) => {
                     const priority: Record<string, number> = { removed: 0, modify: 1, modified: 1, added: 2, approved: 3 };
                     const pa = priority[a.current_state?.toLowerCase()] ?? 4;
@@ -610,7 +613,7 @@ function ProjectStatePageInner() {
                       <div
                         key={fact.id}
                         onClick={hasHistory ? () => setSelectedFactId(fact.id) : undefined}
-                        className={`group relative flex flex-col rounded-xl border border-line bg-white px-4 py-3 transition-colors ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''}`}
+                        className={`group relative flex w-[74%] max-w-[300px] flex-shrink-0 snap-start flex-col rounded-xl border border-line bg-white px-4 py-3 transition-colors sm:w-auto sm:max-w-none ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''}`}
                       >
                         <p className="text-[15px] font-semibold leading-snug text-ink">{capitalize(fact.subject)}</p>
                         <span className={`relative mt-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
@@ -624,7 +627,7 @@ function ProjectStatePageInner() {
                         </span>
                         {isApproved && approvalEntry?.author ? (
                           <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-muted">
-                            Approved by {approvalEntry.author}
+                            Approved{isRawExternalId(approvalEntry.author) ? '' : ` by ${approvalEntry.author}`}
                             {approvalEntry.decided_at && ` · ${formatRelative(approvalEntry.decided_at)}`}
                           </p>
                         ) : contextLine ? (
@@ -640,13 +643,13 @@ function ProjectStatePageInner() {
                             {hasHistory && showUpdated && <span>·</span>}
                             {showUpdated && <span>{formatRelative(fact.last_updated_at!)}</span>}
                             {(lastActor || lastSource) && (
-                              <span className="ml-auto flex items-center gap-1.5">
-                                {lastActor && (
+                              <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
+                                {lastActor && !isRawExternalId(lastActor) && (
                                   <>
                                     <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
                                       <Avatar name={lastActor} email={lastActor} className="text-[8px]" />
                                     </span>
-                                    <span>{lastActor}</span>
+                                    <span className="max-w-[80px] truncate">{lastActor}</span>
                                   </>
                                 )}
                                 {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
@@ -732,12 +735,12 @@ function ProjectStatePageInner() {
                                   </span>
                                 </div>
                                 <span className="flex flex-shrink-0 items-center gap-2.5 text-xs text-ink-faint">
-                                  {event.author && (
+                                  {event.author && !isRawExternalId(event.author) && (
                                     <span className="flex items-center gap-1">
-                                      <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
+                                      <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
                                         <Avatar name={event.author} email={event.author} className="text-[8px]" />
                                       </span>
-                                      {event.author}
+                                      <span className="max-w-[84px] truncate">{event.author}</span>
                                     </span>
                                   )}
                                   {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
@@ -952,7 +955,7 @@ function ProjectStatePageInner() {
                               {group.source === 'gdocs' ? 'Google Docs' : capitalize(group.source)}
                             </span>
                           )}
-                          {group.author && (
+                          {group.author && !isRawExternalId(group.author) && (
                             <span className="flex items-center gap-1.5">
                               <span className="flex h-4 w-4 items-center justify-center rounded-full overflow-hidden">
                                 <Avatar name={group.author} email={group.author} className="text-[8px]" />
