@@ -501,7 +501,7 @@ function ProjectStatePageInner() {
 
 
 
-        <div className="grid gap-10 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
           {/* Latest */}
           <section className="order-3 lg:col-span-8">
               <SectionHeader
