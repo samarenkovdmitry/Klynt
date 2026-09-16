@@ -502,10 +502,8 @@ function ProjectStatePageInner() {
 
 
         <div className="grid gap-10 lg:grid-cols-12">
-          {/* Main column */}
-          <div className="order-1 flex flex-col lg:order-1 lg:col-span-8">
-            {/* Latest */}
-            <section className="order-2 mb-10">
+          {/* Latest */}
+          <section className="order-3 lg:col-span-8">
               <SectionHeader
                 title="Latest"
                 meta={summary?.headline && (
@@ -563,7 +561,7 @@ function ProjectStatePageInner() {
             </section>
 
             {/* Current state — aggregate meta lives in the project header */}
-            <section className="order-1 mb-10">
+            <section className="order-1 lg:col-span-8">
               {state.currentState.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-white p-8 text-center">
                   <RiEyeLine size={40} className="text-line" />
@@ -664,7 +662,7 @@ function ProjectStatePageInner() {
             </section>
 
             {/* Activity */}
-            <section className="order-3">
+            <section className="order-4 lg:col-span-8">
               <SectionHeader
                 title="Activity"
                 right={
@@ -797,10 +795,8 @@ function ProjectStatePageInner() {
                 </div>
               )}
             </section>
-          </div>
-
-          {/* Right column */}
-          <div className="order-2 lg:order-2 lg:col-span-4">
+          {/* Right column — on mobile sits between Current state and Latest */}
+          <div className="order-2 lg:col-span-4 lg:row-span-3">
             <section>
               <SectionHeader
                 title={unresolvedCount > 0
@@ -892,12 +888,15 @@ function ProjectStatePageInner() {
         </div>
 
         {selectedFact && <div className="fixed inset-0 z-40 bg-black/20 transition-opacity duration-300" onClick={() => setSelectedFactId(null)} />}
+        {/* Clip container keeps the off-canvas sheet from extending page scroll */}
+        <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
         <div
-          className={`fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto bg-white p-6 shadow-2xl transition-transform duration-300 ease-out ${
-            selectedFact ? 'translate-x-0' : 'translate-x-full'
+          className={`pointer-events-auto absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white p-6 shadow-2xl transition-transform duration-300 ease-out lg:inset-y-0 lg:left-auto lg:right-0 lg:max-h-none lg:w-full lg:max-w-md lg:rounded-none ${
+            selectedFact ? 'translate-y-0 lg:translate-x-0' : 'translate-y-full lg:translate-x-full lg:translate-y-0'
           }`}
           aria-hidden={!selectedFact}
         >
+          <div className="mx-auto -mt-2 mb-3 h-1 w-10 rounded-full bg-line-strong lg:hidden" />
           {selectedFact && selectedMeta && (
             <>
               <div className="mb-6 flex items-center justify-between">
@@ -996,6 +995,7 @@ function ProjectStatePageInner() {
               </div>
             </>
           )}
+        </div>
         </div>
 
       </main>
