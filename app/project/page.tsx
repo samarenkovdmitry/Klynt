@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, type ReactNode } from 'react';
+import { Suspense, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
@@ -131,6 +131,14 @@ function SectionHeader({ title, meta, right, caps = true }: { title: string; met
 }
 
 export default function ProjectStatePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-app-bg" />}>
+      <ProjectStatePageInner />
+    </Suspense>
+  );
+}
+
+function ProjectStatePageInner() {
   const searchParams = useSearchParams();
   const queryProjectId = searchParams.get('projectId');
 

@@ -1,5 +1,24 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { RawEvent, CandidateEvent, CandidateEventType, Importance } from '@/lib/types/events';
+import { CandidateEventType, Importance } from '@/lib/types/events';
+
+// Minimal shape the processor needs — callers pass DB rows whose
+// enums/timestamps are looser than the domain types in lib/types/events.
+export interface EventInput {
+  source: string;
+  event_type: string;
+  timestamp: string | Date;
+  content?: string;
+  author_id?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface ConflictEventInput {
+  id: string;
+  event_type: string;
+  action?: string;
+  subject: string;
+  confidence: number;
+}
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -18,11 +37,11 @@ export interface AIInterpretation {
 }
 
 export async function interpretEvent(
-  rawEvent: RawEvent,
+  rawEvent: EventInput,
   context?: {
-    previousEvents?: RawEvent[];
+    previousEvents?: EventInput[];
     projectFacts?: any[];
-    threadContext?: RawEvent[];
+    threadContext?: EventInput[];
   }
 ): Promise<AIInterpretation> {
   const systemPrompt = `You are an AI assistant that interprets project communication events from tools like Figma and Slack. Your goal is to extract meaningful project information from raw events.
@@ -123,7 +142,7 @@ Return ONLY valid JSON with no additional text.`;
   }
 }
 
-function buildPrompt(rawEvent: RawEvent, context?: any): string {
+function buildPrompt(rawEvent: EventInput, context?: any): string {
   // Convert timestamp string to Date if needed
   const timestamp = typeof rawEvent.timestamp === 'string'
     ? new Date(rawEvent.timestamp)
@@ -156,14 +175,14 @@ function buildPrompt(rawEvent: RawEvent, context?: any): string {
   // Add context if available
   if (context?.previousEvents && context.previousEvents.length > 0) {
     prompt += `\nRecent events in this project:\n`;
-    context.previousEvents.slice(-5).forEach((event: RawEvent, i: number) => {
+    context.previousEvents.slice(-5).forEach((event: EventInput, i: number) => {
       prompt += `${i + 1}. ${event.source} - ${event.content || '(no content)'}\n`;
     });
   }
 
   if (context?.threadContext && context.threadContext.length > 0) {
     prompt += `\nThread context:\n`;
-    context.threadContext.forEach((event: RawEvent, i: number) => {
+    context.threadContext.forEach((event: EventInput, i: number) => {
       prompt += `${i + 1}. ${event.content || '(no content)'}\n`;
     });
   }
@@ -179,7 +198,7 @@ function buildPrompt(rawEvent: RawEvent, context?: any): string {
 }
 
 export async function detectConflicts(
-  newEvent: CandidateEvent,
+  newEvent: ConflictEventInput,
   existingFact: any
 ): Promise<any[]> {
   const conflicts: any[] = [];

@@ -1,4 +1,4 @@
-import { supabase, Project, RawEvent, CandidateEvent, ProjectFact, Conflict } from './supabase';
+import { supabase, Project, RawEvent, CandidateEvent, ProjectFact, FactHistory, Conflict } from './supabase';
 
 // Project operations
 export async function createProject(name: string, description?: string, ownerId?: string): Promise<Project> {

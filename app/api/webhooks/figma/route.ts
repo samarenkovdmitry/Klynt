@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { FigmaWebhookEvent } from '@/lib/types/events';
+import { FigmaWebhookEvent, EventType } from '@/lib/types/events';
 import { createRawEvent, getIntegrationByFileKey } from '@/lib/db/queries';
 
 // Figma webhook passcode should be stored in environment variables
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       source_event_id: `${body.file_key}_${body.timestamp}`,
       event_type: mapFigmaEventType(body.event_type),
       author_id: extractAuthorId(body),
-      timestamp: new Date(body.timestamp),
+      timestamp: new Date(body.timestamp).toISOString(),
       content: extractContent(body),
       metadata: body,
     };
@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function mapFigmaEventType(figmaType: string): RawEvent['event_type'] {
-  const mapping: Record<string, RawEvent['event_type']> = {
+function mapFigmaEventType(figmaType: string): EventType {
+  const mapping: Record<string, EventType> = {
     'FILE_COMMENT': 'comment',
     'FILE_VERSION_UPDATE': 'file_version',
     'FILE_UPDATE': 'file_update',

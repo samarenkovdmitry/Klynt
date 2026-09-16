@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         if (interpretation.confidence > CONFIDENCE_THRESHOLD && STATE_CHANGING_EVENTS.includes(interpretation.event_type)) {
           const newState = interpretation.action || interpretation.event_type;
           const displayState = interpretation.display_state;
-          const eventTimestamp = typeof event.timestamp === 'string' ? new Date(event.timestamp).toISOString() : event.timestamp.toISOString();
+          const eventTimestamp = new Date(event.timestamp).toISOString();
 
           const existingFact = await getProjectFact(projectId, interpretation.subject, 'design_component');
 
