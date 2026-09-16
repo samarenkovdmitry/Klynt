@@ -123,6 +123,14 @@ html {
   font-family: var(--font-instrument);
 }
 
+/* Off-canvas elements (e.g. the project context drawer) must not widen the
+   page — clip horizontal overflow at the document level without creating a
+   scroll container (keeps position: sticky working). */
+html,
+body {
+  overflow-x: clip;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
