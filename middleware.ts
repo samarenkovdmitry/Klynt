@@ -18,6 +18,8 @@ const PUBLIC_PATHS = new Set([
 function isPublicRoute(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true
   if (pathname.startsWith('/_next/')) return true
+  // Static assets served from /public
+  if (/\.(png|jpe?g|svg|gif|webp|avif|ico|webmanifest|txt|xml|woff2?|mp4|webm)$/i.test(pathname)) return true
   if (pathname.startsWith('/api/waitlist/')) return true
   if (pathname.startsWith('/api/webhooks/')) return true
   if (pathname.startsWith('/api/integrations/')) return true

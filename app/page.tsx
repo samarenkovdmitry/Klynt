@@ -104,6 +104,16 @@ export default function LandingPage() {
 
       <main className="relative flex-1">
 
+        {/* Brand material — behind the product UI, alpha-faded into the cream canvas.
+            Mobile/tablet: stone band along the bottom. Desktop: full-height right composition. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] overflow-hidden lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[74%]">
+          <img
+            src="/klynt-hero-bg.png"
+            alt=""
+            className="h-full w-full object-cover object-right-bottom lg:object-right"
+          />
+        </div>
+
         <div className="relative mx-auto grid max-w-7xl gap-14 px-6 pb-20 pt-10 lg:min-h-[680px] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:pt-4">
           {/* Left: copy + capture */}
           <div className="relative z-10 max-w-xl pt-6">
