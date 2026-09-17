@@ -577,7 +577,7 @@ function ProjectStatePageInner() {
                   </a>
                 </div>
               ) : (
-                <div className="-mx-3 flex snap-x snap-mandatory gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:px-0 sm:pb-0">
+                <div className="-mx-3 flex snap-x snap-mandatory scroll-px-3 gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:scroll-px-0 sm:px-0 sm:pb-0">
                   {state.currentState.slice().sort((a: any, b: any) => {
                     const priority: Record<string, number> = { removed: 0, modify: 1, modified: 1, added: 2, approved: 3 };
                     const pa = priority[a.current_state?.toLowerCase()] ?? 4;
