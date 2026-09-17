@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  RiMenuLine,
-  RiCloseLine,
+  RiArrowDownSLine,
   RiPlugLine,
   RiSettings3Line,
   RiLogoutBoxRLine,
@@ -165,28 +164,37 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
       {/* Mobile top bar */}
       <div className="sticky top-0 z-50 w-full lg:hidden">
         <header
-          className="flex w-full items-center bg-white px-4 py-3 shadow-[0_1px_0_0_rgba(0,0,0,0.03),0_2px_8px_-4px_rgba(0,0,0,0.03)]"
+          className="flex w-full items-center gap-2 border-b border-line bg-app-bg px-4 py-2.5"
         >
-          <Link href="/project" onClick={() => setMobileMenuOpen(false)}>
-            <KlyntLogo />
+          <Link href="/project" onClick={() => setMobileMenuOpen(false)} className="flex-shrink-0">
+            <img src="/icon.png" alt="Klynt" className="h-6 w-6" />
           </Link>
-          <div className="ml-auto flex items-center gap-3">
+          <button
+            onClick={() => setMobileMenuOpen(v => !v)}
+            className="flex min-w-0 flex-1 items-center gap-1 rounded-md py-1 text-left"
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          >
+            <span className="truncate text-[15px] font-semibold text-ink">
+              {activeItem === 'project'
+                ? (selectedProject?.name || 'Klynt')
+                : activeItem === 'integrations' ? 'Integrations' : 'Settings'}
+            </span>
+            <RiArrowDownSLine
+              size={18}
+              className={`flex-shrink-0 text-ink-faint transition-transform duration-200 ${mobileMenuOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+          <div className="ml-auto flex items-center">
             {loading && (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-line border-t-[#061C2F]" />
             )}
-            <button
-              onClick={() => setMobileMenuOpen(v => !v)}
-              className="p-2 text-ink"
-              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-            >
-              {mobileMenuOpen ? <RiCloseLine size={24} /> : <RiMenuLine size={24} />}
-            </button>
           </div>
         </header>
 
         {/* Mobile dropdown menu */}
         <div
-          className={`absolute left-0 right-0 top-full z-10 bg-white px-4 py-4 shadow-lg transition-all duration-200 ease-out ${
+          className={`absolute left-3 right-3 top-full z-10 mt-1 rounded-xl border border-line bg-white px-4 py-4 shadow-lg transition-all duration-200 ease-out ${
             mobileMenuOpen
               ? 'translate-y-0 opacity-100'
               : '-translate-y-2 opacity-0 pointer-events-none'
