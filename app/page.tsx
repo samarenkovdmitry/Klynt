@@ -108,9 +108,9 @@ export default function LandingPage() {
             Mobile/tablet: stone band along the bottom. Desktop: full-height right composition. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] overflow-hidden md:h-[55%] lg:-top-16 lg:left-auto lg:right-0 lg:h-auto lg:w-[74%]">
           <img
-            src="/klynt-hero-bg-alpha.png"
+            src="/klynt-hero-bg-2.png"
             alt=""
-            className="h-full w-full object-cover object-right-bottom [mask-image:linear-gradient(to_bottom,transparent,black_35%)] md:origin-bottom-right md:scale-[1.5] lg:origin-center lg:scale-100 lg:object-right lg:[mask-image:none]"
+            className="h-full w-full object-cover object-right-bottom [mask-image:linear-gradient(to_bottom,transparent,black_35%)] md:origin-bottom-right md:scale-[1.5] lg:origin-center lg:scale-100 lg:object-right lg:[mask-image:linear-gradient(to_right,transparent,black_20%)]"
           />
         </div>
 
