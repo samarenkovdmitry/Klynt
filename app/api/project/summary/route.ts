@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { listProjectFacts, getProjectConflicts, getProject } from '@/lib/db/queries';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { createClient } from '@supabase/supabase-js';
-import { generateProjectSummary } from '@/lib/ai/summary-generator';
+import { generateProjectSummary, SummaryInput } from '@/lib/ai/summary-generator';
+
+// Cached across serverless invocations — the stamp arg changes whenever
+// facts/events/conflicts change, so new activity produces a fresh summary.
+const getCachedSummary = unstable_cache(
+  async (input: SummaryInput, _stamp: string) => generateProjectSummary(input),
+  ['project-summary'],
+);
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -40,13 +48,20 @@ export async function GET(request: NextRequest) {
 
     if (eventsError) throw eventsError;
 
-    const summary = await generateProjectSummary({
+    const stamp = [
+      ...currentState.map(f => f.updated_at || f.created_at),
+      ...(recentEvents || []).map(e => e.created_at),
+      ...conflicts.map(c => c.created_at),
+    ].filter(Boolean).sort().pop() || 'empty';
+    const stampKey = `${stamp}:${currentState.length}:${(recentEvents || []).length}:${conflicts.length}`;
+
+    const summary = await getCachedSummary({
       projectId,
       currentState,
       recentEvents: recentEvents || [],
       conflicts,
       since,
-    });
+    }, stampKey);
 
     return NextResponse.json(summary);
 
