@@ -77,7 +77,17 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-clip bg-cream">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-cream">
+      {/* Brand material — behind everything, spans the full page incl. header/footer.
+          Mobile/tablet: stone band along the bottom. Desktop: full-height right composition. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] overflow-hidden md:h-[55%] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-auto lg:w-[74%]">
+        <img
+          src="/klynt-hero-bg-2.png"
+          alt=""
+          className="h-full w-full object-cover object-right-bottom [mask-image:linear-gradient(to_bottom,transparent,black_35%)] md:origin-bottom-right md:scale-[1.25] lg:origin-center lg:scale-100 lg:object-right lg:[mask-image:linear-gradient(to_right,transparent,black_20%)]"
+        />
+      </div>
+
       <header className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/">
           <img
@@ -103,16 +113,6 @@ export default function LandingPage() {
       </header>
 
       <main className="relative flex-1">
-
-        {/* Brand material — behind the product UI, alpha-faded into the cream canvas.
-            Mobile/tablet: stone band along the bottom. Desktop: full-height right composition. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 -bottom-14 h-[calc(42%+3.5rem)] overflow-hidden md:h-[calc(55%+3.5rem)] lg:-top-16 lg:left-auto lg:right-0 lg:h-auto lg:w-[74%]">
-          <img
-            src="/klynt-hero-bg-2.png"
-            alt=""
-            className="h-full w-full object-cover object-right-bottom [mask-image:linear-gradient(to_bottom,transparent,black_35%)] md:origin-bottom-right md:scale-[1.5] lg:origin-center lg:scale-100 lg:object-right lg:[mask-image:linear-gradient(to_right,transparent,black_20%)]"
-          />
-        </div>
 
         <div className="relative mx-auto grid max-w-7xl gap-14 px-6 pb-20 pt-10 lg:min-h-[680px] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:pt-4">
           {/* Left: copy + capture */}
