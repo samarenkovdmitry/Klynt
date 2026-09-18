@@ -106,7 +106,7 @@ export default function LandingPage() {
 
         {/* Brand material — behind the product UI, alpha-faded into the cream canvas.
             Mobile/tablet: stone band along the bottom. Desktop: full-height right composition. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] overflow-hidden md:h-[55%] lg:-top-16 lg:left-auto lg:right-0 lg:h-auto lg:w-[74%]">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 -bottom-14 h-[calc(42%+3.5rem)] overflow-hidden md:h-[calc(55%+3.5rem)] lg:-top-16 lg:left-auto lg:right-0 lg:h-auto lg:w-[74%]">
           <img
             src="/klynt-hero-bg-2.png"
             alt=""
