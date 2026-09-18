@@ -167,7 +167,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
           className="flex w-full items-center gap-2 border-b border-line bg-app-bg px-4 py-2.5"
         >
           <Link href="/project" onClick={() => setMobileMenuOpen(false)} className="flex-shrink-0">
-            <img src="/icon.png" alt="Klynt" className="h-6 w-6" />
+            <img src="/klynt_logo_woodmark.svg" alt="Klynt" className="h-6 w-6" />
           </Link>
           <button
             onClick={() => setMobileMenuOpen(v => !v)}
