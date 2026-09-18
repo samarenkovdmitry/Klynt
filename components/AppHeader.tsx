@@ -134,7 +134,7 @@ export function AppHeader() {
             onClick={() => setMenuOpen(false)}
           >
             <img
-              src={isDarkLanding ? "/klynt-logo-light.svg" : "/klynt-logo-dark.svg"}
+              src={isDarkLanding ? "/klynt-logo-light.svg" : "/Klynt_logo.svg"}
               alt="Klynt"
               className="h-[30px] w-[100px] shrink-0"
             />

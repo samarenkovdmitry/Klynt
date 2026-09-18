@@ -33,7 +33,7 @@ interface SidebarProps {
 function KlyntLogo() {
   return (
     <img
-      src="/klynt-logo-dark.svg"
+      src="/Klynt_logo.svg"
       alt="Klynt"
       className="h-8 w-auto"
     />

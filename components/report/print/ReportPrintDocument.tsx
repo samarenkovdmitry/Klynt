@@ -499,7 +499,7 @@ export function ReportPrintDocument({
         <header className="report-print-cover">
           <div className="report-print-brand-bar">
             <Image
-              src="/klynt-logo-dark.svg"
+              src="/Klynt_logo.svg"
               alt="Klynt"
               width={88}
               height={22}

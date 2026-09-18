@@ -12,7 +12,7 @@ export function LandingJsonLd() {
           "@type": "Organization",
           name: SITE_NAME,
           url: siteUrl,
-          logo: `${siteUrl}/klynt-logo-dark.svg`,
+          logo: `${siteUrl}/Klynt_logo.svg`,
           email: "hello@klynt.one",
         },
         {

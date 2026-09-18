@@ -54,8 +54,8 @@ function hexWithAlpha(hex: string, alphaHex: string) {
 async function getKlyntLogoDataUrl(): Promise<string | null> {
   if (!klyntLogoDataUrlPromise) {
     const candidatePaths = [
-      path.join(process.cwd(), "public", "klynt-logo-dark.svg"),
-      path.join(process.cwd(), ".next", "standalone", "public", "klynt-logo-dark.svg"),
+      path.join(process.cwd(), "public", "Klynt_logo.svg"),
+      path.join(process.cwd(), ".next", "standalone", "public", "Klynt_logo.svg"),
     ];
 
     klyntLogoDataUrlPromise = (async () => {

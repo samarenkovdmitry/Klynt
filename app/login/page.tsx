@@ -39,7 +39,7 @@ export default function LoginPage() {
         <div className="mx-auto w-full max-w-7xl px-6 py-4">
           <Link href="/">
             <img
-              src="/klynt-logo-dark.svg"
+              src="/Klynt_logo.svg"
               alt="Klynt"
               className="h-8 w-auto"
             />

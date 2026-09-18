@@ -42,7 +42,7 @@ export function ReportJsonLd({ routeSlug, report, siteUrl }: ReportJsonLdProps) 
           url: siteUrl,
           logo: {
             "@type": "ImageObject",
-            url: absoluteUrl("/klynt-logo-dark.svg", siteUrl),
+            url: absoluteUrl("/Klynt_logo.svg", siteUrl),
           },
         },
         about: domain

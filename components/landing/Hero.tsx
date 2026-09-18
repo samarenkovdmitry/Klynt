@@ -52,7 +52,7 @@ export function Hero() {
           <div className="flex shrink-0 items-center gap-3">
             <Link href="/" aria-label="Klynt — home">
               <Image
-                src="/klynt-logo-dark.svg"
+                src="/Klynt_logo.svg"
                 alt="Klynt"
                 width={92}
                 height={28}

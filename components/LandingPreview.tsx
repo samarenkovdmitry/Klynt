@@ -72,7 +72,7 @@ export default function LandingPreview() {
         <aside className="flex h-full w-[200px] flex-shrink-0 flex-col self-start overflow-y-auto bg-white px-4 py-8 shadow-[1px_0_0_0_rgba(0,0,0,0.03),2px_0_8px_-4px_rgba(0,0,0,0.03)]">
           <div className="mb-8 px-2">
             <img
-              src="/klynt-logo-dark.svg"
+              src="/Klynt_logo.svg"
               alt="Klynt"
               className="h-8 w-auto"
             />

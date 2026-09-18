@@ -100,7 +100,7 @@ export function FreemiumProModal({
 
         <div className="px-8 pb-8 pt-10">
           <div className="flex justify-center">
-            <img src="/klynt-logo-dark.svg" alt="Klynt" className="h-[22px] w-auto" />
+            <img src="/Klynt_logo.svg" alt="Klynt" className="h-[22px] w-auto" />
           </div>
 
           <div className="mt-6 text-center">

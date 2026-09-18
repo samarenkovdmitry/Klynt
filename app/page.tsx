@@ -91,7 +91,7 @@ export default function LandingPage() {
       <header className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/">
           <img
-            src="/klynt-logo-dark.svg"
+            src="/Klynt_logo.svg"
             alt="Klynt"
             className="h-8 w-auto"
           />
