@@ -134,6 +134,76 @@ function SectionHeader({ title, meta, right, caps = true }: { title: string; met
   );
 }
 
+function SkeletonBar({ className }: { className: string }) {
+  return <div className={`animate-pulse rounded-md bg-fill ${className}`} />;
+}
+
+function SkeletonCard({ className }: { className: string }) {
+  return <div className={`animate-pulse rounded-xl border border-line bg-white ${className}`} />;
+}
+
+function ProjectSkeleton() {
+  return (
+    <>
+      <div className="mb-8">
+        <SkeletonBar className="h-8 w-56 max-w-[70%]" />
+        <SkeletonBar className="mt-3 h-4 w-80 max-w-[90%]" />
+      </div>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+        {/* Latest */}
+        <section className="order-3 lg:col-span-8">
+          <SkeletonBar className="mb-4 h-4 w-24" />
+          <div className="space-y-4">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-3">
+                <SkeletonBar className="h-4 w-4 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <SkeletonBar className="h-4 w-3/4" />
+                  <SkeletonBar className="mt-1.5 h-3 w-1/3" />
+                </div>
+                <SkeletonBar className="h-3 w-16 flex-shrink-0" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Current state */}
+        <section className="order-1 lg:col-span-8">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <SkeletonCard className="h-[104px]" />
+            <SkeletonCard className="hidden h-[104px] sm:block" />
+            <SkeletonCard className="hidden h-[104px] sm:block" />
+          </div>
+        </section>
+
+        {/* Activity */}
+        <section className="order-4 lg:col-span-8">
+          <div className="mb-4 flex items-center justify-between">
+            <SkeletonBar className="h-4 w-24" />
+            <SkeletonBar className="h-7 w-44 rounded-lg" />
+          </div>
+          <SkeletonBar className="mb-3 h-3 w-24" />
+          <div className="space-y-4">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="flex items-center gap-3">
+                <SkeletonBar className="h-3 w-10 flex-shrink-0" />
+                <SkeletonBar className="h-4 w-2/3 min-w-0 flex-1" />
+                <SkeletonBar className="h-3 w-16 flex-shrink-0" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Right column */}
+        <div className="order-2 lg:col-span-4 lg:row-span-3">
+          <SkeletonBar className="mb-4 h-4 w-36" />
+          <SkeletonCard className="h-24 rounded-2xl" />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export default function ProjectStatePage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-app-bg" />}>
@@ -290,7 +360,16 @@ function ProjectStatePageInner() {
     }
   };
 
-  if (loading && !state) return <div className="p-8 text-center text-ink-muted">Loading...</div>;
+  if (loading && !state) {
+    return (
+      <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
+        <Sidebar projects={projects} selectedProjectId={selectedProjectId} activeItem="project" loading />
+        <main className="w-full flex-1 px-3 py-4 sm:px-8 sm:py-6">
+          <ProjectSkeleton />
+        </main>
+      </div>
+    );
+  }
   if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
   if (projects.length === 0) {
     return (
@@ -506,7 +585,7 @@ function ProjectStatePageInner() {
 
 
 
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+        <div className={`grid grid-cols-1 gap-10 transition-opacity lg:grid-cols-12 ${loading ? 'opacity-50' : ''}`}>
           {/* Latest */}
           <section className="order-3 lg:col-span-8">
               <SectionHeader
