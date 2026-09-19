@@ -23,6 +23,8 @@ function isPublicRoute(pathname: string): boolean {
   if (pathname.startsWith('/api/waitlist/')) return true
   if (pathname.startsWith('/api/webhooks/')) return true
   if (pathname.startsWith('/api/integrations/')) return true
+  // Job endpoints do their own auth (CRON_SECRET bearer or session)
+  if (pathname.startsWith('/api/jobs/')) return true
   return false
 }
 
