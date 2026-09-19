@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
     const rawTimestamps = new Map((rawEventsInPeriod || []).map(r => [r.id, r.timestamp]));
     const rawSources = new Map((rawEventsInPeriod || []).map(r => {
       const metadata = typeof r.metadata === 'string' ? JSON.parse(r.metadata) : r.metadata;
-      return [r.id, { source: r.source, author: r.author_id, content: r.content, metadata }];
+      return [r.id, { source: r.source, author: metadata?.author?.name || r.author_id, content: r.content, metadata }];
     }));
 
 
@@ -167,7 +167,7 @@ export async function GET(request: NextRequest) {
         const metadata = typeof r.metadata === 'string' ? JSON.parse(r.metadata) : r.metadata;
         rawEventMap.set(r.id, {
           source: r.source,
-          author: r.author_id,
+          author: metadata?.author?.name || r.author_id,
           content: r.content,
           metadata,
           source_url: buildSourceUrl(r.source, metadata),
@@ -222,7 +222,10 @@ export async function GET(request: NextRequest) {
     if (allRawEvents && allRawEvents.length > 0) {
       const recentRawIds = allRawEvents.map(r => r.id);
       const recentTimestamps = new Map(allRawEvents.map(r => [r.id, r.timestamp]));
-      const recentSources = new Map(allRawEvents.map(r => [r.id, { source: r.source, author: r.author_id }]));
+      const recentSources = new Map(allRawEvents.map(r => {
+        const metadata = typeof r.metadata === 'string' ? JSON.parse(r.metadata) : r.metadata;
+        return [r.id, { source: r.source, author: metadata?.author?.name || r.author_id }];
+      }));
 
       const { data, error } = await supabase
         .from('candidate_events')

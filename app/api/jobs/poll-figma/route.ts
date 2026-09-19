@@ -40,6 +40,7 @@ async function pollFileVersions(integration: any, fileKey: string, fileName: str
         file_key: fileKey,
         file_name: fileName,
         version: { id: v.id, label: v.label, description: v.description, user: v.user },
+        ...(v.user?.id ? { author: { id: v.user.id, name: v.user.handle || v.user.id, avatar_url: v.user.img_url || undefined } } : {}),
         via: 'polling',
       },
     });
@@ -81,6 +82,7 @@ async function pollFileComments(integration: any, fileKey: string, fileName: str
           resolved_at: c.resolved_at,
           client_meta: c.client_meta,
         },
+        ...(c.user?.id ? { author: { id: c.user.id, name: c.user.handle || c.user.id, avatar_url: c.user.img_url || undefined } } : {}),
         via: 'polling',
       },
     });

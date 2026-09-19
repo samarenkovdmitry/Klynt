@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
 import NewProjectModal from '@/components/NewProjectModal';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
+import { emojify } from 'node-emoji';
 import {
   RiArrowRightSLine,
   RiArrowRightUpLine,
@@ -524,7 +525,7 @@ function ProjectStatePageInner() {
                           {ACTION_ICONS[event.action] || DEFAULT_ACTION_ICON}
                         </span>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-ink">{capitalize(event.reason)}</p>
+                          <p className="truncate text-sm font-medium text-ink">{capitalize(emojify(event.reason || ''))}</p>
                           <p className="mt-0.5 truncate text-xs text-ink-muted">
                             {capitalize(event.subject)} · {event.action}
                           </p>
@@ -751,7 +752,7 @@ function ProjectStatePageInner() {
                                   {event.content && (
                                     <>
                                       <p className="text-xs font-medium text-ink-faint">Original message</p>
-                                      <p className="mt-1">{event.content}</p>
+                                      <p className="mt-1">{emojify(event.content)}</p>
                                     </>
                                   )}
                                   {event.source_url && (
@@ -946,7 +947,7 @@ function ProjectStatePageInner() {
                           {group.occurrences.length > 1 && ` · +${group.occurrences.length - 1} more`}
                         </p>
                         <p className="mt-0.5 text-sm text-ink-secondary">
-                          {group.reason ? capitalize(group.reason) : 'No reason given'}
+                          {group.reason ? capitalize(emojify(group.reason)) : 'No reason given'}
                         </p>
                         <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-muted">
                           {group.source && (

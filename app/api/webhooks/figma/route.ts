@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       author_id: extractAuthorId(body),
       timestamp: new Date(body.timestamp).toISOString(),
       content: extractContent(body),
-      metadata: body,
+      metadata: { ...body, ...(extractAuthor(body) ? { author: extractAuthor(body) } : {}) },
     };
 
     // Store raw event in database
@@ -73,6 +73,12 @@ function mapFigmaEventType(figmaType: string): EventType {
     'FILE_DELETE': 'file_update',
   };
   return mapping[figmaType] || 'file_update';
+}
+
+function extractAuthor(event: FigmaWebhookEvent) {
+  const user = event.comment?.user || event.version?.user;
+  if (!user?.id) return undefined;
+  return { id: user.id, name: user.handle || user.id, avatar_url: user.img_url || undefined };
 }
 
 function extractAuthorId(event: FigmaWebhookEvent): string | undefined {

@@ -49,6 +49,23 @@ export async function POST(request: NextRequest) {
 
     const projectId = integration.project_id;
 
+    // Resolve the author's profile so the UI can show a name, not a U-id
+    let author: { id: string; name: string; avatar_url?: string } | undefined;
+    if (slackEvent.user) {
+      const info = await fetch(
+        `https://slack.com/api/users.info?user=${slackEvent.user}`,
+        { headers: { Authorization: `Bearer ${integration.access_token_encrypted}` } },
+      ).then(r => r.json()).catch(() => null);
+      if (info?.ok && info.user) {
+        const profile = info.user.profile || {};
+        author = {
+          id: slackEvent.user,
+          name: profile.display_name || profile.real_name || info.user.real_name || slackEvent.user,
+          avatar_url: profile.image_48 || profile.image_32,
+        };
+      }
+    }
+
     // Transform Slack event to RawEvent
     const rawEventData = {
       project_id: projectId,
@@ -65,6 +82,7 @@ export async function POST(request: NextRequest) {
         subtype: slackEvent.subtype,
         team_id: body.team_id,
         event_id: body.event_id,
+        ...(author ? { author } : {}),
       },
     };
 
