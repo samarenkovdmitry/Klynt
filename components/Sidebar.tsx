@@ -19,6 +19,7 @@ import Avatar from '@/components/Avatar';
 interface Project {
   id: string;
   name: string;
+  slug?: string;
   unresolved_count?: number;
 }
 
@@ -59,18 +60,22 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
     router.push('/login');
   };
 
-  const handleProjectClick = (projectId: string) => {
+  const handleProjectClick = (project: Project) => {
     if (onProjectChange) {
-      onProjectChange(projectId);
+      onProjectChange(project.id);
     } else {
-      router.push(`/project?projectId=${projectId}`);
+      router.push(project.slug ? `/project/${project.slug}` : `/project?projectId=${project.id}`);
     }
   };
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
-  const pageHref = (path: string) =>
-    selectedProjectId ? `${path}?projectId=${selectedProjectId}` : path;
+  const pageHref = (path: string) => {
+    if (path === '/project') {
+      return selectedProject?.slug ? `/project/${selectedProject.slug}` : '/project';
+    }
+    return selectedProjectId ? `${path}?projectId=${selectedProjectId}` : path;
+  };
 
   const navItem = (href: string, label: string, isActive: boolean, icon?: React.ReactNode) => (
     <Link
@@ -102,7 +107,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
             return (
               <button
                 key={p.id}
-                onClick={() => handleProjectClick(p.id)}
+                onClick={() => handleProjectClick(p)}
                 className={`relative flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                   isSelected
                     ? 'bg-[var(--accent-tint)] font-medium text-[var(--accent-link)]'
@@ -205,7 +210,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
               return (
                 <button
                   key={p.id}
-                  onClick={() => { handleProjectClick(p.id); setMobileMenuOpen(false); }}
+                  onClick={() => { handleProjectClick(p); setMobileMenuOpen(false); }}
                   className={`relative flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${
                     isSelected ? 'bg-[var(--accent-tint)] font-medium text-[var(--accent-link)]' : 'text-ink-secondary'
                   }`}

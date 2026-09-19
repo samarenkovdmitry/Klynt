@@ -1,12 +1,37 @@
 import { supabase, Project, RawEvent, CandidateEvent, ProjectFact, FactHistory, Conflict } from './supabase';
+import { slugify } from '@/lib/slug';
 
 // Project operations
 export async function createProject(name: string, description?: string, ownerId?: string): Promise<Project> {
-  const { data, error } = await supabase
+  const base = slugify(name);
+
+  let slug = base;
+  for (let i = 2; i <= 20; i++) {
+    const { data: existing } = await supabase
+      .from('projects')
+      .select('id')
+      .eq('slug', slug)
+      .maybeSingle();
+    if (!existing) break;
+    slug = `${base}-${i}`;
+  }
+
+  let { data, error } = await supabase
     .from('projects')
-    .insert({ name, description, owner_id: ownerId })
+    .insert({ name, description, owner_id: ownerId, slug })
     .select()
     .single();
+
+  // slug column not migrated yet — insert without it
+  if (error && /slug/i.test(error.message || '')) {
+    const retry = await supabase
+      .from('projects')
+      .insert({ name, description, owner_id: ownerId })
+      .select()
+      .single();
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error) throw error;
   return data;

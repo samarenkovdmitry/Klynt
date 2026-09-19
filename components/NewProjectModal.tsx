@@ -27,7 +27,7 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create project');
       onClose();
-      router.push(`/project?projectId=${data.project.id}`);
+      router.push(data.project.slug ? `/project/${data.project.slug}` : `/project?projectId=${data.project.id}`);
       router.refresh();
     } catch (err: any) {
       setError(err.message);
