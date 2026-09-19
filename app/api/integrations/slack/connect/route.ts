@@ -5,7 +5,7 @@ import { getProject } from '@/lib/db/queries';
 const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID;
 const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI;
 
-const SLACK_SCOPES = 'channels:history channels:read chat:write users:read team:read';
+const SLACK_SCOPES = 'channels:history channels:read channels:join chat:write groups:history groups:read users:read team:read';
 
 function getBaseUrl(request: NextRequest): string {
   const protocol =
