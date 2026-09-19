@@ -162,7 +162,6 @@ export default function SettingsPage() {
         projects={projects}
         selectedProjectId={selectedProjectId}
         activeItem="settings"
-        onProjectChange={handleProjectChange}
         loading={loading}
       />
 
@@ -180,7 +179,7 @@ export default function SettingsPage() {
                 <div className="relative flex-1">
                   <select
                     value={selectedProjectId || ''}
-                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                    onChange={(e) => handleProjectChange(e.target.value)}
                     className="w-full appearance-none rounded-xl border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                   >
                     {projects.map((p) => (

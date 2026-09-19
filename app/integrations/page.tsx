@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { siNotion, siLinear, siGoogledocs } from 'simple-icons';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
+import { RiArrowDownSLine } from '@remixicon/react';
 
 interface Integration {
   id: string;
@@ -297,13 +298,32 @@ export default function IntegrationsPage() {
         projects={projects}
         selectedProjectId={selectedProjectId}
         activeItem="integrations"
-        onProjectChange={handleProjectChange}
         loading={loading}
       />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-3 py-6 sm:px-8 sm:py-8">
         <h1 className="text-2xl font-semibold text-ink">Integrations</h1>
         <p className="mt-1 text-sm text-ink-muted">Connect tools to keep project state up to date.</p>
+
+        {projects.length > 1 && (
+          <div className="mt-6">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-faint">Project</p>
+            <div className="relative max-w-xs">
+              <select
+                value={selectedProjectId || ''}
+                onChange={(e) => handleProjectChange(e.target.value)}
+                className="w-full appearance-none rounded-xl border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+              >
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-ink-muted">
+                <RiArrowDownSLine size={16} />
+              </div>
+            </div>
+          </div>
+        )}
 
         {loading && <p className="mt-6 text-sm text-ink-muted">Loading...</p>}
         {error && <p className="mt-6 text-sm text-red-500">{error}</p>}
