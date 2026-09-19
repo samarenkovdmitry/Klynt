@@ -16,7 +16,7 @@ import {
   RiEditLine,
   RiCheckLine,
   RiFileTextLine,
-  RiEyeLine,
+  RiLinksLine,
   RiHistoryLine,
   RiCloseLine,
 } from '@remixicon/react';
@@ -549,13 +549,10 @@ function ProjectStatePageInner() {
               ) : state.currentState.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-line-strong p-6 text-center">
                   <p className="text-sm font-medium text-ink">No changes yet</p>
-                  <p className="mt-1 text-sm text-ink-muted">Connect an integration to start tracking your project.</p>
-                  <a
-                    href="/integrations"
-                    className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] hover:bg-[var(--accent-hover)]"
-                  >
-                    Go to Integrations <RiArrowRightSLine size={16} />
-                  </a>
+                  <p className="mt-1 text-sm text-ink-muted">
+                    <a href="/integrations" className="font-medium text-[var(--accent-link)] hover:underline">Connect an integration</a>
+                    {' '}to start tracking your project.
+                  </p>
                 </div>
               ) : (
                 <div className="border-t border-line py-4">
@@ -568,7 +565,7 @@ function ProjectStatePageInner() {
             <section className="order-1 lg:col-span-8">
               {state.currentState.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-white p-8 text-center">
-                  <RiEyeLine size={40} className="text-line" />
+                  <RiLinksLine size={40} className="text-line" />
                   <p className="mt-4 text-base text-ink">Connect an integration to see what is currently true.</p>
                   <a
                     href="/integrations"
