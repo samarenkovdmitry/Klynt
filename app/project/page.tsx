@@ -569,7 +569,7 @@ function ProjectStatePageInner() {
                   <p className="mt-4 text-base text-ink">Connect an integration to see what is currently true.</p>
                   <a
                     href="/integrations"
-                    className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] hover:bg-[var(--accent-hover)]"
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent)] py-2 pl-4 pr-3 text-sm font-medium text-[var(--accent-fg)] hover:bg-[var(--accent-hover)]"
                   >
                     Go to Integrations <RiArrowRightSLine size={16} />
                   </a>
