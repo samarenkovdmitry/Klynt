@@ -217,7 +217,8 @@ LEFT JOIN project_members pm ON pf.primary_event_id IN (
 WHERE pf.current_state NOT IN ('removed', 'deprecated');
 
 -- Recent changes view
-CREATE OR REPLACE VIEW recent_changes AS
+CREATE OR REPLACE VIEW recent_changes
+WITH (security_invoker = true) AS
 SELECT
   fh.project_id,
   fh.fact_id,
@@ -237,7 +238,8 @@ LEFT JOIN project_members pm ON fh.decided_by = pm.id
 ORDER BY fh.decided_at DESC;
 
 -- Unresolved conflicts view
-CREATE OR REPLACE VIEW unresolved_conflicts AS
+CREATE OR REPLACE VIEW unresolved_conflicts
+WITH (security_invoker = true) AS
 SELECT
   c.id,
   c.project_id,
