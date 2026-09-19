@@ -53,7 +53,7 @@ Analyze the event and determine:
 4. display_state: A short, human-readable status that answers "what is happening with this right now?" (2-5 words). Examples: "Approved", "Needs mobile review", "Decision pending", "Waiting for legal review", "New", "Removed"
 5. confidence: How confident you are in this interpretation (0.00 to 1.00)
 6. importance: How impactful this event is: "low", "medium", or "high"
-7. reason: Brief explanation of your interpretation
+7. reason: A short title for this event (max 12 words) that restates what the message says or proposes. It is shown as the one-line title in the UI.
 8. related_entities: Array of related project entities (e.g., ["homepage", "mobile", "pricing"])
 9. potential_impacts: What parts of the project this might affect
 
@@ -76,6 +76,11 @@ Guidelines:
 - "blocker": Something preventing progress
 - "scope_change": Addition/removal that affects project scope
 - "idea": Suggestion not yet decided
+
+Guidelines for reason:
+- Describe the content, never your uncertainty. Do NOT write meta-commentary such as "ambiguous message", "lacks context", "low confidence", "interpretation is uncertain", or "could refer to".
+- For casual or unclear messages, briefly restate the message itself (e.g. "walk faster" → "Request to speed up the pace", "you design soo good" → "Compliment on design work").
+- Keep it under 12 words so it reads as a title, not a paragraph.
 
 Consider the context of who is speaking (if available):
 - Client messages carry more weight for decisions/approvals
