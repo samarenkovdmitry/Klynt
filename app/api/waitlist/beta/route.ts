@@ -4,6 +4,7 @@ import {
   getSupabaseConfigError,
   isSupabaseConfigured,
 } from '@/lib/supabase-server'
+import { sendBetaConfirmationEmail } from '@/lib/send-waitlist-email'
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
@@ -44,6 +45,13 @@ export async function POST(req: Request) {
 
     if (error) {
       throw new Error(error.message)
+    }
+
+    // Signup succeeds even if the confirmation email fails
+    try {
+      await sendBetaConfirmationEmail(email)
+    } catch (emailError) {
+      console.error('[waitlist/beta] confirmation email failed:', emailError)
     }
 
     return NextResponse.json({ ok: true })

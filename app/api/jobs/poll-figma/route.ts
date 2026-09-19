@@ -35,7 +35,9 @@ async function pollFileVersions(integration: any, fileKey: string, fileName: str
       event_type: 'file_version',
       author_id: v.user?.id,
       timestamp: v.created_at,
-      content: v.label ? `Version: ${v.label}` : `Version saved${v.description ? `: ${v.description}` : ''}`,
+      content: v.label
+        ? `New version in ${fileName}: ${v.label}`
+        : `New version saved in ${fileName}${v.description ? `: ${v.description}` : ''}`,
       metadata: {
         file_key: fileKey,
         file_name: fileName,

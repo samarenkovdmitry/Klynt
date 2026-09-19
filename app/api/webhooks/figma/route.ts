@@ -95,8 +95,11 @@ function extractContent(event: FigmaWebhookEvent): string | undefined {
   if (event.comment?.text) {
     return event.comment.text;
   }
-  if (event.version?.label) {
-    return `Version: ${event.version.label}`;
+  if (event.version) {
+    const fileName = event.file_name || 'the file';
+    return event.version.label
+      ? `New version in ${fileName}: ${event.version.label}`
+      : `New version saved in ${fileName}`;
   }
   return undefined;
 }

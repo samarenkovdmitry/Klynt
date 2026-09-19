@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
+const CONTENT_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
 
 export type LegalSectionNav = {
   id: string;
@@ -23,7 +23,7 @@ export function LegalDocumentPage({
   return (
     <>
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
-        <div className={REPORT_PAGE_CONTAINER_CLASS}>
+        <div className={CONTENT_CONTAINER_CLASS}>
           <div className="grid min-w-0 gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[240px_minmax(0,1fr)]">
             <aside className="hidden min-w-0 lg:block lg:sticky lg:top-[88px] lg:self-start">
               <nav

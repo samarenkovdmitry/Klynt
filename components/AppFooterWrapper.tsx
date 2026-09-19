@@ -4,7 +4,8 @@ import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 
 import { AppFooter } from "@/components/AppFooter";
-import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
+
+const CONTENT_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
 
 function AppFooterContent() {
   const pathname = usePathname();
@@ -13,13 +14,12 @@ function AppFooterContent() {
     return null;
   }
 
-  const isDarkFooter =
-    pathname === "/" || pathname === "/landing-copy" || pathname?.startsWith("/landing-copy/");
+  const isDarkFooter = pathname === "/";
 
   return (
     <AppFooter
       variant={isDarkFooter ? "dark" : "light"}
-      containerClass={isDarkFooter ? undefined : REPORT_PAGE_CONTAINER_CLASS}
+      containerClass={isDarkFooter ? undefined : CONTENT_CONTAINER_CLASS}
     />
   );
 }

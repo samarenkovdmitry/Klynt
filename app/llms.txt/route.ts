@@ -1,4 +1,3 @@
-import { DEMO_REPORT_PATH, DEMO_REPORT_SLUG } from "@/lib/demo-report";
 import { SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/site";
 
 export function GET() {
@@ -6,18 +5,11 @@ export function GET() {
   const lines = [
     `# ${SITE_NAME}`,
     "",
-    "> AI UX clarity analyzer for landing pages.",
-    "",
-    "## Sample UX report",
-    absoluteUrl(DEMO_REPORT_PATH, siteUrl),
-    "",
-    "## Plain-text report export",
-    absoluteUrl(`/api/reports/${DEMO_REPORT_SLUG}?format=text`, siteUrl),
+    "> Project truth layer — keeps track of what is currently true across Figma, Slack, and docs.",
     "",
     "## Main pages",
     absoluteUrl("/", siteUrl),
-    absoluteUrl("/analyze", siteUrl),
-    absoluteUrl("/landing-copy", siteUrl),
+    absoluteUrl("/contact", siteUrl),
   ];
 
   return new Response(`${lines.join("\n")}\n`, {

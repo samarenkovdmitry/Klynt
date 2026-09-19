@@ -7,7 +7,7 @@ import {
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 
-import { LANDING_UPDATE_CONTAINER } from "@/lib/landing-update-content";
+const DEFAULT_CONTAINER_CLASS = "mx-auto w-full max-w-[1180px]";
 
 const legalLinks = [
   { href: "/privacy", label: "Privacy" },
@@ -60,7 +60,7 @@ type AppFooterProps = {
 
 export function AppFooter({ variant = "light", containerClass }: AppFooterProps) {
   const styles = variantStyles[variant];
-  const container = containerClass ?? LANDING_UPDATE_CONTAINER;
+  const container = containerClass ?? DEFAULT_CONTAINER_CLASS;
 
   return (
     <footer

@@ -5,12 +5,10 @@ import { RiArrowRightLine, RiMailLine, RiTimeLine } from "@remixicon/react";
 import { Button } from "@/components/ui/Button";
 import { FormLabel } from "@/components/ui/FormLabel";
 import { inputFieldClass, inputFieldSizeClass } from "@/components/ui/inputClasses";
-import {
-  REPORT_HERO_RADIUS_CLASS,
-  REPORT_PAGE_CONTAINER_CLASS,
-  REPORT_SURFACE_BORDER_CLASS,
-  REPORT_SURFACE_SHADOW_CLASS,
-} from "@/components/report/reportStyles";
+const CARD_RADIUS_CLASS = "rounded-[20px]";
+const CONTENT_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
+const SURFACE_BORDER_CLASS = "border border-[rgba(6,28,47,0.06)]";
+const SURFACE_SHADOW_CLASS = "shadow-[0_10px_40px_rgba(0,0,0,0.03)]";
 
 const CONTACT_POINTS = [
   {
@@ -76,16 +74,16 @@ export default function ContactPage() {
     message.trim().length >= 10;
 
   const cardClassName = [
-    REPORT_HERO_RADIUS_CLASS,
-    REPORT_SURFACE_BORDER_CLASS,
-    REPORT_SURFACE_SHADOW_CLASS,
+    CARD_RADIUS_CLASS,
+    SURFACE_BORDER_CLASS,
+    SURFACE_SHADOW_CLASS,
     "bg-white p-6 md:p-8",
   ].join(" ");
 
   return (
     <>
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
-        <div className={REPORT_PAGE_CONTAINER_CLASS}>
+        <div className={CONTENT_CONTAINER_CLASS}>
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,480px)] lg:items-start lg:gap-12">
             <header className="lg:pt-2">
               <p className="text-[15px] font-normal leading-5 text-[#8E99A2]">
