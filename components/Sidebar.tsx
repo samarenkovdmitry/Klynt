@@ -156,12 +156,6 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
           </div>
         )}
 
-        {loading && (
-          <div className="flex items-center gap-2 px-3 py-2 text-sm text-ink-muted">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-line border-t-[#061C2F]" />
-            Loading...
-          </div>
-        )}
       </aside>
 
       {/* Mobile top bar */}
