@@ -1,16 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { SlackWebhookEvent } from '@/lib/types/events';
 import { createRawEvent, getIntegrationByTeamId } from '@/lib/db/queries';
 
-// Slack signing secret should be stored in environment variables
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
+const MAX_SIGNATURE_AGE_MS = 5 * 60 * 1000;
 
-// TODO: Implement Slack request signature verification using SLACK_SIGNING_SECRET,
-// X-Slack-Signature and X-Slack-Request-Timestamp. Skipped for the prototype.
+// Verify X-Slack-Signature: HMAC-SHA256 of "v0:{timestamp}:{rawBody}"
+// with the app signing secret, plus a 5-minute window against replays.
+function verifySlackSignature(request: NextRequest, rawBody: string): boolean {
+  if (!SLACK_SIGNING_SECRET) {
+    console.error('SLACK_SIGNING_SECRET not configured — rejecting request');
+    return false;
+  }
+  const signature = request.headers.get('x-slack-signature');
+  const timestamp = request.headers.get('x-slack-request-timestamp');
+  if (!signature || !timestamp) return false;
+
+  if (Math.abs(Date.now() - parseInt(timestamp, 10) * 1000) > MAX_SIGNATURE_AGE_MS) {
+    return false;
+  }
+
+  const expected = `v0=${createHmac('sha256', SLACK_SIGNING_SECRET)
+    .update(`v0:${timestamp}:${rawBody}`)
+    .digest('hex')}`;
+
+  try {
+    return timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json() as SlackWebhookEvent;
+    const rawBody = await request.text();
+
+    if (!verifySlackSignature(request, rawBody)) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    }
+
+    const body = JSON.parse(rawBody) as SlackWebhookEvent;
 
     // Handle URL verification (Slack sends this when webhook is created)
     if (body.type === 'url_verification') {
