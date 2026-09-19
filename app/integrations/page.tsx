@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { siNotion, siLinear, siGoogledocs } from 'simple-icons';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
@@ -252,13 +253,19 @@ export default function IntegrationsPage() {
     setIntegrations(data.integrations || []);
   };
 
+  const router = useRouter();
+
   useEffect(() => {
+    const queryProjectId = new URLSearchParams(window.location.search).get('projectId');
     Promise.all([fetch('/api/projects'), fetch('/api/integrations')])
       .then(([p, i]) => Promise.all([p.json(), i.json()]))
       .then(([pData, iData]) => {
-        const list = pData.projects || [];
+        const list: { id: string; name: string }[] = pData.projects || [];
         setProjects(list);
-        setSelectedProjectId(list[0]?.id || null);
+        const initial = queryProjectId && list.find(p => p.id === queryProjectId)
+          ? queryProjectId
+          : list[0]?.id || null;
+        setSelectedProjectId(initial);
         setIntegrations(iData.integrations || []);
         setLoading(false);
       })
@@ -267,6 +274,11 @@ export default function IntegrationsPage() {
         setLoading(false);
       });
   }, []);
+
+  const handleProjectChange = (projectId: string) => {
+    setSelectedProjectId(projectId);
+    router.replace(`/integrations?projectId=${projectId}`, { scroll: false });
+  };
 
   const formatDate = (date: string | null) => {
     if (!date) return 'Never';
@@ -285,6 +297,7 @@ export default function IntegrationsPage() {
         projects={projects}
         selectedProjectId={selectedProjectId}
         activeItem="integrations"
+        onProjectChange={handleProjectChange}
         loading={loading}
       />
 

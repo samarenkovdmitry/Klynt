@@ -69,6 +69,9 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
+  const pageHref = (path: string) =>
+    selectedProjectId ? `${path}?projectId=${selectedProjectId}` : path;
+
   const navItem = (href: string, label: string, isActive: boolean, icon?: React.ReactNode) => (
     <Link
       href={href}
@@ -86,7 +89,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
       {/* Sidebar */}
       <aside className="sticky top-0 hidden h-screen w-[240px] flex-shrink-0 self-start overflow-y-auto bg-white px-4 py-8 shadow-[1px_0_0_0_rgba(0,0,0,0.03),2px_0_8px_-4px_rgba(0,0,0,0.03)] lg:flex lg:flex-col">
         <div className="mb-8 px-2">
-          <Link href="/project">
+          <Link href={pageHref('/project')}>
             <KlyntLogo />
           </Link>
         </div>
@@ -131,8 +134,8 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
 
           <div className="my-4 h-px bg-fill" />
 
-          {navItem('/integrations', 'Integrations', activeItem === 'integrations', <RiPlugLine size={16} />)}
-          {navItem('/settings', 'Settings', activeItem === 'settings', <RiSettings3Line size={16} />)}
+          {navItem(pageHref('/integrations'), 'Integrations', activeItem === 'integrations', <RiPlugLine size={16} />)}
+          {navItem(pageHref('/settings'), 'Settings', activeItem === 'settings', <RiSettings3Line size={16} />)}
         </nav>
 
         {userEmail && (
@@ -166,7 +169,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
         <header
           className="flex w-full items-center gap-2 border-b border-line bg-app-bg px-4 py-2.5"
         >
-          <Link href="/project" onClick={() => setMobileMenuOpen(false)} className="flex-shrink-0">
+          <Link href={pageHref('/project')} onClick={() => setMobileMenuOpen(false)} className="flex-shrink-0">
             <img src="/klynt_logo_woodmark.svg" alt="Klynt" className="h-6 w-6" />
           </Link>
           <button
@@ -234,11 +237,11 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
           </div>
           <div className="my-3 h-px bg-fill" />
           <div className="space-y-1">
-            <Link href="/integrations" className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary" onClick={() => setMobileMenuOpen(false)}>
+            <Link href={pageHref('/integrations')} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary" onClick={() => setMobileMenuOpen(false)}>
               <RiPlugLine size={16} className="text-ink-faint" />
               Integrations
             </Link>
-            <Link href="/settings" className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary" onClick={() => setMobileMenuOpen(false)}>
+            <Link href={pageHref('/settings')} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary" onClick={() => setMobileMenuOpen(false)}>
               <RiSettings3Line size={16} className="text-ink-faint" />
               Settings
             </Link>

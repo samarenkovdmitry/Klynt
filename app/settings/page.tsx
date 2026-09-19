@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
 import { RiArrowDownSLine } from '@remixicon/react';
@@ -34,17 +35,26 @@ export default function SettingsPage() {
   const [deleting, setDeleting] = useState(false);
   const [editProject, setEditProject] = useState({ name: '', description: '' });
 
+  const router = useRouter();
+
   useEffect(() => {
+    const queryProjectId = new URLSearchParams(window.location.search).get('projectId');
     fetch('/api/projects')
       .then(res => res.json())
       .then(data => {
-        const list = data.projects || [];
+        const list: Project[] = data.projects || [];
         setProjects(list);
-        if (list.length > 0) {
-          setSelectedProjectId(list[0].id);
-        }
+        const initial = queryProjectId && list.find(p => p.id === queryProjectId)
+          ? queryProjectId
+          : list[0]?.id || null;
+        setSelectedProjectId(initial);
       });
   }, []);
+
+  const handleProjectChange = (projectId: string) => {
+    setSelectedProjectId(projectId);
+    router.replace(`/settings?projectId=${projectId}`, { scroll: false });
+  };
 
   useEffect(() => {
     const project = projects.find(p => p.id === selectedProjectId);
@@ -152,6 +162,7 @@ export default function SettingsPage() {
         projects={projects}
         selectedProjectId={selectedProjectId}
         activeItem="settings"
+        onProjectChange={handleProjectChange}
         loading={loading}
       />
 

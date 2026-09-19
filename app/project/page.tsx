@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState, useCallback, type ReactNode } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
 import NewProjectModal from '@/components/NewProjectModal';
@@ -143,8 +143,7 @@ export default function ProjectStatePage() {
 }
 
 function ProjectStatePageInner() {
-  const searchParams = useSearchParams();
-  const queryProjectId = searchParams.get('projectId');
+  const router = useRouter();
 
   const [state, setState] = useState<ProjectState | null>(null);
   const [summary, setSummary] = useState<ProjectSummary | null>(null);
@@ -193,6 +192,7 @@ function ProjectStatePageInner() {
   }, []);
 
   useEffect(() => {
+    const queryProjectId = new URLSearchParams(window.location.search).get('projectId');
     fetch('/api/projects')
       .then(res => res.json())
       .then(data => {
@@ -212,7 +212,7 @@ function ProjectStatePageInner() {
         setError(err.message);
         setLoading(false);
       });
-  }, [fetchData, queryProjectId]);
+  }, [fetchData]);
 
   useEffect(() => {
     if (!selectedProjectId) return;
@@ -227,6 +227,7 @@ function ProjectStatePageInner() {
 
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
+    router.replace(`/project?projectId=${projectId}`, { scroll: false });
     fetchData(period, projectId);
   };
 
