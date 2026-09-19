@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import { ProjectDashboard } from './dashboard';
 
 export default function ProjectRedirectPage() {
   const router = useRouter();
+  const [empty, setEmpty] = useState(false);
 
   useEffect(() => {
     const queryProjectId = new URLSearchParams(window.location.search).get('projectId');
@@ -13,20 +15,24 @@ export default function ProjectRedirectPage() {
       .then(res => res.json())
       .then(data => {
         const list = data.projects || [];
+        if (list.length === 0) {
+          setEmpty(true);
+          return;
+        }
         const target = queryProjectId
           ? list.find((p: { id: string }) => p.id === queryProjectId)
           : list[0];
         router.replace(
-          target?.slug
-            ? `/project/${target.slug}`
-            : target
-              ? `/project?projectId=${target.id}`
-              : '/project',
+          target?.slug ? `/project/${target.slug}` : `/project?projectId=${target.id}`,
           { scroll: false }
         );
       })
       .catch(() => {});
   }, [router]);
+
+  if (empty) {
+    return <ProjectDashboard />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
