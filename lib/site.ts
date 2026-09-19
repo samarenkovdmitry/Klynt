@@ -1,9 +1,9 @@
 export const SITE_NAME = "Klynt";
 
-export const SITE_TAGLINE = "AI UX clarity analyzer";
+export const SITE_TAGLINE = "Project truth layer";
 
 export const DEFAULT_DESCRIPTION =
-  "Klynt finds confusing UX, weak positioning, and conversion friction on landing pages — with clear, actionable fixes you can ship.";
+  "Klynt keeps track of what's actually true in your project. It collects meaningful changes from Figma, Slack and docs, and turns them into a current state you can read in 30 seconds.";
 
 /** Production canonical origin (no trailing slash). */
 export function getSiteUrl(): string {
