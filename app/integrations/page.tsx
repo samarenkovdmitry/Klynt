@@ -7,6 +7,7 @@ import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
 
 interface Integration {
   id: string;
+  project_id: string;
   source: string;
   status: string;
   last_sync_at: string | null;
@@ -298,7 +299,9 @@ export default function IntegrationsPage() {
           <>
             <div className="mt-8 space-y-3">
               {AVAILABLE.map((service) => {
-                const integration = integrations.find(i => i.source === service.source);
+                const integration = integrations.find(
+                  i => i.source === service.source && i.project_id === selectedProjectId,
+                );
                 return (
                   <div
                     key={service.source}
