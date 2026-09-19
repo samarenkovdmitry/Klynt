@@ -12,6 +12,7 @@ import {
 } from '@/lib/db/queries';
 import { interpretEvent, detectConflicts } from '@/lib/ai/event-processor';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
+import { supabase } from '@/lib/db/supabase';
 
 // Events that should update project state
 const STATE_CHANGING_EVENTS = ['decision', 'approval', 'change', 'scope_change', 'commitment', 'request'];
@@ -19,35 +20,18 @@ const STATE_CHANGING_EVENTS = ['decision', 'approval', 'change', 'scope_change',
 // Minimum confidence to auto-confirm and update state
 const CONFIDENCE_THRESHOLD = 0.65;
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { projectId } = body;
+async function processProjectEvents(projectId: string) {
+  const events = await getUnprocessedEvents(projectId, 50);
 
-    if (!projectId) {
-      return NextResponse.json({ error: 'Project ID required' }, { status: 400 });
-    }
+  const result = { processed: 0, factsCreated: 0, factsUpdated: 0, conflictsDetected: 0 };
+  if (events.length === 0) return result;
 
-    const user = await getSessionUser();
-    if (!user) return unauthorizedResponse();
+  console.log(`Processing ${events.length} unprocessed events for project ${projectId}`);
 
-    const project = await getProject(projectId, user.id);
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
-    }
-
-    const events = await getUnprocessedEvents(projectId, 50);
-
-    if (events.length === 0) {
-      return NextResponse.json({ message: 'No unprocessed events', processed: 0 });
-    }
-
-    console.log(`Processing ${events.length} unprocessed events for project ${projectId}`);
-
-    let processedCount = 0;
-    let factsCreated = 0;
-    let factsUpdated = 0;
-    let conflictsDetected = 0;
+  let processedCount = 0;
+  let factsCreated = 0;
+  let factsUpdated = 0;
+  let conflictsDetected = 0;
 
     for (const event of events) {
       try {
@@ -169,14 +153,56 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      message: 'Events processed successfully',
-      processed: processedCount,
-      factsCreated,
-      factsUpdated,
-      conflictsDetected,
-    });
+    result.processed = processedCount;
+    result.factsCreated = factsCreated;
+    result.factsUpdated = factsUpdated;
+    result.conflictsDetected = conflictsDetected;
+    return result;
+}
 
+export async function POST(request: NextRequest) {
+  try {
+    const isCron = !!process.env.CRON_SECRET &&
+      request.headers.get('authorization') === `Bearer ${process.env.CRON_SECRET}`;
+
+    const body = await request.json().catch(() => ({}));
+
+    let projectIds: string[];
+    if (isCron) {
+      // Cron mode: process the given project, or every project with pending events
+      if (body.projectId) {
+        projectIds = [body.projectId];
+      } else {
+        const { data } = await supabase
+          .from('raw_events')
+          .select('project_id')
+          .is('processed_at', null);
+        projectIds = [...new Set((data || []).map(r => r.project_id))];
+      }
+    } else {
+      const { projectId } = body;
+      if (!projectId) {
+        return NextResponse.json({ error: 'Project ID required' }, { status: 400 });
+      }
+      const user = await getSessionUser();
+      if (!user) return unauthorizedResponse();
+      const project = await getProject(projectId, user.id);
+      if (!project) {
+        return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+      }
+      projectIds = [projectId];
+    }
+
+    const totals = { processed: 0, factsCreated: 0, factsUpdated: 0, conflictsDetected: 0 };
+    for (const projectId of projectIds) {
+      const r = await processProjectEvents(projectId);
+      totals.processed += r.processed;
+      totals.factsCreated += r.factsCreated;
+      totals.factsUpdated += r.factsUpdated;
+      totals.conflictsDetected += r.conflictsDetected;
+    }
+
+    return NextResponse.json({ message: 'Events processed successfully', ...totals });
   } catch (error) {
     console.error('Error in process-events job:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
