@@ -49,9 +49,9 @@ function BrandIcon({ source, size = 24, className }: { source: string; size?: nu
 const AVAILABLE = [
   { source: 'figma', name: 'Figma', description: 'Import comments, versions, and design changes.' },
   { source: 'slack', name: 'Slack', description: 'Import messages, decisions, and mentions.' },
+  { source: 'linear', name: 'Linear', description: 'Import issue status changes and comments.' },
   { source: 'gdocs', name: 'Google Docs', description: 'Import briefs, comments, and decisions from docs.' },
   { source: 'notion', name: 'Notion', description: 'Sync pages and decisions.' },
-  { source: 'linear', name: 'Linear', description: 'Import issue status changes and comments.' },
 ];
 
 function FigmaWatchPanel({ projectId, integration, onChanged }: {

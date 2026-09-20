@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/integrations?error=invalid_state`);
     }
 
-    const response = NextResponse.redirect(`${baseUrl}/integrations?success=linear_connected`);
+    const response = NextResponse.redirect(`${baseUrl}/integrations?success=linear_connected&projectId=${statePayload.project_id}`);
     response.cookies.delete('linear_oauth_state');
 
     if (!LINEAR_CLIENT_ID || !LINEAR_CLIENT_SECRET) {

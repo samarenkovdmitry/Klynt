@@ -46,7 +46,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Clear state and project cookies
-    const response = NextResponse.redirect(`${baseUrl}/integrations?success=figma_connected`);
+    const projectParam = request.cookies.get('figma_oauth_project_id')?.value;
+    const response = NextResponse.redirect(`${baseUrl}/integrations?success=figma_connected${projectParam ? `&projectId=${projectParam}` : ''}`);
     response.cookies.delete('figma_oauth_state');
     response.cookies.delete('figma_oauth_project_id');
 

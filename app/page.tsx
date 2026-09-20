@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import LandingPreview from '@/components/LandingPreview'
-import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons'
-import { siNotion, siGmail, siGoogledrive, siZoom, siLinear } from 'simple-icons'
+import { FigmaIcon, LinearIcon, SlackIcon } from '@/components/icons/BrandIcons'
+import { siNotion, siGmail, siGoogledrive, siZoom } from 'simple-icons'
 
 function SiIcon({ icon, size = 16 }: { icon: { path: string; hex: string; title: string }; size?: number }) {
   return (
@@ -162,13 +162,13 @@ export default function LandingPage() {
 
             <div className="mt-12 flex items-center gap-4">
               <FigmaIcon size={17} />
+              <LinearIcon size={17} />
               <SlackIcon size={17} />
               <span className="flex items-center gap-4 opacity-30 grayscale">
                 <SiIcon icon={siNotion} />
                 <SiIcon icon={siGmail} />
                 <SiIcon icon={siGoogledrive} />
                 <SiIcon icon={siZoom} />
-                <SiIcon icon={siLinear} />
               </span>
               <span className="text-xs text-ink-faint">coming soon</span>
             </div>

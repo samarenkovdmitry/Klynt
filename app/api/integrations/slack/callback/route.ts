@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/integrations?error=invalid_state`);
     }
 
-    const response = NextResponse.redirect(`${baseUrl}/integrations?success=slack_connected`);
+    const response = NextResponse.redirect(`${baseUrl}/integrations?success=slack_connected&projectId=${statePayload.project_id}`);
     response.cookies.delete('slack_oauth_state');
 
     if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET) {
