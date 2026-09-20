@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   LegalDocumentPage,
   LegalSection,
@@ -65,8 +64,7 @@ export default function PrivacyPage() {
             <strong className="font-medium text-[var(--ink-primary)]">
               Contact information
             </strong>{" "}
-            — name, email address, and message content when you use our contact
-            form
+            — name, email address, and message content when you email us
           </li>
           <li>
             <strong className="font-medium text-[var(--ink-primary)]">
@@ -270,10 +268,13 @@ export default function PrivacyPage() {
           complaint with a supervisory authority.
         </p>
         <p>
-          To exercise these rights, contact us using the{" "}
-          <Link href="/contact" className="font-medium text-[var(--accent-link)] hover:underline">
-            contact page
-          </Link>
+          To exercise these rights, email{" "}
+          <a
+            href="mailto:hello@klynt.one"
+            className="font-medium text-[var(--accent-link)] hover:underline"
+          >
+            hello@klynt.one
+          </a>
           . We may need to verify your request before responding.
         </p>
       </LegalSection>
@@ -300,11 +301,7 @@ export default function PrivacyPage() {
 
       <LegalSection id="contact" title="Contact">
         <p>
-          Questions about this Privacy Policy? Reach us via the{" "}
-          <Link href="/contact" className="font-medium text-[var(--accent-link)] hover:underline">
-            contact page
-          </Link>{" "}
-          or email{" "}
+          Questions about this Privacy Policy? Email{" "}
           <a
             href="mailto:hello@klynt.one"
             className="font-medium text-[var(--accent-link)] hover:underline"

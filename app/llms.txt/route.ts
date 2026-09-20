@@ -9,7 +9,9 @@ export function GET() {
     "",
     "## Main pages",
     absoluteUrl("/", siteUrl),
-    absoluteUrl("/contact", siteUrl),
+    "",
+    "## Contact",
+    "hello@klynt.one",
   ];
 
   return new Response(`${lines.join("\n")}\n`, {

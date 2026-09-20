@@ -28,9 +28,9 @@ export function LegalDocumentPage({
             <img src="/Klynt_logo.svg" alt="Klynt" className="h-7 w-auto" />
           </Link>
           <nav className="flex items-center gap-5 text-sm">
-            <Link href="/contact" className="font-medium text-ink-secondary transition hover:text-[var(--accent-link)]">
+            <a href="mailto:hello@klynt.one" className="font-medium text-ink-secondary transition hover:text-[var(--accent-link)]">
               Contact
-            </Link>
+            </a>
             <Link href="/login" className="font-medium text-ink-secondary transition hover:text-[var(--accent-link)]">
               Log in
             </Link>
@@ -78,6 +78,7 @@ export function LegalDocumentPage({
         <div className={`${CONTENT_CONTAINER_CLASS} flex flex-col items-center justify-between gap-3 text-sm text-ink-muted md:flex-row`}>
           <p>© 2026 Klynt</p>
           <div className="flex items-center gap-4">
+            <a href="mailto:hello@klynt.one" className="hover:text-[var(--accent-link)]">hello@klynt.one</a>
             <Link href="/terms" className="hover:text-[var(--accent-link)]">Terms</Link>
             <Link href="/privacy" className="hover:text-[var(--accent-link)]">Privacy</Link>
           </div>

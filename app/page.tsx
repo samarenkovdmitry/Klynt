@@ -217,6 +217,7 @@ export default function LandingPage() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-ink-muted md:flex-row">
           <p>© 2026 Klynt</p>
           <div className="flex items-center gap-4">
+            <a href="mailto:hello@klynt.one" className="hover:text-[var(--accent-link)]">hello@klynt.one</a>
             <Link href="/terms" className="hover:text-[var(--accent-link)]">Terms</Link>
             <Link href="/privacy" className="hover:text-[var(--accent-link)]">Privacy</Link>
           </div>

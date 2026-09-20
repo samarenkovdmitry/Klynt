@@ -231,11 +231,7 @@ export default function TermsPage() {
 
       <LegalSection id="contact" title="Contact">
         <p>
-          Questions about these Terms? Contact us via the{" "}
-          <Link href="/contact" className="font-medium text-[var(--accent-link)] hover:underline">
-            contact page
-          </Link>{" "}
-          or email{" "}
+          Questions about these Terms? Email{" "}
           <a
             href="mailto:hello@klynt.one"
             className="font-medium text-[var(--accent-link)] hover:underline"
