@@ -1043,7 +1043,20 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 </div>
 
                 {(() => {
-                  const urls = [...new Set(selectedHistory.map((h: any) => h.source_url).filter(Boolean))];
+                  const rawUrls = [...new Set(selectedHistory.map((h: any) => h.source_url).filter(Boolean))] as string[];
+                  const byPath = new Map<string, string>();
+                  for (const url of rawUrls) {
+                    let key: string;
+                    try {
+                      const u = new URL(url);
+                      key = u.origin + u.pathname;
+                    } catch {
+                      key = url;
+                    }
+                    const prev = byPath.get(key);
+                    if (!prev || url.length > prev.length) byPath.set(key, url);
+                  }
+                  const urls = [...byPath.values()];
                   const sources = [...new Set(selectedHistory.map((h: any) => h.source).filter(Boolean))];
                   if (urls.length > 0) {
                     return (
