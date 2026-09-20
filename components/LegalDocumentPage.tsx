@@ -28,9 +28,6 @@ export function LegalDocumentPage({
             <img src="/Klynt_logo.svg" alt="Klynt" className="h-7 w-auto" />
           </Link>
           <nav className="flex items-center gap-5 text-sm">
-            <a href="mailto:hello@klynt.one" className="font-medium text-ink-secondary transition hover:text-[var(--accent-link)]">
-              Contact
-            </a>
             <Link href="/login" className="font-medium text-ink-secondary transition hover:text-[var(--accent-link)]">
               Log in
             </Link>
