@@ -8,9 +8,11 @@ import {
 const SECTIONS: LegalSectionNav[] = [
   { id: "agreement", title: "Agreement" },
   { id: "service", title: "The Service" },
-  { id: "eligibility", title: "Eligibility" },
+  { id: "accounts", title: "Accounts & eligibility" },
+  { id: "connected-services", title: "Connected services" },
   { id: "acceptable-use", title: "Acceptable use" },
   { id: "ai-disclaimer", title: "AI disclaimer" },
+  { id: "your-data", title: "Your data" },
   { id: "intellectual-property", title: "Intellectual property" },
   { id: "disclaimer", title: "Disclaimer" },
   { id: "limitation", title: "Limitation of liability" },
@@ -25,37 +27,60 @@ export default function TermsPage() {
   return (
     <LegalDocumentPage
       title="Terms of Service"
-      lastUpdated="June 1, 2026"
+      lastUpdated="September 20, 2026"
       sections={SECTIONS}
     >
       <LegalSection id="agreement" title="Agreement">
         <p>
           These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and
-          use of Klynt at klynt.one (the &ldquo;Service&rdquo;). By accessing or
-          using the Service, you agree to these Terms. If you do not agree, do
-          not use the Service.
+          use of Klynt at klynt.one (the &ldquo;Service&rdquo;). By creating an
+          account or using the Service, you agree to these Terms. If you do not
+          agree, do not use the Service.
         </p>
       </LegalSection>
 
       <LegalSection id="service" title="The Service">
         <p>
-          Klynt analyzes publicly accessible web pages or screenshots you submit
-          and generates automated UX clarity reports, including scores, issues,
-          improvement suggestions, and copy refinements. Features may change,
-          be added, or be removed at any time.
+          Klynt is a project truth layer. It connects to tools you already use —
+          such as Slack and Figma — collects the changes that carry meaning,
+          interprets them using AI, and maintains a current state of your
+          project: what changed, what is approved, what is unresolved, and where
+          new information contradicts earlier decisions.
         </p>
         <p>
-          The Service is currently offered without requiring account
-          registration for basic use. Some features may be limited during
-          pre-launch or promotional periods.
+          The Service is currently in closed beta. Features may change, be
+          added, or be removed at any time, and availability or quality may vary
+          while we iterate.
         </p>
       </LegalSection>
 
-      <LegalSection id="eligibility" title="Eligibility">
+      <LegalSection id="accounts" title="Accounts & eligibility">
         <p>
-          You must be at least 13 years old (or the minimum age required in your
-          jurisdiction) to use the Service. By using Klynt, you represent that you
-          meet this requirement and have the authority to agree to these Terms.
+          You must be at least 16 years old (or the minimum age required in your
+          jurisdiction) to use the Service. You are responsible for keeping your
+          account credentials confidential and for all activity under your
+          account.
+        </p>
+        <p>
+          If you connect a workspace or project on behalf of a company or team,
+          you represent that you are authorized to do so and to grant the access
+          the Service requests.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="connected-services" title="Connected services">
+        <p>
+          The Service relies on third-party services you connect — currently
+          Slack and Figma, with others planned. When you connect an account, you
+          grant Klynt access to the content and events you configure (for
+          example, messages in selected Slack channels or activity in connected
+          Figma files) so it can detect and interpret project changes.
+        </p>
+        <p>
+          Your use of those third-party services remains governed by their own
+          terms and privacy policies. Only connect workspaces and files you have
+          the right to share. You can disconnect an integration at any time,
+          which stops further collection from that source.
         </p>
       </LegalSection>
 
@@ -64,19 +89,22 @@ export default function TermsPage() {
         <ul className="list-disc space-y-2 pl-5">
           <li>Use the Service for unlawful purposes or to violate others&apos; rights</li>
           <li>
-            Submit URLs, screenshots, or other content you do not have permission
-            to analyze
+            Connect workspaces, channels, or files you do not have permission to
+            share, or use the Service to process other people&apos;s private
+            data without a lawful basis
           </li>
           <li>
-            Attempt to disrupt, overload, scrape, reverse engineer, or circumvent
-            the Service or its security controls
+            Attempt to disrupt, overload, scrape, reverse engineer, or
+            circumvent the Service or its security controls
           </li>
           <li>
-            Use automated means to abuse rate limits or generate excessive load
+            Access projects or data belonging to other users without
+            authorization
           </li>
           <li>
-            Misrepresent AI-generated output as a guaranteed audit, human expert
-            review, or legal/business advice without appropriate disclosure
+            Misrepresent AI-generated interpretations as verified facts, human
+            expert review, or legal/business advice without appropriate
+            disclosure
           </li>
         </ul>
         <p>
@@ -87,16 +115,35 @@ export default function TermsPage() {
 
       <LegalSection id="ai-disclaimer" title="AI disclaimer">
         <p>
-          Reports are generated using artificial intelligence and automated
-          analysis of visible page content. Output is provided for informational
-          and educational purposes only. It is not professional design, legal,
-          financial, or business advice.
+          Project state, interpretations, summaries, and conflict detections are
+          generated by artificial intelligence from the content of events Klynt
+          collects. AI output can be incomplete, delayed, or wrong — including
+          missing a meaningful change or misreading its importance.
         </p>
         <p>
-          UX scores, impact estimates, and recommendations are approximations
-          based on the content available at the time of analysis. You are
-          responsible for evaluating results before making product, marketing, or
-          business decisions.
+          The Service is an aid to awareness, not a system of record. You are
+          responsible for verifying important decisions, approvals, and
+          contradictions against the original sources before acting on them.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="your-data" title="Your data">
+        <p>
+          You retain ownership of the content Klynt accesses through your
+          connected services and of the project data in your account. You grant
+          us a limited, non-exclusive license to process that content solely to
+          operate, provide, and improve the Service — including sending event
+          content to our AI provider for interpretation.
+        </p>
+        <p>
+          How we collect, store, and use information is described in our{" "}
+          <Link
+            href="/privacy"
+            className="font-medium text-[var(--brand-primary)] hover:underline"
+          >
+            Privacy Policy
+          </Link>
+          .
         </p>
       </LegalSection>
 
@@ -104,12 +151,8 @@ export default function TermsPage() {
         <p>
           The Klynt name, brand, website, software, and related materials are
           owned by us or our licensors and are protected by applicable
-          intellectual property laws.
-        </p>
-        <p>
-          You retain ownership of content you submit. You grant us a limited,
-          non-exclusive license to process submitted URLs, screenshots, and
-          related content solely to operate, provide, and improve the Service.
+          intellectual property laws. These Terms do not grant you any right to
+          use our branding except as needed to use the Service as intended.
         </p>
       </LegalSection>
 
@@ -117,28 +160,30 @@ export default function TermsPage() {
         <p>
           THE SERVICE IS PROVIDED &ldquo;AS IS&rdquo; AND &ldquo;AS
           AVAILABLE&rdquo; WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
-          IMPLIED, INCLUDING IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-          PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+          IMPLIED, INCLUDING IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR
+          A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
         </p>
         <p>
           We do not warrant that the Service will be uninterrupted, error-free,
-          secure, or that reports will be accurate, complete, or suitable for any
-          particular purpose.
+          or secure, that it will detect every meaningful change, or that
+          interpretations, summaries, and detected conflicts will be accurate or
+          complete.
         </p>
       </LegalSection>
 
       <LegalSection id="limitation" title="Limitation of liability">
         <p>
-          TO THE FULLEST EXTENT PERMITTED BY LAW, KLYNT AND ITS OPERATORS, AFFILIATES,
-          AND SUPPLIERS WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
-          CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, REVENUE,
-          DATA, GOODWILL, OR BUSINESS OPPORTUNITIES ARISING FROM YOUR USE OF THE
-          SERVICE.
+          TO THE FULLEST EXTENT PERMITTED BY LAW, KLYNT AND ITS OPERATORS,
+          AFFILIATES, AND SUPPLIERS WILL NOT BE LIABLE FOR ANY INDIRECT,
+          INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS
+          OF PROFITS, REVENUE, DATA, GOODWILL, OR BUSINESS OPPORTUNITIES ARISING
+          FROM YOUR USE OF THE SERVICE — INCLUDING RELIANCE ON AI-GENERATED
+          INTERPRETATIONS OR MISSED EVENTS.
         </p>
         <p>
-          Our total liability for any claim relating to the Service will not exceed
-          the greater of (a) the amount you paid us for the Service in the twelve
-          months before the claim, or (b) USD $100.
+          Our total liability for any claim relating to the Service will not
+          exceed the greater of (a) the amount you paid us for the Service in
+          the twelve months before the claim, or (b) USD $100.
         </p>
       </LegalSection>
 
@@ -146,16 +191,17 @@ export default function TermsPage() {
         <p>
           You agree to indemnify and hold harmless Klynt and its operators from
           any claims, damages, losses, or expenses (including reasonable legal
-          fees) arising from your use of the Service, content you submit, or your
-          violation of these Terms or applicable law.
+          fees) arising from your use of the Service, content or workspaces you
+          connect, or your violation of these Terms or applicable law.
         </p>
       </LegalSection>
 
       <LegalSection id="termination" title="Termination">
         <p>
-          You may stop using the Service at any time. We may suspend or terminate
-          access, with or without notice, if you violate these Terms, create risk
-          or legal exposure for us, or if we discontinue the Service.
+          You may stop using the Service and disconnect integrations at any
+          time. We may suspend or terminate access, with or without notice, if
+          you violate these Terms, create risk or legal exposure for us, or if
+          we discontinue the Service.
         </p>
         <p>
           Sections that by their nature should survive termination — including
