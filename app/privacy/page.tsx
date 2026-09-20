@@ -271,7 +271,7 @@ export default function PrivacyPage() {
         </p>
         <p>
           To exercise these rights, contact us using the{" "}
-          <Link href="/contact" className="font-medium text-[var(--brand-primary)] hover:underline">
+          <Link href="/contact" className="font-medium text-[var(--accent-link)] hover:underline">
             contact page
           </Link>
           . We may need to verify your request before responding.
@@ -301,13 +301,13 @@ export default function PrivacyPage() {
       <LegalSection id="contact" title="Contact">
         <p>
           Questions about this Privacy Policy? Reach us via the{" "}
-          <Link href="/contact" className="font-medium text-[var(--brand-primary)] hover:underline">
+          <Link href="/contact" className="font-medium text-[var(--accent-link)] hover:underline">
             contact page
           </Link>{" "}
           or email{" "}
           <a
             href="mailto:hello@klynt.one"
-            className="font-medium text-[var(--brand-primary)] hover:underline"
+            className="font-medium text-[var(--accent-link)] hover:underline"
           >
             hello@klynt.one
           </a>

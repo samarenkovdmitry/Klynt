@@ -15,12 +15,12 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const primaryStyles: Record<ButtonTone, string> = {
   light:
-    "border border-transparent bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-primary-hover)]",
+    "border border-transparent bg-[var(--accent)] text-[var(--accent-fg)] hover:bg-[var(--accent-hover)]",
   dark: "border border-transparent bg-white text-[#18181B] hover:bg-[#F4F4F5]",
 };
 
 const accentStyles =
-  "border border-transparent bg-[var(--brand-primary)] text-white shadow-[0_10px_30px_var(--brand-primary-shadow)] hover:-translate-y-px hover:bg-[var(--brand-primary-hover)] hover:shadow-[0_14px_34px_var(--brand-primary-shadow-strong)]";
+  "border border-transparent bg-[var(--accent)] text-[var(--accent-fg)] shadow-[0_10px_30px_rgba(15,61,46,0.22)] hover:-translate-y-px hover:bg-[var(--accent-hover)] hover:shadow-[0_14px_34px_rgba(15,61,46,0.28)]";
 
 const secondaryStyles: Record<ButtonTone, string> = {
   light:

@@ -213,7 +213,7 @@ export default function LandingPage() {
 
       </main>
 
-      <footer className="relative z-10 border-t border-ink/10 bg-white/75 px-6 py-4 backdrop-blur-md">
+      <footer className="relative z-10 bg-white/75 px-6 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-ink-muted md:flex-row">
           <p>© 2026 Klynt</p>
           <div className="flex items-center gap-4">

@@ -109,14 +109,14 @@ export default function ContactPage() {
                     {"href" in point ? (
                       <a
                         href={point.href}
-                        className="mt-1 inline-flex items-center gap-2 text-[16px] font-medium text-[var(--ink-primary)] transition hover:text-[var(--brand-primary)]"
+                        className="mt-1 inline-flex items-center gap-2 text-[16px] font-medium text-[var(--ink-primary)] transition hover:text-[var(--accent-link)]"
                       >
-                        <Icon size={18} className="shrink-0 text-[var(--brand-primary)]" aria-hidden />
+                        <Icon size={18} className="shrink-0 text-[var(--accent-link)]" aria-hidden />
                         {point.value}
                       </a>
                     ) : (
                       <p className="mt-1 flex items-center gap-2 text-[16px] font-medium text-[var(--ink-primary)]">
-                        <Icon size={18} className="shrink-0 text-[var(--brand-primary)]" aria-hidden />
+                        <Icon size={18} className="shrink-0 text-[var(--accent-link)]" aria-hidden />
                         {point.value}
                       </p>
                     )}
@@ -141,7 +141,7 @@ export default function ContactPage() {
                   <button
                     type="button"
                     onClick={() => setSent(false)}
-                    className="mt-6 text-[14px] font-medium text-[var(--brand-primary)] hover:underline"
+                    className="mt-6 text-[14px] font-medium text-[var(--accent-link)] hover:underline"
                   >
                     Send another message
                   </button>

@@ -9,7 +9,7 @@ type InputFieldOptions = {
 export const inputFieldSizeClass = "h-[52px] bg-[#FAFBFC] md:h-[54px]";
 
 const inputFieldFocusClass =
-  "focus:border-2 focus:border-brand-primary focus-visible:border-2 focus-visible:border-brand-primary";
+  "focus:border-2 focus:border-[var(--accent-link)] focus-visible:border-2 focus-visible:border-[var(--accent-link)]";
 
 export function inputFieldClass({
   disabled = false,

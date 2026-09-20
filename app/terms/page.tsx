@@ -139,7 +139,7 @@ export default function TermsPage() {
           How we collect, store, and use information is described in our{" "}
           <Link
             href="/privacy"
-            className="font-medium text-[var(--brand-primary)] hover:underline"
+            className="font-medium text-[var(--accent-link)] hover:underline"
           >
             Privacy Policy
           </Link>
@@ -232,13 +232,13 @@ export default function TermsPage() {
       <LegalSection id="contact" title="Contact">
         <p>
           Questions about these Terms? Contact us via the{" "}
-          <Link href="/contact" className="font-medium text-[var(--brand-primary)] hover:underline">
+          <Link href="/contact" className="font-medium text-[var(--accent-link)] hover:underline">
             contact page
           </Link>{" "}
           or email{" "}
           <a
             href="mailto:hello@klynt.one"
-            className="font-medium text-[var(--brand-primary)] hover:underline"
+            className="font-medium text-[var(--accent-link)] hover:underline"
           >
             hello@klynt.one
           </a>
