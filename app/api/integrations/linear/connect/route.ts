@@ -5,8 +5,9 @@ import { getProject } from '@/lib/db/queries';
 const LINEAR_CLIENT_ID = process.env.LINEAR_CLIENT_ID;
 const LINEAR_REDIRECT_URI = process.env.LINEAR_REDIRECT_URI;
 
-// `write` is required to create webhooks via the API.
-const LINEAR_SCOPES = 'read,write';
+// `admin` is required to create webhooks via the API — Linear gates
+// webhookCreate/webhookDelete behind the admin scope, not just `write`.
+const LINEAR_SCOPES = 'read,write,admin';
 
 function getBaseUrl(request: NextRequest): string {
   const protocol =

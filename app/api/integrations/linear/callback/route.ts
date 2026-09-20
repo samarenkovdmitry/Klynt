@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
-import { createIntegration, getProject } from '@/lib/db/queries';
+import { createIntegration, getIntegration, getProject } from '@/lib/db/queries';
 import { getSessionUser } from '@/lib/api-auth';
 import { encryptToken } from '@/lib/crypto';
 import { linearGraphQL } from '@/lib/linear/client';
@@ -116,6 +116,22 @@ export async function GET(request: NextRequest) {
     if (!organization) {
       console.error('Failed to fetch Linear organization:', orgRes);
       return NextResponse.redirect(`${baseUrl}/integrations?error=linear_org_failed`);
+    }
+
+    // Remove webhooks from a previous connection so reconnects don't pile up
+    const existing = await getIntegration(projectId, 'linear');
+    const oldWebhookIds: string[] =
+      existing?.config?.webhook_ids ||
+      (existing?.config?.webhook_id ? [existing.config.webhook_id] : []);
+    for (const id of oldWebhookIds) {
+      const del = await linearGraphQL(
+        accessToken,
+        `mutation WebhookDelete($id: String!) { webhookDelete(id: $id) { success } }`,
+        { id }
+      );
+      if (!del?.data?.webhookDelete?.success) {
+        console.error('Failed to delete old Linear webhook', id, del);
+      }
     }
 
     // Create an org-wide webhook so issue/comment/project activity flows in
