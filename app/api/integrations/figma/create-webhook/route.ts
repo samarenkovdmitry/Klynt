@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getIntegration, getProject } from '@/lib/db/queries';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
+import { decryptToken } from '@/lib/crypto';
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get access token (for now, assuming it's stored in plain text - should be encrypted in production)
-    const accessToken = integration.access_token_encrypted;
+    const accessToken = decryptToken(integration.access_token_encrypted);
 
     // Determine webhook endpoint URL (body override, env, then default)
     const defaultWebhookUrl = process.env.NODE_ENV === 'production'

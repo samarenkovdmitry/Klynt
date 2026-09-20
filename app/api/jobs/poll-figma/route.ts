@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { createRawEvent, getRawEvent, updateIntegrationLastSync } from '@/lib/db/queries';
 import { getSessionUser } from '@/lib/api-auth';
+import { decryptToken } from '@/lib/crypto';
 
 const MAX_NEW_PER_RUN = 25; // cap inserts per file per run
 
@@ -14,7 +15,7 @@ function isAuthorized(request: NextRequest): Promise<boolean> | boolean {
 }
 
 async function pollFileVersions(integration: any, fileKey: string, fileName: string) {
-  const token = integration.access_token_encrypted;
+  const token = decryptToken(integration.access_token_encrypted);
   const res = await fetch(`https://api.figma.com/v1/files/${fileKey}/versions`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -52,7 +53,7 @@ async function pollFileVersions(integration: any, fileKey: string, fileName: str
 }
 
 async function pollFileComments(integration: any, fileKey: string, fileName: string) {
-  const token = integration.access_token_encrypted;
+  const token = decryptToken(integration.access_token_encrypted);
   const res = await fetch(`https://api.figma.com/v1/files/${fileKey}/comments`, {
     headers: { Authorization: `Bearer ${token}` },
   });

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getIntegration, getProject } from '@/lib/db/queries';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
+import { decryptToken } from '@/lib/crypto';
 
 // Extract a file key from a Figma URL or accept a raw key.
 // Handles figma.com/file/KEY, figma.com/design/KEY, figma.com/board/KEY.
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Connect Figma first' }, { status: 404 });
     }
 
-    const accessToken = integration.access_token_encrypted;
+    const accessToken = decryptToken(integration.access_token_encrypted);
 
     // Verify the token can read this file and grab its display name
     const fileRes = await fetch(
@@ -161,7 +162,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Figma integration not found' }, { status: 404 });
     }
 
-    const accessToken = integration.access_token_encrypted;
+    const accessToken = decryptToken(integration.access_token_encrypted);
     const cfg = integration.config || {};
 
     // Best-effort cleanup of live webhooks

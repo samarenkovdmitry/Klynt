@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { SlackWebhookEvent } from '@/lib/types/events';
 import { createRawEvent, getIntegrationByTeamId } from '@/lib/db/queries';
+import { decryptToken } from '@/lib/crypto';
 
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 const MAX_SIGNATURE_AGE_MS = 5 * 60 * 1000;
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
     if (slackEvent.user) {
       const info = await fetch(
         `https://slack.com/api/users.info?user=${slackEvent.user}`,
-        { headers: { Authorization: `Bearer ${integration.access_token_encrypted}` } },
+        { headers: { Authorization: `Bearer ${decryptToken(integration.access_token_encrypted)}` } },
       ).then(r => r.json()).catch(() => null);
       if (info?.ok && info.user) {
         const profile = info.user.profile || {};

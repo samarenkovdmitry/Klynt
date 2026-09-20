@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getIntegration, getProject } from '@/lib/db/queries';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
+import { decryptToken } from '@/lib/crypto';
 
 async function slackApi(method: string, token: string, params?: Record<string, string>) {
   const url = new URL(`https://slack.com/api/${method}`);
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
     const { integration, error } = await getAuthorizedIntegration(request);
     if (error) return error;
 
-    const token = integration.access_token_encrypted;
+    const token = decryptToken(integration.access_token_encrypted);
     const channels: { id: string; name: string; is_private: boolean; is_member: boolean }[] = [];
     let cursor = '';
 
@@ -119,7 +120,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Connect Slack first' }, { status: 404 });
     }
 
-    const token = integration.access_token_encrypted;
+    const token = decryptToken(integration.access_token_encrypted);
 
     // Fetch channel names for display + try to join public channels so
     // Events API actually delivers their messages to the webhook.

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createIntegration, getProject } from '@/lib/db/queries';
 import { getSessionUser } from '@/lib/api-auth';
+import { encryptToken } from '@/lib/crypto';
 
 const FIGMA_CLIENT_ID = process.env.FIGMA_CLIENT_ID;
 const FIGMA_CLIENT_SECRET = process.env.FIGMA_CLIENT_SECRET;
@@ -109,8 +110,8 @@ export async function GET(request: NextRequest) {
     await createIntegration({
       project_id: projectId,
       source: 'figma',
-      access_token_encrypted: tokenData.access_token,
-      refresh_token_encrypted: tokenData.refresh_token,
+      access_token_encrypted: encryptToken(tokenData.access_token),
+      refresh_token_encrypted: encryptToken(tokenData.refresh_token),
       config: {
         expires_in: tokenData.expires_in,
         expires_at: expiresAt,

@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { decryptToken, encryptToken } from '@/lib/crypto';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -36,12 +37,12 @@ export async function getFigmaAccessToken(projectId: string): Promise<string> {
   // If token is expired or expires within 5 minutes, refresh it
   if (expiresAt && new Date(expiresAt).getTime() - now.getTime() < 5 * 60 * 1000) {
     console.log('Figma token expired or about to expire. Refreshing...');
-    const tokens = await refreshFigmaToken(integration.refresh_token_encrypted);
+    const tokens = await refreshFigmaToken(decryptToken(integration.refresh_token_encrypted));
     await storeFigmaTokens(integration.id, tokens);
     return tokens.access_token;
   }
 
-  return integration.access_token_encrypted;
+  return decryptToken(integration.access_token_encrypted);
 }
 
 async function refreshFigmaToken(refreshToken: string): Promise<FigmaTokens> {
@@ -88,8 +89,8 @@ async function storeFigmaTokens(integrationId: string, tokens: FigmaTokens) {
   const { error } = await supabase
     .from('integrations')
     .update({
-      access_token_encrypted: tokens.access_token,
-      refresh_token_encrypted: tokens.refresh_token,
+      access_token_encrypted: encryptToken(tokens.access_token),
+      refresh_token_encrypted: encryptToken(tokens.refresh_token),
       config: {
         ...existing?.config,
         expires_in: tokens.expires_in,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser } from '@/lib/api-auth';
+import { decryptToken } from '@/lib/crypto';
 
 async function isAuthorized(request: NextRequest): Promise<boolean> {
   const secret = process.env.CRON_SECRET;
@@ -57,7 +58,10 @@ export async function POST(request: NextRequest) {
             .eq('project_id', event.project_id)
             .eq('source', 'slack')
             .maybeSingle();
-          slackTokenByProject.set(event.project_id, integ?.access_token_encrypted || '');
+          slackTokenByProject.set(
+            event.project_id,
+            integ?.access_token_encrypted ? decryptToken(integ.access_token_encrypted) : ''
+          );
         }
         const token = slackTokenByProject.get(event.project_id);
         if (token) {
