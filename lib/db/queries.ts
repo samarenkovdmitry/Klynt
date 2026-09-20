@@ -338,6 +338,22 @@ export async function getIntegrationByFileKey(fileKey: string, source: string = 
   return data;
 }
 
+export async function getIntegrationByLinearOrg(organizationId: string) {
+  const { data, error } = await supabase
+    .from('integrations')
+    .select()
+    .filter('config->>organization_id', 'eq', organizationId)
+    .eq('source', 'linear')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error finding Linear integration by organization id:', error);
+    return null;
+  }
+
+  return data;
+}
+
 export async function getIntegrationByTeamId(teamId: string) {
   const { data, error } = await supabase
     .from('integrations')

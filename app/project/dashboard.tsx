@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
 import NewProjectModal from '@/components/NewProjectModal';
-import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
+import { FigmaIcon, SlackIcon, LinearIcon } from '@/components/icons/BrandIcons';
 import { emojify } from 'node-emoji';
 import {
   RiArrowRightSLine,
@@ -542,7 +542,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     key={s}
                     className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary"
                   >
-                    {s === 'figma' ? <FigmaIcon size={11} /> : s === 'slack' ? <SlackIcon size={11} /> : <RiFileTextLine size={11} className="text-green-600" />}
+                    {s === 'figma' ? <FigmaIcon size={11} /> : s === 'slack' ? <SlackIcon size={11} /> : s === 'linear' ? <LinearIcon size={11} /> : <RiFileTextLine size={11} className="text-green-600" />}
                     {s === 'gdocs' ? 'Google Docs' : capitalize(s)}
                   </span>
                 ))}
@@ -614,7 +614,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                               <span className="max-w-[84px] truncate">{event.author}</span>
                             </span>
                           )}
-                          {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
+                          {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
                           {formatRelative(eventTime)}
                         </span>
                       </div>
@@ -725,7 +725,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                     <span className="max-w-[80px] truncate">{lastActor}</span>
                                   </>
                                 )}
-                                {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
+                                {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource === 'linear' ? <LinearIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
                               </span>
                             )}
                           </div>
@@ -816,7 +816,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                       <span className="max-w-[84px] truncate">{event.author}</span>
                                     </span>
                                   )}
-                                  {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
+                                  {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
                                 </span>
                               </div>
                               {expandedEvents.has(event.id) && (event.content || event.source_url) && (
@@ -1024,7 +1024,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-muted">
                           {group.source && (
                             <span className="flex items-center gap-1">
-                              {group.source === 'figma' ? <FigmaIcon size={14} /> : group.source === 'slack' ? <SlackIcon size={14} /> : <RiFileTextLine size={12} className="text-green-500" />}
+                              {group.source === 'figma' ? <FigmaIcon size={14} /> : group.source === 'slack' ? <SlackIcon size={14} /> : group.source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-500" />}
                               {group.source === 'gdocs' ? 'Google Docs' : capitalize(group.source)}
                             </span>
                           )}

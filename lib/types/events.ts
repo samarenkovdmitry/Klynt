@@ -1,8 +1,15 @@
 // Core event types for Klynt
 
-export type Source = 'figma' | 'slack' | 'email' | 'notion';
+export type Source = 'figma' | 'slack' | 'email' | 'notion' | 'linear';
 
-export type EventType = 'message' | 'comment' | 'file_version' | 'file_update' | 'library_publish';
+export type EventType =
+  | 'message'
+  | 'comment'
+  | 'file_version'
+  | 'file_update'
+  | 'library_publish'
+  | 'issue'
+  | 'issue_comment';
 
 export interface RawEvent {
   id: string;

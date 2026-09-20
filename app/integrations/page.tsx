@@ -51,7 +51,7 @@ const AVAILABLE = [
   { source: 'slack', name: 'Slack', description: 'Import messages, decisions, and mentions.' },
   { source: 'gdocs', name: 'Google Docs', description: 'Import briefs, comments, and decisions from docs.' },
   { source: 'notion', name: 'Notion', description: 'Sync pages and decisions.' },
-  { source: 'linear', name: 'Linear', description: 'Sync issues and project status.' },
+  { source: 'linear', name: 'Linear', description: 'Import issue status changes and comments.' },
 ];
 
 function FigmaWatchPanel({ projectId, integration, onChanged }: {
@@ -358,13 +358,13 @@ export default function IntegrationsPage() {
                       <div className="flex items-center gap-3">
                         <span className={`h-2 w-2 rounded-full ${integration.status === 'active' ? 'bg-green-500' : 'bg-line-strong'}`} />
                         <a
-                          href={service.source === 'figma' || service.source === 'slack' ? `/api/integrations/${service.source}/connect?project_id=${selectedProjectId}` : `/api/integrations/${service.source}/connect`}
+                          href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
                           className="rounded-full bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           Reconnect
                         </a>
                       </div>
-                    ) : service.source === 'figma' || service.source === 'slack' ? (
+                    ) : service.source === 'figma' || service.source === 'slack' || service.source === 'linear' ? (
                       <a
                         href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
                         className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
@@ -393,6 +393,20 @@ export default function IntegrationsPage() {
                         integration={integration}
                         onChanged={refreshIntegrations}
                       />
+                    )}
+                    {integration && service.source === 'linear' && (
+                      <div className="mt-3 rounded-xl bg-fill-soft px-4 py-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p className="text-xs text-ink-muted">
+                            {integration.config?.organization_name
+                              ? <>Workspace <span className="font-medium text-ink">{integration.config.organization_name}</span> — all public teams tracked</>
+                              : 'All public teams tracked'}
+                            <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${integration.config?.webhook_id ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                              {integration.config?.webhook_id ? 'Live' : 'No webhook'}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
                     )}
                   </div>
                 );
