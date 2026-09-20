@@ -136,11 +136,11 @@ function SectionHeader({ title, meta, right, caps = true }: { title: string; met
 }
 
 function SkeletonBar({ className }: { className: string }) {
-  return <div className={`animate-pulse rounded-md bg-fill ${className}`} />;
+  return <div className={`skeleton-shimmer rounded-md ${className}`} />;
 }
 
 function SkeletonCard({ className }: { className: string }) {
-  return <div className={`animate-pulse rounded-xl border border-line bg-white ${className}`} />;
+  return <div className={`skeleton-shimmer rounded-xl border border-line ${className}`} />;
 }
 
 function ProjectSkeleton() {
