@@ -89,14 +89,14 @@ body {
 @utility skeleton-shimmer {
   background-image: linear-gradient(
     90deg,
-    #E9E5DA 0%,
-    #E9E5DA 35%,
-    #F9F7F1 50%,
-    #E9E5DA 65%,
-    #E9E5DA 100%
+    #EFEDE6 0%,
+    #EFEDE6 40%,
+    #F7F5EF 50%,
+    #EFEDE6 60%,
+    #EFEDE6 100%
   );
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.3s ease-in-out infinite;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
 }
 
 @keyframes share-backdrop-in {
