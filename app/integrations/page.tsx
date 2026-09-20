@@ -241,6 +241,108 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
   );
 }
 
+function LinearTeamsPanel({ projectId, integration, onChanged }: {
+  projectId: string;
+  integration: Integration;
+  onChanged: () => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [teams, setTeams] = useState<{ id: string; name: string; key: string }[]>([]);
+  const [selected, setSelected] = useState<string[]>(integration.config?.team_ids || []);
+  const [busy, setBusy] = useState(false);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
+
+  const names = integration.config?.team_names || {};
+  const selectedNames = selected.map((id) => names[id] || id).slice(0, 3);
+
+  const load = async () => {
+    setBusy(true);
+    setLoadErr(null);
+    const res = await fetch(`/api/integrations/linear/teams?project_id=${projectId}`);
+    const data = await res.json();
+    if (res.ok) {
+      setTeams(data.teams);
+      setSelected(data.selected);
+      setOpen(true);
+    } else {
+      setLoadErr(data.error || 'Failed to load teams');
+    }
+    setBusy(false);
+  };
+
+  const save = async () => {
+    setBusy(true);
+    const teamNames = Object.fromEntries(
+      teams.filter((t) => selected.includes(t.id)).map((t) => [t.id, t.name]),
+    );
+    await fetch('/api/integrations/linear/teams', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectId, teamIds: selected, teamNames }),
+    });
+    await onChanged();
+    setOpen(false);
+    setBusy(false);
+  };
+
+  const toggle = (id: string) =>
+    setSelected((s) => (s.includes(id) ? s.filter((t) => t !== id) : [...s, id]));
+
+  return (
+    <div className="mt-3 rounded-xl bg-fill-soft px-4 py-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-ink-muted">
+          {integration.config?.organization_name && (
+            <span className="mr-2 font-medium text-ink">{integration.config.organization_name}</span>
+          )}
+          {selected.length > 0
+            ? `${selected.length} team${selected.length === 1 ? '' : 's'} tracked${selectedNames.length ? ` — ${selectedNames.join(', ')}${selected.length > 3 ? '…' : ''}` : ''}`
+            : 'All public teams tracked'}
+        </p>
+        <div className="flex items-center gap-2">
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${integration.config?.webhook_id ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+            {integration.config?.webhook_id ? 'Live' : 'No webhook'}
+          </span>
+          <button onClick={open ? () => setOpen(false) : load} disabled={busy} className="text-xs font-medium text-ink-secondary hover:text-ink disabled:opacity-50">
+            {open ? 'Close' : 'Pick teams'}
+          </button>
+        </div>
+      </div>
+      {loadErr && <p className="mt-2 text-xs text-red-500">{loadErr}</p>}
+      {open && (
+        <>
+          <div className="mt-3 max-h-48 space-y-1 overflow-y-auto">
+            {teams.map((t) => (
+              <label key={t.id} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-ink hover:bg-white/60">
+                <input
+                  type="checkbox"
+                  checked={selected.includes(t.id)}
+                  onChange={() => toggle(t.id)}
+                  className="h-3.5 w-3.5 accent-[var(--accent)]"
+                />
+                <span className="truncate">{t.name}</span>
+                <span className="text-[10px] text-ink-faint">{t.key}</span>
+              </label>
+            ))}
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-[11px] text-ink-faint">
+              Uncheck all to track every public team.
+            </p>
+            <button
+              onClick={save}
+              disabled={busy}
+              className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
+            >
+              Save
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function IntegrationsPage() {
   const [projects, setProjects] = useState<{ id: string; name: string; unresolved_count?: number }[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
@@ -394,19 +496,12 @@ export default function IntegrationsPage() {
                         onChanged={refreshIntegrations}
                       />
                     )}
-                    {integration && service.source === 'linear' && (
-                      <div className="mt-3 rounded-xl bg-fill-soft px-4 py-3">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <p className="text-xs text-ink-muted">
-                            {integration.config?.organization_name
-                              ? <>Workspace <span className="font-medium text-ink">{integration.config.organization_name}</span> — all public teams tracked</>
-                              : 'All public teams tracked'}
-                            <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${integration.config?.webhook_id ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                              {integration.config?.webhook_id ? 'Live' : 'No webhook'}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
+                    {integration && service.source === 'linear' && selectedProjectId && (
+                      <LinearTeamsPanel
+                        projectId={selectedProjectId}
+                        integration={integration}
+                        onChanged={refreshIntegrations}
+                      />
                     )}
                   </div>
                 );

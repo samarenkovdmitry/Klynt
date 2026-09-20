@@ -153,6 +153,7 @@ export async function GET(request: NextRequest) {
         organization_name: organization.name,
         organization_url_key: organization.urlKey,
         webhook_id: webhook?.id || null,
+        webhook_ids: webhook?.id ? [webhook.id] : [],
         webhook_secret: webhookOk ? encryptToken(webhookSecret) : null,
         token_type: tokenData.token_type,
         scope: tokenData.scope,

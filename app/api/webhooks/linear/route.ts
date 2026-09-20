@@ -131,7 +131,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Ignore deliveries from other webhooks pointed at this org
-    if (integration.config?.webhook_id && webhookId !== integration.config.webhook_id) {
+    const knownWebhookIds: string[] =
+      integration.config?.webhook_ids ||
+      (integration.config?.webhook_id ? [integration.config.webhook_id] : []);
+    if (knownWebhookIds.length > 0 && !knownWebhookIds.includes(webhookId)) {
       return NextResponse.json({ received: true });
     }
 
