@@ -22,8 +22,8 @@ export function LegalDocumentPage({
 }: LegalDocumentPageProps) {
   return (
     <>
-      <header className="sticky top-0 z-20 border-b border-ink/5 bg-white/85 backdrop-blur-md">
-        <div className={`${CONTENT_CONTAINER_CLASS} flex items-center justify-between px-4 py-4 md:px-6`}>
+      <header className="sticky top-0 z-20 border-b border-ink/5 bg-white/85 px-4 backdrop-blur-md md:px-6">
+        <div className={`${CONTENT_CONTAINER_CLASS} flex items-center justify-between py-4`}>
           <Link href="/" aria-label="Klynt home">
             <img src="/Klynt_logo.svg" alt="Klynt" className="h-7 w-auto" />
           </Link>
