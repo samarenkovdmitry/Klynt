@@ -7,6 +7,8 @@ const LINEAR_REDIRECT_URI = process.env.LINEAR_REDIRECT_URI;
 
 // `admin` is required to create webhooks via the API — Linear gates
 // webhookCreate/webhookDelete behind the admin scope, not just `write`.
+// App actors (`actor=app`) can't hold the admin scope, so the token must
+// act as the connecting user — who must be a Linear workspace admin.
 const LINEAR_SCOPES = 'read,write,admin';
 
 function getBaseUrl(request: NextRequest): string {
@@ -67,8 +69,6 @@ export async function GET(request: NextRequest) {
     linearAuthUrl.searchParams.set('response_type', 'code');
     linearAuthUrl.searchParams.set('scope', LINEAR_SCOPES);
     linearAuthUrl.searchParams.set('state', state);
-    // App acts as itself, not as the connecting user
-    linearAuthUrl.searchParams.set('actor', 'app');
     linearAuthUrl.searchParams.set('prompt', 'consent');
 
     const response = NextResponse.redirect(linearAuthUrl.toString());
