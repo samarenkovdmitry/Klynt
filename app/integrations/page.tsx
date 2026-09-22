@@ -366,7 +366,14 @@ export default function IntegrationsPage() {
     const errorParam = params.get('error');
     if (successParam) {
       const name = successParam.replace(/_connected$/, '');
-      setNotice({ kind: 'success', text: `${name.charAt(0).toUpperCase() + name.slice(1)} connected.` });
+      setNotice({ kind: 'success', text: `${name.charAt(0).toUpperCase() + name.slice(1)} connected. Importing recent activity…` });
+      if (queryProjectId) {
+        fetch('/api/jobs/process-events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: queryProjectId }),
+        }).catch(() => {});
+      }
       router.replace(`/integrations${queryProjectId ? `?projectId=${queryProjectId}` : ''}`, { scroll: false });
     } else if (errorParam) {
       setNotice({ kind: 'error', text: `Connection failed: ${errorParam.replace(/_/g, ' ')}` });

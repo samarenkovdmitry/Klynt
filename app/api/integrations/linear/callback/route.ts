@@ -4,6 +4,7 @@ import { createIntegration, getIntegration, getProject } from '@/lib/db/queries'
 import { getSessionUser } from '@/lib/api-auth';
 import { encryptToken } from '@/lib/crypto';
 import { linearGraphQL } from '@/lib/linear/client';
+import { backfillLinear } from '@/lib/backfill';
 
 const LINEAR_CLIENT_ID = process.env.LINEAR_CLIENT_ID;
 const LINEAR_CLIENT_SECRET = process.env.LINEAR_CLIENT_SECRET;
@@ -181,6 +182,11 @@ export async function GET(request: NextRequest) {
       org: organization.name,
       webhook: webhook?.id || 'FAILED',
     });
+
+    const backfilled = await backfillLinear(projectId, accessToken, {
+      organization_id: organization.id,
+    }).catch((e) => { console.error('Linear backfill failed:', e); return 0; });
+    console.log(`Linear backfill: ${backfilled} events for project ${projectId}`);
 
     return response;
   } catch (error) {

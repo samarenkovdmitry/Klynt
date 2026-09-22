@@ -3,6 +3,7 @@ import { getIntegration, getProject } from '@/lib/db/queries';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { decryptToken } from '@/lib/crypto';
+import { backfillFigma } from '@/lib/backfill';
 
 // Extract a file key from a Figma URL or accept a raw key.
 // Handles figma.com/file/KEY, figma.com/design/KEY, figma.com/board/KEY.
@@ -133,6 +134,12 @@ export async function POST(request: NextRequest) {
       .eq('id', integration.id);
 
     if (updateError) throw updateError;
+
+    const backfilled = await backfillFigma(projectId, accessToken, {
+      file_key: fileKey,
+      file_name: fileName,
+    }).catch((e) => { console.error('Figma backfill failed:', e); return 0; });
+    console.log(`Figma backfill: ${backfilled} events for project ${projectId}`);
 
     return NextResponse.json({ fileName, mode: syncMode });
   } catch (error) {

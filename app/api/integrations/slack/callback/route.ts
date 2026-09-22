@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createIntegration, getProject } from '@/lib/db/queries';
 import { getSessionUser } from '@/lib/api-auth';
 import { encryptToken } from '@/lib/crypto';
+import { backfillSlack } from '@/lib/backfill';
 
 const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID;
 const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
@@ -121,6 +122,13 @@ export async function GET(request: NextRequest) {
     });
 
     console.log('Slack integration created successfully for project:', projectId);
+
+    const backfilled = await backfillSlack(
+      projectId,
+      tokenData.access_token,
+      { team_id: tokenData.team?.id },
+    ).catch((e) => { console.error('Slack backfill failed:', e); return 0; });
+    console.log(`Slack backfill: ${backfilled} events for project ${projectId}`);
 
     return response;
   } catch (error) {
