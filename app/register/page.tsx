@@ -25,10 +25,16 @@ export default function RegisterPage() {
 
     setLoading(true)
 
+    const next = new URLSearchParams(window.location.search).get('next')
+    const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/project'
+
     const supabase = createClient()
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(safeNext)}`,
+      },
     })
 
     setLoading(false)
@@ -36,7 +42,7 @@ export default function RegisterPage() {
     if (signUpError) {
       setError(signUpError.message)
     } else {
-      router.push('/project')
+      router.push(safeNext)
     }
   }
 

@@ -20,7 +20,10 @@ function isPublicRoute(pathname: string): boolean {
   if (pathname.startsWith('/_next/')) return true
   // Static assets served from /public
   if (/\.(png|jpe?g|svg|gif|webp|avif|ico|webmanifest|txt|xml|woff2?|mp4|webm)$/i.test(pathname)) return true
+  if (pathname.startsWith('/invite/')) return true
   if (pathname.startsWith('/api/waitlist/')) return true
+  // Invite info lookup is public; accept does its own session check
+  if (pathname.startsWith('/api/invites/')) return true
   if (pathname.startsWith('/api/webhooks/')) return true
   if (pathname.startsWith('/api/integrations/')) return true
   // Job endpoints do their own auth (CRON_SECRET bearer or session)
@@ -37,6 +40,7 @@ export async function middleware(request: NextRequest) {
 
   if (!user) {
     const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('next', request.nextUrl.pathname + request.nextUrl.search)
     return NextResponse.redirect(loginUrl)
   }
 

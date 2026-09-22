@@ -27,7 +27,24 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     if (error) throw error;
 
-    return NextResponse.json({ members: data || [] });
+    // Real app users with access: owner + accepted invitees
+    const team: { email: string; role: string }[] = [];
+    const { data: ownerUser } = project.owner_id
+      ? await supabase.auth.admin.getUserById(project.owner_id)
+      : { data: null };
+    if (ownerUser?.user?.email) {
+      team.push({ email: ownerUser.user.email, role: 'owner' });
+    }
+    const { data: appMembers } = await supabase
+      .from('project_users')
+      .select('email, role')
+      .eq('project_id', id)
+      .order('created_at', { ascending: true });
+    for (const m of appMembers || []) {
+      if (m.email) team.push({ email: m.email, role: m.role || 'member' });
+    }
+
+    return NextResponse.json({ members: data || [], team });
   } catch (error) {
     console.error('Error listing project members:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

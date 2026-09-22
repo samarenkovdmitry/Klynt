@@ -21,14 +21,30 @@ interface Member {
   external_source: string;
 }
 
+interface TeamMember {
+  email: string;
+  role: string;
+}
+
+interface PendingInvite {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
 export default function SettingsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
+  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [invites, setInvites] = useState<PendingInvite[]>([]);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteError, setInviteError] = useState<string | null>(null);
+  const [inviteSent, setInviteSent] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [invite, setInvite] = useState({ name: '', email: '', role: 'viewer' });
+  const [person, setPerson] = useState({ name: '', email: '', role: 'viewer' });
   const [newProject, setNewProject] = useState({ name: '', description: '' });
   const [editing, setEditing] = useState(false);
   const [savingProject, setSavingProject] = useState(false);
@@ -66,10 +82,14 @@ export default function SettingsPage() {
   useEffect(() => {
     if (!selectedProjectId) return;
     setLoading(true);
-    fetch(`/api/projects/${selectedProjectId}/members`)
-      .then(res => res.json())
-      .then(data => {
-        setMembers(data.members || []);
+    Promise.all([
+      fetch(`/api/projects/${selectedProjectId}/members`).then(res => res.json()),
+      fetch(`/api/projects/${selectedProjectId}/invite`).then(res => res.json()),
+    ])
+      .then(([membersData, invitesData]) => {
+        setMembers(membersData.members || []);
+        setTeam(membersData.team || []);
+        setInvites(invitesData.invites || []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -77,22 +97,51 @@ export default function SettingsPage() {
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProjectId) return;
+    if (!selectedProjectId || !inviteEmail.trim()) return;
     setSaving(true);
+    setInviteError(null);
+    setInviteSent(false);
     try {
-      const res = await fetch(`/api/projects/${selectedProjectId}/members`, {
+      const res = await fetch(`/api/projects/${selectedProjectId}/invite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(invite),
+        body: JSON.stringify({ email: inviteEmail.trim() }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setMembers(prev => [data.member, ...prev]);
-        setInvite({ name: '', email: '', role: 'viewer' });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.invite) {
+        setInvites(prev => [data.invite, ...prev]);
+        setInviteEmail('');
+        setInviteSent(true);
+      } else {
+        setInviteError(data.error || 'Failed to send invite');
       }
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleRemoveTeammate = async (email: string) => {
+    if (!selectedProjectId) return;
+    await fetch(`/api/projects/${selectedProjectId}/invite?email=${encodeURIComponent(email)}`, { method: 'DELETE' });
+    setTeam(prev => prev.filter(t => t.email !== email));
+    setInvites(prev => prev.filter(i => i.email !== email));
+  };
+
+  const handleAddPerson = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProjectId) return;
+    try {
+      const res = await fetch(`/api/projects/${selectedProjectId}/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(person),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMembers(prev => [data.member, ...prev]);
+        setPerson({ name: '', email: '', role: 'viewer' });
+      }
+    } catch { /* keep silent — directory is secondary */ }
   };
 
   const handleCreateProject = async (e: React.FormEvent) => {
@@ -279,12 +328,84 @@ export default function SettingsPage() {
             <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">Team</h2>
           </div>
           {loading ? (
-            <p className="text-sm text-ink-muted">Loading members...</p>
+            <p className="text-sm text-ink-muted">Loading...</p>
           ) : (
             <div className="rounded-2xl border border-line bg-white p-4 space-y-4">
               <div className="space-y-2">
+                {team.map((t) => (
+                  <div key={t.email} className="flex items-center gap-3 py-2">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full">
+                      <Avatar name={null} email={t.email} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-ink">{t.email}</p>
+                      <p className="text-xs text-ink-muted capitalize">{t.role}</p>
+                    </div>
+                    {t.role !== 'owner' && (
+                      <button
+                        onClick={() => handleRemoveTeammate(t.email)}
+                        className="text-xs font-medium text-ink-muted transition hover:text-red-600"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {invites.map((i) => (
+                  <div key={i.id} className="flex items-center gap-3 py-2 opacity-70">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full">
+                      <Avatar name={null} email={i.email} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-ink">{i.email}</p>
+                      <p className="text-xs text-ink-muted">Invite sent</p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveTeammate(i.email)}
+                      className="text-xs font-medium text-ink-muted transition hover:text-red-600"
+                    >
+                      Revoke
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <form onSubmit={handleInvite} className="border-t border-line-soft pt-4">
+                <p className="mb-3 text-sm font-medium text-ink">Invite by email</p>
+                <div className="flex gap-3">
+                  <input
+                    type="email"
+                    placeholder="teammate@company.com"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    className="flex-1 rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {saving ? 'Sending...' : 'Invite'}
+                  </button>
+                </div>
+                {inviteError && <p className="mt-2 text-xs text-red-600">{inviteError}</p>}
+                {inviteSent && <p className="mt-2 text-xs text-emerald-700">Invite sent — they'll get a link by email.</p>}
+              </form>
+            </div>
+          )}
+        </section>
+
+        <section className="mt-10">
+          <div className="mb-4">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">People directory</h2>
+            <p className="mt-1 text-sm text-ink-muted">Names from Slack, Figma and Linear — used to attribute events. They don't get access to the project.</p>
+          </div>
+          {loading ? null : (
+            <div className="rounded-2xl border border-line bg-white p-4 space-y-4">
+              <div className="space-y-2">
                 {members.length === 0 ? (
-                  <p className="text-sm text-ink-muted">No members yet.</p>
+                  <p className="text-sm text-ink-muted">No people yet — they'll appear from connected sources.</p>
                 ) : (
                   members.map((m) => (
                     <div
@@ -303,29 +424,29 @@ export default function SettingsPage() {
                 )}
               </div>
 
-              <form onSubmit={handleInvite} className="border-t border-line-soft pt-4">
-                <p className="mb-3 text-sm font-medium text-ink">Invite member</p>
+              <form onSubmit={handleAddPerson} className="border-t border-line-soft pt-4">
+                <p className="mb-3 text-sm font-medium text-ink">Add person</p>
                 <div className="grid gap-3 sm:grid-cols-4">
                   <input
                     type="text"
                     placeholder="Name"
-                    value={invite.name}
-                    onChange={(e) => setInvite({ ...invite, name: e.target.value })}
+                    value={person.name}
+                    onChange={(e) => setPerson({ ...person, name: e.target.value })}
                     className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     required
                   />
                   <input
                     type="email"
                     placeholder="Email"
-                    value={invite.email}
-                    onChange={(e) => setInvite({ ...invite, email: e.target.value })}
+                    value={person.email}
+                    onChange={(e) => setPerson({ ...person, email: e.target.value })}
                     className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     required
                   />
                   <div className="relative">
                     <select
-                      value={invite.role}
-                      onChange={(e) => setInvite({ ...invite, role: e.target.value })}
+                      value={person.role}
+                      onChange={(e) => setPerson({ ...person, role: e.target.value })}
                       className="w-full appearance-none rounded-xl border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     >
                       <option value="viewer">Viewer</option>
@@ -338,10 +459,9 @@ export default function SettingsPage() {
                   </div>
                   <button
                     type="submit"
-                    disabled={saving}
-                    className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-xl bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {saving ? 'Inviting...' : 'Invite'}
+                    Add
                   </button>
                 </div>
               </form>

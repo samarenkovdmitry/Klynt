@@ -37,42 +37,74 @@ export async function createProject(name: string, description?: string, ownerId?
   return data;
 }
 
-export async function getProject(projectId: string, ownerId?: string): Promise<Project | null> {
-  let query = supabase
-    .from('projects')
-    .select()
-    .eq('id', projectId);
+async function listMemberProjectIds(userId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('project_users')
+    .select('project_id')
+    .eq('user_id', userId);
 
-  if (ownerId) query = query.eq('owner_id', ownerId);
-
-  const { data, error } = await query.single();
-
-  if (error) return null;
-  return data;
+  if (error) return [];
+  return (data || []).map((r: { project_id: string }) => r.project_id);
 }
 
-export async function listProjects(ownerId?: string): Promise<Project[]> {
+// userId = app user who can access the project: owner or invited member.
+export async function getProject(projectId: string, userId?: string): Promise<Project | null> {
+  const { data, error } = await supabase
+    .from('projects')
+    .select()
+    .eq('id', projectId)
+    .single();
+
+  if (error || !data) return null;
+  if (!userId) return data;
+  if (data.owner_id === userId) return data;
+
+  const { data: membership } = await supabase
+    .from('project_users')
+    .select('id')
+    .eq('project_id', projectId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  return membership ? data : null;
+}
+
+export async function listProjects(userId?: string): Promise<Project[]> {
+  if (!userId) {
+    const { data, error } = await supabase
+      .from('projects')
+      .select()
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+
+  const memberIds = await listMemberProjectIds(userId);
   let query = supabase
     .from('projects')
     .select()
     .order('created_at', { ascending: false });
-
-  if (ownerId) query = query.eq('owner_id', ownerId);
+  query = memberIds.length > 0
+    ? query.or(`owner_id.eq.${userId},id.in.(${memberIds.join(',')})`)
+    : query.eq('owner_id', userId);
 
   const { data, error } = await query;
-
   if (error) throw error;
   return data || [];
 }
 
-export async function listOwnedProjectIds(ownerId: string): Promise<string[]> {
+// Owned + invited-membership project ids (name kept for existing callers).
+export async function listOwnedProjectIds(userId: string): Promise<string[]> {
+  const memberIds = await listMemberProjectIds(userId);
+
   const { data, error } = await supabase
     .from('projects')
     .select('id')
-    .eq('owner_id', ownerId);
+    .eq('owner_id', userId);
 
   if (error) throw error;
-  return (data || []).map((p: { id: string }) => p.id);
+  const owned = (data || []).map((p: { id: string }) => p.id);
+  return [...new Set([...owned, ...memberIds])];
 }
 
 // Raw Event operations

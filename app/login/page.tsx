@@ -29,7 +29,8 @@ export default function LoginPage() {
     if (signInError) {
       setError(signInError.message)
     } else {
-      router.push('/project')
+      const next = new URLSearchParams(window.location.search).get('next')
+      router.push(next && next.startsWith('/') && !next.startsWith('//') ? next : '/project')
     }
   }
 
