@@ -5,7 +5,7 @@ import { buildPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildPageMetadata({
   title: "Privacy Policy",
   description:
-    "How Klynt handles URLs, screenshots, and analysis data when you run a UX clarity audit.",
+    "How Klynt collects and handles project data from connected tools like Figma, Slack and Linear.",
   path: "/privacy",
 });
 

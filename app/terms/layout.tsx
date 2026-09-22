@@ -5,7 +5,7 @@ import { buildPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildPageMetadata({
   title: "Terms of Service",
   description:
-    "Terms and conditions for using Klynt, the AI-powered UX clarity analyzer.",
+    "Terms and conditions for using Klynt, the project truth layer.",
   path: "/terms",
 });
 
