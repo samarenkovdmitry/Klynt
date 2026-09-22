@@ -1077,7 +1077,17 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     );
                   }
                   if (sources.length > 0) {
-                    return <p className="text-sm text-ink-muted">Source: {sources.map(capitalize).join(', ')}</p>;
+                    return (
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-muted">
+                        <span>Source:</span>
+                        {sources.map((source: string) => (
+                          <span key={source} className="flex items-center gap-1.5">
+                            {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={13} className="text-green-500" />}
+                            {source === 'gdocs' ? 'Google Docs' : capitalize(source)}
+                          </span>
+                        ))}
+                      </div>
+                    );
                   }
                   return null;
                 })()}
