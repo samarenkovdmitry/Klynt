@@ -78,8 +78,13 @@ Guidelines:
 - "idea": Suggestion not yet decided
 
 Guidelines for reason:
+- Write a declarative title, never copy the message verbatim. Rephrase into a statement:
+  "Do we need dark mode for a marketing site?" → "Dark mode questioned for marketing site"
+  "Can someone review the hero?" → "Hero review requested"
+  "walk faster" → "Request to speed up the pace"
+  "you design soo good" → "Compliment on design work"
+- The title should read as what happened, not what was said — the UI shows the original message separately.
 - Describe the content, never your uncertainty. Do NOT write meta-commentary such as "ambiguous message", "lacks context", "low confidence", "interpretation is uncertain", or "could refer to".
-- For casual or unclear messages, briefly restate the message itself (e.g. "walk faster" → "Request to speed up the pace", "you design soo good" → "Compliment on design work").
 - Keep it under 12 words so it reads as a title, not a paragraph.
 
 Consider the context of who is speaking (if available):

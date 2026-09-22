@@ -112,6 +112,16 @@ const DEFAULT_ACTION_ICON = <RiEditLine size={14} />;
 // Raw external IDs (e.g. Figma user "1624093726897831277") aren't meaningful to show
 const isRawExternalId = (s: string) => /^[0-9_-]{10,}$/.test(s);
 
+// True when the original message adds nothing over the interpreted title —
+// identical text, or the title is fully contained in it (or vice versa).
+const isDuplicateText = (a?: string, b?: string) => {
+  if (!a || !b) return false;
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9а-яё]+/giu, ' ').replace(/\s+/g, ' ').trim();
+  const na = norm(a);
+  const nb = norm(b);
+  return na === nb || na.includes(nb) || nb.includes(na);
+};
+
 const CONFLICT_TYPE_LABELS: Record<string, string> = {
   state_change: 'No final decision',
   contradiction: 'Decision conflict',
@@ -791,11 +801,13 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         {groupedEvents[date].map((event: any) => {
                           const eventTime = event.source_timestamp || event.created_at;
                           const source = event.source || 'figma';
+                          const showOriginal = event.content && !isDuplicateText(event.content, event.reason);
+                          const expandable = Boolean(showOriginal || event.source_url);
                           return (
                             <div key={event.id}>
                             <button
-                              onClick={() => toggleEventDetails(event.id)}
-                              className="-mx-2 w-[calc(100%+1rem)] rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-fill"
+                              onClick={expandable ? () => toggleEventDetails(event.id) : undefined}
+                              className={`-mx-2 w-[calc(100%+1rem)] rounded-lg px-2 py-1.5 text-left transition-colors ${expandable ? 'hover:bg-fill' : 'cursor-default'}`}
                             >
                               <div className="flex items-center gap-3">
                                 <span className="w-10 flex-shrink-0 text-xs tabular-nums text-ink-faint">
@@ -819,9 +831,9 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                   {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
                                 </span>
                               </div>
-                              {expandedEvents.has(event.id) && (event.content || event.source_url) && (
+                              {expandedEvents.has(event.id) && expandable && (
                                 <div className="mt-2 rounded-lg bg-fill px-3 py-2 text-sm text-ink-secondary">
-                                  {event.content && (
+                                  {showOriginal && (
                                     <>
                                       <p className="text-xs font-medium text-ink-faint">Original message</p>
                                       <p className="mt-1">{emojify(event.content)}</p>
