@@ -1,0 +1,2 @@
+ALTER TABLE public.projects
+  ADD COLUMN IF NOT EXISTS last_digest_at TIMESTAMP WITH TIME ZONE;

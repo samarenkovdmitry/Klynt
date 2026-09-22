@@ -6,9 +6,14 @@ import { sendDigestEmail } from '@/lib/send-digest-email';
 import { getSiteUrl } from '@/lib/site';
 
 // POST /api/jobs/digest
-// Cron mode: Authorization: Bearer $CRON_SECRET — digests for all projects with
-// activity in the window. Session mode: { projectId } for a project you can access.
-// Query param: ?hours=24 (default) — the lookback window.
+// Cron mode: Authorization: Bearer $CRON_SECRET — adaptive digests for all
+// projects: send when >= MIN_EVENTS new events since the last digest, or when
+// any activity piled up for >= QUIET_DAYS. Session mode: { projectId } forces
+// a digest for a project you can access.
+
+const MIN_EVENTS = 5;         // busy project -> digest now
+const QUIET_DAYS = 7;         // quiet project -> weekly rollup
+const MAX_WINDOW_DAYS = 30;   // never dig deeper than this
 
 async function getRecipients(projectId: string, ownerId?: string): Promise<string[]> {
   const emails = new Set<string>();
@@ -29,19 +34,12 @@ async function getRecipients(projectId: string, ownerId?: string): Promise<strin
   return [...emails];
 }
 
-async function sendProjectDigest(projectId: string, sinceIso: string) {
-  const { data: project } = await supabase
-    .from('projects')
-    .select('id, name, slug, owner_id')
-    .eq('id', projectId)
-    .single();
-  if (!project) return { skipped: 'no project' };
-
+async function sendProjectDigest(project: { id: string; name: string; slug?: string; owner_id?: string }, sinceIso: string, now: string) {
   // Activity in the window
   const { data: recentEvents } = await supabase
     .from('candidate_events')
     .select('subject, action, event_type, reason, created_at')
-    .eq('project_id', projectId)
+    .eq('project_id', project.id)
     .gte('created_at', sinceIso)
     .order('created_at', { ascending: false })
     .limit(20);
@@ -54,19 +52,19 @@ async function sendProjectDigest(projectId: string, sinceIso: string) {
     supabase
       .from('project_facts')
       .select('subject, current_state, confidence')
-      .eq('project_id', projectId)
+      .eq('project_id', project.id)
       .order('last_updated_at', { ascending: false })
       .limit(15),
     supabase
       .from('conflicts')
       .select('subject, description')
-      .eq('project_id', projectId)
+      .eq('project_id', project.id)
       .neq('status', 'resolved')
       .limit(5),
   ]);
 
   const summary = await generateProjectSummary({
-    projectId,
+    projectId: project.id,
     currentState: currentState || [],
     recentEvents,
     conflicts: conflicts || [],
@@ -74,7 +72,7 @@ async function sendProjectDigest(projectId: string, sinceIso: string) {
   });
 
   const projectUrl = `${getSiteUrl()}/project/${project.slug || project.id}`;
-  const recipients = await getRecipients(projectId, project.owner_id);
+  const recipients = await getRecipients(project.id, project.owner_id);
 
   let sent = 0;
   const failures: string[] = [];
@@ -88,7 +86,14 @@ async function sendProjectDigest(projectId: string, sinceIso: string) {
     }
   }
 
-  return { sent, failed: failures.length, recipients: recipients.length, events: recentEvents.length };
+  if (sent > 0) {
+    await supabase
+      .from('projects')
+      .update({ last_digest_at: now })
+      .eq('id', project.id);
+  }
+
+  return { sent, failed: failures.length, recipients: recipients.length, events: recentEvents.length, since: sinceIso };
 }
 
 export async function POST(request: NextRequest) {
@@ -97,62 +102,102 @@ export async function POST(request: NextRequest) {
       request.headers.get('authorization') === `Bearer ${process.env.CRON_SECRET}`;
 
     const body = await request.json().catch(() => ({}));
-    const hours = Math.min(Number(new URL(request.url).searchParams.get('hours')) || 24, 168);
-    const sinceIso = new Date(Date.now() - hours * 3600 * 1000).toISOString();
+    const now = new Date().toISOString();
 
-    let projectIds: string[];
+    const results: Record<string, unknown> = {};
 
-    if (isCron) {
-      if (body.projectId) {
-        projectIds = [body.projectId];
-      } else {
-        // Every project that had interpreted activity in the window
-        const { data } = await supabase
+    if (isCron && !body.projectId) {
+      // Adaptive cron mode: per project, window = since last digest (or project
+      // creation), capped at MAX_WINDOW_DAYS.
+      const capIso = new Date(Date.now() - MAX_WINDOW_DAYS * 86400 * 1000).toISOString();
+      const quietCutoff = new Date(Date.now() - QUIET_DAYS * 86400 * 1000).toISOString();
+
+      const { data: active } = await supabase
+        .from('candidate_events')
+        .select('project_id')
+        .gte('created_at', capIso);
+      const projectIds = [...new Set((active || []).map((r: { project_id: string }) => r.project_id))];
+
+      const { data: projects } = projectIds.length
+        ? await supabase
+            .from('projects')
+            .select('id, name, slug, owner_id, last_digest_at, created_at')
+            .in('id', projectIds)
+        : { data: [] };
+
+      for (const project of projects || []) {
+        const lastDigest = project.last_digest_at || project.created_at;
+        const sinceIso = lastDigest > capIso ? lastDigest : capIso;
+
+        const { count } = await supabase
           .from('candidate_events')
-          .select('project_id')
+          .select('id', { count: 'exact', head: true })
+          .eq('project_id', project.id)
           .gte('created_at', sinceIso);
-        projectIds = [...new Set((data || []).map((r: { project_id: string }) => r.project_id))];
+
+        const n = count || 0;
+        if (n === 0) {
+          results[project.id] = { skipped: 'no activity' };
+          continue;
+        }
+
+        // Quiet accumulation: below threshold -> only weekly, and only if the
+        // last digest (or project start) is already QUIET_DAYS old.
+        const due = n >= MIN_EVENTS || lastDigest <= quietCutoff;
+        if (!due) {
+          results[project.id] = { skipped: 'accumulating', events: n, since: sinceIso };
+          continue;
+        }
+
+        try {
+          results[project.id] = await sendProjectDigest(project, sinceIso, now);
+        } catch (e) {
+          console.error(`Digest failed for project ${project.id}:`, e);
+          results[project.id] = { error: 'digest failed' };
+        }
       }
     } else {
+      // Single project: session mode (manual trigger) or cron with projectId.
       const { projectId } = body;
       if (!projectId) {
         return NextResponse.json({ error: 'Project ID required' }, { status: 400 });
       }
-      const user = await getSessionUser();
-      if (!user) return unauthorizedResponse();
 
       const { data: project } = await supabase
         .from('projects')
-        .select('id, owner_id')
+        .select('id, name, slug, owner_id, last_digest_at, created_at')
         .eq('id', projectId)
         .single();
       if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 });
 
-      const isOwner = project.owner_id === user.id;
-      if (!isOwner) {
-        const { data: membership } = await supabase
-          .from('project_users')
-          .select('id')
-          .eq('project_id', projectId)
-          .eq('user_id', user.id)
-          .maybeSingle();
-        if (!membership) return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+      if (!isCron) {
+        const user = await getSessionUser();
+        if (!user) return unauthorizedResponse();
+        const isOwner = project.owner_id === user.id;
+        if (!isOwner) {
+          const { data: membership } = await supabase
+            .from('project_users')
+            .select('id')
+            .eq('project_id', projectId)
+            .eq('user_id', user.id)
+            .maybeSingle();
+          if (!membership) return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+        }
       }
 
-      projectIds = [projectId];
-    }
+      const capIso = new Date(Date.now() - MAX_WINDOW_DAYS * 86400 * 1000).toISOString();
+      const lastDigest = project.last_digest_at || project.created_at;
+      const sinceIso = lastDigest > capIso ? lastDigest : capIso;
 
-    const results: Record<string, unknown> = {};
-    for (const pid of projectIds) {
       try {
-        results[pid] = await sendProjectDigest(pid, sinceIso);
+        results[project.id] = await sendProjectDigest(project, sinceIso, now);
       } catch (e) {
-        console.error(`Digest failed for project ${pid}:`, e);
-        results[pid] = { error: 'digest failed' };
+        console.error(`Digest failed for project ${project.id}:`, e);
+        results[project.id] = { error: 'digest failed' };
       }
     }
 
-    return NextResponse.json({ message: 'Digest run complete', since: sinceIso, results });
+    return NextResponse.json({ message: 'Digest run complete', results });
   } catch (error) {
     console.error('Error in digest job:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
