@@ -349,6 +349,7 @@ export default function IntegrationsPage() {
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
 
   const refreshIntegrations = async () => {
     const res = await fetch('/api/integrations');
@@ -359,7 +360,18 @@ export default function IntegrationsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const queryProjectId = new URLSearchParams(window.location.search).get('projectId');
+    const params = new URLSearchParams(window.location.search);
+    const queryProjectId = params.get('projectId');
+    const successParam = params.get('success');
+    const errorParam = params.get('error');
+    if (successParam) {
+      const name = successParam.replace(/_connected$/, '');
+      setNotice({ kind: 'success', text: `${name.charAt(0).toUpperCase() + name.slice(1)} connected.` });
+      router.replace(`/integrations${queryProjectId ? `?projectId=${queryProjectId}` : ''}`, { scroll: false });
+    } else if (errorParam) {
+      setNotice({ kind: 'error', text: `Connection failed: ${errorParam.replace(/_/g, ' ')}` });
+      router.replace(`/integrations${queryProjectId ? `?projectId=${queryProjectId}` : ''}`, { scroll: false });
+    }
     Promise.all([fetch('/api/projects'), fetch('/api/integrations')])
       .then(([p, i]) => Promise.all([p.json(), i.json()]))
       .then(([pData, iData]) => {
@@ -377,6 +389,18 @@ export default function IntegrationsPage() {
         setLoading(false);
       });
   }, []);
+
+  const disconnect = async (source: string) => {
+    if (!selectedProjectId) return;
+    if (!window.confirm(`Disconnect ${source} from this project?`)) return;
+    const res = await fetch(`/api/integrations?project_id=${selectedProjectId}&source=${source}`, { method: 'DELETE' });
+    if (res.ok) {
+      await refreshIntegrations();
+      setNotice({ kind: 'success', text: `${source.charAt(0).toUpperCase() + source.slice(1)} disconnected.` });
+    } else {
+      setNotice({ kind: 'error', text: 'Failed to disconnect. Try again.' });
+    }
+  };
 
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
@@ -406,6 +430,17 @@ export default function IntegrationsPage() {
       <main className="mx-auto w-full max-w-3xl flex-1 px-3 py-6 sm:px-8 sm:py-8">
         <h1 className="text-2xl font-semibold text-ink">Integrations</h1>
         <p className="mt-1 text-sm text-ink-muted">Connect tools to keep project state up to date.</p>
+
+        {notice && (
+          <div className={`mt-4 flex items-center justify-between rounded-xl px-4 py-3 text-sm ${
+            notice.kind === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-700'
+          }`}>
+            <span>{notice.text}</span>
+            <button onClick={() => setNotice(null)} className="ml-3 text-current opacity-60 hover:opacity-100" aria-label="Dismiss">
+              ×
+            </button>
+          </div>
+        )}
 
         {projects.length > 1 && (
           <div className="mt-6">
@@ -465,6 +500,12 @@ export default function IntegrationsPage() {
                         >
                           Reconnect
                         </a>
+                        <button
+                          onClick={() => disconnect(service.source)}
+                          className="text-xs font-medium text-ink-faint transition hover:text-red-600"
+                        >
+                          Disconnect
+                        </button>
                       </div>
                     ) : service.source === 'figma' || service.source === 'slack' || service.source === 'linear' ? (
                       <a
