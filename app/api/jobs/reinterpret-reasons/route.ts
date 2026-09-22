@@ -29,6 +29,15 @@ function needsRewrite(reason: string | null): boolean {
   return META_REASON_PATTERNS.some(p => lower.includes(p));
 }
 
+// Verbatim copy of the raw message — not an interpretation
+function isVerbatimCopy(reason: string | null, content: string | null): boolean {
+  if (!reason || !content) return false;
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9а-яё]+/giu, ' ').replace(/\s+/g, ' ').trim();
+  const nr = norm(reason);
+  const nc = norm(content);
+  return nr === nc || nc.includes(nr);
+}
+
 export async function POST(request: NextRequest) {
   if (!(await isAuthorized(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -37,13 +46,16 @@ export async function POST(request: NextRequest) {
   try {
     const { data: candidates, error } = await supabase
       .from('candidate_events')
-      .select('id, raw_event_id, reason')
+      .select('id, raw_event_id, reason, raw_events(content)')
       .order('created_at', { ascending: false })
       .limit(300);
 
     if (error) throw error;
 
-    const stale = (candidates || []).filter(c => needsRewrite(c.reason));
+    const stale = (candidates || []).filter(c =>
+      needsRewrite(c.reason) ||
+      isVerbatimCopy(c.reason, (c.raw_events as any)?.content)
+    );
     let updated = 0;
     const errors: string[] = [];
 
