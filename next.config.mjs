@@ -1,3 +1,5 @@
+import { withSentryConfig } from "@sentry/nextjs/config";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -11,6 +13,7 @@ const nextConfig = {
   },
 
   experimental: {
+    instrumentationHook: true,
     serverActions: {
       allowedOrigins: ["*"],
     },
@@ -24,4 +27,9 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  silent: !process.env.CI,
+  // Source maps upload requires SENTRY_AUTH_TOKEN — skip until configured
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+  telemetry: false,
+});
