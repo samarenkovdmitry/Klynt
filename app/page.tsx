@@ -67,7 +67,7 @@ export default function LandingPage() {
         setMessage(data.error || 'Something went wrong. Please try again.')
       } else {
         setStatus('success')
-        setMessage('Thanks! We will be in touch.')
+        setMessage('Check your email — we sent you a sign-in link.')
         setEmail('')
       }
     } catch {

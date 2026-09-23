@@ -1,20 +1,20 @@
 import { buildEmailLogoHtml } from "@/lib/email-brand";
 import { getSiteUrl } from "@/lib/site";
 
-function buildBetaConfirmationContent() {
+function buildBetaAccessContent(accessUrl: string) {
   const siteUrl = getSiteUrl();
   const logoHtml = buildEmailLogoHtml(siteUrl);
 
   const text = [
     "Hey,",
     "",
-    "You're on the Klynt beta list.",
+    "Your Klynt workspace is ready.",
     "",
-    "Klynt keeps track of what is actually true in your project —",
-    "it collects meaningful changes from Figma, Slack and docs,",
-    "and turns them into a current state you can read in 30 seconds.",
+    "We set up a sample project so you can see how Klynt reads a",
+    "project's current state — what changed, what's approved, and",
+    "what's still unresolved.",
     "",
-    "We'll reach out as soon as your invite is ready.",
+    `Open Klynt: ${accessUrl}`,
     "",
     "— Dmitry",
   ].join("\n");
@@ -34,9 +34,12 @@ function buildBetaConfirmationContent() {
             <tr>
               <td style="font-size:16px;line-height:1.7;color:#1C1B17;">
                 <p style="margin:0 0 16px;">Hey,</p>
-                <p style="margin:0 0 16px;">You're on the Klynt beta list.</p>
-                <p style="margin:0 0 16px;">Klynt keeps track of what is actually true in your project — it collects meaningful changes from Figma, Slack and docs, and turns them into a current state you can read in 30 seconds.</p>
-                <p style="margin:0 0 16px;">We'll reach out as soon as your invite is ready.</p>
+                <p style="margin:0 0 16px;">Your Klynt workspace is ready.</p>
+                <p style="margin:0 0 16px;">We set up a sample project so you can see how Klynt reads a project's current state — what changed, what's approved, and what's still unresolved.</p>
+                <p style="margin:0 0 24px;">
+                  <a href="${accessUrl}" style="display:inline-block;background:#1C1B17;color:#F5F4EF;text-decoration:none;padding:12px 28px;border-radius:999px;font-size:15px;font-weight:500;">Open Klynt</a>
+                </p>
+                <p style="margin:0 0 16px;font-size:13px;color:#6B675F;">This link signs you in instantly — no password needed.</p>
                 <p style="margin:0;">— Dmitry</p>
               </td>
             </tr>
@@ -50,7 +53,7 @@ function buildBetaConfirmationContent() {
   return { text, html };
 }
 
-export async function sendBetaConfirmationEmail(email: string) {
+export async function sendBetaAccessEmail(email: string, accessUrl: string) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new Error(
@@ -62,7 +65,7 @@ export async function sendBetaConfirmationEmail(email: string) {
     process.env.CONTACT_FROM_EMAIL?.trim() ||
     "Klynt <onboarding@resend.dev>";
 
-  const { text, html } = buildBetaConfirmationContent();
+  const { text, html } = buildBetaAccessContent(accessUrl);
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -73,7 +76,7 @@ export async function sendBetaConfirmationEmail(email: string) {
     body: JSON.stringify({
       from,
       to: [email],
-      subject: "You're on the Klynt beta list",
+      subject: "Your Klynt workspace is ready",
       text,
       html,
     }),
