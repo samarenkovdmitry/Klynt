@@ -294,9 +294,12 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     if (!selectedProjectId) return;
     setVisitBaseline(prev => {
       if (prev[selectedProjectId] !== undefined) return prev;
-      const key = `klynt:lastVisit:${selectedProjectId}`;
-      const last = localStorage.getItem(key) || '';
-      localStorage.setItem(key, new Date().toISOString());
+      let last = '';
+      try {
+        const key = `klynt:lastVisit:${selectedProjectId}`;
+        last = localStorage.getItem(key) || '';
+        localStorage.setItem(key, new Date().toISOString());
+      } catch {}
       return { ...prev, [selectedProjectId]: last };
     });
   }, [selectedProjectId]);

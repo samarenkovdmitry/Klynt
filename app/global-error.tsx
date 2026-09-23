@@ -8,10 +8,12 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
     Sentry.captureException(error);
 
     // Stale-chunk crash after a fresh deploy — reload once to fetch new assets
-    if (error?.name === 'ChunkLoadError' && !sessionStorage.getItem('klynt:chunkReload')) {
-      sessionStorage.setItem('klynt:chunkReload', '1');
-      window.location.reload();
-    }
+    try {
+      if (error?.name === 'ChunkLoadError' && !sessionStorage.getItem('klynt:chunkReload')) {
+        sessionStorage.setItem('klynt:chunkReload', '1');
+        window.location.reload();
+      }
+    } catch {}
   }, [error]);
 
   return (
