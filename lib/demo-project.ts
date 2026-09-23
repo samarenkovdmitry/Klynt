@@ -117,7 +117,7 @@ const CONFLICTS = [
 
 export async function createDemoProject(ownerId: string) {
   const base = {
-    name: 'Sample · Lunar mobile',
+    name: 'Lunar mobile',
     description: 'Sample project — a mobile app redesign tracked from Figma and Slack.',
     owner_id: ownerId,
     slug: `sample-lunar-mobile-${Date.now().toString(36)}`,

@@ -573,7 +573,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             <h1 className="text-[26px] font-bold tracking-tight text-ink">{selectedProject?.name || 'Project'}</h1>
             {(selectedProject?.is_demo || selectedProject?.name?.startsWith('Sample ·')) && (
               <span className="rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
-                Sample data
+                Sample
               </span>
             )}
             {activeSources.length > 0 && (
