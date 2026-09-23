@@ -12,6 +12,14 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = createClient()
+
+  // Magic links are single-use — if this browser is already signed in
+  // (e.g. the link was clicked once before), just continue to `next`.
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    return NextResponse.redirect(new URL(next, request.url))
+  }
+
   const { error } = await supabase.auth.verifyOtp({
     token_hash,
     type: type as any,
