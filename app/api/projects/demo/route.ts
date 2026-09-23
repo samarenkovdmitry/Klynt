@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   if (!user) return unauthorizedResponse();
 
   // One demo per user
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from('projects')
     .select('id, slug, name')
     .eq('owner_id', user.id)
@@ -19,6 +19,20 @@ export async function POST(request: NextRequest) {
 
   if (existing) {
     return NextResponse.json({ project: existing, alreadyExists: true });
+  }
+
+  // is_demo column not yet migrated — fall back to name match
+  if (existingError?.message?.includes('is_demo')) {
+    const { data: byName } = await supabase
+      .from('projects')
+      .select('id, slug, name')
+      .eq('owner_id', user.id)
+      .ilike('name', 'Sample ·%')
+      .limit(1)
+      .maybeSingle();
+    if (byName) {
+      return NextResponse.json({ project: byName, alreadyExists: true });
+    }
   }
 
   try {

@@ -116,20 +116,25 @@ const CONFLICTS = [
 ];
 
 export async function createDemoProject(ownerId: string) {
-  const { data: project, error } = await supabase
+  const base = {
+    name: 'Sample · Lunar mobile',
+    description: 'Sample project — a mobile app redesign tracked from Figma and Slack.',
+    owner_id: ownerId,
+    slug: `sample-lunar-mobile-${Date.now().toString(36)}`,
+  };
+
+  let { data: project, error } = await supabase
     .from('projects')
-    .insert({
-      name: 'Sample · Lunar mobile',
-      description: 'Sample project — a mobile app redesign tracked from Figma and Slack.',
-      owner_id: ownerId,
-      slug: `sample-lunar-mobile-${Date.now().toString(36)}`,
-      is_demo: true,
-    })
+    .insert({ ...base, is_demo: true })
     .select()
     .single();
 
+  // is_demo column not yet migrated — insert without it
+  if (error && error.message?.includes('is_demo')) {
+    ({ data: project, error } = await supabase.from('projects').insert(base).select().single());
+  }
   if (error) throw error;
-  return seedProjectData(project);
+  return seedProjectData(project!);
 }
 
 async function seedProjectData(project: { id: string }) {
