@@ -571,7 +571,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-[26px] font-bold tracking-tight text-ink">{selectedProject?.name || 'Project'}</h1>
-            {selectedProject?.is_demo && (
+            {(selectedProject?.is_demo || selectedProject?.name?.startsWith('Sample ·')) && (
               <span className="rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
                 Sample data
               </span>

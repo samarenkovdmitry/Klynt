@@ -21,7 +21,10 @@ interface Project {
   name: string;
   slug?: string;
   unresolved_count?: number;
+  is_demo?: boolean;
 }
+
+const isDemo = (p: Project) => Boolean(p.is_demo) || p.name.startsWith('Sample ·');
 
 interface SidebarProps {
   projects: Project[];
@@ -69,6 +72,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
   };
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const sortedProjects = [...projects].sort((a, b) => Number(isDemo(a)) - Number(isDemo(b)));
 
   const pageHref = (path: string) => {
     if (path === '/project') {
@@ -101,7 +105,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
 
         <nav className="flex-1 space-y-1">
           <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Projects</p>
-          {projects.map((p) => {
+          {sortedProjects.map((p) => {
             const isSelected = selectedProjectId === p.id && activeItem === 'project';
             const count = p.unresolved_count || 0;
             return (
@@ -204,7 +208,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
         >
           <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Projects</p>
           <div className="mt-2 space-y-1">
-            {projects.map((p) => {
+            {sortedProjects.map((p) => {
               const isSelected = selectedProjectId === p.id;
               const count = p.unresolved_count || 0;
               return (
