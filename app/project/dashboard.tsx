@@ -27,6 +27,7 @@ interface Project {
   slug?: string;
   description?: string;
   unresolved_count?: number;
+  is_demo?: boolean;
 }
 
 interface ProjectSummary {
@@ -232,6 +233,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
 
   const [selectedFactId, setSelectedFactId] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [creatingDemo, setCreatingDemo] = useState(false);
   const [visitBaseline, setVisitBaseline] = useState<Record<string, string>>({});
   const [integrations, setIntegrations] = useState<any[]>([]);
 
@@ -298,6 +300,23 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
       return { ...prev, [selectedProjectId]: last };
     });
   }, [selectedProjectId]);
+
+  const handleCreateDemo = async () => {
+    setCreatingDemo(true);
+    try {
+      const res = await fetch('/api/projects/demo', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok && data.project) {
+        router.push(`/project/${data.project.slug || data.project.id}`);
+        return;
+      }
+      setError(data.error || 'Failed to create sample project');
+      setCreatingDemo(false);
+    } catch {
+      setError('Failed to create sample project');
+      setCreatingDemo(false);
+    }
+  };
 
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
@@ -391,6 +410,13 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               className="mt-6 rounded-full bg-[var(--accent)] px-6 py-3.5 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
             >
               New project
+            </button>
+            <button
+              onClick={handleCreateDemo}
+              disabled={creatingDemo}
+              className="mt-3 block w-full text-sm font-medium text-[var(--accent-link)] transition hover:underline disabled:opacity-50"
+            >
+              {creatingDemo ? 'Preparing sample project...' : 'See a live example first'}
             </button>
           </div>
         </main>
@@ -545,6 +571,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-[26px] font-bold tracking-tight text-ink">{selectedProject?.name || 'Project'}</h1>
+            {selectedProject?.is_demo && (
+              <span className="rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
+                Sample data
+              </span>
+            )}
             {activeSources.length > 0 && (
               <div className="flex items-center gap-1.5">
                 {activeSources.map((s: string) => (
