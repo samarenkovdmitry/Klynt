@@ -155,6 +155,12 @@ async function seedProjectData(project: { id: string }) {
   const factIds: Record<string, string> = {};
   const eventRows: { candidateId: string; rawId: string; e: DemoEvent }[] = [];
 
+  // last_updated_at = timestamp of the most recent event on that subject
+  const lastEventAt = (subject: string) => {
+    const e = [...EVENTS].reverse().find(ev => ev.subject === subject);
+    return e ? daysAgo(e.daysAgo, e.hour) : daysAgo(0, 9);
+  };
+
   for (const [subject, f] of Object.entries(FACTS)) {
     const { data: fact } = await supabase
       .from('project_facts')
@@ -168,7 +174,7 @@ async function seedProjectData(project: { id: string }) {
         confidence: f.confidence,
         importance: f.importance,
         evidence_summary: `Latest: ${f.display.toLowerCase()}`,
-        last_updated_at: daysAgo(0, 9),
+        last_updated_at: lastEventAt(subject),
       })
       .select('id')
       .single();
