@@ -30,11 +30,7 @@ interface Project {
   is_demo?: boolean;
 }
 
-interface ProjectSummary {
-  headline: string;
-  bullets: string[];
-  needsAttention: string[];
-}
+
 
 interface ProjectState {
   projectId: string;
@@ -220,7 +216,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const router = useRouter();
 
   const [state, setState] = useState<ProjectState | null>(null);
-  const [summary, setSummary] = useState<ProjectSummary | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [period, setPeriod] = useState<Period>('7d');
@@ -240,17 +235,13 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const fetchData = useCallback(async (selectedPeriod: Period, projectId: string) => {
     setLoading(true);
     try {
-      const [stateRes, summaryRes] = await Promise.all([
-        fetch(`/api/project/state?period=${selectedPeriod}&projectId=${projectId}`),
-        fetch(`/api/project/summary?projectId=${projectId}`),
-      ]);
-      const [stateData, summaryData] = await Promise.all([stateRes.json(), summaryRes.json()]);
+      const stateRes = await fetch(`/api/project/state?period=${selectedPeriod}&projectId=${projectId}`);
+      const stateData = await stateRes.json();
 
       if (stateData.error) {
         setError(stateData.error);
       } else {
         setState(stateData);
-        setSummary(summaryData.error ? null : summaryData);
       }
     } catch (err: any) {
       setError(err.message);
@@ -629,17 +620,10 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         <div className={`grid grid-cols-1 gap-10 transition-opacity lg:grid-cols-12 ${loading ? 'opacity-50' : ''}`}>
           {/* Latest */}
           <section className="order-3 lg:col-span-8">
-              <SectionHeader
-                title={baseline ? 'New since last visit' : 'Latest'}
-                meta={summary?.headline && (
-                  <p className="text-xs text-ink-muted">{summary.headline}</p>
-                )}
-              />
+              <SectionHeader title={baseline ? 'New since last visit' : 'Latest'} />
               {state.whatChanged.length > 0 ? (
                 newSinceVisit.length === 0 ? (
-                <div className="border-t border-line py-4">
-                  <p className="text-sm text-ink-muted">You're up to date — nothing new since your last visit.</p>
-                </div>
+                <p className="text-sm text-ink-faint">Nothing new since your last visit.</p>
                 ) : (
                 <div className="divide-y divide-line-soft">
                   {latestEvents.map((event: any) => {
@@ -685,9 +669,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   </p>
                 </div>
               ) : (
-                <div className="border-t border-line py-4">
-                  <p className="text-sm text-ink-muted">No changes in the last {period}.</p>
-                </div>
+                <p className="text-sm text-ink-faint">No changes in the last {period}.</p>
               )}
             </section>
 
