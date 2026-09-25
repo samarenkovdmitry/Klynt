@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { updateSession, sanitizeInternalHeaders } from '@/lib/supabase/middleware'
 
 const PUBLIC_PATHS = new Set([
   '/',
@@ -32,11 +32,15 @@ function isPublicRoute(pathname: string): boolean {
 }
 
 export async function middleware(request: NextRequest) {
+  // Internal session headers are only ever set by updateSession —
+  // always strip client-supplied values first, even on public routes.
+  const requestHeaders = sanitizeInternalHeaders(request)
+
   if (isPublicRoute(request.nextUrl.pathname)) {
-    return NextResponse.next()
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
-  const { user, response } = await updateSession(request)
+  const { user, response } = await updateSession(request, requestHeaders)
 
   if (!user) {
     const loginUrl = new URL('/login', request.url)
