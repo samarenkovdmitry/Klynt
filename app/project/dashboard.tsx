@@ -1075,61 +1075,22 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                               {group.author}
                             </span>
                           )}
+                          {group.occurrences[0].source_url && (
+                            <a
+                              href={group.occurrences[0].source_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-0.5 text-[var(--accent-link)] hover:underline"
+                            >
+                              View
+                              <RiArrowRightUpLine size={12} />
+                            </a>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                {(() => {
-                  const rawUrls = [...new Set(selectedHistory.map((h: any) => h.source_url).filter(Boolean))] as string[];
-                  const byPath = new Map<string, string>();
-                  for (const url of rawUrls) {
-                    let key: string;
-                    try {
-                      const u = new URL(url);
-                      key = u.origin + u.pathname;
-                    } catch {
-                      key = url;
-                    }
-                    const prev = byPath.get(key);
-                    if (!prev || url.length > prev.length) byPath.set(key, url);
-                  }
-                  const urls = [...byPath.values()];
-                  const sources = [...new Set(selectedHistory.map((h: any) => h.source).filter(Boolean))];
-                  if (urls.length > 0) {
-                    return (
-                      <div className="space-y-2">
-                        {urls.map((url: string, i: number) => (
-                          <a
-                            key={i}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-0.5 text-sm font-medium text-[var(--accent-link)] hover:underline"
-                          >
-                            View source
-                            <RiArrowRightUpLine size={14} />
-                          </a>
-                        ))}
-                      </div>
-                    );
-                  }
-                  if (sources.length > 0) {
-                    return (
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-muted">
-                        <span>Source:</span>
-                        {sources.map((source: string) => (
-                          <span key={source} className="flex items-center gap-1.5">
-                            {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={13} className="text-green-500" />}
-                            {source === 'gdocs' ? 'Google Docs' : capitalize(source)}
-                          </span>
-                        ))}
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
               </div>
             </>
           )}
