@@ -150,7 +150,7 @@ function SkeletonCard({ className }: { className: string }) {
   return <div className={`skeleton-shimmer rounded-xl border border-line ${className}`} />;
 }
 
-function ProjectSkeleton() {
+export function ProjectSkeleton() {
   return (
     <>
       <div className="mb-8">

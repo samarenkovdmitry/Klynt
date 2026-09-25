@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
-import { ProjectDashboard } from './dashboard';
+import { ProjectDashboard, ProjectSkeleton } from './dashboard';
 
 export default function ProjectRedirectPage() {
   const router = useRouter();
@@ -37,7 +37,9 @@ export default function ProjectRedirectPage() {
   return (
     <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
       <Sidebar projects={[]} selectedProjectId={null} activeItem="project" loading />
-      <main className="w-full flex-1 px-3 py-4 sm:px-8 sm:py-6" />
+      <main className="w-full flex-1 px-3 py-4 sm:px-8 sm:py-6">
+        <ProjectSkeleton />
+      </main>
     </div>
   );
 }
