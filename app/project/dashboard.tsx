@@ -267,9 +267,13 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           setProjects(data.projects);
           const bySlug = slugParam ? data.projects.find((p: Project) => p.slug === slugParam || p.id === slugParam) : null;
           const byQuery = queryProjectId ? data.projects.find((p: Project) => p.id === queryProjectId) : null;
-          const initial = (bySlug || byQuery || data.projects[0]).id;
-          setSelectedProjectId(initial);
-          fetchData('7d', initial);
+          const initial = bySlug || byQuery || data.projects[0];
+          setSelectedProjectId(initial.id);
+          if (!slugParam) {
+            const url = initial.slug ? `/project/${initial.slug}` : `/project?projectId=${initial.id}`;
+            window.history.replaceState(null, '', url);
+          }
+          fetchData('7d', initial.id);
         } else {
           setProjects([]);
           setLoading(false);
@@ -315,7 +319,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
     const target = projects.find(p => p.id === projectId);
-    router.replace(target?.slug ? `/project/${target.slug}` : `/project?projectId=${projectId}`, { scroll: false });
+    window.history.replaceState(null, '', target?.slug ? `/project/${target.slug}` : `/project?projectId=${projectId}`);
     fetchData(period, projectId);
   };
 
