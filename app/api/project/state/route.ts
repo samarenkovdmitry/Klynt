@@ -35,44 +35,107 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const user = await getSessionUser();
-    if (!user) return unauthorizedResponse();
+    const since = getSince(period);
 
-    // Get project details and stats
-    const project = await getProject(projectId, user.id);
+    // Auth and project fetch run in parallel; membership check only for non-owners
+    const [user, project] = await Promise.all([
+      getSessionUser(),
+      getProject(projectId),
+    ]);
+    if (!user) return unauthorizedResponse();
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
+    if (project.owner_id !== user.id) {
+      const { data: membership } = await supabase
+        .from('project_users')
+        .select('id')
+        .eq('project_id', projectId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (!membership) {
+        return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+      }
+    }
 
+    // Phase 1: all independent queries in parallel
     const [
       { count: factsCount },
       { count: eventsCount },
       { count: conflictsCount },
       { count: integrationsCount },
+      facts,
+      conflicts,
+      { data: history, error: historyError },
+      { data: rawEventsInPeriod, error: rawError },
+      { data: allRawEvents, error: allRawError },
     ] = await Promise.all([
       supabase.from('project_facts').select('*', { count: 'exact', head: true }).eq('project_id', projectId),
       supabase.from('candidate_events').select('*', { count: 'exact', head: true }).eq('project_id', projectId),
       supabase.from('conflicts').select('*', { count: 'exact', head: true }).eq('project_id', projectId).eq('status', 'unresolved'),
       supabase.from('integrations').select('*', { count: 'exact', head: true }).eq('project_id', projectId).eq('status', 'active'),
+      listProjectFacts(projectId),
+      getProjectConflicts(projectId),
+      supabase
+        .from('fact_history')
+        .select()
+        .eq('project_id', projectId)
+        .order('decided_at', { ascending: true }),
+      supabase
+        .from('raw_events')
+        .select('id, timestamp, source, author_id, content, metadata')
+        .eq('project_id', projectId)
+        .gte('timestamp', since)
+        .order('timestamp', { ascending: false }),
+      supabase
+        .from('raw_events')
+        .select('id, timestamp, source, author_id, content, metadata')
+        .eq('project_id', projectId)
+        .order('timestamp', { ascending: false })
+        .limit(10),
     ]);
 
-    // Get current facts
-    const facts = await listProjectFacts(projectId);
+    if (historyError) throw historyError;
+    if (rawError) throw rawError;
+    if (allRawError) throw allRawError;
 
-    // Get unresolved conflicts
-    const conflicts = await getProjectConflicts(projectId);
-
-    // Enrich conflicts with the most recent candidate event for the same subject
+    // Phase 2: dependent queries in parallel
     const conflictSubjects = [...new Set((conflicts || []).map(c => c.subject).filter(Boolean))];
-    const { data: conflictingEvents } = conflictSubjects.length > 0
-      ? await supabase
-          .from('candidate_events')
-          .select('*')
-          .eq('project_id', projectId)
-          .in('subject', conflictSubjects)
-          .in('event_type', ['change', 'decision', 'approval'])
-          .order('created_at', { ascending: false })
-      : { data: [] };
+    const candidateEventIds = [...new Set((history || []).map((h: any) => h.event_id).filter(Boolean))];
+    const rawIds = (rawEventsInPeriod || []).map(r => r.id);
+    const recentRawIds = (allRawEvents || []).map(r => r.id);
+    const EMPTY_UUID = '00000000-0000-0000-0000-000000000000';
+
+    const [
+      { data: conflictingEvents },
+      { data: candidateLinks, error: candError },
+      { data: periodCandidates, error: periodCandError },
+      { data: recentCandidates, error: recentCandError },
+    ] = await Promise.all([
+      conflictSubjects.length > 0
+        ? supabase
+            .from('candidate_events')
+            .select('*')
+            .eq('project_id', projectId)
+            .in('subject', conflictSubjects)
+            .in('event_type', ['change', 'decision', 'approval'])
+            .order('created_at', { ascending: false })
+        : Promise.resolve({ data: [] as any[], error: null }),
+      supabase
+        .from('candidate_events')
+        .select('id, raw_event_id')
+        .in('id', candidateEventIds.length > 0 ? candidateEventIds : [EMPTY_UUID]),
+      rawIds.length > 0
+        ? supabase.from('candidate_events').select().in('raw_event_id', rawIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+      recentRawIds.length > 0
+        ? supabase.from('candidate_events').select().in('raw_event_id', recentRawIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+    ]);
+
+    if (candError) throw candError;
+    if (periodCandError) throw periodCandError;
+    if (recentCandError) throw recentCandError;
 
     const latestEventBySubject = new Map<string, any>();
     for (const ev of (conflictingEvents || [])) {
@@ -89,29 +152,6 @@ export async function GET(request: NextRequest) {
       proposedEvent: latestEventBySubject.get(c.subject) || null,
     }));
 
-    // Get history for all facts
-    const factIds = facts.map(f => f.id);
-    const { data: history, error: historyError } = await supabase
-      .from('fact_history')
-      .select()
-      .in('fact_id', factIds.length > 0 ? factIds : ['00000000-0000-0000-0000-000000000000'])
-      .order('decided_at', { ascending: true });
-
-    if (historyError) throw historyError;
-
-    const since = getSince(period);
-
-    // Get raw events in period
-    const { data: rawEventsInPeriod, error: rawError } = await supabase
-      .from('raw_events')
-      .select('id, timestamp, source, author_id, content, metadata')
-      .eq('project_id', projectId)
-      .gte('timestamp', since)
-      .order('timestamp', { ascending: false });
-
-    if (rawError) throw rawError;
-
-    const rawIds = (rawEventsInPeriod || []).map(r => r.id);
     const rawTimestamps = new Map((rawEventsInPeriod || []).map(r => [r.id, r.timestamp]));
     const rawSources = new Map((rawEventsInPeriod || []).map(r => {
       const metadata = typeof r.metadata === 'string' ? JSON.parse(r.metadata) : r.metadata;
@@ -138,20 +178,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Enrich fact history with source/author/content/source_url
-    const candidateEventIds = [...new Set((history || []).map((h: any) => h.event_id).filter(Boolean))];
     const evidenceRawEventIds = [...new Set((history || []).flatMap((h: any) => h.evidence || []).filter(Boolean))];
 
     const candidateRawEventMap = new Map<string, string>();
-    if (candidateEventIds.length > 0) {
-      const { data: candidateLinks, error: candError } = await supabase
-        .from('candidate_events')
-        .select('id, raw_event_id')
-        .in('id', candidateEventIds);
-
-      if (candError) throw candError;
-      for (const c of (candidateLinks || [])) {
-        candidateRawEventMap.set(c.id, c.raw_event_id);
-      }
+    for (const c of (candidateLinks || [])) {
+      candidateRawEventMap.set(c.id, c.raw_event_id);
     }
 
     const rawEventIdsToFetch = [...new Set([...evidenceRawEventIds, ...candidateRawEventMap.values()])];
@@ -189,13 +220,7 @@ export async function GET(request: NextRequest) {
 
     let whatChanged: any[] = [];
     if (rawIds.length > 0) {
-      const { data, error } = await supabase
-        .from('candidate_events')
-        .select()
-        .in('raw_event_id', rawIds);
-
-      if (error) throw error;
-      whatChanged = (data || []).map(e => {
+      whatChanged = (periodCandidates || []).map(e => {
         const raw = rawSources.get(e.raw_event_id);
         return {
           ...e,
@@ -208,32 +233,15 @@ export async function GET(request: NextRequest) {
       }).sort((a, b) => new Date(b.source_timestamp || b.created_at).getTime() - new Date(a.source_timestamp || a.created_at).getTime());
     }
 
-    // Recent activity (all time, top 10 by source timestamp)
-    const { data: allRawEvents, error: allRawError } = await supabase
-      .from('raw_events')
-      .select('id, timestamp, source, author_id, content, metadata')
-      .eq('project_id', projectId)
-      .order('timestamp', { ascending: false })
-      .limit(10);
-
-    if (allRawError) throw allRawError;
-
     let recentEvents: any[] = [];
     if (allRawEvents && allRawEvents.length > 0) {
-      const recentRawIds = allRawEvents.map(r => r.id);
       const recentTimestamps = new Map(allRawEvents.map(r => [r.id, r.timestamp]));
       const recentSources = new Map(allRawEvents.map(r => {
         const metadata = typeof r.metadata === 'string' ? JSON.parse(r.metadata) : r.metadata;
         return [r.id, { source: r.source, author: metadata?.author?.name || r.author_id }];
       }));
 
-      const { data, error } = await supabase
-        .from('candidate_events')
-        .select()
-        .in('raw_event_id', recentRawIds);
-
-      if (error) throw error;
-      recentEvents = (data || []).map(e => ({
+      recentEvents = (recentCandidates || []).map(e => ({
         ...e,
         source_timestamp: recentTimestamps.get(e.raw_event_id),
         source: recentSources.get(e.raw_event_id)?.source,
