@@ -231,20 +231,21 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const [creatingDemo, setCreatingDemo] = useState(false);
   const [visitBaseline, setVisitBaseline] = useState<Record<string, string>>({});
   const [integrations, setIntegrations] = useState<any[]>([]);
-
-  const fetchData = useCallback(async (selectedPeriod: Period, projectId: string) => {
+  const fetchData = useCallback(async (selectedPeriod: Period, projectId: string, optimistic = false) => {
     setLoading(true);
     try {
       const stateRes = await fetch(`/api/project/state?period=${selectedPeriod}&projectId=${projectId}`);
       const stateData = await stateRes.json();
 
       if (stateData.error) {
-        setError(stateData.error);
-      } else {
-        setState(stateData);
+        if (!optimistic) setError(stateData.error);
+        return false;
       }
+      setState(stateData);
+      return true;
     } catch (err: any) {
-      setError(err.message);
+      if (!optimistic) setError(err.message);
+      return false;
     } finally {
       setLoading(false);
     }
@@ -260,6 +261,10 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   useEffect(() => {
     const queryProjectId = new URLSearchParams(window.location.search).get('projectId');
     const slugParam = slug;
+    let lastId = '';
+    try { lastId = localStorage.getItem('klynt:lastProject') || ''; } catch {}
+    const optimistic = !slugParam && !queryProjectId && lastId;
+    const optimisticFetch = optimistic ? fetchData('7d', lastId, true) : null;
     fetch('/api/projects')
       .then(res => res.json())
       .then(data => {
@@ -269,11 +274,16 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           const byQuery = queryProjectId ? data.projects.find((p: Project) => p.id === queryProjectId) : null;
           const initial = bySlug || byQuery || data.projects[0];
           setSelectedProjectId(initial.id);
+          try { localStorage.setItem('klynt:lastProject', initial.id); } catch {}
           if (!slugParam) {
             const url = initial.slug ? `/project/${initial.slug}` : `/project?projectId=${initial.id}`;
             window.history.replaceState(null, '', url);
           }
-          fetchData('7d', initial.id);
+          if (initial.id !== lastId) {
+            fetchData('7d', initial.id);
+          } else if (optimisticFetch) {
+            optimisticFetch.then(ok => { if (!ok) fetchData('7d', initial.id); });
+          }
         } else {
           setProjects([]);
           setLoading(false);
@@ -318,6 +328,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
 
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
+    try { localStorage.setItem('klynt:lastProject', projectId); } catch {}
     const target = projects.find(p => p.id === projectId);
     window.history.replaceState(null, '', target?.slug ? `/project/${target.slug}` : `/project?projectId=${projectId}`);
     fetchData(period, projectId);
