@@ -480,9 +480,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   }
 
   const baseline = selectedProjectId ? visitBaseline[selectedProjectId] : undefined;
-  const changesSinceVisit = baseline
-    ? state.whatChanged.filter((e: any) => new Date(e.source_timestamp || e.created_at).getTime() > new Date(baseline).getTime()).length
-    : 0;
+  const newSinceVisit = baseline
+    ? state.whatChanged.filter((e: any) => new Date(e.source_timestamp || e.created_at).getTime() > new Date(baseline).getTime())
+    : state.whatChanged;
+  const changesSinceVisit = baseline ? newSinceVisit.length : 0;
+  const latestEvents = newSinceVisit.slice(0, 5);
 
   const getPreviousState = (factId: string) => {
     const factHistory = state.history
@@ -628,14 +630,19 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           {/* Latest */}
           <section className="order-3 lg:col-span-8">
               <SectionHeader
-                title="Latest"
+                title={baseline ? 'New since last visit' : 'Latest'}
                 meta={summary?.headline && (
                   <p className="text-xs text-ink-muted">{summary.headline}</p>
                 )}
               />
               {state.whatChanged.length > 0 ? (
+                newSinceVisit.length === 0 ? (
+                <div className="border-t border-line py-4">
+                  <p className="text-sm text-ink-muted">You're up to date — nothing new since your last visit.</p>
+                </div>
+                ) : (
                 <div className="divide-y divide-line-soft">
-                  {state.whatChanged.slice(0, 5).map((event: any) => {
+                  {latestEvents.map((event: any) => {
                     const eventTime = event.source_timestamp || event.created_at;
                     const source = event.source || 'figma';
                     return (
@@ -664,7 +671,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       </div>
                     );
                   })}
+                  {newSinceVisit.length > 5 && (
+                    <p className="py-2 text-xs text-ink-faint">+{newSinceVisit.length - 5} more in Activity below</p>
+                  )}
                 </div>
+                )
               ) : state.currentState.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-line-strong p-6 text-center">
                   <p className="text-sm font-medium text-ink">No changes yet</p>
