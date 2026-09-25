@@ -61,6 +61,42 @@ function FactCard({
   );
 }
 
+function LatestEvent({
+  icon,
+  title,
+  meta,
+  author,
+  source,
+  ago,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  meta: string;
+  author: string;
+  source: 'figma' | 'slack';
+  ago: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 py-3">
+      <span className="flex-shrink-0 text-ink-faint">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-ink">{title}</p>
+        <p className="mt-0.5 truncate text-xs text-ink-muted">{meta}</p>
+      </div>
+      <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
+        <span className="flex items-center gap-1">
+          <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
+            <Avatar name={author} email={`${author.toLowerCase()}@lunar.app`} className="text-[8px]" />
+          </span>
+          {author}
+        </span>
+        {source === 'figma' ? <FigmaIcon size={14} /> : <SlackIcon size={14} />}
+        {ago}
+      </span>
+    </div>
+  );
+}
+
 const NEUTRAL_PILL = 'bg-fill text-ink-secondary';
 const AMBER_PILL = 'bg-amber-50 text-amber-700';
 const VIOLET_PILL = 'bg-violet-50 text-violet-700';
@@ -80,24 +116,23 @@ export default function LandingPreview() {
 
           <nav className="flex-1 space-y-1">
             <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Projects</p>
-            <div className="relative flex w-full items-center gap-2 rounded-lg bg-[var(--accent-tint)] px-3 py-2 text-left text-sm font-medium text-[var(--accent-link)]">
-              <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-[var(--accent)]" />
-              <RiFolderLine size={15} className="flex-shrink-0 text-[var(--accent-link)]" />
-              <span className="truncate">Acme rebrand (demo)</span>
-            </div>
             <div className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary">
               <RiFolderLine size={15} className="flex-shrink-0 text-ink-faint" />
               <span className="truncate">Website redesign</span>
             </div>
             <div className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary">
               <RiFolderLine size={15} className="flex-shrink-0 text-ink-faint" />
-              <span className="truncate">Lunar mobile</span>
-              <span className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
+              <span className="truncate">Acme rebrand</span>
             </div>
             <div className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary">
               <RiFolderLine size={15} className="flex-shrink-0 text-ink-faint" />
               <span className="truncate">Tesla website</span>
               <span className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
+            </div>
+            <div className="relative flex w-full items-center gap-2 rounded-lg bg-[var(--accent-tint)] px-3 py-2 text-left text-sm font-medium text-[var(--accent-link)]">
+              <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-[var(--accent)]" />
+              <RiFolderLine size={15} className="flex-shrink-0 text-[var(--accent-link)]" />
+              <span className="truncate">Lunar mobile</span>
             </div>
             <div className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-2 text-xs font-medium text-ink-muted">
               <RiAddLine size={14} />
@@ -128,7 +163,7 @@ export default function LandingPreview() {
         <main className="relative w-full flex-1 overflow-hidden px-5 py-5">
           <div className="mb-5">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold tracking-tight text-ink">Acme rebrand (demo)</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-ink">Lunar mobile</h1>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
                 <FigmaIcon size={11} /> Figma
               </span>
@@ -136,12 +171,12 @@ export default function LandingPreview() {
                 <SlackIcon size={11} /> Slack
               </span>
             </div>
-            <p className="mt-1 text-[15px] text-ink-secondary">Brand identity system. Logo, colors, typography.</p>
+            <p className="mt-1 text-[15px] text-ink-secondary">Mobile app redesign tracked from Figma and Slack.</p>
             <div className="mt-2.5 flex items-baseline justify-between gap-4">
               <p className="text-[13px] text-ink-muted">
-                6 areas · 3 approved · 2 need review · 1 pending
+                8 areas · 4 approved · 2 need review · 1 pending
               </p>
-              <p className="text-xs text-ink-faint">Updated 8 min ago</p>
+              <p className="text-xs text-ink-faint">Updated 1d ago</p>
             </div>
           </div>
 
@@ -150,48 +185,48 @@ export default function LandingPreview() {
               <section>
                 <div className="grid grid-cols-3 gap-2">
                   <FactCard
-                    subject="Brandmark"
+                    subject="App icon"
                     label="Decision pending"
-                    pillStyle={VIOLET_PILL}
-                    context="Two competing directions remain"
-                    changes={3}
-                    ago="5h ago"
-                  />
-                  <FactCard
-                    subject="Logo"
-                    label="Needs review"
                     pillStyle={AMBER_PILL}
-                    context="Client suggested serif alternative"
-                    changes={2}
-                    ago="2h ago"
-                  />
-                  <FactCard
-                    subject="Illustrations"
-                    label="Needs review"
-                    pillStyle={AMBER_PILL}
+                    context="Flipped blue → green → blue in 3 days"
                     changes={4}
-                    ago="Yesterday"
+                    ago="1d ago"
                   />
                   <FactCard
-                    subject="Color palette"
+                    subject="Avatar upload"
+                    label="Out of scope"
+                    pillStyle={VIOLET_PILL}
+                    context="Designer added it, PM cut it from MVP"
+                    changes={2}
+                    ago="10d ago"
+                  />
+                  <FactCard
+                    subject="Settings screen"
+                    label="In progress"
+                    pillStyle={AMBER_PILL}
+                    changes={2}
+                    ago="5d ago"
+                  />
+                  <FactCard
+                    subject="Dark mode"
                     label="Approved"
                     pillStyle={NEUTRAL_PILL}
-                    context="Approved by John · 2d ago"
+                    context="Approved by Sara · 6d ago"
                     approved
                   />
                   <FactCard
-                    subject="Typography"
+                    subject="Checkout flow"
                     label="Approved"
                     pillStyle={NEUTRAL_PILL}
-                    context="Approved by Sarah · 2h ago"
+                    context="Approved by Sara · 8d ago"
                     approved
                   />
                   <FactCard
-                    subject="Voice & tone"
-                    label="Approved"
+                    subject="Payment method"
+                    label="Added"
                     pillStyle={NEUTRAL_PILL}
-                    context="Approved by Sarah · 3d ago"
-                    approved
+                    changes={2}
+                    ago="8d ago"
                   />
                 </div>
               </section>
@@ -199,57 +234,22 @@ export default function LandingPreview() {
               <section>
                 <MockSectionHeader title="Latest" />
                 <div className="divide-y divide-line-soft">
-                  <div className="flex items-center gap-3 py-3">
-                    <span className="flex-shrink-0 text-ink-faint"><RiCheckLine size={14} /></span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-ink">Typography approved</p>
-                      <p className="mt-0.5 truncate text-xs text-ink-muted">Typography · approved</p>
-                    </div>
-                    <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
-                      <span className="flex items-center gap-1">
-                        <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
-                          <Avatar name="Sarah" email="sarah@acme.co" className="text-[8px]" />
-                        </span>
-                        Sarah
-                      </span>
-                      <SlackIcon size={14} />
-                      2h ago
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 py-3">
-                    <span className="flex-shrink-0 text-ink-faint"><RiEditLine size={14} /></span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-ink">Brandmark direction questioned</p>
-                      <p className="mt-0.5 truncate text-xs text-ink-muted">Brandmark · modified</p>
-                    </div>
-                    <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
-                      <span className="flex items-center gap-1">
-                        <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
-                          <Avatar name="Max" email="max@acme.co" className="text-[8px]" />
-                        </span>
-                        Max
-                      </span>
-                      <FigmaIcon size={14} />
-                      5h ago
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 py-3">
-                    <span className="flex-shrink-0 text-ink-faint"><RiCheckLine size={14} /></span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-ink">Color palette finalized</p>
-                      <p className="mt-0.5 truncate text-xs text-ink-muted">Color palette · approved</p>
-                    </div>
-                    <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
-                      <span className="flex items-center gap-1">
-                        <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
-                          <Avatar name="Anna" email="anna@acme.co" className="text-[8px]" />
-                        </span>
-                        Anna
-                      </span>
-                      <FigmaIcon size={14} />
-                      Yesterday
-                    </span>
-                  </div>
+                  <LatestEvent
+                    icon={<RiEditLine size={14} />}
+                    title="Reverted to blue, final decision pending"
+                    meta="App icon · modify"
+                    author="Anna"
+                    source="figma"
+                    ago="1d"
+                  />
+                  <LatestEvent
+                    icon={<RiEditLine size={14} />}
+                    title="Client asked to revert to blue icon"
+                    meta="App icon · request"
+                    author="Sara"
+                    source="slack"
+                    ago="1d"
+                  />
                 </div>
               </section>
 
@@ -272,40 +272,25 @@ export default function LandingPreview() {
                   }
                 />
                 <div className="mb-6">
-                  <p className="mb-1 text-xs font-medium text-ink-faint">Today</p>
-                  <div className="divide-y divide-line-soft">
-                    <div className="flex items-center gap-3 py-1.5">
-                      <span className="w-10 flex-shrink-0 text-xs tabular-nums text-ink-faint">02:00</span>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium text-ink">“Much better. Typography is now approved.”</span>
-                      </div>
-                      <span className="flex flex-shrink-0 items-center gap-2.5 text-xs text-ink-faint">
-                        <span>Sarah</span>
-                        <SlackIcon size={14} />
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 py-1.5">
-                      <span className="w-10 flex-shrink-0 text-xs tabular-nums text-ink-faint">11:40</span>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium text-ink">Brandmark v3 uploaded for review</span>
-                      </div>
-                      <span className="flex flex-shrink-0 items-center gap-2.5 text-xs text-ink-faint">
-                        <span>Max</span>
-                        <FigmaIcon size={14} />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div>
                   <p className="mb-1 text-xs font-medium text-ink-faint">Yesterday</p>
                   <div className="divide-y divide-line-soft">
                     <div className="flex items-center gap-3 py-1.5">
-                      <span className="w-10 flex-shrink-0 text-xs tabular-nums text-ink-faint">16:20</span>
+                      <span className="w-10 flex-shrink-0 text-xs tabular-nums text-ink-faint">11:00</span>
                       <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium text-ink">Client: “Let’s go with the green palette”</span>
+                        <span className="text-sm font-medium text-ink">Reverted to blue, final decision pending</span>
                       </div>
                       <span className="flex flex-shrink-0 items-center gap-2.5 text-xs text-ink-faint">
-                        <span>John</span>
+                        <span>Anna</span>
+                        <FigmaIcon size={14} />
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 py-1.5">
+                      <span className="w-10 flex-shrink-0 text-xs tabular-nums text-ink-faint">09:00</span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-sm font-medium text-ink">Client asked to revert to blue icon</span>
+                      </div>
+                      <span className="flex flex-shrink-0 items-center gap-2.5 text-xs text-ink-faint">
+                        <span>Sara</span>
                         <SlackIcon size={14} />
                       </span>
                     </div>
@@ -321,13 +306,13 @@ export default function LandingPreview() {
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-semibold tabular-nums text-line-strong">01</span>
-                      <p className="text-sm font-semibold text-ink">Brandmark</p>
+                      <p className="text-sm font-semibold text-ink">App icon</p>
                       <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         Decision conflict
                       </span>
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
-                      Client prefers geometric mark. Team proposed wordmark instead.
+                      Client prefers blue. PM's research says green. Final call pending.
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
                       <span className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
@@ -345,13 +330,13 @@ export default function LandingPreview() {
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-semibold tabular-nums text-line-strong">02</span>
-                      <p className="text-sm font-semibold text-ink">Logo</p>
+                      <p className="text-sm font-semibold text-ink">Avatar upload</p>
                       <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
-                        Not confirmed
+                        Scope change
                       </span>
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
-                      Serif alternative was suggested but never confirmed.
+                      Designer added it to the profile screen; PM marked it out of scope.
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
                       <span className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
