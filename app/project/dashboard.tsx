@@ -1061,12 +1061,27 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                           {group.reason ? capitalize(emojify(group.reason)) : 'No reason given'}
                         </p>
                         <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-muted">
-                          {group.source && (
-                            <span className="flex items-center gap-1">
-                              {group.source === 'figma' ? <FigmaIcon size={14} /> : group.source === 'slack' ? <SlackIcon size={14} /> : group.source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-500" />}
-                              {group.source === 'gdocs' ? 'Google Docs' : capitalize(group.source)}
-                            </span>
-                          )}
+                          {group.source && (() => {
+                            const url = group.occurrences[0].source_url;
+                            const label = (
+                              <>
+                                {group.source === 'figma' ? <FigmaIcon size={14} /> : group.source === 'slack' ? <SlackIcon size={14} /> : group.source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-500" />}
+                                {group.source === 'gdocs' ? 'Google Docs' : capitalize(group.source)}
+                              </>
+                            );
+                            return url ? (
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 text-[var(--accent-link)] hover:underline"
+                              >
+                                {label}
+                              </a>
+                            ) : (
+                              <span className="flex items-center gap-1">{label}</span>
+                            );
+                          })()}
                           {group.author && !isRawExternalId(group.author) && (
                             <span className="flex items-center gap-1.5">
                               <span className="flex h-4 w-4 items-center justify-center rounded-full overflow-hidden">
@@ -1074,17 +1089,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                               </span>
                               {group.author}
                             </span>
-                          )}
-                          {group.occurrences[0].source_url && (
-                            <a
-                              href={group.occurrences[0].source_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-0.5 text-[var(--accent-link)] hover:underline"
-                            >
-                              View
-                              <RiArrowRightUpLine size={12} />
-                            </a>
                           )}
                         </div>
                       </div>
