@@ -33,6 +33,8 @@ function FactCard({
   changes,
   ago,
   approved,
+  actor,
+  source,
 }: {
   subject: string;
   label: string;
@@ -41,6 +43,8 @@ function FactCard({
   changes?: number;
   ago?: string;
   approved?: boolean;
+  actor?: string;
+  source?: 'figma' | 'slack';
 }) {
   return (
     <div className="flex flex-col rounded-xl border border-line bg-white px-4 py-3">
@@ -53,9 +57,22 @@ function FactCard({
         <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-muted line-clamp-2">{context}</p>
       )}
       {changes && (
-        <p className="mt-auto pt-3 text-[11px] text-ink-faint">
-          {changes} changes{ago ? ` · ${ago}` : ''}
-        </p>
+        <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
+          <span>{changes} changes{ago ? ` · ${ago}` : ''}</span>
+          {(actor || source) && (
+            <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
+              {actor && (
+                <>
+                  <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
+                    <Avatar name={actor} email={`${actor.toLowerCase()}@lunar.app`} className="text-[8px]" />
+                  </span>
+                  <span className="max-w-[80px] truncate">{actor}</span>
+                </>
+              )}
+              {source === 'figma' ? <FigmaIcon size={12} /> : source === 'slack' ? <SlackIcon size={12} /> : null}
+            </span>
+          )}
+        </div>
       )}
     </div>
   );
@@ -191,6 +208,8 @@ export default function LandingPreview() {
                     context="Flipped blue → green → blue in 3 days"
                     changes={4}
                     ago="1d ago"
+                    actor="Anna"
+                    source="figma"
                   />
                   <FactCard
                     subject="Avatar upload"
@@ -199,6 +218,8 @@ export default function LandingPreview() {
                     context="Designer added it, PM cut it from MVP"
                     changes={2}
                     ago="10d ago"
+                    actor="John"
+                    source="slack"
                   />
                   <FactCard
                     subject="Settings screen"
@@ -206,20 +227,28 @@ export default function LandingPreview() {
                     pillStyle={AMBER_PILL}
                     changes={2}
                     ago="5d ago"
+                    actor="Anna"
+                    source="figma"
                   />
                   <FactCard
                     subject="Dark mode"
                     label="Approved"
                     pillStyle={NEUTRAL_PILL}
                     context="Approved by Sara · 6d ago"
+                    changes={3}
                     approved
+                    actor="Sara"
+                    source="slack"
                   />
                   <FactCard
                     subject="Checkout flow"
                     label="Approved"
                     pillStyle={NEUTRAL_PILL}
                     context="Approved by Sara · 8d ago"
+                    changes={3}
                     approved
+                    actor="Sara"
+                    source="slack"
                   />
                   <FactCard
                     subject="Payment method"
@@ -227,6 +256,8 @@ export default function LandingPreview() {
                     pillStyle={NEUTRAL_PILL}
                     changes={2}
                     ago="8d ago"
+                    actor="Anna"
+                    source="figma"
                   />
                 </div>
               </section>
