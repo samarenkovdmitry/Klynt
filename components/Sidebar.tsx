@@ -105,6 +105,16 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
 
         <nav className="flex-1 space-y-1">
           <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Projects</p>
+          {loading && sortedProjects.length === 0 && (
+            <div className="space-y-1">
+              {[0, 1].map(i => (
+                <div key={i} className="flex items-center gap-2 rounded-lg px-3 py-2">
+                  <div className="skeleton-shimmer h-4 w-4 rounded" />
+                  <div className={`skeleton-shimmer h-3.5 rounded ${i === 0 ? 'w-24' : 'w-16'}`} />
+                </div>
+              ))}
+            </div>
+          )}
           {sortedProjects.map((p) => {
             const isSelected = selectedProjectId === p.id && activeItem === 'project';
             const count = p.unresolved_count || 0;
@@ -208,6 +218,12 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
         >
           <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Projects</p>
           <div className="mt-2 space-y-1">
+            {loading && sortedProjects.length === 0 && [0, 1].map(i => (
+              <div key={i} className="flex items-center gap-2 rounded-lg px-3 py-2">
+                <div className="skeleton-shimmer h-4 w-4 rounded" />
+                <div className={`skeleton-shimmer h-3.5 rounded ${i === 0 ? 'w-24' : 'w-16'}`} />
+              </div>
+            ))}
             {sortedProjects.map((p) => {
               const isSelected = selectedProjectId === p.id;
               const count = p.unresolved_count || 0;

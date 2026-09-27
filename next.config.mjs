@@ -2,6 +2,16 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    // Safari/iOS probes these icon paths without extensions; they
+    // 404ed and noised up the logs.
+    return [
+      { source: "/apple-icon", destination: "/apple-icon.png" },
+      { source: "/apple-touch-icon.png", destination: "/apple-icon.png" },
+      { source: "/apple-touch-icon-precomposed.png", destination: "/apple-icon.png" },
+    ];
+  },
+
   images: {
     remotePatterns: [
       {

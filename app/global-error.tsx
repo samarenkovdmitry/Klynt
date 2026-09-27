@@ -21,7 +21,12 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
       <body>
         <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
           <h2>Something went wrong.</h2>
-          <p style={{ color: '#666', fontSize: '14px' }}>{error?.message}</p>
+          {error?.message && (
+            <details style={{ marginTop: '0.75rem', color: '#666', fontSize: '13px' }}>
+              <summary style={{ cursor: 'pointer' }}>Details</summary>
+              <p style={{ marginTop: '0.5rem' }}>{error.message}</p>
+            </details>
+          )}
         </div>
       </body>
     </html>
