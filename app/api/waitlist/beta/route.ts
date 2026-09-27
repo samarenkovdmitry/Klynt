@@ -4,6 +4,7 @@ import {
   isSupabaseConfigured,
 } from '@/lib/supabase-server'
 import { supabase } from '@/lib/db/supabase'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { sendBetaAccessEmail } from '@/lib/send-waitlist-email'
 import { createDemoProject } from '@/lib/demo-project'
 import { getSiteUrl } from '@/lib/site'
@@ -55,6 +56,20 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: 'Enter a valid email address.' },
         { status: 400 }
+      )
+    }
+
+    // Abuse guard: the endpoint creates accounts and emails arbitrary
+    // addresses, so cap both per-IP signups and per-address resends.
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const [ipAllowed, emailAllowed] = await Promise.all([
+      checkRateLimit(`beta:ip:${ip}`, 5, 60 * 60 * 1000),
+      checkRateLimit(`beta:email:${email}`, 3, 60 * 60 * 1000),
+    ])
+    if (!ipAllowed || !emailAllowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again in an hour.' },
+        { status: 429 }
       )
     }
 

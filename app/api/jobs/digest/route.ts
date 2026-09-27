@@ -123,6 +123,7 @@ export async function POST(request: NextRequest) {
             .from('projects')
             .select('id, name, slug, owner_id, last_digest_at, created_at')
             .in('id', projectIds)
+            .eq('is_demo', false)
         : { data: [] };
 
       for (const project of projects || []) {
