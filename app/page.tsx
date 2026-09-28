@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import LandingPreview from '@/components/LandingPreview'
-import { FigmaIcon, LinearIcon, SlackIcon } from '@/components/icons/BrandIcons'
+import { FigmaIcon, LinearIcon, SlackIcon, TelegramIcon } from '@/components/icons/BrandIcons'
+import { t, getLocale } from '@/lib/i18n'
 import { siNotion, siGmail, siGoogledrive, siZoom } from 'simple-icons'
 
 function SiIcon({ icon, size = 16 }: { icon: { path: string; hex: string; title: string }; size?: number }) {
@@ -64,15 +65,15 @@ export default function LandingPage() {
 
       if (!res.ok) {
         setStatus('error')
-        setMessage(data.error || 'Something went wrong. Please try again.')
+        setMessage(data.error || t('landing.error'))
       } else {
         setStatus('success')
-        setMessage('Check your email — we sent you a sign-in link.')
+        setMessage(t('landing.success'))
         setEmail('')
       }
     } catch {
       setStatus('error')
-      setMessage('Something went wrong. Please try again.')
+      setMessage(t('landing.error'))
     }
   }
 
@@ -101,13 +102,13 @@ export default function LandingPage() {
             href="/login"
             className="rounded-full px-4 py-2 text-sm font-medium text-ink-secondary transition hover:bg-black/5 hover:text-[var(--accent-link)]"
           >
-            Log in
+            {t('landing.login')}
           </Link>
           <Link
             href="/register"
             className="rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] shadow-sm transition hover:bg-[var(--accent-hover)] hover:shadow"
           >
-            Sign up
+            {t('landing.signup')}
           </Link>
         </div>
       </header>
@@ -118,12 +119,11 @@ export default function LandingPage() {
           {/* Left: copy + capture */}
           <div className="relative z-10 max-w-xl pt-6">
             <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl">
-              Know what&apos;s actually true about your project.
+              {t('landing.h1')}
             </h1>
 
             <p className="mt-5 max-w-md text-lg leading-relaxed text-ink-secondary">
-              Klynt connects your tools, gathers what matters, and keeps
-              everyone aligned on the current state of your project.
+              {t('landing.sub')}
             </p>
 
             <form onSubmit={handleSubmit} className="mt-9 w-full max-w-lg">
@@ -132,7 +132,7 @@ export default function LandingPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder={t('landing.emailPlaceholder')}
                   required
                   className="h-16 w-full rounded-full border border-line bg-field pl-7 pr-48 text-lg text-ink outline-none transition placeholder:text-ink-faint focus:border-[var(--accent-link)] focus:bg-white focus:shadow-[inset_0_0_0_1px_var(--accent-link)]"
                 />
@@ -141,7 +141,7 @@ export default function LandingPage() {
                   disabled={status === 'loading'}
                   className="absolute bottom-2 right-2 top-2 inline-flex items-center justify-center rounded-full bg-[var(--accent)] px-6 text-base font-medium text-[var(--accent-fg)] transition duration-200 hover:bg-[var(--accent-hover)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {status === 'loading' ? 'Joining...' : 'Get early access'}
+                  {status === 'loading' ? t('landing.submitting') : t('landing.submit')}
                 </button>
               </div>
             </form>
@@ -154,23 +154,29 @@ export default function LandingPage() {
             )}
 
             <p className="mt-5 text-sm text-ink-muted">
-              Closed beta. Already in?{' '}
+              {t('landing.closedBeta')} {t('landing.alreadyIn')}{' '}
               <Link href="/login" className="font-medium text-[var(--accent-link)] hover:underline">
-                Log in
+                {t('landing.login')}
               </Link>
             </p>
 
             <div className="mt-12 flex items-center gap-4">
-              <FigmaIcon size={17} />
-              <LinearIcon size={17} />
-              <SlackIcon size={17} />
+              {getLocale() === 'ru' ? (
+                <TelegramIcon size={17} />
+              ) : (
+                <>
+                  <FigmaIcon size={17} />
+                  <LinearIcon size={17} />
+                  <SlackIcon size={17} />
+                </>
+              )}
               <span className="flex items-center gap-4 opacity-30 grayscale">
                 <SiIcon icon={siNotion} />
                 <SiIcon icon={siGmail} />
                 <SiIcon icon={siGoogledrive} />
                 <SiIcon icon={siZoom} />
               </span>
-              <span className="text-xs text-ink-faint">coming soon</span>
+              <span className="text-xs text-ink-faint">{t('landing.comingSoon')}</span>
             </div>
           </div>
 
@@ -218,8 +224,8 @@ export default function LandingPage() {
           <p>© 2026 Klynt</p>
           <div className="flex items-center gap-4">
             <a href="mailto:hello@klynt.one" className="hover:text-[var(--accent-link)]">hello@klynt.one</a>
-            <Link href="/terms" className="hover:text-[var(--accent-link)]">Terms</Link>
-            <Link href="/privacy" className="hover:text-[var(--accent-link)]">Privacy</Link>
+            <Link href="/terms" className="hover:text-[var(--accent-link)]">{t('landing.terms')}</Link>
+            <Link href="/privacy" className="hover:text-[var(--accent-link)]">{t('landing.privacy')}</Link>
           </div>
         </div>
       </footer>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
 import { RiArrowDownSLine } from '@remixicon/react';
+import { t } from '@/lib/i18n';
 
 interface Project {
   id: string;
@@ -113,7 +114,7 @@ export default function SettingsPage() {
         setInviteEmail('');
         setInviteSent(true);
       } else {
-        setInviteError(data.error || 'Failed to send invite');
+        setInviteError(data.error || t('settings.inviteFailed'));
       }
     } finally {
       setSaving(false);
@@ -123,7 +124,7 @@ export default function SettingsPage() {
   const handleRemoveTeammate = async (email: string) => {
     if (!selectedProjectId) return;
     await fetch(`/api/projects/${selectedProjectId}/invite?email=${encodeURIComponent(email)}`, { method: 'DELETE' });
-    setTeam(prev => prev.filter(t => t.email !== email));
+    setTeam(prev => prev.filter(tm => tm.email !== email));
     setInvites(prev => prev.filter(i => i.email !== email));
   };
 
@@ -189,7 +190,7 @@ export default function SettingsPage() {
   const handleDeleteProject = async () => {
     if (!selectedProjectId) return;
     const project = projects.find(p => p.id === selectedProjectId);
-    if (!confirm(`Delete project "${project?.name || ''}"? This cannot be undone.`)) return;
+    if (!confirm(t('settings.deleteConfirm', { name: project?.name || '' }))) return;
     setDeleting(true);
     try {
       const res = await fetch(`/api/projects/${selectedProjectId}`, { method: 'DELETE' });
@@ -215,12 +216,12 @@ export default function SettingsPage() {
       />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-3 py-6 sm:px-8 sm:py-8">
-        <h1 className="text-2xl font-semibold text-ink">Settings</h1>
-        <p className="mt-1 text-sm text-ink-muted">Manage your project and team.</p>
+        <h1 className="text-2xl font-semibold text-ink">{t('settings.title')}</h1>
+        <p className="mt-1 text-sm text-ink-muted">{t('settings.subtitle')}</p>
 
         <section className="mt-8">
           <div className="mb-4">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">Project</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('settings.project')}</h2>
           </div>
           {projects.length > 0 ? (
             <div className="rounded-2xl border border-line bg-white p-4 space-y-4">
@@ -244,7 +245,7 @@ export default function SettingsPage() {
                     onClick={() => setEditing(true)}
                     className="rounded-xl bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Edit
+                    {t('settings.edit')}
                   </button>
                 )}
               </div>
@@ -263,7 +264,7 @@ export default function SettingsPage() {
                     value={editProject.description}
                     onChange={(e) => setEditProject({ ...editProject, description: e.target.value })}
                     className="w-full rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
-                    placeholder="Description"
+                    placeholder={t('settings.description')}
                   />
                   <div className="flex gap-2">
                     <button
@@ -271,7 +272,7 @@ export default function SettingsPage() {
                       disabled={savingProject}
                       className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {savingProject ? 'Saving...' : 'Save'}
+                      {savingProject ? t('settings.saving') : t('settings.save')}
                     </button>
                     <button
                       type="button"
@@ -282,20 +283,20 @@ export default function SettingsPage() {
                       }}
                       className="rounded-xl bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Cancel
+                      {t('settings.cancel')}
                     </button>
                   </div>
                 </form>
               ) : (
-                <p className="text-sm text-ink-muted">{editProject.description || 'No description'}</p>
+                <p className="text-sm text-ink-muted">{editProject.description || t('settings.noDescription')}</p>
               )}
 
               <div className="border-t border-line-soft pt-4">
-                <p className="mb-3 text-sm font-medium text-ink">Create new project</p>
+                <p className="mb-3 text-sm font-medium text-ink">{t('settings.createProject')}</p>
                 <form onSubmit={handleCreateProject} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
                   <input
                     type="text"
-                    placeholder="Project name"
+                    placeholder={t('settings.projectName')}
                     value={newProject.name}
                     onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
                     className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
@@ -303,7 +304,7 @@ export default function SettingsPage() {
                   />
                   <input
                     type="text"
-                    placeholder="Description (optional)"
+                    placeholder={t('settings.descriptionOptional')}
                     value={newProject.description}
                     onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                     className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
@@ -313,40 +314,40 @@ export default function SettingsPage() {
                     disabled={creating}
                     className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {creating ? 'Creating...' : 'Create'}
+                    {creating ? t('settings.creating') : t('settings.create')}
                   </button>
                 </form>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-ink-muted">No projects.</p>
+            <p className="text-sm text-ink-muted">{t('settings.noProjects')}</p>
           )}
         </section>
 
         <section className="mt-10">
           <div className="mb-4">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">Team</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('settings.team')}</h2>
           </div>
           {loading ? (
-            <p className="text-sm text-ink-muted">Loading...</p>
+            <p className="text-sm text-ink-muted">{t('settings.loading')}</p>
           ) : (
             <div className="rounded-2xl border border-line bg-white p-4 space-y-4">
               <div className="space-y-2">
-                {team.map((t) => (
-                  <div key={t.email} className="flex items-center gap-3 py-2">
+                {team.map((tm) => (
+                  <div key={tm.email} className="flex items-center gap-3 py-2">
                     <div className="flex h-11 w-11 items-center justify-center rounded-full">
-                      <Avatar name={null} email={t.email} />
+                      <Avatar name={null} email={tm.email} />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-ink">{t.email}</p>
-                      <p className="text-xs text-ink-muted capitalize">{t.role}</p>
+                      <p className="font-medium text-ink">{tm.email}</p>
+                      <p className="text-xs text-ink-muted">{t(`settings.role.${tm.role}`)}</p>
                     </div>
-                    {t.role !== 'owner' && (
+                    {tm.role !== 'owner' && (
                       <button
-                        onClick={() => handleRemoveTeammate(t.email)}
+                        onClick={() => handleRemoveTeammate(tm.email)}
                         className="text-xs font-medium text-ink-muted transition hover:text-red-600"
                       >
-                        Remove
+                        {t('settings.remove')}
                       </button>
                     )}
                   </div>
@@ -358,20 +359,20 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-ink">{i.email}</p>
-                      <p className="text-xs text-ink-muted">Invite sent</p>
+                      <p className="text-xs text-ink-muted">{t('settings.inviteSent')}</p>
                     </div>
                     <button
                       onClick={() => handleRemoveTeammate(i.email)}
                       className="text-xs font-medium text-ink-muted transition hover:text-red-600"
                     >
-                      Revoke
+                      {t('settings.revoke')}
                     </button>
                   </div>
                 ))}
               </div>
 
               <form onSubmit={handleInvite} className="border-t border-line-soft pt-4">
-                <p className="mb-3 text-sm font-medium text-ink">Invite by email</p>
+                <p className="mb-3 text-sm font-medium text-ink">{t('settings.inviteByEmail')}</p>
                 <div className="flex gap-3">
                   <input
                     type="email"
@@ -386,11 +387,11 @@ export default function SettingsPage() {
                     disabled={saving}
                     className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {saving ? 'Sending...' : 'Invite'}
+                    {saving ? t('settings.sending') : t('settings.invite')}
                   </button>
                 </div>
                 {inviteError && <p className="mt-2 text-xs text-red-600">{inviteError}</p>}
-                {inviteSent && <p className="mt-2 text-xs text-emerald-700">Invite sent — they'll get a link by email.</p>}
+                {inviteSent && <p className="mt-2 text-xs text-emerald-700">{t('settings.inviteSentMsg')}</p>}
               </form>
             </div>
           )}
@@ -398,14 +399,14 @@ export default function SettingsPage() {
 
         <section className="mt-10">
           <div className="mb-4">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">People directory</h2>
-            <p className="mt-1 text-sm text-ink-muted">Names from Slack, Figma and Linear — used to attribute events. They don't get access to the project.</p>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('settings.peopleDirectory')}</h2>
+            <p className="mt-1 text-sm text-ink-muted">{t('settings.peopleHint')}</p>
           </div>
           {loading ? null : (
             <div className="rounded-2xl border border-line bg-white p-4 space-y-4">
               <div className="space-y-2">
                 {members.length === 0 ? (
-                  <p className="text-sm text-ink-muted">No people yet — they'll appear from connected sources.</p>
+                  <p className="text-sm text-ink-muted">{t('settings.noPeople')}</p>
                 ) : (
                   members.map((m) => (
                     <div
@@ -416,8 +417,8 @@ export default function SettingsPage() {
                         <Avatar name={m.name} email={m.email} />
                       </div>
                       <div>
-                        <p className="font-medium text-ink">{m.name || 'Unknown'}</p>
-                        <p className="text-xs text-ink-muted">{m.email || m.external_source} · {m.role}</p>
+                        <p className="font-medium text-ink">{m.name || t('settings.unknown')}</p>
+                        <p className="text-xs text-ink-muted">{m.email || m.external_source} · {t(`settings.role.${m.role}`)}</p>
                       </div>
                     </div>
                   ))
@@ -425,11 +426,11 @@ export default function SettingsPage() {
               </div>
 
               <form onSubmit={handleAddPerson} className="border-t border-line-soft pt-4">
-                <p className="mb-3 text-sm font-medium text-ink">Add person</p>
+                <p className="mb-3 text-sm font-medium text-ink">{t('settings.addPerson')}</p>
                 <div className="grid gap-3 sm:grid-cols-4">
                   <input
                     type="text"
-                    placeholder="Name"
+                    placeholder={t('settings.name')}
                     value={person.name}
                     onChange={(e) => setPerson({ ...person, name: e.target.value })}
                     className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
@@ -437,7 +438,7 @@ export default function SettingsPage() {
                   />
                   <input
                     type="email"
-                    placeholder="Email"
+                    placeholder={t('auth.email')}
                     value={person.email}
                     onChange={(e) => setPerson({ ...person, email: e.target.value })}
                     className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
@@ -449,9 +450,9 @@ export default function SettingsPage() {
                       onChange={(e) => setPerson({ ...person, role: e.target.value })}
                       className="w-full appearance-none rounded-xl border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     >
-                      <option value="viewer">Viewer</option>
-                      <option value="editor">Editor</option>
-                      <option value="admin">Admin</option>
+                      <option value="viewer">{t('settings.role.viewer')}</option>
+                      <option value="editor">{t('settings.role.editor')}</option>
+                      <option value="admin">{t('settings.role.admin')}</option>
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-ink-muted">
                       <RiArrowDownSLine size={16} />
@@ -461,7 +462,7 @@ export default function SettingsPage() {
                     type="submit"
                     className="rounded-xl bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Add
+                    {t('settings.add')}
                   </button>
                 </div>
               </form>
@@ -475,9 +476,9 @@ export default function SettingsPage() {
             disabled={deleting}
             className="text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
           >
-            {deleting ? 'Deleting...' : 'Delete project'}
+            {deleting ? t('settings.deleting') : t('settings.deleteProject')}
           </button>
-          <p className="mt-1 text-sm text-ink-muted">This cannot be undone.</p>
+          <p className="mt-1 text-sm text-ink-muted">{t('settings.deleteWarning')}</p>
         </section>
       </main>
     </div>

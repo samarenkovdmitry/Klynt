@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { FloatingInput } from '@/components/ui/FloatingInput'
+import { t } from '@/lib/i18n'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -49,7 +50,7 @@ export default function LoginPage() {
       </div>
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold text-ink">Log in</h1>
+          <h1 className="text-2xl font-semibold text-ink">{t('landing.login')}</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -58,7 +59,7 @@ export default function LoginPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            label="Email"
+            label={t('auth.email')}
             required
             autoComplete="email"
           />
@@ -68,7 +69,7 @@ export default function LoginPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            label="Password"
+            label={t('auth.password')}
             required
             autoComplete="current-password"
             size="lg"
@@ -81,14 +82,14 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full rounded-full bg-[var(--accent)] px-6 py-4 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? 'Logging in...' : 'Log in'}
+            {loading ? t('auth.loggingIn') : t('landing.login')}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-ink-secondary">
-          Don&apos;t have an account?{' '}
+          {t('auth.noAccount')}{' '}
           <Link href="/register" className="font-medium text-[var(--accent-link)] transition hover:underline">
-            Sign up
+            {t('landing.signup')}
           </Link>
         </p>
       </div>

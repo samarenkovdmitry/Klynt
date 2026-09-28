@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { FloatingInput } from '@/components/ui/FloatingInput'
+import { t } from '@/lib/i18n'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -19,7 +20,7 @@ export default function RegisterPage() {
     setError(null)
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
+      setError(t('auth.passwordsMismatch'))
       return
     }
 
@@ -61,7 +62,7 @@ export default function RegisterPage() {
       </div>
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold text-ink">Sign up</h1>
+          <h1 className="text-2xl font-semibold text-ink">{t('landing.signup')}</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -70,7 +71,7 @@ export default function RegisterPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            label="Email"
+            label={t('auth.email')}
             required
             autoComplete="email"
           />
@@ -80,7 +81,7 @@ export default function RegisterPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            label="Password"
+            label={t('auth.password')}
             required
             autoComplete="new-password"
             size="lg"
@@ -91,7 +92,7 @@ export default function RegisterPage() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            label="Confirm password"
+            label={t('auth.confirmPassword')}
             required
             autoComplete="new-password"
             size="lg"
@@ -104,14 +105,14 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full rounded-full bg-[var(--accent)] px-6 py-4 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Sign up'}
+            {loading ? t('auth.creating') : t('landing.signup')}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-ink-secondary">
-          Already have an account?{' '}
+          {t('auth.hasAccount')}{' '}
           <Link href="/login" className="font-medium text-[var(--accent-link)] transition hover:underline">
-            Log in
+            {t('landing.login')}
           </Link>
         </p>
       </div>
