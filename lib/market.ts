@@ -34,9 +34,10 @@ export function getEnabledConnectors(): string[] {
   if (raw) {
     return raw.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
   }
+  // gdocs/notion stay in the global list — they render as "Coming soon"
   return getMarket() === 'ru'
     ? ['telegram']
-    : ['figma', 'slack', 'linear'];
+    : ['figma', 'slack', 'linear', 'gdocs', 'notion'];
 }
 
 export function isConnectorEnabled(source: string): boolean {
