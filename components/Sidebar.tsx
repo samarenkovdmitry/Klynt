@@ -15,6 +15,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import NewProjectModal from '@/components/NewProjectModal';
 import Avatar from '@/components/Avatar';
+import { t } from '@/lib/i18n';
 
 interface Project {
   id: string;
@@ -104,7 +105,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
         </div>
 
         <nav className="flex-1 space-y-1">
-          <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Projects</p>
+          <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">{t('sidebar.projects')}</p>
           {loading && sortedProjects.length === 0 && (
             <div className="space-y-1">
               {[0, 1].map(i => (
@@ -136,7 +137,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
                 {!isSelected && count > 0 && (
                   <span
                     className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500"
-                    title={`${count} ${count === 1 ? 'item needs' : 'items need'} attention`}
+                    title={`${count} ${count === 1 ? t('sidebar.itemNeedsAttention') : t('sidebar.itemsNeedAttention')}`}
                   />
                 )}
               </button>
@@ -148,13 +149,13 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
             className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-2 text-xs font-medium text-ink-muted transition-colors hover:border-line-strong hover:text-ink-secondary"
           >
             <RiAddLine size={14} />
-            New project
+            {t('sidebar.newProject')}
           </button>
 
           <div className="my-4 h-px bg-fill" />
 
-          {navItem(pageHref('/integrations'), 'Integrations', activeItem === 'integrations', <RiPlugLine size={16} />)}
-          {navItem(pageHref('/settings'), 'Settings', activeItem === 'settings', <RiSettings3Line size={16} />)}
+          {navItem(pageHref('/integrations'), t('sidebar.integrations'), activeItem === 'integrations', <RiPlugLine size={16} />)}
+          {navItem(pageHref('/settings'), t('sidebar.settings'), activeItem === 'settings', <RiSettings3Line size={16} />)}
         </nav>
 
         {userEmail && (
@@ -168,7 +169,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
             <button
               onClick={handleLogout}
               className="flex-shrink-0 text-ink-faint transition-colors hover:text-ink-secondary"
-              title="Log out"
+              title={t('sidebar.logout')}
             >
               <RiLogoutBoxRLine size={16} />
             </button>
@@ -194,7 +195,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
             <span className="truncate text-[15px] font-semibold text-ink">
               {activeItem === 'project'
                 ? (selectedProject?.name || 'Klynt')
-                : activeItem === 'integrations' ? 'Integrations' : 'Settings'}
+                : activeItem === 'integrations' ? t('sidebar.integrations') : t('sidebar.settings')}
             </span>
             <RiArrowDownSLine
               size={18}
@@ -216,7 +217,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
               : '-translate-y-2 opacity-0 pointer-events-none'
           }`}
         >
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Projects</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">{t('sidebar.projects')}</p>
           <div className="mt-2 space-y-1">
             {loading && sortedProjects.length === 0 && [0, 1].map(i => (
               <div key={i} className="flex items-center gap-2 rounded-lg px-3 py-2">
@@ -251,18 +252,18 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
               className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-2 text-xs font-medium text-ink-muted"
             >
               <RiAddLine size={14} />
-              New project
+              {t('sidebar.newProject')}
             </button>
           </div>
           <div className="my-3 h-px bg-fill" />
           <div className="space-y-1">
             <Link href={pageHref('/integrations')} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary" onClick={() => setMobileMenuOpen(false)}>
               <RiPlugLine size={16} className="text-ink-faint" />
-              Integrations
+              {t('sidebar.integrations')}
             </Link>
             <Link href={pageHref('/settings')} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary" onClick={() => setMobileMenuOpen(false)}>
               <RiSettings3Line size={16} className="text-ink-faint" />
-              Settings
+              {t('sidebar.settings')}
             </Link>
           </div>
           {userEmail && (
@@ -274,7 +275,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
               <button
                 onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
                 className="flex-shrink-0 text-ink-faint transition-colors hover:text-ink-secondary"
-                title="Log out"
+                title={t('sidebar.logout')}
               >
                 <RiLogoutBoxRLine size={16} />
               </button>

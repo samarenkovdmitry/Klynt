@@ -81,6 +81,9 @@ export async function DELETE(request: NextRequest) {
             headers: { Authorization: `Bearer ${token}` },
           });
         }
+      } else if (source === 'telegram' && token) {
+        const { telegramApi } = await import('@/lib/telegram/client');
+        await telegramApi(token, 'deleteWebhook', { drop_pending_updates: true });
       }
     } catch (e) {
       console.error(`Provider cleanup failed for ${source}:`, e);

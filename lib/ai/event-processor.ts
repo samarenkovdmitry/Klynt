@@ -1,5 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { CandidateEventType, Importance } from '@/lib/types/events';
+import { getLLM, extractJson } from '@/lib/ai/llm';
+import { interpretSystemPrompt, eventUserLabels } from '@/lib/ai/prompts';
+import { getLocale } from '@/lib/market';
 
 // Minimal shape the processor needs — callers pass DB rows whose
 // enums/timestamps are looser than the domain types in lib/types/events.
@@ -19,10 +21,6 @@ export interface ConflictEventInput {
   subject: string;
   confidence: number;
 }
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 export interface AIInterpretation {
   event_type: CandidateEventType;
@@ -44,88 +42,19 @@ export async function interpretEvent(
     threadContext?: EventInput[];
   }
 ): Promise<AIInterpretation> {
-  const systemPrompt = `You are an AI assistant that interprets project communication events from tools like Figma and Slack. Your goal is to extract meaningful project information from raw events.
-
-Analyze the event and determine:
-1. event_type: One of: decision, request, discussion, approval, change, question, commitment, blocker, scope_change, idea
-2. subject: The entity being discussed (e.g., "pricing section", "homepage hero", "mobile navigation")
-3. action: The machine state this event represents. One of: add, remove, modify, approve, reject, in_progress, undecided. Keep it short and stable.
-4. display_state: A short, human-readable status that answers "what is happening with this right now?" (2-5 words). Examples: "Approved", "Needs mobile review", "Decision pending", "Waiting for legal review", "New", "Removed"
-5. confidence: How confident you are in this interpretation (0.00 to 1.00)
-6. importance: How impactful this event is: "low", "medium", or "high"
-7. reason: A short title for this event (max 12 words) that restates what the message says or proposes. It is shown as the one-line title in the UI.
-8. related_entities: Array of related project entities (e.g., ["homepage", "mobile", "pricing"])
-9. potential_impacts: What parts of the project this might affect
-
-Guidelines for display_state:
-- It should describe the current situation, not the action to take.
-- Use specific, plain language.
-- If approved, say "Approved".
-- If a decision is not yet made, say "Decision pending".
-- If something is blocked by a specific review, say "Waiting for ... review".
-- If something is being modified or needs work, say "Needs ... review".
-
-Guidelines:
-- "decision": Clear resolution or agreement on something
-- "request": Someone asking for something to be done
-- "discussion": General conversation without clear resolution
-- "approval": Explicit confirmation or sign-off
-- "change": Something is being modified
-- "question": Something that needs an answer
-- "commitment": Promise to do something by a certain time
-- "blocker": Something preventing progress
-- "scope_change": Addition/removal that affects project scope
-- "idea": Suggestion not yet decided
-
-Guidelines for reason:
-- Write a declarative title, never copy the message verbatim. Rephrase into a statement:
-  "Do we need dark mode for a marketing site?" → "Dark mode questioned for marketing site"
-  "Can someone review the hero?" → "Hero review requested"
-  "walk faster" → "Request to speed up the pace"
-  "you design soo good" → "Compliment on design work"
-- The title should read as what happened, not what was said — the UI shows the original message separately.
-- Describe the content, never your uncertainty. Do NOT write meta-commentary such as "ambiguous message", "lacks context", "low confidence", "interpretation is uncertain", or "could refer to".
-- Keep it under 12 words so it reads as a title, not a paragraph.
-
-Consider the context of who is speaking (if available):
-- Client messages carry more weight for decisions/approvals
-- Designer messages are typically about design changes
-- Developer messages are about implementation
-
-For Figma version updates, use the file name from metadata as the subject and treat the action as 'modify' unless it is the very first version of a new file.
-
-Return ONLY valid JSON with no additional text.`;
-
-  const userPrompt = buildPrompt(rawEvent, context);
+  const locale = getLocale();
+  const systemPrompt = interpretSystemPrompt(locale);
+  const userPrompt = buildPrompt(rawEvent, context, locale);
 
   try {
-    const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001', // Using Haiku for cost efficiency
-      max_tokens: 1024,
-      system: [
-        { type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } },
-      ],
-      messages: [
-        { role: 'user', content: userPrompt },
-      ],
-      temperature: 0.3, // Lower temperature for more consistent results
+    const text = await getLLM().complete({
+      system: systemPrompt,
+      user: userPrompt,
+      maxTokens: 1024,
+      temperature: 0.3,
     });
 
-    const content = response.content[0];
-    if (content.type !== 'text') {
-      throw new Error('Unexpected response type from Claude');
-    }
-
-    // Clean up response - Claude may wrap JSON in markdown code blocks
-    let text = content.text.trim();
-    if (text.startsWith('```json')) {
-      text = text.replace(/^```json\n?/, '').replace(/\n?```$/, '');
-    } else if (text.startsWith('```')) {
-      text = text.replace(/^```\n?/, '').replace(/\n?```$/, '');
-    }
-    text = text.trim();
-
-    const interpretation = JSON.parse(text) as AIInterpretation;
+    const interpretation = JSON.parse(extractJson(text)) as AIInterpretation;
 
     // Validate and normalize the interpretation
     return {
@@ -154,53 +83,55 @@ Return ONLY valid JSON with no additional text.`;
   }
 }
 
-function buildPrompt(rawEvent: EventInput, context?: any): string {
+function buildPrompt(rawEvent: EventInput, context?: any, locale: 'en' | 'ru' = 'en'): string {
+  const L = eventUserLabels(locale);
+
   // Convert timestamp string to Date if needed
   const timestamp = typeof rawEvent.timestamp === 'string'
     ? new Date(rawEvent.timestamp)
     : rawEvent.timestamp;
 
-  let prompt = `Analyze this project event:\n\n`;
-  prompt += `Source: ${rawEvent.source}\n`;
-  prompt += `Type: ${rawEvent.event_type}\n`;
-  prompt += `Timestamp: ${timestamp.toISOString()}\n`;
+  let prompt = `${L.analyze}\n\n`;
+  prompt += `${L.source}: ${rawEvent.source}\n`;
+  prompt += `${L.type}: ${rawEvent.event_type}\n`;
+  prompt += `${L.timestamp}: ${timestamp.toISOString()}\n`;
 
   if (rawEvent.content) {
-    prompt += `Content: "${rawEvent.content}"\n`;
+    prompt += `${L.content}: "${rawEvent.content}"\n`;
   }
 
   if (rawEvent.author_id) {
-    prompt += `Author: ${rawEvent.author_id}\n`;
+    prompt += `${L.author}: ${rawEvent.author_id}\n`;
   }
 
   // Include Figma/Slack metadata to improve subject/state extraction
   if (rawEvent.metadata?.file_name) {
-    prompt += `File name: ${rawEvent.metadata.file_name}\n`;
+    prompt += `${L.fileName}: ${rawEvent.metadata.file_name}\n`;
   }
   if (rawEvent.metadata?.description) {
-    prompt += `Details: ${rawEvent.metadata.description}\n`;
+    prompt += `${L.details}: ${rawEvent.metadata.description}\n`;
   }
   if (rawEvent.metadata?.channel) {
-    prompt += `Channel: ${rawEvent.metadata.channel}\n`;
+    prompt += `${L.channel}: ${rawEvent.metadata.channel}\n`;
   }
 
   // Add context if available
   if (context?.previousEvents && context.previousEvents.length > 0) {
-    prompt += `\nRecent events in this project:\n`;
+    prompt += `\n${L.recentEvents}\n`;
     context.previousEvents.slice(-5).forEach((event: EventInput, i: number) => {
-      prompt += `${i + 1}. ${event.source} - ${event.content || '(no content)'}\n`;
+      prompt += `${i + 1}. ${event.source} - ${event.content || L.noContent}\n`;
     });
   }
 
   if (context?.threadContext && context.threadContext.length > 0) {
-    prompt += `\nThread context:\n`;
+    prompt += `\n${L.threadContext}\n`;
     context.threadContext.forEach((event: EventInput, i: number) => {
-      prompt += `${i + 1}. ${event.content || '(no content)'}\n`;
+      prompt += `${i + 1}. ${event.content || L.noContent}\n`;
     });
   }
 
   if (context?.projectFacts && context.projectFacts.length > 0) {
-    prompt += `\nCurrent project facts:\n`;
+    prompt += `\n${L.currentFacts}\n`;
     context.projectFacts.slice(0, 10).forEach((fact: any) => {
       prompt += `- ${fact.subject}: ${fact.current_state}\n`;
     });
@@ -214,6 +145,7 @@ export async function detectConflicts(
   existingFact: any
 ): Promise<any[]> {
   const conflicts: any[] = [];
+  const ru = getLocale() === 'ru';
 
   if (!existingFact) return conflicts;
 
@@ -250,7 +182,9 @@ export async function detectConflicts(
       conflict_type: 'contradiction',
       previous_fact_id: existingFact.id,
       new_event_id: newEvent.id,
-      description: `Previously "${existingFact.current_state}" but now "${newAction}". This contradicts an earlier decision.`,
+      description: ru
+        ? `Раньше было «${existingFact.current_state}», теперь «${newAction}» — противоречит более раннему решению.`
+        : `Previously "${existingFact.current_state}" but now "${newAction}". This contradicts an earlier decision.`,
     });
     return conflicts;
   }
@@ -262,7 +196,9 @@ export async function detectConflicts(
       conflict_type: 'state_change',
       previous_fact_id: existingFact.id,
       new_event_id: newEvent.id,
-      description: `New event suggests "${newAction}" but current state is "${existingFact.current_state}"`,
+      description: ru
+        ? `Новое событие предлагает «${newAction}», а текущее состояние — «${existingFact.current_state}»`
+        : `New event suggests "${newAction}" but current state is "${existingFact.current_state}"`,
     });
   }
 

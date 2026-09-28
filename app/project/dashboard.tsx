@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
 import NewProjectModal from '@/components/NewProjectModal';
-import { FigmaIcon, SlackIcon, LinearIcon } from '@/components/icons/BrandIcons';
+import { FigmaIcon, SlackIcon, LinearIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import { emojify } from 'node-emoji';
+import { t, getLocale, tp } from '@/lib/i18n';
 import {
   RiArrowRightSLine,
   RiArrowRightUpLine,
@@ -79,12 +80,10 @@ const FACT_META: Record<string, { bg: string; text: string; subject: string; bod
 
 const DEFAULT_FACT_META = { bg: 'bg-fill', text: 'text-ink-secondary', subject: 'text-ink/70', body: 'text-ink/60', muted: 'text-ink/45', border: 'border-ink/10' };
 
-const STATE_LABELS: Record<string, string> = {
-  approved: 'Approved',
-  added: 'New',
-  modify: 'Needs review',
-  modified: 'Needs review',
-  removed: 'Decision pending',
+// t() echoes the key back on a miss, so check before using as a label
+const getStateLabel = (key: string): string => {
+  const label = t(`state.${key}`);
+  return label === `state.${key}` ? '' : label;
 };
 
 // Approved намеренно нейтральный: одобренное уже не требует внимания,
@@ -119,12 +118,9 @@ const isDuplicateText = (a?: string, b?: string) => {
   return na === nb || na.includes(nb) || nb.includes(na);
 };
 
-const CONFLICT_TYPE_LABELS: Record<string, string> = {
-  state_change: 'No final decision',
-  contradiction: 'Decision conflict',
-  scope_change: 'Scope change',
-  scope_question: 'Scope question',
-  missing_confirmation: 'Not confirmed',
+const conflictTypeLabel = (key: string): string => {
+  const label = t(`conflict.${key}`);
+  return label === `conflict.${key}` ? '' : label;
 };
 
 function SectionHeader({ title, meta, right, caps = true }: { title: string; meta?: ReactNode; right?: ReactNode; caps?: boolean }) {
@@ -410,22 +406,22 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         <Sidebar projects={[]} selectedProjectId={null} activeItem="project" />
         <main className="flex flex-1 items-center justify-center px-4 py-16">
           <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">Create your first project</h2>
+            <h2 className="text-xl font-semibold text-ink">{t('dashboard.createFirst')}</h2>
             <p className="mt-2 text-sm text-ink-muted">
-              Klynt will collect decisions and changes from Figma, Slack and docs, and keep the project state up to date.
+              {t('dashboard.emptyProjectText')}
             </p>
             <button
               onClick={() => setCreateOpen(true)}
               className="mt-6 rounded-full bg-[var(--accent)] px-6 py-3.5 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
             >
-              New project
+              {t('sidebar.newProject')}
             </button>
             <button
               onClick={handleCreateDemo}
               disabled={creatingDemo}
               className="mt-3 block w-full text-sm font-medium text-[var(--accent-link)] transition hover:underline disabled:opacity-50"
             >
-              {creatingDemo ? 'Preparing sample project...' : 'See a live example first'}
+              {creatingDemo ? t('dashboard.preparingSample') : t('dashboard.seeExample')}
             </button>
           </div>
         </main>
@@ -436,14 +432,14 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   if (!state) return null;
 
   const formatTime = (date: string) => {
-    return new Date(date).toLocaleTimeString('en-US', {
+    return new Date(date).toLocaleTimeString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
   };
 
   const formatDateFull = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -453,16 +449,16 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const formatRelative = (date: string) => {
     const diff = Date.now() - new Date(date).getTime();
     const m = Math.floor(diff / 60000);
-    if (m < 1) return 'just now';
-    if (m < 60) return `${m} min ago`;
+    if (m < 1) return t('dashboard.justNow');
+    if (m < 60) return t('dashboard.minAgo', { m });
     const h = Math.floor(m / 60);
-    if (h < 24) return `${h}h ago`;
+    if (h < 24) return t('dashboard.hAgo', { h });
     const d = Math.floor(h / 24);
-    return `${d}d ago`;
+    return t('dashboard.dAgo', { d });
   };
 
   const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleString('en-US', {
+    return new Date(date).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -532,7 +528,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     : [];
   const selectedMeta = selectedFact ? (FACT_META[selectedFact.current_state?.toLowerCase()] || DEFAULT_FACT_META) : null;
   const selectedStateLabel = selectedFact
-    ? (selectedFact.current_value?.display_state || STATE_LABELS[selectedFact.current_state?.toLowerCase()] || capitalize(selectedFact.current_state))
+    ? (selectedFact.current_value?.display_state || getStateLabel(selectedFact.current_state?.toLowerCase()) || capitalize(selectedFact.current_state))
     : null;
   let decisionCounter = 0;
 
@@ -594,7 +590,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     key={s}
                     className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary"
                   >
-                    {s === 'figma' ? <FigmaIcon size={11} /> : s === 'slack' ? <SlackIcon size={11} /> : s === 'linear' ? <LinearIcon size={11} /> : <RiFileTextLine size={11} className="text-green-600" />}
+                    {s === 'figma' ? <FigmaIcon size={11} /> : s === 'slack' ? <SlackIcon size={11} /> : s === 'linear' ? <LinearIcon size={11} /> : s === 'telegram' ? <TelegramIcon size={11} /> : <RiFileTextLine size={11} className="text-green-600" />}
                     {s === 'gdocs' ? 'Google Docs' : capitalize(s)}
                   </span>
                 ))}
@@ -607,23 +603,23 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           {state.currentState.length > 0 && (
             <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
               <p className="text-[13px] text-ink-muted">
-                {state.currentState.length} areas
-                {stateCounts.approved > 0 && ` · ${stateCounts.approved} approved`}
-                {stateCounts.review > 0 && ` · ${stateCounts.review} need review`}
-                {stateCounts.added > 0 && ` · ${stateCounts.added} new`}
-                {stateCounts.pending > 0 && ` · ${stateCounts.pending} pending`}
+                {state.currentState.length} {tp(state.currentState.length, 'plural.area')}
+                {stateCounts.approved > 0 && ` · ${stateCounts.approved} ${t('dashboard.approved')}`}
+                {stateCounts.review > 0 && ` · ${stateCounts.review} ${t('dashboard.needReview')}`}
+                {stateCounts.added > 0 && ` · ${stateCounts.added} ${t('dashboard.new')}`}
+                {stateCounts.pending > 0 && ` · ${stateCounts.pending} ${t('dashboard.pending')}`}
                 {changesSinceVisit > 0 && (
                   <span className="font-medium text-[var(--accent-link)]">
-                    {' '}· {changesSinceVisit} since your last visit
+                    {' '}· {changesSinceVisit} {t('dashboard.sinceLastVisit')}
                   </span>
                 )}
               </p>
               {lastUpdated && (
                 <p
                   className="text-xs text-ink-faint"
-                  title={new Date(lastUpdated).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 >
-                  Updated {formatRelative(lastUpdated)}
+                  {t('dashboard.updated')} {formatRelative(lastUpdated)}
                 </p>
               )}
             </div>
@@ -635,10 +631,10 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         <div className={`grid grid-cols-1 gap-10 transition-opacity lg:grid-cols-12 ${loading ? 'opacity-50' : ''}`}>
           {/* Latest */}
           <section className="order-3 lg:col-span-8">
-              <SectionHeader title={baseline ? 'New since last visit' : 'Latest'} />
+              <SectionHeader title={baseline ? t('dashboard.newSinceVisit') : t('dashboard.latest')} />
               {state.whatChanged.length > 0 ? (
                 newSinceVisit.length === 0 ? (
-                <p className="text-sm text-ink-faint">Nothing new since your last visit.</p>
+                <p className="text-sm text-ink-faint">{t('dashboard.nothingNew')}</p>
                 ) : (
                 <div className="divide-y divide-line-soft">
                   {latestEvents.map((event: any) => {
@@ -664,27 +660,27 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                               <span className="max-w-[84px] truncate">{event.author}</span>
                             </span>
                           )}
-                          {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
+                          {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : source === 'telegram' ? <TelegramIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
                           {formatRelative(eventTime)}
                         </span>
                       </div>
                     );
                   })}
                   {newSinceVisit.length > 5 && (
-                    <p className="py-2 text-xs text-ink-faint">+{newSinceVisit.length - 5} more in Activity below</p>
+                    <p className="py-2 text-xs text-ink-faint">{t('dashboard.moreInActivity', { count: newSinceVisit.length - 5 })}</p>
                   )}
                 </div>
                 )
               ) : state.currentState.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-line-strong p-6 text-center">
-                  <p className="text-sm font-medium text-ink">No changes yet</p>
+                  <p className="text-sm font-medium text-ink">{t('dashboard.noChangesYet')}</p>
                   <p className="mt-1 text-sm text-ink-muted">
-                    <a href="/integrations" className="font-medium text-[var(--accent-link)] hover:underline">Connect an integration</a>
-                    {' '}to start tracking your project.
+                    <a href="/integrations" className="font-medium text-[var(--accent-link)] hover:underline">{t('dashboard.connectIntegration')}</a>
+                    {t('dashboard.connectToTrack')}
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-ink-faint">No changes in the last {period}.</p>
+                <p className="text-sm text-ink-faint">{t('dashboard.noChangesPeriod', { period })}</p>
               )}
             </section>
 
@@ -693,12 +689,12 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               {state.currentState.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-white p-8 text-center">
                   <RiLinksLine size={40} className="text-line" />
-                  <p className="mt-4 text-base text-ink">Connect an integration to see what is currently true.</p>
+                  <p className="mt-4 text-base text-ink">{t('dashboard.connectToSeeState')}</p>
                   <a
                     href="/integrations"
                     className="mt-4 inline-flex items-center gap-1 rounded-lg bg-[var(--accent)] py-2 pl-4 pr-3 text-sm font-medium text-[var(--accent-fg)] hover:bg-[var(--accent-hover)]"
                   >
-                    Go to Integrations <RiArrowRightSLine size={16} />
+                    {t('integrations.title')} <RiArrowRightSLine size={16} />
                   </a>
                 </div>
               ) : (
@@ -711,10 +707,10 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     return (a.subject || '').toLowerCase().localeCompare((b.subject || '').toLowerCase());
                   }).map((fact: any) => {
                     const pillStyle = STATE_PILL_STYLES[fact.current_state?.toLowerCase()] || DEFAULT_PILL_STYLE;
-                    const stateLabel = fact.current_value?.display_state || STATE_LABELS[fact.current_state?.toLowerCase()] || capitalize(fact.current_state);
+                    const stateLabel = fact.current_value?.display_state || getStateLabel(fact.current_state?.toLowerCase()) || capitalize(fact.current_state);
                     const isApproved = fact.current_state?.toLowerCase() === 'approved';
                     const confidence = Math.round(fact.confidence * 100);
-                    const confidenceText = confidence < 80 ? `Confidence ${confidence}%` : null;
+                    const confidenceText = confidence < 80 ? t('dashboard.confidence', { confidence }) : null;
                     const factHistory = state.history
                       .filter((h: any) => h.fact_id === fact.id && h.new_state && h.previous_state?.toLowerCase() !== h.new_state?.toLowerCase() && h.reason !== 'test')
                       .sort((a: any, b: any) => new Date(b.decided_at || b.created_at).getTime() - new Date(a.decided_at || a.created_at).getTime());
@@ -777,7 +773,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                     <span className="max-w-[80px] truncate">{lastActor}</span>
                                   </>
                                 )}
-                                {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource === 'linear' ? <LinearIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
+                                {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource === 'linear' ? <LinearIcon size={12} /> : lastSource === 'telegram' ? <TelegramIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
                               </span>
                             )}
                           </div>
@@ -792,7 +788,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             {/* Activity */}
             <section className="order-4 lg:col-span-8">
               <SectionHeader
-                title="Activity"
+                title={t('dashboard.activity')}
                 right={
                   <div className="flex flex-shrink-0 gap-1 rounded-lg bg-fill/60 p-1">
                     {PERIODS.map((p) => (
@@ -805,7 +801,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             : 'text-ink-muted hover:text-ink-secondary'
                         }`}
                       >
-                        {p.label}
+                        {p.value === 'all' ? t('dashboard.periodAll') : p.label}
                       </button>
                     ))}
                   </div>
@@ -816,19 +812,19 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-white p-8 text-center">
                   <RiHistoryLine size={40} className="text-line" />
                   {state.currentState.length === 0 ? (
-                    <p className="mt-4 text-base text-ink">Connect an integration to see what changed.</p>
+                    <p className="mt-4 text-base text-ink">{t('dashboard.connectToSeeChanges')}</p>
                   ) : (
                     <>
-                      <p className="mt-4 text-base text-ink">No changes in the last {period}</p>
+                      <p className="mt-4 text-base text-ink">{t('dashboard.noChangesPeriod', { period })}</p>
                       <div className="mt-3 flex justify-center gap-3">
                         {period !== '7d' && (
-                          <button onClick={() => handlePeriodChange('7d')} className="text-sm font-medium text-[var(--accent-link)] hover:underline">7 days</button>
+                          <button onClick={() => handlePeriodChange('7d')} className="text-sm font-medium text-[var(--accent-link)] hover:underline">{t('dashboard.7d')}</button>
                         )}
                         {period !== '30d' && (
-                          <button onClick={() => handlePeriodChange('30d')} className="text-sm font-medium text-[var(--accent-link)] hover:underline">30 days</button>
+                          <button onClick={() => handlePeriodChange('30d')} className="text-sm font-medium text-[var(--accent-link)] hover:underline">{t('dashboard.30d')}</button>
                         )}
                         {period !== 'all' && (
-                          <button onClick={() => handlePeriodChange('all')} className="text-sm font-medium text-[var(--accent-link)] hover:underline">All time</button>
+                          <button onClick={() => handlePeriodChange('all')} className="text-sm font-medium text-[var(--accent-link)] hover:underline">{t('dashboard.all')}</button>
                         )}
                       </div>
                     </>
@@ -870,14 +866,14 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                       <span className="max-w-[84px] truncate">{event.author}</span>
                                     </span>
                                   )}
-                                  {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
+                                  {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : source === 'telegram' ? <TelegramIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
                                 </span>
                               </div>
                               {expandedEvents.has(event.id) && expandable && (
                                 <div className="mt-2 rounded-lg bg-fill px-3 py-2 text-sm text-ink-secondary">
                                   {showOriginal && (
                                     <>
-                                      <p className="text-xs font-medium text-ink-faint">Original message</p>
+                                      <p className="text-xs font-medium text-ink-faint">{t('dashboard.originalMessage')}</p>
                                       <p className="mt-1">{emojify(event.content)}</p>
                                     </>
                                   )}
@@ -889,7 +885,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                       onClick={(e) => e.stopPropagation()}
                                       className="mt-2 inline-flex items-center gap-0.5 text-xs font-medium text-[var(--accent-link)] hover:underline"
                                     >
-                                      View source
+                                      {t('dashboard.viewSource')}
                                       <RiArrowRightUpLine size={13} />
                                     </a>
                                   )}
@@ -908,7 +904,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       onClick={() => setExpanded(true)}
                       className="flex items-center gap-1 text-sm font-medium text-[var(--accent-link)] hover:underline"
                     >
-                      Show {hiddenCount} more
+                      {t('dashboard.showMore', { count: hiddenCount })}
                       <RiArrowDownSLine size={16} />
                     </button>
                   )}
@@ -918,7 +914,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       onClick={() => setExpanded(false)}
                       className="flex items-center gap-1 text-sm font-medium text-[var(--accent-link)] hover:underline"
                     >
-                      Show less
+                      {t('dashboard.showLess')}
                       <RiArrowUpSLine size={16} />
                     </button>
                   )}
@@ -930,13 +926,13 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             <section>
               <SectionHeader
                 title={unresolvedCount > 0
-                  ? `${unresolvedCount} ${unresolvedCount === 1 ? 'decision needs' : 'decisions need'} you`
-                  : 'Needs attention'}
+                  ? t('dashboard.needsAttentionCount', { count: unresolvedCount })
+                  : t('dashboard.needsAttention')}
                 caps={false}
               />
               {state.conflicts.length === 0 ? (
                 <div className="rounded-2xl border border-line bg-white p-4">
-                  <p className="text-sm text-ink-muted">No issues to review.</p>
+                  <p className="text-sm text-ink-muted">{t('dashboard.noIssues')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -962,7 +958,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             {capitalize(conflict.subject)}
                           </p>
                           <span className={`ml-auto inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${isResolved ? 'bg-fill text-ink-muted' : 'bg-amber-50 text-amber-700'}`}>
-                            {isResolved ? 'Resolved' : (CONFLICT_TYPE_LABELS[conflict.conflict_type] || 'Needs decision')}
+                            {isResolved ? t('dashboard.resolved') : (conflictTypeLabel(conflict.conflict_type) || t('dashboard.needsDecision'))}
                           </span>
                         </div>
                         <p className={`mt-1.5 text-[13px] leading-[1.55] ${isResolved ? 'text-ink-faint' : 'text-ink-secondary'}`}>
@@ -978,7 +974,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                               disabled={resolving === conflict.id}
                               className="rounded-lg px-2 py-1 text-xs font-medium text-ink-muted transition-colors hover:bg-fill disabled:opacity-50"
                             >
-                              {resolving === conflict.id ? 'Updating...' : 'Undo'}
+                              {resolving === conflict.id ? t('dashboard.updating') : t('dashboard.undo')}
                             </button>
                           ) : (
                             <>
@@ -988,7 +984,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                   disabled={resolving === conflict.id}
                                   className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
                                 >
-                                  Accept
+                                  {t('dashboard.accept')}
                                 </button>
                               )}
                               <button
@@ -996,14 +992,14 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                 disabled={resolving === conflict.id}
                                 className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-line-strong hover:bg-fill-soft disabled:opacity-50"
                               >
-                                Keep as is
+                                {t('dashboard.keepAsIs')}
                               </button>
                               <button
                                 onClick={() => resolveConflict(conflict.id, 'unclear')}
                                 disabled={resolving === conflict.id}
                                 className="px-2 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink-secondary disabled:opacity-50"
                               >
-                                Not sure
+                                {t('dashboard.notSure')}
                               </button>
                             </>
                           )}
@@ -1038,49 +1034,51 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               <div className="space-y-5 border-t border-line-soft pt-4">
                 {selectedFact.current_state?.toLowerCase() === 'removed' && (
                   <div className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
-                    No final decision found.
+                    {t('conflict.state_change')}.
                   </div>
                 )}
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-ink-muted">Current</span>
+                    <span className="text-sm font-medium text-ink-muted">{t('dashboard.current')}</span>
                     <span className={`text-sm font-semibold ${selectedMeta.text}`}>{selectedStateLabel}</span>
                   </div>
                   {selectedHistory[0]?.previous_state && (
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-ink-muted">Previous state</span>
+                      <span className="text-sm font-medium text-ink-muted">{t('dashboard.previousState')}</span>
                       <span className="text-sm text-ink-secondary">{capitalize(selectedHistory[0].previous_state)}</span>
                     </div>
                   )}
                   {selectedHistory.length > 0 && (
                     <p className="text-xs text-ink-faint">
-                      {selectedHistory.length} {selectedHistory.length === 1 ? 'change' : 'changes'}
-                      {new Set(selectedHistory.map((h: any) => h.author).filter(Boolean)).size > 1 &&
-                        ` · ${new Set(selectedHistory.map((h: any) => h.author).filter(Boolean)).size} people involved`}
+                      {selectedHistory.length} {tp(selectedHistory.length, 'plural.change')}
+                      {(() => {
+                        const people = new Set(selectedHistory.map((h: any) => h.author).filter(Boolean)).size;
+                        return people > 1 ? ` · ${people} ${tp(people, 'plural.person')}` : null;
+                      })()}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <p className="mb-3 text-sm font-medium text-ink">Why this is the current state</p>
+                  <p className="mb-3 text-sm font-medium text-ink">{t('dashboard.whyCurrentState')}</p>
                   <div className="relative ml-1 space-y-4 border-l border-line pl-4">
                     {groupedWhy.map((group: any) => (
                       <div key={group.id} className="relative">
                         <span className="absolute -left-[21px] top-1.5 h-2 w-2 rounded-full bg-line-strong" />
                         <p className="text-xs text-ink-faint">
                           {formatDateTime(group.occurrences[0].decided_at || group.occurrences[0].created_at)}
-                          {group.occurrences.length > 1 && ` · +${group.occurrences.length - 1} more`}
+                          {group.occurrences.length > 1 && ` · +${group.occurrences.length - 1}`}
                         </p>
                         <p className="mt-0.5 text-sm text-ink-secondary">
-                          {group.reason ? capitalize(emojify(group.reason)) : 'No reason given'}
+                          {group.reason ? capitalize(emojify(group.reason)) : t('dashboard.noReason')}
                         </p>
                         <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-muted">
                           {group.source && (() => {
                             const url = group.occurrences[0].source_url;
                             const label = (
                               <>
-                                {group.source === 'figma' ? <FigmaIcon size={14} /> : group.source === 'slack' ? <SlackIcon size={14} /> : group.source === 'linear' ? <LinearIcon size={14} /> : <RiFileTextLine size={12} className="text-green-500" />}
+                                {group.source === 'figma' ? <FigmaIcon size={14} /> : group.source === 'slack' ? <SlackIcon size={14} /> : group.source === 'linear' ? <LinearIcon size={14} /> : group.source === 'telegram' ? <TelegramIcon size={14} /> : <RiFileTextLine size={12} className="text-green-500" />}
                                 {group.source === 'gdocs' ? 'Google Docs' : capitalize(group.source)}
                               </>
                             );

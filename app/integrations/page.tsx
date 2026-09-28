@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
-import { siNotion, siLinear, siGoogledocs } from 'simple-icons';
+import { siNotion, siLinear, siGoogledocs, siTelegram } from 'simple-icons';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
 import { RiArrowDownSLine } from '@remixicon/react';
+import { getEnabledConnectors, getLocale } from '@/lib/market';
+import { t } from '@/lib/i18n';
 
 interface Integration {
   id: string;
@@ -27,6 +29,7 @@ const ICONS: Record<string, { path?: string; hex?: string; title: string; render
   gdocs: { path: siGoogledocs.path, hex: siGoogledocs.hex, title: siGoogledocs.title },
   notion: { path: siNotion.path, hex: siNotion.hex, title: siNotion.title },
   linear: { path: siLinear.path, hex: siLinear.hex, title: siLinear.title },
+  telegram: { path: siTelegram.path, hex: siTelegram.hex, title: siTelegram.title },
 };
 
 function BrandIcon({ source, size = 24, className }: { source: string; size?: number; className?: string }) {
@@ -46,13 +49,16 @@ function BrandIcon({ source, size = 24, className }: { source: string; size?: nu
   );
 }
 
-const AVAILABLE = [
-  { source: 'figma', name: 'Figma', description: 'Import comments, versions, and design changes.' },
-  { source: 'slack', name: 'Slack', description: 'Import messages, decisions, and mentions.' },
-  { source: 'linear', name: 'Linear', description: 'Import issue status changes and comments.' },
-  { source: 'gdocs', name: 'Google Docs', description: 'Import briefs, comments, and decisions from docs.' },
-  { source: 'notion', name: 'Notion', description: 'Sync pages and decisions.' },
+const ALL_SERVICES = [
+  { source: 'figma', name: 'Figma', implemented: true },
+  { source: 'slack', name: 'Slack', implemented: true },
+  { source: 'linear', name: 'Linear', implemented: true },
+  { source: 'telegram', name: 'Telegram', implemented: true },
+  { source: 'gdocs', name: 'Google Docs', implemented: false },
+  { source: 'notion', name: 'Notion', implemented: false },
 ];
+
+const AVAILABLE = ALL_SERVICES.filter(s => getEnabledConnectors().includes(s.source));
 
 function FigmaWatchPanel({ projectId, integration, onChanged }: {
   projectId: string;
@@ -97,7 +103,9 @@ function FigmaWatchPanel({ projectId, integration, onChanged }: {
     const data = await res.json();
     const added = (data.results || []).reduce(
       (n: number, r: any) => n + (r.versions?.inserted || 0) + (r.comments?.inserted || 0), 0);
-    setMsg(res.ok ? `Synced — ${added} new event${added === 1 ? '' : 's'}` : (data.error || 'Sync failed'));
+    setMsg(res.ok
+      ? t(added === 1 ? 'integrations.figma.syncedOne' : 'integrations.figma.synced', { count: added })
+      : (data.error || t('integrations.figma.syncFailed')));
     await onChanged();
     setBusy(false);
   };
@@ -107,19 +115,19 @@ function FigmaWatchPanel({ projectId, integration, onChanged }: {
       {fileName ? (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs text-ink-muted">
-            Watching <span className="font-medium text-ink">{fileName}</span>
+            {t('integrations.figma.watching')} <span className="font-medium text-ink">{fileName}</span>
             <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${mode === 'webhooks' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-              {mode === 'webhooks' ? 'Live' : 'Polling'}
+              {mode === 'webhooks' ? t('integrations.figma.live') : t('integrations.figma.polling')}
             </span>
           </div>
           <div className="flex items-center gap-2">
             {mode === 'polling' && (
               <button onClick={syncNow} disabled={busy} className="text-xs font-medium text-ink-secondary hover:text-ink disabled:opacity-50">
-                Sync now
+                {t('integrations.figma.syncNow')}
               </button>
             )}
             <button onClick={unwatch} disabled={busy} className="text-xs font-medium text-ink-faint hover:text-ink-secondary disabled:opacity-50">
-              Stop
+              {t('integrations.figma.stop')}
             </button>
           </div>
         </div>
@@ -129,7 +137,7 @@ function FigmaWatchPanel({ projectId, integration, onChanged }: {
             <input
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
-              placeholder="Paste a Figma file link…"
+              placeholder={t('integrations.figma.filePlaceholder')}
               className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2 text-xs text-ink placeholder:text-ink-faint focus:outline-none"
             />
             <button
@@ -137,11 +145,11 @@ function FigmaWatchPanel({ projectId, integration, onChanged }: {
               disabled={busy || !fileUrl.trim()}
               className="rounded-lg bg-[var(--accent)] px-3 py-2 text-xs font-medium text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
             >
-              Watch
+              {t('integrations.figma.watch')}
             </button>
           </div>
           <p className="mt-1.5 text-[11px] text-ink-faint">
-            Pick which file to track. Right-click a file in Figma → Copy link.
+            {t('integrations.figma.hint')}
           </p>
         </>
       )}
@@ -199,11 +207,11 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
       <div className="flex items-center justify-between">
         <p className="text-xs text-ink-muted">
           {selected.length > 0
-            ? `${selected.length} channel${selected.length === 1 ? '' : 's'} tracked${selectedNames.length ? ` — ${selectedNames.join(', ')}${selected.length > 3 ? '…' : ''}` : ''}`
-            : 'All channels tracked'}
+            ? `${t(selected.length === 1 ? 'integrations.slack.channelTracked' : 'integrations.slack.channelsTracked', { count: selected.length })}${selectedNames.length ? ` — ${selectedNames.join(', ')}${selected.length > 3 ? '…' : ''}` : ''}`
+            : t('integrations.slack.allChannels')}
         </p>
         <button onClick={open ? () => setOpen(false) : load} disabled={busy} className="text-xs font-medium text-ink-secondary hover:text-ink disabled:opacity-50">
-          {open ? 'Close' : 'Pick channels'}
+          {open ? t('integrations.slack.close') : t('integrations.slack.pickChannels')}
         </button>
       </div>
       {loadErr && <p className="mt-2 text-xs text-red-500">{loadErr}</p>}
@@ -219,20 +227,20 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
                   className="h-3.5 w-3.5 accent-[var(--accent)]"
                 />
                 <span className="truncate">#{ch.name}</span>
-                {ch.is_private && <span className="text-[10px] text-ink-faint">private</span>}
+                {ch.is_private && <span className="text-[10px] text-ink-faint">{t('integrations.slack.private')}</span>}
               </label>
             ))}
           </div>
           <div className="mt-3 flex items-center justify-between">
             <p className="text-[11px] text-ink-faint">
-              Private channels: invite the bot with /invite first.
+              {t('integrations.slack.privateHint')}
             </p>
             <button
               onClick={save}
               disabled={busy}
               className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
             >
-              Save
+              {t('integrations.slack.save')}
             </button>
           </div>
         </>
@@ -296,15 +304,15 @@ function LinearTeamsPanel({ projectId, integration, onChanged }: {
             <span className="mr-2 font-medium text-ink">{integration.config.organization_name}</span>
           )}
           {selected.length > 0
-            ? `${selected.length} team${selected.length === 1 ? '' : 's'} tracked${selectedNames.length ? ` — ${selectedNames.join(', ')}${selected.length > 3 ? '…' : ''}` : ''}`
-            : 'All public teams tracked'}
+            ? `${t(selected.length === 1 ? 'integrations.linear.teamTracked' : 'integrations.linear.teamsTracked', { count: selected.length })}${selectedNames.length ? ` — ${selectedNames.join(', ')}${selected.length > 3 ? '…' : ''}` : ''}`
+            : t('integrations.linear.allTeams')}
         </p>
         <div className="flex items-center gap-2">
           <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${integration.config?.webhook_id ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-            {integration.config?.webhook_id ? 'Live' : 'No webhook'}
+            {integration.config?.webhook_id ? t('integrations.linear.live') : t('integrations.linear.noWebhook')}
           </span>
           <button onClick={open ? () => setOpen(false) : load} disabled={busy} className="text-xs font-medium text-ink-secondary hover:text-ink disabled:opacity-50">
-            {open ? 'Close' : 'Pick teams'}
+            {open ? t('integrations.linear.close') : t('integrations.linear.pickTeams')}
           </button>
         </div>
       </div>
@@ -327,16 +335,90 @@ function LinearTeamsPanel({ projectId, integration, onChanged }: {
           </div>
           <div className="mt-3 flex items-center justify-between">
             <p className="text-[11px] text-ink-faint">
-              Uncheck all to track every public team.
+              {t('integrations.linear.uncheckAll')}
             </p>
             <button
               onClick={save}
               disabled={busy}
               className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
             >
-              Save
+              {t('integrations.linear.save')}
             </button>
           </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function TelegramConnectPanel({ projectId, integration, onChanged, onNotice }: {
+  projectId: string;
+  integration: Integration | undefined;
+  onChanged: () => Promise<void>;
+  onNotice: (n: { kind: 'success' | 'error'; text: string } | null) => void;
+}) {
+  const [token, setToken] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const botUsername = integration?.config?.bot_username;
+  const chatTitle = integration?.config?.chat_title;
+  const chatBound = Boolean(integration?.config?.chat_id);
+
+  const connect = async () => {
+    setBusy(true);
+    const res = await fetch('/api/integrations/telegram/connect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectId, botToken: token.trim() }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      onNotice({ kind: 'success', text: t('integrations.telegram.connectedNotice', { bot: data.bot_username }) });
+      setToken('');
+      await onChanged();
+    } else {
+      onNotice({ kind: 'error', text: data.error || 'Connection failed' });
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div className="mt-3 rounded-xl bg-fill-soft px-4 py-3">
+      {integration ? (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="text-xs text-ink-muted">
+            {t('integrations.telegram.bot')} <span className="font-medium text-ink">@{botUsername}</span>
+            <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${chatBound ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+              {chatBound ? t('integrations.telegram.tracking', { chat: chatTitle || 'chat' }) : t('integrations.telegram.waiting')}
+            </span>
+          </div>
+          {!chatBound && (
+            <p className="w-full text-[11px] text-ink-faint">
+              {t('integrations.telegram.addBot', { bot: botUsername })}
+            </p>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="flex gap-2">
+            <input
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              placeholder={t('integrations.telegram.tokenPlaceholder')}
+              type="password"
+              className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2 text-xs text-ink placeholder:text-ink-faint focus:outline-none"
+            />
+            <button
+              onClick={connect}
+              disabled={busy || !token.trim()}
+              className="rounded-lg bg-[var(--accent)] px-3 py-2 text-xs font-medium text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
+            >
+              {t('integrations.connect')}
+            </button>
+          </div>
+          <p className="mt-1.5 text-[11px] text-ink-faint">
+            {t('integrations.telegram.howto')}
+          </p>
         </>
       )}
     </div>
@@ -366,7 +448,7 @@ export default function IntegrationsPage() {
     const errorParam = params.get('error');
     if (successParam) {
       const name = successParam.replace(/_connected$/, '');
-      setNotice({ kind: 'success', text: `${name.charAt(0).toUpperCase() + name.slice(1)} connected. Importing recent activity…` });
+      setNotice({ kind: 'success', text: t('integrations.connectedNotice', { name: name.charAt(0).toUpperCase() + name.slice(1) }) });
       if (queryProjectId) {
         fetch('/api/jobs/process-events', {
           method: 'POST',
@@ -376,7 +458,7 @@ export default function IntegrationsPage() {
       }
       router.replace(`/integrations${queryProjectId ? `?projectId=${queryProjectId}` : ''}`, { scroll: false });
     } else if (errorParam) {
-      setNotice({ kind: 'error', text: `Connection failed: ${errorParam.replace(/_/g, ' ')}` });
+      setNotice({ kind: 'error', text: t('integrations.connectionFailed', { error: errorParam.replace(/_/g, ' ') }) });
       router.replace(`/integrations${queryProjectId ? `?projectId=${queryProjectId}` : ''}`, { scroll: false });
     }
     Promise.all([fetch('/api/projects'), fetch('/api/integrations')])
@@ -399,13 +481,13 @@ export default function IntegrationsPage() {
 
   const disconnect = async (source: string) => {
     if (!selectedProjectId) return;
-    if (!window.confirm(`Disconnect ${source} from this project?`)) return;
+    if (!window.confirm(t('integrations.disconnectConfirm', { source }))) return;
     const res = await fetch(`/api/integrations?project_id=${selectedProjectId}&source=${source}`, { method: 'DELETE' });
     if (res.ok) {
       await refreshIntegrations();
-      setNotice({ kind: 'success', text: `${source.charAt(0).toUpperCase() + source.slice(1)} disconnected.` });
+      setNotice({ kind: 'success', text: t('integrations.disconnectedNotice', { name: source.charAt(0).toUpperCase() + source.slice(1) }) });
     } else {
-      setNotice({ kind: 'error', text: 'Failed to disconnect. Try again.' });
+      setNotice({ kind: 'error', text: t('integrations.disconnectFailed') });
     }
   };
 
@@ -415,14 +497,14 @@ export default function IntegrationsPage() {
   };
 
   const formatDate = (date: string | null) => {
-    if (!date) return 'Never';
+    if (!date) return t('integrations.never');
     const d = new Date(date);
     const now = new Date();
     const diff = Math.floor((now.getTime() - d.getTime()) / 60000);
-    if (diff < 1) return 'Just now';
+    if (diff < 1) return t('integrations.justNow');
     if (diff < 60) return `${diff}m ago`;
     if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return d.toLocaleDateString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric' });
   };
 
   return (
@@ -435,8 +517,8 @@ export default function IntegrationsPage() {
       />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-3 py-6 sm:px-8 sm:py-8">
-        <h1 className="text-2xl font-semibold text-ink">Integrations</h1>
-        <p className="mt-1 text-sm text-ink-muted">Connect tools to keep project state up to date.</p>
+        <h1 className="text-2xl font-semibold text-ink">{t('integrations.title')}</h1>
+        <p className="mt-1 text-sm text-ink-muted">{t('integrations.subtitle')}</p>
 
         {notice && (
           <div className={`mt-4 flex items-center justify-between rounded-xl px-4 py-3 text-sm ${
@@ -451,7 +533,7 @@ export default function IntegrationsPage() {
 
         {projects.length > 1 && (
           <div className="mt-6">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-faint">Project</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('integrations.project')}</p>
             <div className="relative max-w-xs">
               <select
                 value={selectedProjectId || ''}
@@ -469,7 +551,7 @@ export default function IntegrationsPage() {
           </div>
         )}
 
-        {loading && <p className="mt-6 text-sm text-ink-muted">Loading...</p>}
+        {loading && <p className="mt-6 text-sm text-ink-muted">{t('integrations.loading')}</p>}
         {error && <p className="mt-6 text-sm text-red-500">{error}</p>}
 
         {!loading && !error && (
@@ -493,40 +575,44 @@ export default function IntegrationsPage() {
                         <p className="font-medium text-ink">{service.name}</p>
                         <p className="text-xs text-ink-muted">
                           {integration
-                            ? `${integration.status === 'active' ? 'Connected' : integration.status} · Last sync ${formatDate(integration.last_sync_at)}`
-                            : service.description}
+                            ? `${integration.status === 'active' ? t('integrations.connected') : integration.status} · ${t('integrations.lastSync')} ${formatDate(integration.last_sync_at)}`
+                            : t(`integrations.${service.source}.desc`)}
                         </p>
                       </div>
                     </div>
                     {integration ? (
                       <div className="flex items-center gap-3">
                         <span className={`h-2 w-2 rounded-full ${integration.status === 'active' ? 'bg-green-500' : 'bg-line-strong'}`} />
-                        <a
-                          href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
-                          className="rounded-full bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          Reconnect
-                        </a>
+                        {service.source !== 'telegram' && (
+                          <a
+                            href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
+                            className="rounded-full bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {t('integrations.reconnect')}
+                          </a>
+                        )}
                         <button
                           onClick={() => disconnect(service.source)}
                           className="text-xs font-medium text-ink-faint transition hover:text-red-600"
                         >
-                          Disconnect
+                          {t('integrations.disconnect')}
                         </button>
                       </div>
-                    ) : service.source === 'figma' || service.source === 'slack' || service.source === 'linear' ? (
-                      <a
-                        href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
-                        className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Connect
-                      </a>
+                    ) : service.implemented ? (
+                      service.source === 'telegram' ? null : (
+                        <a
+                          href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
+                          className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {t('integrations.connect')}
+                        </a>
+                      )
                     ) : (
                       <button
                         disabled
                         className="px-2 py-2.5 text-sm font-medium text-ink-faint"
                       >
-                        Coming soon
+                        {t('integrations.comingSoon')}
                       </button>
                     )}
                     </div>
@@ -549,6 +635,14 @@ export default function IntegrationsPage() {
                         projectId={selectedProjectId}
                         integration={integration}
                         onChanged={refreshIntegrations}
+                      />
+                    )}
+                    {service.source === 'telegram' && selectedProjectId && (
+                      <TelegramConnectPanel
+                        projectId={selectedProjectId}
+                        integration={integration}
+                        onChanged={refreshIntegrations}
+                        onNotice={setNotice}
                       />
                     )}
                   </div>

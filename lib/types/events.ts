@@ -1,6 +1,6 @@
 // Core event types for Klynt
 
-export type Source = 'figma' | 'slack' | 'email' | 'notion' | 'linear';
+export type Source = 'figma' | 'slack' | 'email' | 'notion' | 'linear' | 'telegram';
 
 export type EventType =
   | 'message'
