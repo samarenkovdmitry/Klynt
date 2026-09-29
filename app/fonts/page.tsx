@@ -4,6 +4,7 @@ import { RiCheckLine, RiEditLine, RiArrowRightSLine } from '@remixicon/react';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
 import Avatar from '@/components/Avatar';
 import LandingPreview from '@/components/LandingPreview';
+import { logoSrc } from '@/lib/market';
 
 export const metadata: Metadata = {
   title: 'Font comparison — Klynt',
@@ -195,7 +196,7 @@ export default function FontsPage() {
       />
 
       <header className="mx-auto max-w-7xl px-6 pb-10 pt-14">
-        <img src="/Klynt_logo.svg" alt="Klynt" className="h-8 w-auto" />
+        <img src={logoSrc()} alt="Klynt" className="h-8 w-auto" />
         <h1 className="mt-10 text-3xl font-bold tracking-tight text-ink">Font comparison</h1>
         <p className="mt-2 max-w-2xl text-[15px] text-ink-secondary">
           Same UI chunks rendered in each candidate typeface. Current font: Instrument Sans.

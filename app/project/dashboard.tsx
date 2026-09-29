@@ -314,10 +314,10 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         router.push(`/project/${data.project.slug || data.project.id}`);
         return;
       }
-      setError(data.error || 'Failed to create sample project');
+      setError(data.error || t('dashboard.sampleFailed'));
       setCreatingDemo(false);
     } catch {
-      setError('Failed to create sample project');
+      setError(t('dashboard.sampleFailed'));
       setCreatingDemo(false);
     }
   };
@@ -353,7 +353,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         if (selectedProjectId) fetchData(period, selectedProjectId);
       } else {
         const data = await res.json();
-        setError(data.error || 'Failed to resolve');
+        setError(data.error || t('dashboard.resolveFailed'));
       }
     } catch (err: any) {
       setError(err.message);
@@ -372,7 +372,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         if (selectedProjectId) fetchData(period, selectedProjectId);
       } else {
         const data = await res.json();
-        setError(data.error || 'Failed to undo');
+        setError(data.error || t('dashboard.undoFailed'));
       }
     } catch (err: any) {
       setError(err.message);
@@ -815,7 +815,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     <p className="mt-4 text-base text-ink">{t('dashboard.connectToSeeChanges')}</p>
                   ) : (
                     <>
-                      <p className="mt-4 text-base text-ink">{t('dashboard.noChangesPeriod', { period })}</p>
+                      <p className="mt-4 text-base text-ink">
+                        {period === 'all'
+                          ? t('dashboard.noChangesAll')
+                          : t('dashboard.noChangesPeriod', { period: t(`dashboard.${period}`) })}
+                      </p>
                       <div className="mt-3 flex justify-center gap-3">
                         {period !== '7d' && (
                           <button onClick={() => handlePeriodChange('7d')} className="text-sm font-medium text-[var(--accent-link)] hover:underline">{t('dashboard.7d')}</button>

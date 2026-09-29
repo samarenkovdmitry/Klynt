@@ -34,6 +34,7 @@ const en: Dict = {
   'integrations.disconnectConfirm': 'Disconnect {source} from this project?',
   'integrations.disconnectFailed': 'Failed to disconnect. Try again.',
   'integrations.connectionFailed': 'Connection failed: {error}',
+  'integrations.connectFailed': 'Connection failed',
 
   // Integrations — service copy
   'integrations.figma.desc': 'Import comments, versions, and design changes.',
@@ -279,6 +280,31 @@ const en: Dict = {
   'invite.signupToJoin': 'Sign up to join',
   'invite.hasAccount': 'Already have an account? Log in',
   'invite.acceptFailed': 'Failed to accept invite',
+
+  // New project modal
+  'newProject.title': 'New project',
+  'newProject.sub': 'Klynt will collect decisions and changes from your tools for this project.',
+  'newProject.name': 'Name',
+  'newProject.namePlaceholder': 'Website redesign',
+  'newProject.description': 'Description',
+  'newProject.optional': '(optional)',
+  'newProject.descPlaceholder': 'Brand identity system. Logo, colors, typography.',
+  'newProject.create': 'Create project',
+  'newProject.creating': 'Creating...',
+  'newProject.failed': 'Failed to create project',
+
+  // Misc
+  'dashboard.24h': '24 hours',
+  'dashboard.noChangesAll': 'No changes yet.',
+  'dashboard.sampleFailed': 'Failed to create sample project',
+  'dashboard.resolveFailed': 'Failed to resolve',
+  'dashboard.undoFailed': 'Failed to undo',
+  'sidebar.openMenu': 'Open menu',
+  'sidebar.closeMenu': 'Close menu',
+  'legal.toc': 'Table of contents',
+  'integrations.watchFailed': 'Failed to watch file',
+  'integrations.loadChannelsFailed': 'Failed to load channels',
+  'integrations.loadTeamsFailed': 'Failed to load teams',
 };
 
 const ru: Dict = {
@@ -309,6 +335,7 @@ const ru: Dict = {
   'integrations.disconnectConfirm': 'Отключить {source} от этого проекта?',
   'integrations.disconnectFailed': 'Не удалось отключить. Попробуйте ещё раз.',
   'integrations.connectionFailed': 'Ошибка подключения: {error}',
+  'integrations.connectFailed': 'Ошибка подключения',
 
   // Integrations — service copy
   'integrations.figma.desc': 'Импорт комментариев, версий и изменений дизайна.',
@@ -554,6 +581,31 @@ const ru: Dict = {
   'invite.signupToJoin': 'Зарегистрироваться',
   'invite.hasAccount': 'Уже есть аккаунт? Войти',
   'invite.acceptFailed': 'Не удалось принять приглашение',
+
+  // New project modal
+  'newProject.title': 'Новый проект',
+  'newProject.sub': 'Klynt будет собирать решения и изменения из ваших инструментов по этому проекту.',
+  'newProject.name': 'Название',
+  'newProject.namePlaceholder': 'Редизайн сайта',
+  'newProject.description': 'Описание',
+  'newProject.optional': '(необязательно)',
+  'newProject.descPlaceholder': 'Айдентика бренда. Логотип, цвета, типографика.',
+  'newProject.create': 'Создать проект',
+  'newProject.creating': 'Создаём…',
+  'newProject.failed': 'Не удалось создать проект',
+
+  // Misc
+  'dashboard.24h': '24 часа',
+  'dashboard.noChangesAll': 'Нет изменений за всё время.',
+  'dashboard.sampleFailed': 'Не удалось создать пример проекта',
+  'dashboard.resolveFailed': 'Не удалось применить',
+  'dashboard.undoFailed': 'Не удалось отменить',
+  'sidebar.openMenu': 'Открыть меню',
+  'sidebar.closeMenu': 'Закрыть меню',
+  'legal.toc': 'Содержание',
+  'integrations.watchFailed': 'Не удалось подключить файл',
+  'integrations.loadChannelsFailed': 'Не удалось загрузить каналы',
+  'integrations.loadTeamsFailed': 'Не удалось загрузить команды',
 };
 
 const dicts: Record<string, Dict> = { en, ru };

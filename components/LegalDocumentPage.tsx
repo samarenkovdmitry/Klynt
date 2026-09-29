@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { logoSrc } from "@/lib/market";
+import { t } from "@/lib/i18n";
 const CONTENT_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
 
 export type LegalSectionNav = {
@@ -25,11 +27,11 @@ export function LegalDocumentPage({
       <header className="sticky top-0 z-20 border-b border-ink/5 bg-white/85 px-4 backdrop-blur-md md:px-6">
         <div className={`${CONTENT_CONTAINER_CLASS} flex items-center justify-between py-4`}>
           <Link href="/" aria-label="Klynt home">
-            <img src="/Klynt_logo.svg" alt="Klynt" className="h-7 w-auto" />
+            <img src={logoSrc()} alt="Klynt" className="h-7 w-auto" />
           </Link>
           <nav className="flex items-center gap-5 text-sm">
             <Link href="/login" className="font-medium text-ink-secondary transition hover:text-[var(--accent-link)]">
-              Log in
+              {t('landing.login')}
             </Link>
           </nav>
         </div>
@@ -39,7 +41,7 @@ export function LegalDocumentPage({
           <div className="grid min-w-0 gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[240px_minmax(0,1fr)]">
             <aside className="hidden min-w-0 lg:block lg:sticky lg:top-[88px] lg:self-start">
               <nav
-                aria-label="Table of contents"
+                aria-label={t('legal.toc')}
                 className="flex flex-col gap-0.5"
               >
                 {sections.map((section) => (

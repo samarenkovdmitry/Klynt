@@ -5,6 +5,7 @@ import Link from 'next/link'
 import LandingPreview from '@/components/LandingPreview'
 import { FigmaIcon, LinearIcon, SlackIcon, TelegramIcon } from '@/components/icons/BrandIcons'
 import { t, getLocale } from '@/lib/i18n'
+import { logoSrc } from '@/lib/market'
 import { siNotion, siGmail, siGoogledrive, siZoom } from 'simple-icons'
 
 function SiIcon({ icon, size = 16 }: { icon: { path: string; hex: string; title: string }; size?: number }) {
@@ -92,7 +93,7 @@ export default function LandingPage() {
       <header className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/">
           <img
-            src="/Klynt_logo.svg"
+            src={logoSrc()}
             alt="Klynt"
             className="h-8 w-auto"
           />

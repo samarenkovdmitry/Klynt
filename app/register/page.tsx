@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { FloatingInput } from '@/components/ui/FloatingInput'
 import { t } from '@/lib/i18n'
+import { logoSrc } from '@/lib/market'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -53,7 +54,7 @@ export default function RegisterPage() {
         <div className="mx-auto w-full max-w-7xl px-6 py-4">
           <Link href="/">
             <img
-              src="/Klynt_logo.svg"
+              src={logoSrc()}
               alt="Klynt"
               className="h-8 w-auto"
             />

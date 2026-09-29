@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { t } from '@/lib/i18n'
+import { logoSrc } from '@/lib/market'
 
 type InviteState =
   | { status: 'loading' }
@@ -54,7 +55,7 @@ export default function InvitePage() {
       <div className="absolute inset-x-0 top-0">
         <div className="mx-auto w-full max-w-7xl px-6 py-4">
           <Link href="/">
-            <img src="/Klynt_logo.svg" alt="Klynt" className="h-8 w-auto" />
+            <img src={logoSrc()} alt="Klynt" className="h-8 w-auto" />
           </Link>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RiCloseLine } from '@remixicon/react';
+import { t } from '@/lib/i18n';
 
 export default function NewProjectModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
         body: JSON.stringify({ name: name.trim(), description: description.trim() || undefined }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create project');
+      if (!res.ok) throw new Error(data.error || t('newProject.failed'));
       onClose();
       router.push(data.project.slug ? `/project/${data.project.slug}` : `/project?projectId=${data.project.id}`);
       router.refresh();
@@ -46,7 +47,7 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ink">New project</h2>
+          <h2 className="text-lg font-semibold text-ink">{t('newProject.title')}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -56,12 +57,12 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
           </button>
         </div>
         <p className="mt-1 text-sm text-ink-muted">
-          Klynt will collect decisions and changes from your tools for this project.
+          {t('newProject.sub')}
         </p>
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div>
             <label htmlFor="new-project-name" className="mb-1.5 block text-sm font-medium text-ink-secondary">
-              Name
+              {t('newProject.name')}
             </label>
             <input
               id="new-project-name"
@@ -70,20 +71,20 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
               onChange={(e) => setName(e.target.value)}
               required
               autoFocus
-              placeholder="Website redesign"
+              placeholder={t('newProject.namePlaceholder')}
               className="w-full rounded-2xl border border-line bg-field px-5 py-3.5 text-base text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
             />
           </div>
           <div>
             <label htmlFor="new-project-description" className="mb-1.5 block text-sm font-medium text-ink-secondary">
-              Description <span className="font-normal text-ink-faint">(optional)</span>
+              {t('newProject.description')} <span className="font-normal text-ink-faint">{t('newProject.optional')}</span>
             </label>
             <input
               id="new-project-description"
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brand identity system. Logo, colors, typography."
+              placeholder={t('newProject.descPlaceholder')}
               className="w-full rounded-2xl border border-line bg-field px-5 py-3.5 text-base text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
             />
           </div>
@@ -93,7 +94,7 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
             disabled={creating}
             className="w-full rounded-full bg-[var(--accent)] px-6 py-3.5 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {creating ? 'Creating...' : 'Create project'}
+            {creating ? t('newProject.creating') : t('newProject.create')}
           </button>
         </form>
       </div>

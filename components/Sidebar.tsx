@@ -16,6 +16,7 @@ import { createClient } from '@/lib/supabase/client';
 import NewProjectModal from '@/components/NewProjectModal';
 import Avatar from '@/components/Avatar';
 import { t } from '@/lib/i18n';
+import { logoSrc } from '@/lib/market';
 
 interface Project {
   id: string;
@@ -38,7 +39,7 @@ interface SidebarProps {
 function KlyntLogo() {
   return (
     <img
-      src="/Klynt_logo.svg"
+      src={logoSrc()}
       alt="Klynt"
       className="h-8 w-auto"
     />
@@ -190,7 +191,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
             onClick={() => setMobileMenuOpen(v => !v)}
             className="flex min-w-0 flex-1 items-center gap-1 rounded-md py-1 text-left"
             aria-expanded={mobileMenuOpen}
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={mobileMenuOpen ? t('sidebar.closeMenu') : t('sidebar.openMenu')}
           >
             <span className="truncate text-[15px] font-semibold text-ink">
               {activeItem === 'project'

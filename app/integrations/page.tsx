@@ -85,7 +85,7 @@ function FigmaWatchPanel({ projectId, integration, onChanged }: {
       setFileUrl('');
       await onChanged();
     } else {
-      setMsg(data.error || 'Failed to watch file');
+      setMsg(data.error || t('integrations.watchFailed'));
     }
     setBusy(false);
   };
@@ -182,7 +182,7 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
       setSelected(data.selected);
       setOpen(true);
     } else {
-      setLoadErr(data.error || 'Failed to load channels');
+      setLoadErr(data.error || t('integrations.loadChannelsFailed'));
     }
     setBusy(false);
   };
@@ -273,7 +273,7 @@ function LinearTeamsPanel({ projectId, integration, onChanged }: {
       setSelected(data.selected);
       setOpen(true);
     } else {
-      setLoadErr(data.error || 'Failed to load teams');
+      setLoadErr(data.error || t('integrations.loadTeamsFailed'));
     }
     setBusy(false);
   };
@@ -377,7 +377,7 @@ function TelegramConnectPanel({ projectId, integration, onChanged, onNotice }: {
       setToken('');
       await onChanged();
     } else {
-      onNotice({ kind: 'error', text: data.error || 'Connection failed' });
+      onNotice({ kind: 'error', text: data.error || t('integrations.connectFailed') });
     }
     setBusy(false);
   };
