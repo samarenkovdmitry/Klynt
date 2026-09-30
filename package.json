@@ -19,7 +19,8 @@
     "import:figma": "node scripts/import-figma-comments.js",
     "import:figma-versions": "node scripts/import-figma-versions.js",
     "seed:demo-projects": "node scripts/seed-demo-projects.js",
-    "figma:refresh": "node scripts/refresh-figma-token.js"
+    "figma:refresh": "node scripts/refresh-figma-token.js",
+    "dev:ru": "node scripts/dev-ru.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.106.0",
