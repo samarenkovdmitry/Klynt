@@ -628,12 +628,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 )}
               </div>
               <p className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[13px] text-ink-muted">
-                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
                 <span>{state.currentState.length} {tp(state.currentState.length, 'plural.area')}</span>
                 {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
                   stateCounts[k] > 0 && (
                     <span key={k} className="inline-flex items-center gap-1">
-                      <span className="text-ink-faint">·</span>
                       <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
                       {stateCounts[k]} {label}
                     </span>
