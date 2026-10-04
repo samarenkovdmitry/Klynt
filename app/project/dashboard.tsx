@@ -98,6 +98,16 @@ const STATE_PILL_STYLES: Record<string, string> = {
 
 const DEFAULT_PILL_STYLE = 'bg-fill text-ink-secondary';
 
+// Segment colours of the header state bar. Approved is a calm green on the
+// left — the bar then reads as a progress bar (done → work left), and colour
+// still belongs to what needs deciding.
+const STATE_BAR_COLORS: Record<string, string> = {
+  approved: 'bg-emerald-300',
+  review: 'bg-amber-400',
+  added: 'bg-blue-400',
+  pending: 'bg-violet-400',
+};
+
 const ACTION_ICONS: Record<string, ReactNode> = {
   added: <RiAddLine size={14} />,
   approved: <RiCheckLine size={14} />,
@@ -579,7 +589,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-[26px] font-bold tracking-tight text-ink">{selectedProject?.name || 'Project'}</h1>
             {(selectedProject?.is_demo || selectedProject?.name?.startsWith('Sample ·')) && (
-              <span className="rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
+              <span className="rounded-full border border-dashed border-line px-2.5 py-1 text-[11px] font-medium text-ink-faint">
                 Sample
               </span>
             )}
@@ -601,27 +611,48 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             <p className="mt-1 text-[15px] text-ink-secondary">{selectedProject.description}</p>
           )}
           {state.currentState.length > 0 && (
-            <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-              <p className="text-[13px] text-ink-muted">
-                {state.currentState.length} {tp(state.currentState.length, 'plural.area')}
-                {stateCounts.approved > 0 && ` · ${stateCounts.approved} ${t('dashboard.approved')}`}
-                {stateCounts.review > 0 && ` · ${stateCounts.review} ${t('dashboard.needReview')}`}
-                {stateCounts.added > 0 && ` · ${stateCounts.added} ${t('dashboard.new')}`}
-                {stateCounts.pending > 0 && ` · ${stateCounts.pending} ${t('dashboard.pending')}`}
+            <div className="mt-3">
+              {/* Segmented state bar — settled on the left like a progress
+                  bar, undecided states keep the attention colours on the right */}
+              <div className="mt-2.5 flex h-1.5 overflow-hidden rounded-full bg-fill" role="img"
+                aria-label={`${stateCounts.approved} ${t('dashboard.approved')}, ${stateCounts.review} ${t('dashboard.needReview')}, ${stateCounts.added} ${t('dashboard.new')}, ${stateCounts.pending} ${t('dashboard.pending')}`}>
+                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
+                  stateCounts[k] > 0 && (
+                    <div
+                      key={k}
+                      title={`${stateCounts[k]} ${label}`}
+                      className={STATE_BAR_COLORS[k]}
+                      style={{ width: `${(stateCounts[k] / state.currentState.length) * 100}%` }}
+                    />
+                  ),
+                )}
+              </div>
+              <p className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[13px] text-ink-muted">
+                <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                <span>{state.currentState.length} {tp(state.currentState.length, 'plural.area')}</span>
+                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
+                  stateCounts[k] > 0 && (
+                    <span key={k} className="inline-flex items-center gap-1">
+                      <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
+                      {stateCounts[k]} {label}
+                    </span>
+                  ),
+                )}
                 {changesSinceVisit > 0 && (
                   <span className="font-medium text-[var(--accent-link)]">
                     {' '}· {changesSinceVisit} {t('dashboard.sinceLastVisit')}
                   </span>
                 )}
+                </span>
+                {lastUpdated && (
+                  <span
+                    className="text-xs text-ink-faint"
+                    title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  >
+                    {t('dashboard.updated')} {formatRelative(lastUpdated)}
+                  </span>
+                )}
               </p>
-              {lastUpdated && (
-                <p
-                  className="text-xs text-ink-faint"
-                  title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                >
-                  {t('dashboard.updated')} {formatRelative(lastUpdated)}
-                </p>
-              )}
             </div>
           )}
         </div>
@@ -734,7 +765,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       <div
                         key={fact.id}
                         onClick={hasHistory ? () => setSelectedFactId(fact.id) : undefined}
-                        className={`group relative flex w-[74%] max-w-[300px] flex-shrink-0 snap-start flex-col rounded-xl border border-line bg-white px-4 py-3 transition-colors sm:w-auto sm:max-w-none ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''}`}
+                        className={`group relative flex w-[74%] max-w-[300px] flex-shrink-0 snap-start flex-col rounded-xl border border-line bg-white px-4 py-3 transition sm:w-auto sm:max-w-none ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''} ${isApproved ? 'opacity-75 hover:opacity-100' : ''}`}
                       >
                         <p className="text-[15px] font-semibold leading-snug text-ink">{capitalize(fact.subject)}</p>
                         <span className={`relative mt-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
