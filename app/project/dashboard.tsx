@@ -612,22 +612,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           )}
           {state.currentState.length > 0 && (
             <div className="mt-3">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-                <p className="text-[15px] font-medium text-ink">
-                  {t('dashboard.verdict', { a: stateCounts.approved, n: state.currentState.length })}
-                  {unresolvedCount > 0 && (
-                    <span className="text-amber-700">{' '}· {t('dashboard.toResolve', { c: unresolvedCount })}</span>
-                  )}
-                </p>
-                {lastUpdated && (
-                  <p
-                    className="text-xs text-ink-faint"
-                    title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                  >
-                    {t('dashboard.updated')} {formatRelative(lastUpdated)}
-                  </p>
-                )}
-              </div>
               {/* Segmented state bar — settled on the left like a progress
                   bar, undecided states keep the attention colours on the right */}
               <div className="mt-2.5 flex h-1.5 overflow-hidden rounded-full bg-fill" role="img"
@@ -643,7 +627,8 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   ),
                 )}
               </div>
-              <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-ink-muted">
+              <p className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[13px] text-ink-muted">
+                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
                 <span>{state.currentState.length} {tp(state.currentState.length, 'plural.area')}</span>
                 {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
                   stateCounts[k] > 0 && (
@@ -657,6 +642,15 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 {changesSinceVisit > 0 && (
                   <span className="font-medium text-[var(--accent-link)]">
                     {' '}· {changesSinceVisit} {t('dashboard.sinceLastVisit')}
+                  </span>
+                )}
+                </span>
+                {lastUpdated && (
+                  <span
+                    className="text-xs text-ink-faint"
+                    title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  >
+                    {t('dashboard.updated')} {formatRelative(lastUpdated)}
                   </span>
                 )}
               </p>

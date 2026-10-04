@@ -220,27 +220,23 @@ export default function LandingPreview() {
             </div>
             <p className="mt-1 text-[15px] text-ink-secondary">{t('preview.subtitle')}</p>
             <div className="mt-3">
-              <div className="flex items-baseline justify-between gap-4">
-                <p className="text-[15px] font-medium text-ink">
-                  {t('dashboard.verdict', { a: 4, n: 8 })}
-                  <span className="text-amber-700"> · {t('dashboard.toResolve', { c: 2 })}</span>
-                </p>
-                <p className="text-xs text-ink-faint">{t('preview.updated')}</p>
-              </div>
-              <div className="mt-2.5 flex h-1.5 overflow-hidden rounded-full bg-fill">
+              <div className="flex h-1.5 overflow-hidden rounded-full bg-fill">
                 {([['approved', 4], ['review', 2], ['added', 1], ['pending', 1]] as const).map(([k, n]) => (
                   <div key={k} className={STATE_BAR_COLORS[k]} style={{ width: `${(n / 8) * 100}%` }} />
                 ))}
               </div>
-              <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-ink-muted">
-                <span>8 {tp(8, 'plural.area')}</span>
-                {([['approved', 4, t('dashboard.approved')], ['review', 2, t('dashboard.needReview')], ['added', 1, t('dashboard.new')], ['pending', 1, t('dashboard.pending')]] as const).map(([k, n, label]) => (
-                  <span key={k} className="inline-flex items-center gap-1">
-                    <span className="text-ink-faint">·</span>
-                    <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
-                    {n} {label}
-                  </span>
-                ))}
+              <p className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[13px] text-ink-muted">
+                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                  <span>8 {tp(8, 'plural.area')}</span>
+                  {([['approved', 4, t('dashboard.approved')], ['review', 2, t('dashboard.needReview')], ['added', 1, t('dashboard.new')], ['pending', 1, t('dashboard.pending')]] as const).map(([k, n, label]) => (
+                    <span key={k} className="inline-flex items-center gap-1">
+                      <span className="text-ink-faint">·</span>
+                      <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
+                      {n} {label}
+                    </span>
+                  ))}
+                </span>
+                <span className="text-xs text-ink-faint">{t('preview.updated')}</span>
               </p>
             </div>
           </div>
