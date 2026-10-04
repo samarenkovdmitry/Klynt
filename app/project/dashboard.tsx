@@ -107,12 +107,14 @@ const STATE_ACCENT: Record<string, string> = {
   removed: 'border-l-violet-300',
 };
 
-// Segment colours of the header state bar, same palette.
+// Segment colours of the header state bar. Approved is a calm green on the
+// left — the bar then reads as a progress bar (done → work left), and colour
+// still belongs to what needs deciding.
 const STATE_BAR_COLORS: Record<string, string> = {
-  pending: 'bg-violet-400',
+  approved: 'bg-emerald-300',
   review: 'bg-amber-400',
   added: 'bg-blue-400',
-  approved: 'bg-line-strong',
+  pending: 'bg-violet-400',
 };
 
 const ACTION_ICONS: Record<string, ReactNode> = {
@@ -596,13 +598,8 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-[26px] font-bold tracking-tight text-ink">{selectedProject?.name || 'Project'}</h1>
             {(selectedProject?.is_demo || selectedProject?.name?.startsWith('Sample ·')) && (
-              <span className="rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
+              <span className="rounded-full border border-dashed border-line px-2.5 py-1 text-[11px] font-medium text-ink-faint">
                 Sample
-              </span>
-            )}
-            {unresolvedCount > 0 && (
-              <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700">
-                {t('dashboard.toResolve', { c: unresolvedCount })}
               </span>
             )}
             {activeSources.length > 0 && (
@@ -640,25 +637,32 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   </p>
                 )}
               </div>
-              {/* Segmented state bar — proportions read faster than the counts below */}
+              {/* Segmented state bar — settled on the left like a progress
+                  bar, undecided states keep the attention colours on the right */}
               <div className="mt-2.5 flex h-1.5 overflow-hidden rounded-full bg-fill" role="img"
                 aria-label={`${stateCounts.approved} ${t('dashboard.approved')}, ${stateCounts.review} ${t('dashboard.needReview')}, ${stateCounts.added} ${t('dashboard.new')}, ${stateCounts.pending} ${t('dashboard.pending')}`}>
-                {(['pending', 'review', 'added', 'approved'] as const).map((k) =>
+                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
                   stateCounts[k] > 0 && (
                     <div
                       key={k}
+                      title={`${stateCounts[k]} ${label}`}
                       className={STATE_BAR_COLORS[k]}
                       style={{ width: `${(stateCounts[k] / state.currentState.length) * 100}%` }}
                     />
                   ),
                 )}
               </div>
-              <p className="mt-2 text-[13px] text-ink-muted">
-                {state.currentState.length} {tp(state.currentState.length, 'plural.area')}
-                {stateCounts.approved > 0 && ` · ${stateCounts.approved} ${t('dashboard.approved')}`}
-                {stateCounts.review > 0 && ` · ${stateCounts.review} ${t('dashboard.needReview')}`}
-                {stateCounts.added > 0 && ` · ${stateCounts.added} ${t('dashboard.new')}`}
-                {stateCounts.pending > 0 && ` · ${stateCounts.pending} ${t('dashboard.pending')}`}
+              <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-ink-muted">
+                <span>{state.currentState.length} {tp(state.currentState.length, 'plural.area')}</span>
+                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
+                  stateCounts[k] > 0 && (
+                    <span key={k} className="inline-flex items-center gap-1">
+                      <span className="text-ink-faint">·</span>
+                      <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
+                      {stateCounts[k]} {label}
+                    </span>
+                  ),
+                )}
                 {changesSinceVisit > 0 && (
                   <span className="font-medium text-[var(--accent-link)]">
                     {' '}· {changesSinceVisit} {t('dashboard.sinceLastVisit')}
