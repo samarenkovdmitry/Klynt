@@ -7,6 +7,7 @@ import { FigmaIcon, LinearIcon, SlackIcon, TelegramIcon } from '@/components/ico
 import { t, getLocale } from '@/lib/i18n'
 import { logoSrc } from '@/lib/market'
 import { siNotion, siGmail, siGoogledrive, siZoom } from 'simple-icons'
+import { RiShieldCheckLine } from '@remixicon/react'
 
 function SiIcon({ icon, size = 16 }: { icon: { path: string; hex: string; title: string }; size?: number }) {
   return (
@@ -160,6 +161,14 @@ export default function LandingPage() {
                 {t('landing.login')}
               </Link>
             </p>
+
+            <Link
+              href="/security"
+              className="mt-4 inline-flex max-w-md items-start gap-1.5 text-xs leading-snug text-ink-faint transition hover:text-ink-secondary"
+            >
+              <RiShieldCheckLine size={13} className="mt-px shrink-0" />
+              <span className="hover:underline">{t('landing.trustLine')}</span>
+            </Link>
 
             <div className="mt-12 flex items-center gap-4">
               {getLocale() === 'ru' ? (
