@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
-import Avatar from '@/components/Avatar';
 import NewProjectModal from '@/components/NewProjectModal';
 import { FigmaIcon, SlackIcon, LinearIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import { emojify } from 'node-emoji';
