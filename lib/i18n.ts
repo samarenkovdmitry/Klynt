@@ -327,7 +327,7 @@ const en: Dict = {
   'integrations.privacy.hint': 'Messages containing these words are never imported or stored. Comma-separated.',
   'integrations.privacy.placeholder': 'e.g. salary, hiring, layoffs',
   'integrations.slack.firstHint': 'Start with one channel — add more anytime.',
-  'integrations.securityLink': 'How Klynt handles your data →',
+  'integrations.securityLink': 'How Klynt handles your data',
   'landing.security': 'Security',
 
   // Security page
@@ -669,7 +669,7 @@ const ru: Dict = {
   'integrations.privacy.hint': 'Сообщения с этими словами не импортируются и не сохраняются. Через запятую.',
   'integrations.privacy.placeholder': 'напр. зарплата, найм, сокращения',
   'integrations.slack.firstHint': 'Начните с одного канала — добавить остальные можно в любой момент.',
-  'integrations.securityLink': 'Как Klynt обращается с вашими данными →',
+  'integrations.securityLink': 'Как Klynt обращается с вашими данными',
   'landing.security': 'Безопасность',
 
   // Security page

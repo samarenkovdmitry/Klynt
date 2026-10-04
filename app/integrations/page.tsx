@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { siNotion, siLinear, siGoogledocs, siTelegram } from 'simple-icons';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
-import { RiArrowDownSLine, RiDeleteBinLine, RiEyeLine, RiForbidLine } from '@remixicon/react';
+import { RiArrowDownSLine, RiArrowRightUpLine, RiDeleteBinLine, RiEyeLine, RiForbidLine } from '@remixicon/react';
 import { track } from '@vercel/analytics';
 import { getEnabledConnectors, getLocale } from '@/lib/market';
 import { t } from '@/lib/i18n';
@@ -625,8 +625,9 @@ export default function IntegrationsPage() {
       <main className="mx-auto w-full max-w-3xl flex-1 px-3 py-6 sm:px-8 sm:py-8">
         <h1 className="text-2xl font-semibold text-ink">{t('integrations.title')}</h1>
         <p className="mt-1 text-sm text-ink-muted">{t('integrations.subtitle')}</p>
-        <a href="/security" target="_blank" rel="noreferrer" className="mt-1 inline-block text-xs font-medium text-[var(--accent-link)] hover:underline">
+        <a href="/security" target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[var(--accent-link)] hover:underline">
           {t('integrations.securityLink')}
+          <RiArrowRightUpLine size={13} />
         </a>
 
         {notice && (
