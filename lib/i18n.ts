@@ -181,7 +181,6 @@ const en: Dict = {
 
   // Landing preview (mock product UI)
   'preview.subtitle': 'Mobile app redesign tracked from Figma and Slack.',
-  'preview.stats': '8 areas · 4 approved · 2 need review · 1 pending',
   'preview.updated': 'Updated 1d ago',
   'preview.yesterday': 'Yesterday',
   'preview.needYou': '2 decisions need you',
