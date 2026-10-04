@@ -1,12 +1,11 @@
 import type { Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Familjen_Grotesk } from "next/font/google";
+import { Instrument_Sans, Inter } from "next/font/google";
 import { GeistMono } from "geist/font/mono";
-import { AppHeader } from "@/components/AppHeader";
-import { AppFooterWrapper } from "@/components/AppFooterWrapper";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
+import { getLocale } from "@/lib/market";
 
 export const metadata = rootMetadata();
 
@@ -15,10 +14,17 @@ export const viewport: Viewport = {
   themeColor: "#FFFFFF",
 };
 
-const familjen = Familjen_Grotesk({
+const instrument = Instrument_Sans({
   subsets: ["latin"],
-  variable: "--font-familjen",
+  variable: "--font-instrument",
   weight: ["400", "500", "600", "700"],
+});
+
+// Inter ships Cyrillic — the RU deployment uses it since
+// Instrument Sans is Latin-only and Cyrillic would fall back to system fonts.
+const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-instrument",
 });
 
 export default function RootLayout({
@@ -26,15 +32,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const isRu = getLocale() === "ru";
   return (
     <html
-      lang="en"
-      className={`${familjen.variable} ${familjen.className} ${GeistMono.variable} antialiased bg-white`}
+      lang={getLocale()}
+      className={`${isRu ? inter.variable + " " + inter.className : instrument.variable + " " + instrument.className} ${GeistMono.variable} antialiased bg-white`}
     >
       <body className="flex min-h-screen flex-col bg-white">
-        <AppHeader />
         <div className="flex flex-1 flex-col">{children}</div>
-        <AppFooterWrapper />
         <Analytics />
         <SpeedInsights />
       </body>

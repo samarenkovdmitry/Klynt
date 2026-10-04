@@ -10,9 +10,9 @@ import {
 
 const OG_IMAGE = {
   url: "/opengraph-image.jpg",
-  width: 1024,
-  height: 537,
-  alt: `${SITE_NAME} — UX Clarity Analyzer`,
+  width: 1733,
+  height: 907,
+  alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
 };
 
 type PageSeoOptions = {

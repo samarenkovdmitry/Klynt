@@ -1,72 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-familjen), sans-serif;
+  --font-sans: var(--font-instrument), sans-serif;
 
-  --color-status-good:     #1D9E75;
-  --color-status-weak:     #BA7517;
-  --color-status-weak-alt: #7B5EA7;
-  --color-status-medium:   #D97706;
-  --color-status-low:      #DC2626;
-
-  /* Signal v4 report palette */
-  --color-v2-surface:        #ECEAE2;
-  --color-v2-card:           #FFFFFF;
-  --color-v2-card-border:    #E3E0D6;
-  --color-v2-card-divider:   #EEEBE2;
-  --color-v2-card-inner:     #F6F5F0;
-  --color-v2-card-faint:     #FAF9F4;
-  --color-v2-dark:           #1B1A17;
-  --color-v2-dark-alt:       #34322C;
-  --color-v2-accent:         #4A4AFF;
-  --color-v2-ink:            #1B1A17;
-  --color-v2-ink-secondary:  #57544C;
-  --color-v2-ink-muted:      #8C887D;
-  --color-v2-ink-faint:      #A39E90;
-  --color-v2-ink-hairline:   #B7B2A4;
-  --color-v2-critical:       #C8322E;
-  --color-v2-critical-bg:    #FBE6E3;
-  --color-v2-critical-text:  #C8322E;
-  --color-v2-high:           #97631A;
-  --color-v2-high-bg:        #F6EBD4;
-  --color-v2-medium:         #6B6557;
-  --color-v2-medium-bg:      #EEEBE1;
-  --color-v2-pass:           #1E8A4F;
-  --color-v2-pass-bg:        #DCF0E3;
-  --color-v2-pass-surface:   #EEF8F1;
-  --color-v2-potential:      #46C988;
-  --color-v2-potential-dark: #5FCB8C;
-
-  /* Landing v2 page tokens */
-  --color-lv2-cream:        #F0EDE6;
-  --color-lv2-green:        #2E8B3A;
-  --color-lv2-green-bright: #2ECC71;
-  --color-lv2-border:       #DCD8CD;
-  --color-lv2-card-border:  #DCD8CD;
-  --color-lv2-card:         #FBFAF6;
-  --color-lv2-step-num:     #ECE8DE;
-  --color-lv2-list-bg:      #FAF8F3;
-  --color-lv2-list-border:  #E8E4DA;
-  --color-lv2-amber:        #BA7517;
-  --color-lv2-amber-bg:     #F5EAD6;
-
-  /* Hero-slot specific tokens */
-  --color-v2-stat-suffix:    #E89490;
-  --color-v2-quote-icon:     #E6C3BA;
-  --color-v2-before-text:    #9A9588;
-  --color-v2-after-text:     #143322;
-  --color-v2-arrow:          #CBC6B9;
-  --color-v2-absent:         #C3BEB1;
-  --color-v2-absent-border:  #D8D1BF;
-  --color-v2-opp-score:      #2E9E6B;
-  --color-v2-opp-suffix:     #8FBFA6;
-  --color-v2-opp-surface:    #F4FBF7;
-  --color-v2-opp-divider:    #E4F0E8;
-  --color-v2-opp-border:     #BFE0CC;
-
-  /* App brand */
-  --color-brand-primary:       #4A4AFF;
-  --color-brand-primary-hover: #3838EB;
+  /* Brand surfaces */
+  --color-cream:           #F5F4EF;
+  --color-app-bg:          #F8F7F4;
+  --color-line:            #E5E1D8;
+  --color-line-soft:       #EDEAE2;
+  --color-line-strong:     #D8D3C7;
+  --color-fill:            #F0EEE8;
+  --color-fill-soft:       #F5F4EF;
+  --color-field:           #FBFAF7;
+  --color-ink:             #151A23;
+  --color-ink-secondary:   #57544C;
+  --color-ink-muted:       #8C887D;
+  --color-ink-faint:       #A39E90;
+  --color-ink-ghost:       #B7B2A4;
 }
 
 :root {
@@ -76,33 +26,39 @@
   --ink-primary: #061C2F;
   --ink-secondary: #8E99A2;
 
-  --stroke-light: #DCE2E7;
-  --gray-soft: #EBEFF3;
-
   --brand-primary: #4A4AFF;
   --brand-primary-hover: #3838EB;
   --brand-primary-shadow: rgba(74, 74, 255, 0.22);
   --brand-primary-shadow-strong: rgba(74, 74, 255, 0.28);
-  --brand-primary-glow: rgba(74, 74, 255, 0.75);
-  --brand-primary-glow-soft: rgba(74, 74, 255, 0.4);
-  --surface-dark: #0e1b36;
 
-  --nordic: #10a6da;
-  --nordic-text: #4A4AFF;
-  --nordic-border: rgba(74, 74, 255, 0.28);
-  --nordic-bg: rgba(74, 74, 255, 0.08);
+  /* Klynt accent — Forest + butter.
+     accent/accent-fg — тёмная плашка и кремовый текст на ней.
+     accent-link — читаемый на белом оттенок для ссылок, фокуса и мелких подписей.
+     accent-tint/tint-fg — светлая кнопка. accent-surface — пастельная подложка. */
+  --accent: #0F3D2E;
+  --accent-hover: #164F3C;
+  --accent-fg: #FFE79A;
+  --accent-link: #0F6B4F;
+  --accent-tint: #E9F3EC;
+  --accent-tint-fg: #0F3D2E;
+  --accent-surface: #F4F9F5;
 }
 
-/* Убираем принудительный шрифт — теперь Tailwind font-sans = Familjen Grotesk */
+/* Убираем принудительный шрифт — теперь Tailwind font-sans = Instrument Sans */
 html {
-  font-family: var(--font-familjen);
+  font-family: var(--font-instrument);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Off-canvas elements (e.g. the project context drawer) must not widen the
+   page — clip horizontal overflow at the document level without creating a
+   scroll container (keeps position: sticky working). */
+html,
+body {
+  overflow-x: clip;
+}
+
+:root {
+  color-scheme: light;
 }
 
 body {
@@ -116,30 +72,22 @@ body {
   100% { box-shadow: 0 0 0 0 rgba(46,139,58,0); }
 }
 
-@keyframes pulse-segment {
-  0%, 100% {
-    opacity: 1;
-    box-shadow:
-      0 0 6px 1px var(--brand-primary-glow),
-      0 0 14px 3px var(--brand-primary-glow-soft);
-  }
-  50% {
-    opacity: 0.75;
-    box-shadow:
-      0 0 10px 2px var(--brand-primary),
-      0 0 22px 6px var(--brand-primary-glow);
-  }
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-@utility animate-pulse-segment {
-  animation: pulse-segment 1.2s ease-in-out infinite;
-}
-
-@utility segment-glow {
-  background-color: var(--brand-primary);
-  box-shadow:
-    0 0 8px 1px var(--brand-primary-glow),
-    0 0 16px 3px var(--brand-primary-glow-soft);
+@utility skeleton-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    #EFEDE6 0%,
+    #EFEDE6 40%,
+    #F7F5EF 50%,
+    #EFEDE6 60%,
+    #EFEDE6 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
 }
 
 @keyframes share-backdrop-in {
@@ -236,4 +184,23 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Override browser autofill to keep Klynt input background. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: inset 0 0 0 1000px #FAFBFC !important;
+  -webkit-text-fill-color: #061C2F !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* On focus the autofill fill would otherwise override the 2px accent edge,
+   so the accent ring is layered on top of the background fill. */
+input:-webkit-autofill:focus {
+  -webkit-box-shadow:
+    inset 0 0 0 1px var(--accent-link),
+    inset 0 0 0 1000px #fff !important;
+  -webkit-text-fill-color: #061C2F !important;
+  transition: background-color 5000s ease-in-out 0s;
 }

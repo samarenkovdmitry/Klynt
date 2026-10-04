@@ -1,5 +1,17 @@
+import { withSentryConfig } from "@sentry/nextjs/config";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    // Safari/iOS probes these icon paths without extensions; they
+    // 404ed and noised up the logs.
+    return [
+      { source: "/apple-icon", destination: "/apple-icon.png" },
+      { source: "/apple-touch-icon.png", destination: "/apple-icon.png" },
+      { source: "/apple-touch-icon-precomposed.png", destination: "/apple-icon.png" },
+    ];
+  },
+
   images: {
     remotePatterns: [
       {
@@ -11,6 +23,7 @@ const nextConfig = {
   },
 
   experimental: {
+    instrumentationHook: true,
     serverActions: {
       allowedOrigins: ["*"],
     },
@@ -18,25 +31,15 @@ const nextConfig = {
 
   output: "standalone",
 
-  outputFileTracingIncludes: {
-    "/report/[id]/opengraph-image": [
-      "./public/og-fallback.jpg",
-      "./public/klynt-logo-dark.svg",
-      "./public/demo/zapier-preview.jpg",
-      "./app/opengraph-image.jpg",
-    ],
-    "/api/reports/[id]/opengraph-image": [
-      "./public/og-fallback.jpg",
-      "./public/klynt-logo-dark.svg",
-      "./public/demo/zapier-preview.jpg",
-      "./app/opengraph-image.jpg",
-    ],
-  },
-
   webpack: (config) => {
     config.externals.push("@sparticuz/chromium");
     return config;
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  silent: !process.env.CI,
+  // Source maps upload requires SENTRY_AUTH_TOKEN — skip until configured
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+  telemetry: false,
+});

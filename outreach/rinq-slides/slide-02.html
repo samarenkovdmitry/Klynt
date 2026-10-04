@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>rinq pitch — slide 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F9FAFB;
+    --surface: #FFFFFF;
+    --ink: #0F172A;
+    --ink-2: #475569;
+    --muted: #64748B;
+    --line: #E2E8F0;
+    --blue: #2563EB;
+    --blue-soft: #EFF6FF;
+    --blue-icon: #DBEAFE;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: var(--bg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    padding: 72px 96px 80px;
+    display: grid;
+    grid-template-columns: 760px 1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -80px;
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .logo {
+    position: absolute;
+    top: 56px;
+    left: 96px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    color: var(--ink);
+  }
+
+  .logo-word {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+
+  .left {
+    padding-top: 48px;
+  }
+
+  h1 {
+    font-size: 58px;
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    max-width: 700px;
+    margin-bottom: 48px;
+  }
+
+  .sub {
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--blue);
+    max-width: 560px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 40px 44px;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 16px 48px rgba(15, 23, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--blue-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--blue);
+  }
+
+  .item h3 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+    line-height: 1.25;
+  }
+
+  .item p {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    font-weight: 400;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="logo">
+    <svg class="logo-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M16 2L18.8 11.2L28 14L18.8 16.8L16 26L13.2 16.8L4 14L13.2 11.2L16 2Z" fill="currentColor"/>
+    </svg>
+    <span class="logo-word">rinq</span>
+  </div>
+
+  <div class="left">
+    <h1>Corporate finance operations are slow, fragmented, and expensive</h1>
+    <p class="sub">Businesses get buried in financial chaos</p>
+  </div>
+
+  <div class="card">
+    <div class="item">
+      <div class="icon">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 14.5L16 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h3>Overspend and Loss of Financial Visibility</h3>
+        <p>Spend creeps up unnoticed: without limits and policies, money moves across multiple channels and CEO/CFO visibility disappears.</p>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="icon">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 14.5L16 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h3>Cash Flow Gaps</h3>
+        <p>43% of SMBs struggle with unreliable cash flow forecasting and face unexpected liquidity shortfalls exceeding $50,000 roughly every 20 days.</p>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="icon">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 14.5L16 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h3>Personal Cards In, Control Out</h3>
+        <p>Around 52% of companies still rely on employees' personal cards for business spending – then reimbursements and accounting get dragged through chats and spreadsheets.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

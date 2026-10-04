@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>МиграПро — редизайн главной (тестовое)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #cc0a0a;
+      --red-hover: #b00909;
+      --blue: #1a4fb0;
+      --blue-sky: #50b3ff;
+      --blue-dark: #1a4694;
+      --blue-mute: #265f91;
+      --bg: #eaf1f6;
+      --text: #1a1b1d;
+      --text-soft: #4a5560;
+      --green: #62c584;
+      --line: #d7e2ec;
+      --white: #ffffff;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 28px rgba(26, 79, 176, 0.08);
+      --shadow-soft: 0 2px 10px rgba(26, 27, 29, 0.04);
+      --container: 1180px;
+      --font: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: #f4f7fa;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; border: 0; cursor: pointer; background: none; }
+    img { display: block; max-width: 100%; }
+    ul { list-style: none; }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      background: var(--white);
+      box-shadow: 0 0 0 1px rgba(26, 79, 176, 0.06);
+    }
+
+    .container {
+      width: min(100% - 48px, var(--container));
+      margin-inline: auto;
+    }
+
+    /* ——— Buttons ——— */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      transition: background .2s ease, color .2s ease, border-color .2s ease, transform .15s ease;
+      white-space: nowrap;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--red); color: #fff; }
+    .btn-primary:hover { background: var(--red-hover); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--blue);
+      border: 1.5px solid rgba(26, 79, 176, 0.28);
+    }
+    .btn-secondary:hover {
+      border-color: var(--blue);
+      background: rgba(26, 79, 176, 0.04);
+    }
+    .btn-ghost-light {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.45);
+    }
+    .btn-ghost-light:hover { background: rgba(255,255,255,0.2); }
+    .btn-sm { min-height: 42px; padding: 0 16px; font-size: 14px; }
+    .link-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--blue);
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .link-arrow:hover { color: var(--blue-mute); }
+    .link-arrow svg { transition: transform .2s ease; }
+    .link-arrow:hover svg { transform: translateX(3px); }
+
+    /* ——— Header ——— */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(215, 226, 236, 0.9);
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 84px;
+      padding: 12px 0;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .logo img { width: 220px; height: auto; }
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-left: auto;
+    }
+    .rating {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 150px;
+    }
+    .rating-stars {
+      display: flex;
+      gap: 2px;
+      color: #f5b400;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    .rating-text {
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--text-soft);
+      max-width: 150px;
+    }
+    .rating-score {
+      font-weight: 700;
+      color: var(--text);
+    }
+    .socials { display: flex; gap: 8px; }
+    .social {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      border: 1px solid transparent;
+      transition: border-color .2s ease, background .2s ease;
+    }
+    .social:hover { border-color: var(--blue-sky); background: #fff; }
+    .social img, .social svg { width: 20px; height: 20px; }
+    .phone-block { text-align: right; }
+    .phone-block a {
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .phone-block a:hover { color: var(--blue); }
+    .phone-block span {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+    .header-nav {
+      border-top: 1px solid var(--line);
+    }
+    .nav-list {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 52px;
+    }
+    .nav-list a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .nav-list a:hover { background: var(--bg); color: var(--blue); }
+    .chev {
+      width: 10px;
+      height: 10px;
+      opacity: 0.55;
+    }
+    .burger {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      place-items: center;
+      gap: 5px;
+      flex-direction: column;
+    }
+    .burger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+    }
+
+    /* ——— Hero ——— */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(900px 420px at 88% 10%, rgba(80, 179, 255, 0.28), transparent 60%),
+        radial-gradient(700px 380px at 8% 90%, rgba(26, 79, 176, 0.35), transparent 55%),
+        linear-gradient(145deg, #163f96 0%, #1a4fb0 48%, #1d5bc4 100%);
+      color: #fff;
+      padding: 48px 0 36px;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, #000 20%, transparent 95%);
+      pointer-events: none;
+    }
+    .hero-decor {
+      position: absolute;
+      right: -40px;
+      top: 40px;
+      width: min(420px, 36vw);
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    .hero-kicker {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 18px;
+      backdrop-filter: blur(6px);
+      max-width: 100%;
+      line-height: 1.35;
+    }
+    .hero-kicker::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(98, 197, 132, 0.25);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .hero h1 {
+      max-width: 720px;
+      font-size: clamp(32px, 4vw, 44px);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .hero-lead {
+      max-width: 680px;
+      font-size: 17px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 28px;
+    }
+    .path-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .path-card {
+      background: #fff;
+      color: var(--text);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+    .path-card--accent {
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+      outline: 2px solid rgba(80, 179, 255, 0.35);
+    }
+    .path-card h2 {
+      font-size: 24px;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .path-sub {
+      font-size: 15px !important;
+      font-weight: 600;
+      color: var(--blue) !important;
+      margin-bottom: 10px !important;
+      flex: 0 !important;
+    }
+    .path-card p {
+      color: var(--text-soft);
+      font-size: 15px;
+      line-height: 1.55;
+      margin-bottom: 22px;
+      flex: 1;
+    }
+    .hero-visual {
+      position: absolute;
+      right: 4%;
+      top: 56px;
+      width: 280px;
+      height: auto;
+      z-index: 0;
+      opacity: 0.95;
+      pointer-events: none;
+      filter: drop-shadow(0 18px 40px rgba(0,0,0,0.18));
+    }
+    .path-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .path-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(80, 179, 255, 0.12);
+      margin-bottom: 14px;
+    }
+
+    /* ——— Stats ——— */
+    .stats {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      z-index: 2;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .stat {
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+    }
+    .stat:last-child { border-right: 0; }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--blue);
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-soft);
+      line-height: 1.4;
+      max-width: 220px;
+    }
+
+    /* ——— Sections shared ——— */
+    .section {
+      padding: 72px 0;
+    }
+    .section--bg { background: var(--bg); }
+    .section-head {
+      max-width: 640px;
+      margin-bottom: 36px;
+    }
+    .section-head h2 {
+      font-size: clamp(28px, 3vw, 34px);
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .section-head p {
+      font-size: 17px;
+      color: var(--text-soft);
+    }
+
+    /* ——— Start tiles ——— */
+    .start-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .start-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-soft);
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+    .start-card:hover {
+      border-color: rgba(26, 79, 176, 0.28);
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+    .start-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #eff7ff, #e3f1ff);
+      margin-bottom: 18px;
+    }
+    .start-card h3 {
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+    .start-card p {
+      font-size: 15px;
+      color: var(--text-soft);
+      line-height: 1.55;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    /* ——— Services ——— */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .service-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    .service-card:hover {
+      border-color: rgba(26, 79, 176, 0.3);
+      box-shadow: var(--shadow);
+    }
+    .service-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .service-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(26, 79, 176, 0.08);
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.02em;
+    }
+    .service-card h3 {
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+    .service-card p {
+      font-size: 15px;
+      color: var(--text-soft);
+      line-height: 1.55;
+      margin-bottom: 24px;
+      flex: 1;
+    }
+    .service-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .price {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .price span {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+    .price strong {
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .services-more {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 10px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      background: rgba(26, 79, 176, 0.04);
+      border: 1px solid rgba(26, 79, 176, 0.08);
+      font-size: 14px;
+      color: var(--text-soft);
+    }
+    .services-more strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .services-more a {
+      color: var(--blue);
+      font-weight: 500;
+    }
+    .services-more a:hover { text-decoration: underline; }
+
+    /* ——— Process ——— */
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .step {
+      position: relative;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      min-height: 100%;
+      box-shadow: var(--shadow-soft);
+    }
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--blue);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .step h3 {
+      font-size: 17px;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .step p {
+      font-size: 14px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+    .pay-note {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 18px 20px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(98, 197, 132, 0.12), rgba(80, 179, 255, 0.08));
+      border: 1px solid rgba(98, 197, 132, 0.28);
+    }
+    .pay-note-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      color: var(--green);
+      box-shadow: var(--shadow-soft);
+    }
+    .pay-note p {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .pay-note strong { font-weight: 600; }
+
+    /* ——— Mobile nav drawer ——— */
+    .mobile-nav {
+      display: none;
+      border-top: 1px solid var(--line);
+      padding: 8px 0 16px;
+    }
+    .mobile-nav.open { display: block; }
+    .mobile-nav a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      font-weight: 500;
+    }
+
+    /* ——— Frame labels for Figma-style presentation ——— */
+    .artboard-label {
+      display: none;
+    }
+
+    /* ——— Responsive ——— */
+    @media (max-width: 1200px) {
+      .hero-visual { width: 220px; right: 2%; top: 72px; opacity: 0.85; }
+    }
+    @media (max-width: 1100px) {
+      .path-grid { grid-template-columns: 1fr; }
+      .process-grid { grid-template-columns: repeat(2, 1fr); }
+      .rating { display: none; }
+      .hero-visual { display: none; }
+      .hero h1, .hero-lead { max-width: 100%; }
+    }
+
+    @media (max-width: 860px) {
+      .container { width: min(100% - 32px, var(--container)); }
+      .header-top { min-height: 68px; gap: 12px; }
+      .logo img { width: 168px; }
+      .header-meta { gap: 10px; }
+      .phone-block { display: none; }
+      .header-cta-desktop { display: none; }
+      .header-nav { display: none; }
+      .socials { display: none; }
+      .burger { display: grid; }
+      .hero { padding: 32px 0 28px; }
+      .hero h1 { font-size: 30px; }
+      .hero-lead { font-size: 16px; margin-bottom: 22px; }
+      .hero-visual { display: none; }
+      .hero-decor { opacity: 0.1; width: 260px; right: -80px; }
+      .path-card { padding: 22px; }
+      .path-card h2 { font-size: 20px; }
+      .path-actions { flex-direction: column; }
+      .path-actions .btn { width: 100%; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .stat {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding: 20px 16px;
+      }
+      .stat:nth-child(odd) { border-right: 1px solid var(--line); }
+      .stat:nth-last-child(-n+2) { border-bottom: 0; }
+      .section { padding: 52px 0; }
+      .start-grid,
+      .services-grid { grid-template-columns: 1fr; }
+      .process-grid { grid-template-columns: 1fr; }
+      .services-more { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* Presentation: two artboards */
+    body.frames {
+      background: #dce5ee;
+      padding: 40px 24px 80px;
+    }
+    body.frames .page { display: none; }
+    body.frames .frames-wrap { display: flex; gap: 40px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+    .frames-wrap { display: none; }
+    .frame {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(26, 70, 148, 0.15);
+    }
+    .frame-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue-mute);
+      margin-bottom: 10px;
+      letter-spacing: 0.02em;
+    }
+    .frame-desktop { width: 1440px; transform-origin: top left; }
+    .frame-mobile { width: 390px; }
+    .scale-wrap { overflow: auto; max-width: 100%; }
+
+    /* Variant switcher */
+    .switcher {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      background: #122a5c;
+      color: #fff;
+      font-size: 13px;
+    }
+    .switcher-inner {
+      width: min(100% - 32px, var(--container));
+      margin: 0 auto;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 8px 0;
+    }
+    .switcher span { opacity: 0.75; }
+    .switcher-links { display: flex; gap: 8px; }
+    .switcher a {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .switcher a.is-active { background: #fff; color: #122a5c; }
+    .switcher a:hover { background: rgba(255,255,255,0.18); }
+    .switcher a.is-active:hover { background: #fff; }
+    .header { top: 42px; }
+    @media (max-width: 860px) {
+      .header { top: 0; }
+      .switcher { position: relative; }
+    }
+  </style>
+</head>
+<body>
+  <div class="switcher">
+    <div class="switcher-inner">
+      <span>Тестовое · три отдельных варианта</span>
+      <div class="switcher-links">
+        <a class="is-active" href="index.html">A — спокойный</a>
+        <a href="variant-b.html">B — визуальный</a>
+        <a href="variant-c.html">C — Outline</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="live">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="container header-top">
+        <a class="logo" href="#" aria-label="МИГРАПРО">
+          <img src="assets/logo.webp" alt="МИГРАПРО — Российское миграционное агентство" width="220" height="56" />
+        </a>
+
+        <div class="header-meta">
+          <div class="rating" aria-label="Рейтинг 4,8">
+            <div class="rating-stars" aria-hidden="true">★★★★★</div>
+            <div class="rating-text"><span class="rating-score">4,8</span> на Яндекс.Картах и 2ГИС</div>
+          </div>
+
+          <div class="socials">
+            <a class="social" href="#" aria-label="MAX">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#1a4fb0"/><path d="M8 13.2c1.5 1.7 3 2.6 4 2.6s2.5-.9 4-2.6" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="10" r="1.1" fill="#fff"/><circle cx="15" cy="10" r="1.1" fill="#fff"/></svg>
+            </a>
+            <a class="social" href="#" aria-label="Telegram">
+              <img src="assets/tg.svg" alt="" width="20" height="20" />
+            </a>
+          </div>
+
+          <div class="phone-block">
+            <a href="tel:+74958590051">+7 (495) 859-00-51</a>
+            <span>Пн–Пт: 09:00–18:00</span>
+          </div>
+
+          <a class="btn btn-primary btn-sm header-cta-desktop" href="#consult">Бесплатная консультация</a>
+          <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+
+      <nav class="header-nav" aria-label="Основное меню">
+        <div class="container">
+          <ul class="nav-list">
+            <li><a href="#uslugi">Услуги <svg class="chev" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></li>
+            <li><a href="/rnr">Работодателям</a></li>
+            <li><a href="/about">О нас</a></li>
+            <li><a href="/informaciya">База знаний</a></li>
+            <li><a href="#otzyvy">Отзывы</a></li>
+            <li><a href="#contacts">Контакты</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container mobile-nav" id="mobileNav">
+        <a href="#uslugi">Услуги <span>▾</span></a>
+        <a href="/rnr">Работодателям</a>
+        <a href="/about">О нас</a>
+        <a href="/informaciya">База знаний</a>
+        <a href="#otzyvy">Отзывы</a>
+        <a href="#contacts">Контакты</a>
+        <div style="padding-top:16px">
+          <a class="btn btn-primary" href="#consult" style="width:100%">Бесплатная консультация</a>
+          <div style="margin-top:12px;text-align:center;font-size:14px;color:var(--text-soft)">
+            <a href="tel:+74958590051" style="font-weight:700;color:var(--text);font-size:18px">+7 (495) 859-00-51</a><br />
+            Пн–Пт: 09:00–18:00
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO + STATS = «шапка» по ТЗ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <svg class="hero-decor" viewBox="0 0 420 320" fill="none" aria-hidden="true">
+        <circle cx="220" cy="160" r="120" stroke="#fff" stroke-width="1.2"/>
+        <circle cx="220" cy="160" r="80" stroke="#fff" stroke-width="1.2"/>
+        <path d="M100 160h240M220 40v240" stroke="#fff" stroke-width="1"/>
+        <path d="M140 90c40 30 80 30 120 0M140 230c40-30 80-30 120 0" stroke="#fff" stroke-width="1.2"/>
+      </svg>
+      <!-- Document creative: calm, no stock people -->
+      <svg class="hero-visual" viewBox="0 0 280 220" fill="none" aria-hidden="true">
+        <rect x="48" y="28" width="150" height="170" rx="14" fill="#fff" opacity="0.96"/>
+        <rect x="66" y="48" width="52" height="64" rx="8" fill="#eaf1f6"/>
+        <rect x="128" y="52" width="50" height="8" rx="4" fill="#1a4fb0" opacity="0.85"/>
+        <rect x="128" y="68" width="40" height="6" rx="3" fill="#50b3ff" opacity="0.7"/>
+        <rect x="66" y="128" width="114" height="6" rx="3" fill="#d7e2ec"/>
+        <rect x="66" y="144" width="96" height="6" rx="3" fill="#d7e2ec"/>
+        <rect x="66" y="160" width="108" height="6" rx="3" fill="#d7e2ec"/>
+        <rect x="118" y="18" width="130" height="158" rx="14" fill="#1a4fb0"/>
+        <rect x="118" y="18" width="130" height="158" rx="14" fill="url(#passGrad)" opacity="0.35"/>
+        <circle cx="183" cy="78" r="28" fill="#50b3ff" opacity="0.35"/>
+        <path d="M155 118c8-14 20-22 28-22s20 8 28 22" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <rect x="138" y="138" width="90" height="8" rx="4" fill="#fff" opacity="0.75"/>
+        <rect x="138" y="154" width="64" height="6" rx="3" fill="#fff" opacity="0.45"/>
+        <circle cx="230" cy="150" r="22" fill="#cc0a0a"/>
+        <path d="M222 150l5 5 12-12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="passGrad" x1="118" y1="18" x2="248" y2="176" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#50b3ff"/>
+            <stop offset="1" stop-color="#1a4694"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="container">
+        <div class="hero-kicker">Офисы в Подольске и Одинцово · работаем по Москве и области</div>
+        <h1 id="hero-title">Миграционные услуги в Москве и Московской области</h1>
+        <p class="hero-lead">
+          РВП, ВНЖ, гражданство РФ: собираем полный пакет документов и ведём дело до результата.
+          Компаниям — легальное оформление иностранных сотрудников. Выберите свой путь.
+        </p>
+
+        <div class="path-grid">
+          <article class="path-card path-card--accent">
+            <div class="path-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="#1a4fb0" stroke-width="1.7"/><path d="M4.5 20.2c1.6-3 4.3-4.5 7.5-4.5s5.9 1.5 7.5 4.5" stroke="#1a4fb0" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <h2>Иностранным гражданам</h2>
+            <p class="path-sub">Оформляю статус себе или семье</p>
+            <p>
+              РВП, ВНЖ, гражданство РФ. Проверим основание, соберём документы, подадим без ошибок.
+              Не знаете, с чего начать — начните с консультации.
+            </p>
+            <div class="path-actions">
+              <a class="btn btn-primary" href="#consult">Бесплатная консультация</a>
+              <a class="btn btn-secondary" href="#uslugi">Смотреть услуги и цены</a>
+            </div>
+          </article>
+
+          <article class="path-card">
+            <div class="path-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 18V7.5A1.5 1.5 0 0 1 5.5 6H10l2 2h6.5A1.5 1.5 0 0 1 20 9.5V18a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18Z" stroke="#1a4fb0" stroke-width="1.7"/><path d="M9 14h6" stroke="#50b3ff" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <h2>Работодателям</h2>
+            <p class="path-sub">Оформляю иностранных сотрудников</p>
+            <p>
+              Разрешения на работу, ВКС, кадровые уведомления в МВД. Более 10 лет в миграционном праве,
+              работаем с компаниями Москвы и области.
+            </p>
+            <div class="path-actions">
+              <a class="btn btn-primary" href="/rnr">Решения для работодателей</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Ключевые показатели">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-value">Более 10 лет</div>
+            <div class="stat-label">помогаем с миграционными документами</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">6 000+</div>
+            <div class="stat-label">оформлений по РВП, ВНЖ и гражданству</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">2 офиса</div>
+            <div class="stat-label">Подольск и Одинцово: приём рядом с домом, без поездки в центр</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">4,8</div>
+            <div class="stat-label">рейтинг на Яндекс.Картах и 2ГИС</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK 1: С чего начать -->
+    <section class="section" id="start" aria-labelledby="start-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="start-title">С чего начать прямо сейчас</h2>
+          <p>Выберите удобный способ разобраться в своей ситуации.</p>
+        </div>
+        <div class="start-grid">
+          <article class="start-card">
+            <div class="start-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 10.5a4 4 0 1 1 4 4" stroke="#1a4fb0" stroke-width="1.7" stroke-linecap="round"/><path d="M12 14.5v2.2M9.5 19h5" stroke="#50b3ff" stroke-width="1.7" stroke-linecap="round"/><path d="M17.5 7.5c.9.9.9 2.4 0 3.3" stroke="#1a4fb0" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Бесплатная консультация</h3>
+            <p>Юрист разберёт вашу ситуацию: какое основание подходит, какие документы нужны и в каком порядке действовать. В чате или по видео, можно анонимно.</p>
+            <a class="link-arrow" href="#consult">Записаться
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </article>
+
+          <article class="start-card">
+            <div class="start-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="14" rx="3" stroke="#1a4fb0" stroke-width="1.7"/><path d="M8 10h5M8 13h8" stroke="#50b3ff" stroke-width="1.7" stroke-linecap="round"/><circle cx="17.5" cy="7.5" r="2.2" fill="#50b3ff"/></svg>
+            </div>
+            <h3>ИИ-юрист</h3>
+            <p>Ответ на миграционный вопрос за минуту — бесплатно и в любое время суток.</p>
+            <a class="link-arrow" href="#">Открыть чат
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </article>
+
+          <article class="start-card">
+            <div class="start-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 4.5h8A2.5 2.5 0 0 1 18.5 7v12l-3-2-3 2-3-2-3 2V7A2.5 2.5 0 0 1 8 4.5Z" stroke="#1a4fb0" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.5 10.5l1.8 1.8 3.7-3.8" stroke="#62c584" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Тест за 2 минуты</h3>
+            <p>Подберём подходящее вам основание и пришлём пошаговый план действий.</p>
+            <a class="link-arrow" href="#">Пройти тест
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK 2: Услуги -->
+    <section class="section section--bg" id="uslugi" aria-labelledby="services-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="services-title">Услуги для иностранных граждан</h2>
+          <p>Выберите свой статус. В карточке — что входит и от какой суммы, полный прайс — на странице услуги.</p>
+        </div>
+
+        <div class="services-grid">
+          <article class="service-card">
+            <div class="service-top">
+              <div class="service-badge">РВП</div>
+            </div>
+            <h3>РВП</h3>
+            <p>По квоте, браку, детям и другим основаниям. Проверим право на подачу до сбора документов.</p>
+            <div class="service-foot">
+              <div class="price"><span>Стоимость</span><strong>от 14 000 ₽</strong></div>
+              <a class="link-arrow" href="#">Подробнее
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <div class="service-top">
+              <div class="service-badge">ВНЖ</div>
+            </div>
+            <h3>ВНЖ</h3>
+            <p>Документы, экзамен, подтверждение дохода, подача и контроль этапов.</p>
+            <div class="service-foot">
+              <div class="price"><span>Стоимость</span><strong>от 14 000 ₽</strong></div>
+              <a class="link-arrow" href="#">Подробнее
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <div class="service-top">
+              <div class="service-badge" style="font-size:11px">РФ</div>
+            </div>
+            <h3>Гражданство РФ</h3>
+            <p>Общий и упрощённый порядок, по браку, детям, указ №11. Подберём основание и подготовим пакет.</p>
+            <div class="service-foot">
+              <div class="price"><span>Стоимость</span><strong>от 14 000 ₽</strong></div>
+              <a class="link-arrow" href="#">Подробнее
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+        </div>
+
+        <div class="services-more">
+          <strong>Все услуги →</strong>
+          <a href="#">квота на РВП</a>,
+          <a href="#">разрешение на работу</a>,
+          <a href="#">временное убежище</a>,
+          <a href="#">репатриация</a>,
+          <a href="#">обжалование запрета и депортации</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK 3: Как мы работаем -->
+    <section class="section" id="how" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="how-title">Как мы работаем</h2>
+          <p>Понятный порядок: вы всегда знаете, на каком этапе находитесь.</p>
+        </div>
+
+        <div class="process-grid">
+          <article class="step">
+            <div class="step-num">1</div>
+            <h3>Бесплатная консультация</h3>
+            <p>Разбираем ситуацию и определяем основание, по которому вам подходит подача.</p>
+          </article>
+          <article class="step">
+            <div class="step-num">2</div>
+            <h3>Договор с фиксированной ценой</h3>
+            <p>Стоимость и состав работ фиксируются в договоре и не меняются по ходу дела.</p>
+          </article>
+          <article class="step">
+            <div class="step-num">3</div>
+            <h3>Подготовка документов</h3>
+            <p>Собираем и проверяем каждую справку и заявление, чтобы не получить отказ из-за формальной ошибки. Типовой срок подготовки пакета — 7 дней.</p>
+          </article>
+          <article class="step">
+            <div class="step-num">4</div>
+            <h3>Подача и сопровождение</h3>
+            <p>Сопровождаем на этапах подачи, отслеживаем статус заявления и консультируем до получения статуса.</p>
+          </article>
+        </div>
+
+        <div class="pay-note">
+          <div class="pay-note-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3.5 9.5l3.2 3.2L14.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p>
+            <strong>Оплата 50/50:</strong> половина при заключении договора, половина — по готовности пакета документов.
+            Цена зафиксирована в договоре и не растёт по ходу дела.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const burger = document.getElementById('burger');
+    const mobileNav = document.getElementById('mobileNav');
+    if (burger && mobileNav) {
+      burger.addEventListener('click', () => {
+        const open = mobileNav.classList.toggle('open');
+        burger.setAttribute('aria-expanded', String(open));
+      });
+    }
+  </script>
+</body>
+</html>

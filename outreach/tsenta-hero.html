@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tsenta — hero concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAFAF8;
+    --card:#FFFFFF;
+    --ink:#0B0B0C;
+    --ink-2:#3A3A3E;
+    --muted:#6B6B70;
+    --line:#E7E4DE;
+    --line-soft:#F0EEE9;
+    --green:#14432A;
+    --green-hi:#1E9E5A;
+    --green-tint:#EDF6F1;
+    --amber:#B45309;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    width:1440px;
+    background:var(--paper);
+    font-family:'Inter',-apple-system,sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- nav ---------- */
+  .nav{
+    width:1200px;margin:0 auto;height:88px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .nav-left{display:flex;align-items:center;gap:40px;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-mark{
+    width:26px;height:26px;border-radius:7px;background:var(--green);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-family:'Instrument Sans';font-weight:700;font-size:14px;
+  }
+  .logo-word{font-family:'Instrument Sans';font-weight:600;font-size:19px;letter-spacing:-0.02em;}
+  .nav-links{display:flex;align-items:center;gap:28px;}
+  .nav-links a{font-size:15px;color:var(--ink-2);text-decoration:none;font-weight:450;}
+  .nav-right{display:flex;align-items:center;gap:20px;}
+  .nav-login{font-size:15px;color:var(--ink-2);text-decoration:none;font-weight:450;}
+  .nav-cta{
+    background:var(--green);color:#fff;text-decoration:none;
+    font-size:15px;font-weight:550;padding:10px 20px;border-radius:9px;
+  }
+
+  /* ---------- hero shell ---------- */
+  .hero{width:1200px;margin:0 auto;padding-top:72px;display:flex;gap:72px;align-items:flex-start;}
+  .col-copy{width:600px;flex:none;}
+  .col-visual{width:528px;flex:none;padding-top:8px;}
+
+  /* ---------- eyebrow ---------- */
+  .eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
+  .chip{
+    display:flex;align-items:center;gap:7px;
+    height:30px;padding:0 12px;border-radius:999px;
+    border:1px solid var(--line);background:var(--card);
+    font-size:13px;font-weight:500;color:var(--ink-2);letter-spacing:-0.005em;
+  }
+  .chip-yc-mark{
+    width:15px;height:15px;border-radius:3px;background:#FF6B00;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:10px;font-weight:700;font-family:'Instrument Sans';
+  }
+  .chip-free{background:var(--green-tint);border-color:#D7E9DF;color:#14432A;font-weight:550;}
+
+  /* ---------- headline ---------- */
+  h1{
+    font-family:'Instrument Sans';
+    font-size:66px;
+    line-height:1.02;
+    letter-spacing:-0.035em;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:26px;
+  }
+  h1 .dim{color:#9A9A9E;}
+
+  .sub{
+    font-size:19px;
+    line-height:1.55;
+    letter-spacing:-0.011em;
+    color:var(--ink-2);
+    width:520px;
+    margin-bottom:36px;
+  }
+  .sub strong{font-weight:600;color:var(--ink);}
+
+  /* ---------- cta ---------- */
+  .cta-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+  .btn-primary{
+    display:flex;align-items:center;gap:10px;
+    height:56px;padding:0 30px;border-radius:12px;
+    background:var(--green);color:#fff;text-decoration:none;
+    font-size:17px;font-weight:600;letter-spacing:-0.01em;
+    box-shadow:0 1px 2px rgba(11,11,12,.12), 0 8px 24px rgba(20,67,42,.20);
+  }
+  .btn-secondary{
+    display:flex;align-items:center;gap:9px;
+    height:56px;padding:0 24px;border-radius:12px;
+    background:var(--card);border:1px solid var(--line);
+    color:var(--ink);text-decoration:none;
+    font-size:17px;font-weight:550;letter-spacing:-0.01em;
+  }
+  .micro{font-size:14px;color:var(--muted);margin-bottom:44px;letter-spacing:-0.005em;}
+
+  /* ---------- channels ---------- */
+  .channels-label{
+    font-size:12px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;
+    color:#8E8E93;margin-bottom:14px;
+  }
+  .channels{display:flex;gap:8px;}
+  .ch{
+    display:flex;align-items:center;gap:8px;
+    height:38px;padding:0 14px;border-radius:10px;
+    background:var(--card);border:1px solid var(--line);
+    font-size:14px;font-weight:500;color:var(--ink-2);letter-spacing:-0.006em;
+  }
+  .ch-ico{width:16px;height:16px;flex:none;}
+
+  /* ---------- live feed card ---------- */
+  .feed{
+    width:528px;background:var(--card);
+    border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 1px 2px rgba(11,11,12,.04), 0 12px 32px rgba(11,11,12,.06), 0 40px 80px rgba(11,11,12,.05);
+    overflow:hidden;
+  }
+  .feed-head{
+    height:56px;padding:0 20px;border-bottom:1px solid var(--line-soft);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .feed-live{display:flex;align-items:center;gap:9px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green-hi);box-shadow:0 0 0 3px rgba(30,158,90,.16);}
+  .feed-title{font-size:14px;font-weight:600;letter-spacing:-0.008em;}
+  .feed-count{font-size:13px;color:var(--muted);}
+  .feed-count b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;}
+
+  .row{
+    height:74px;padding:0 20px;border-bottom:1px solid var(--line-soft);
+    display:flex;align-items:center;gap:14px;
+  }
+  .row:last-child{border-bottom:none;}
+  .avatar{
+    width:36px;height:36px;border-radius:9px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Instrument Sans';font-weight:600;font-size:15px;color:#fff;
+  }
+  .row-main{flex:1;min-width:0;}
+  .row-role{font-size:14.5px;font-weight:550;letter-spacing:-0.01em;margin-bottom:3px;}
+  .row-meta{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px;}
+  .ats{
+    font-size:11px;font-weight:600;letter-spacing:0.01em;
+    padding:2px 6px;border-radius:5px;background:#F3F1EC;color:#6B6B70;
+  }
+  .row-right{text-align:right;flex:none;}
+  .stamp{
+    font-size:12.5px;font-weight:600;color:var(--green-hi);
+    font-variant-numeric:tabular-nums;margin-bottom:4px;
+  }
+  .stamp.pending{color:var(--amber);}
+  .stamp-sub{font-size:11.5px;color:#9A9A9E;}
+
+  .feed-foot{
+    height:52px;padding:0 20px;background:#FCFCFB;border-top:1px solid var(--line-soft);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .feed-foot-txt{font-size:13px;color:var(--muted);}
+  .feed-foot-link{font-size:13px;font-weight:600;color:var(--green);}
+
+  /* ---------- proof strip ---------- */
+  .proof{
+    width:1200px;margin:88px auto 0;padding:36px 0 0;
+    border-top:1px solid var(--line);
+    display:flex;gap:0;
+  }
+  .stat{flex:1;padding-right:40px;}
+  .stat-n{
+    font-family:'Instrument Sans';font-size:42px;font-weight:600;
+    letter-spacing:-0.03em;line-height:1;margin-bottom:10px;
+    font-variant-numeric:tabular-nums;
+  }
+  .stat-l{font-size:14.5px;color:var(--muted);line-height:1.45;letter-spacing:-0.008em;}
+  .spacer{height:96px;}
+</style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-left">
+      <div class="logo">
+        <div class="logo-mark">T</div>
+        <div class="logo-word">Tsenta</div>
+      </div>
+      <div class="nav-links">
+        <a href="#">How it works</a>
+        <a href="#">Platforms</a>
+        <a href="#">Pricing</a>
+        <a href="#">Blog</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <a class="nav-login" href="#">Log in</a>
+      <a class="nav-cta" href="#">Start free</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+
+    <div class="col-copy">
+
+      <div class="eyebrow">
+        <div class="chip"><span class="chip-yc-mark">Y</span> Backed by Y Combinator</div>
+        <div class="chip chip-free">First 25 applications free</div>
+      </div>
+
+      <h1>The job goes live.<br><span class="dim">You're already</span> applied.</h1>
+
+      <p class="sub">
+        Tsenta watches <strong>50,000+ career pages</strong> across Workday, Greenhouse,
+        Lever, Ashby and 15 more ATSes — and submits a tailored résumé the moment a role
+        that fits you appears.
+      </p>
+
+      <div class="cta-row">
+        <a class="btn-primary" href="#">
+          Start applying tonight
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a class="btn-secondary" href="#">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="6.4" stroke="#0B0B0C" stroke-width="1.4"/>
+            <path d="M6.6 5.6l4 2.4-4 2.4V5.6z" fill="#0B0B0C"/>
+          </svg>
+          See it apply
+        </a>
+      </div>
+      <p class="micro">Free to start. No card required. Cancel any time.</p>
+
+      <div class="channels-label">Apply from anywhere</div>
+      <div class="channels">
+        <div class="ch">
+          <svg class="ch-ico" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2.5" width="13" height="9.5" rx="3" stroke="#3A3A3E" stroke-width="1.3"/><path d="M4.5 12v2.2L7.2 12" stroke="#3A3A3E" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          iMessage
+        </div>
+        <div class="ch">
+          <svg class="ch-ico" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.4" stroke="#3A3A3E" stroke-width="1.3"/><path d="M5.6 6.2c0 2.6 1.6 4.2 4.2 4.2l.8-1-1.5-.7-.7.6c-.6-.3-1.2-.9-1.5-1.5l.6-.7-.7-1.5-1.2.6z" fill="#3A3A3E"/></svg>
+          WhatsApp
+        </div>
+        <div class="ch">
+          <svg class="ch-ico" viewBox="0 0 16 16" fill="none"><path d="M8 1.8l1.7 4.5 4.5 1.7-4.5 1.7L8 14.2l-1.7-4.5L1.8 8l4.5-1.7L8 1.8z" stroke="#3A3A3E" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          Claude
+        </div>
+        <div class="ch">
+          <svg class="ch-ico" viewBox="0 0 16 16" fill="none"><path d="M6 5L3 8l3 3M10 5l3 3-3 3" stroke="#3A3A3E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Codex
+        </div>
+        <div class="ch">
+          <svg class="ch-ico" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.4" stroke="#3A3A3E" stroke-width="1.3"/><circle cx="8" cy="8" r="2.4" stroke="#3A3A3E" stroke-width="1.3"/><path d="M10.1 6.1L14.3 5" stroke="#3A3A3E" stroke-width="1.3"/></svg>
+          Chrome
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-visual">
+      <div class="feed">
+
+        <div class="feed-head">
+          <div class="feed-live">
+            <span class="dot"></span>
+            <span class="feed-title">Applying now</span>
+          </div>
+          <div class="feed-count">Today · <b>47</b> submitted</div>
+        </div>
+
+        <div class="row">
+          <div class="avatar" style="background:#635BFF;">S</div>
+          <div class="row-main">
+            <div class="row-role">Software Engineer, Payments</div>
+            <div class="row-meta">Stripe <span class="ats">GREENHOUSE</span></div>
+          </div>
+          <div class="row-right">
+            <div class="stamp">2m after posting</div>
+            <div class="stamp-sub">Résumé tailored</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="avatar" style="background:#0B0B0C;">V</div>
+          <div class="row-main">
+            <div class="row-role">Backend Engineer I</div>
+            <div class="row-meta">Vercel <span class="ats">ASHBY</span></div>
+          </div>
+          <div class="row-right">
+            <div class="stamp">6m after posting</div>
+            <div class="stamp-sub">Résumé tailored</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="avatar" style="background:#2E2E32;">N</div>
+          <div class="row-main">
+            <div class="row-role">Senior Frontend Engineer</div>
+            <div class="row-meta">Notion <span class="ats">LEVER</span></div>
+          </div>
+          <div class="row-right">
+            <div class="stamp pending">Filling form…</div>
+            <div class="stamp-sub">Awaiting your OK</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="avatar" style="background:#0052CC;">A</div>
+          <div class="row-main">
+            <div class="row-role">Product Engineer, Platform</div>
+            <div class="row-meta">Atlassian <span class="ats">WORKDAY</span></div>
+          </div>
+          <div class="row-right">
+            <div class="stamp">11m after posting</div>
+            <div class="stamp-sub">Résumé tailored</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="avatar" style="background:#1E9E5A;">L</div>
+          <div class="row-main">
+            <div class="row-role">Full-Stack Engineer</div>
+            <div class="row-meta">Linktree <span class="ats">WORKDAY</span></div>
+          </div>
+          <div class="row-right">
+            <div class="stamp">4m after posting</div>
+            <div class="stamp-sub">Recruiter replied</div>
+          </div>
+        </div>
+
+        <div class="feed-foot">
+          <div class="feed-foot-txt">Every submission shows you the exact fields sent.</div>
+          <div class="feed-foot-link">Open tracker →</div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <div class="proof">
+    <div class="stat">
+      <div class="stat-n">50,000+</div>
+      <div class="stat-l">Company career pages watched<br>around the clock</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">19</div>
+      <div class="stat-l">Applicant tracking systems<br>covered end to end</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">Top 100</div>
+      <div class="stat-l">Where you land in the pile<br>when you apply first</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">25</div>
+      <div class="stat-l">Free applications before<br>you pay anything</div>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+</body>
+</html>

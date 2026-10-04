@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Context.dev — hero concept · One call</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@450;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F8FB;
+    --card:#FFFFFF;
+    --ink:#0A0F18;
+    --ink-2:#3D4656;
+    --muted:#6B7585;
+    --line:#E2E8F0;
+    --line-2:#CBD5E1;
+    --blue:#2563EB;
+    --blue-deep:#1D4ED8;
+    --blue-tint:#EFF6FF;
+    --cyan:#0891B2;
+    --violet:#6366F1;
+    --ok:#059669;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{background:var(--bg);}
+  body{
+    min-width:1440px;
+    background:var(--bg);
+    font-family:'Inter',-apple-system,sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .hero-band{
+    width:100%;
+    background:
+      radial-gradient(900px 520px at 78% -8%, rgba(37,99,235,0.10), transparent 70%),
+      radial-gradient(700px 400px at 12% 20%, rgba(99,102,241,0.07), transparent 65%),
+      linear-gradient(180deg, #F8FAFC 0%, var(--bg) 100%);
+    padding-bottom:72px;
+  }
+  .wrap{width:1200px;margin:0 auto;}
+  .nav{height:88px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-left{display:flex;align-items:center;gap:36px;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-mark{
+    width:28px;height:28px;border-radius:8px;
+    background:linear-gradient(135deg,var(--blue) 0%,var(--violet) 100%);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .logo-mark svg{display:block;}
+  .logo-word{font-family:'Instrument Sans';font-weight:600;font-size:18px;letter-spacing:-0.02em;}
+  .nav-links{display:flex;gap:26px;}
+  .nav-links a{font-size:14.5px;color:var(--ink-2);text-decoration:none;font-weight:450;}
+  .nav-right{display:flex;align-items:center;gap:16px;}
+  .nav-ghost{font-size:14.5px;color:var(--ink-2);text-decoration:none;font-weight:500;}
+  .nav-solid{
+    background:var(--ink);color:#fff;text-decoration:none;
+    font-size:14.5px;font-weight:550;padding:10px 18px;border-radius:9px;
+  }
+
+  .hero-top{padding-top:64px;display:flex;gap:64px;align-items:flex-start;}
+  .copy{width:520px;flex:none;padding-top:4px;}
+  .visual{width:616px;flex:none;}
+
+  .eyebrow{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;}
+  .chip{
+    height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--line);
+    background:var(--card);font-size:13px;font-weight:500;color:var(--ink-2);
+    display:flex;align-items:center;gap:7px;
+  }
+  .chip-yc .y{
+    width:15px;height:15px;border-radius:3px;background:#FF6B00;color:#fff;
+    font-size:10px;font-weight:700;font-family:'Instrument Sans';
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  h1{
+    font-family:'Instrument Sans';
+    font-size:62px;line-height:1.03;letter-spacing:-0.034em;font-weight:600;
+    margin-bottom:22px;
+  }
+  h1 .mono{font-family:'JetBrains Mono';font-weight:500;font-size:0.92em;color:var(--blue-deep);}
+  h1 .soft{color:var(--muted);font-weight:500;}
+
+  .sub{
+    font-size:18px;line-height:1.55;letter-spacing:-0.01em;color:var(--ink-2);
+    margin-bottom:32px;max-width:480px;
+  }
+  .sub strong{color:var(--ink);font-weight:600;}
+
+  .cta-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+  .btn-p{
+    display:flex;align-items:center;gap:9px;height:52px;padding:0 26px;border-radius:11px;
+    background:var(--blue);color:#fff;text-decoration:none;font-size:16px;font-weight:600;
+    box-shadow:0 1px 2px rgba(37,99,235,.2), 0 10px 28px rgba(37,99,235,.22);
+  }
+  .btn-s{
+    height:52px;padding:0 22px;border-radius:11px;border:1px solid var(--line-2);
+    background:var(--card);color:var(--ink);text-decoration:none;font-size:16px;font-weight:550;
+  }
+  .micro{font-size:13.5px;color:var(--muted);}
+
+  /* ===== product proof panel ===== */
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 1px 2px rgba(10,15,24,.04), 0 20px 50px rgba(10,15,24,.08);
+    overflow:hidden;
+  }
+  .panel-top{
+    padding:16px 18px 14px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;
+  }
+  .dots{display:flex;gap:6px;margin-right:6px;}
+  .dots i{width:10px;height:10px;border-radius:50%;background:#E2E8F0;display:block;}
+  .url-bar{
+    flex:1;height:40px;border-radius:9px;border:1px solid var(--line);
+    background:#F8FAFC;padding:0 14px;display:flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono';font-size:13px;color:var(--ink-2);
+  }
+  .url-bar .lock{color:var(--ok);font-size:12px;}
+  .run{
+    width:40px;height:40px;border-radius:9px;background:var(--ink);border:none;
+    display:flex;align-items:center;justify-content:center;flex:none;cursor:default;
+  }
+
+  .panel-mid{padding:18px 18px 16px;}
+  .endpoint{
+    font-family:'JetBrains Mono';font-size:12px;color:var(--muted);margin-bottom:14px;
+  }
+  .endpoint b{color:var(--blue);font-weight:600;}
+
+  .out-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .out{
+    border:1px solid var(--line);border-radius:11px;padding:12px 13px;background:#FCFDFE;
+    min-height:88px;
+  }
+  .out-h{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+  }
+  .out-label{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);}
+  .out-badge{
+    font-family:'JetBrains Mono';font-size:10px;font-weight:600;
+    padding:2px 6px;border-radius:5px;background:var(--blue-tint);color:var(--blue-deep);
+  }
+  .out-preview{font-size:12.5px;line-height:1.45;color:var(--ink-2);letter-spacing:-0.006em;}
+  .out-preview code{font-family:'JetBrains Mono';font-size:11px;color:var(--violet);}
+
+  .panel-foot{
+    padding:14px 18px;border-top:1px solid var(--line);background:#FAFBFD;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .foot-l{font-size:13px;color:var(--muted);}
+  .foot-l b{color:var(--ink);font-weight:600;}
+  .foot-r{font-family:'JetBrains Mono';font-size:12px;color:var(--ok);font-weight:600;}
+
+  /* strip */
+  .strip{
+    margin-top:56px;padding-top:24px;border-top:1px solid var(--line);
+    display:flex;align-items:center;gap:28px;
+  }
+  .strip-label{
+    font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--muted);flex:none;
+  }
+  .logos{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+  .logos span{font-size:14px;font-weight:600;color:#94A3B8;letter-spacing:-0.02em;}
+
+  .stats{
+    width:100%;background:var(--card);border-top:1px solid var(--line);
+    padding:56px 0 80px;
+  }
+  .stats .wrap{display:flex;}
+  .stat{flex:1;padding-right:32px;}
+  .stat-n{
+    font-family:'Instrument Sans';font-size:40px;font-weight:600;
+    letter-spacing:-0.03em;margin-bottom:8px;font-variant-numeric:tabular-nums;
+  }
+  .stat-l{font-size:14px;color:var(--muted);line-height:1.45;}
+</style>
+</head>
+<body>
+
+<section class="hero-band">
+  <div class="wrap">
+    <nav class="nav">
+      <div class="nav-left">
+        <div class="logo">
+          <div class="logo-mark">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="#fff" opacity=".95"/><rect x="9" y="2" width="5" height="5" rx="1" fill="#fff" opacity=".75"/><rect x="2" y="9" width="5" height="5" rx="1" fill="#fff" opacity=".75"/><rect x="9" y="9" width="5" height="5" rx="1" fill="#fff" opacity=".55"/></svg>
+          </div>
+          <div class="logo-word">Context.dev</div>
+        </div>
+        <div class="nav-links">
+          <a href="#">Product</a>
+          <a href="#">Pricing</a>
+          <a href="#">Docs</a>
+        </div>
+      </div>
+      <div class="nav-right">
+        <a class="nav-ghost" href="#">Sign in</a>
+        <a class="nav-solid" href="#">Get API key</a>
+      </div>
+    </nav>
+
+    <div class="hero-top">
+      <div class="copy">
+        <div class="eyebrow">
+          <div class="chip chip-yc"><span class="y">Y</span> Backed by Y Combinator</div>
+          <div class="chip">500 free credits · no card</div>
+        </div>
+        <h1>
+          Stop duct-taping<br>
+          <span class="soft">scrapers.</span><br>
+          One <span class="mono">URL</span> → full context.
+        </h1>
+        <p class="sub">
+          Markdown, brand tokens, images, sitemap, screenshots — everything your agent needs from a live page,
+          in <strong>one API call</strong>. Built for teams shipping software and AI agents, not maintaining crawl infra.
+        </p>
+        <div class="cta-row">
+          <a class="btn-p" href="#">Get an API key free</a>
+          <a class="btn-s" href="#">Read the docs</a>
+        </div>
+        <p class="micro">Or paste a URL on the right — that’s the whole product.</p>
+      </div>
+
+      <div class="visual">
+        <div class="panel">
+          <div class="panel-top">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <div class="url-bar">
+              <span class="lock">●</span>
+              <span>https://stripe.com</span>
+            </div>
+            <button class="run" type="button" aria-label="Run">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 3.5l9 4.5-9 4.5V3.5z" fill="#fff"/></svg>
+            </button>
+          </div>
+          <div class="panel-mid">
+            <div class="endpoint"><b>POST</b> /v1/context · 200 · 412ms</div>
+            <div class="out-grid">
+              <div class="out">
+                <div class="out-h"><span class="out-label">Markdown</span><span class="out-badge">ready</span></div>
+                <div class="out-preview"># Payments infrastructure<br>Build and scale your business globally…</div>
+              </div>
+              <div class="out">
+                <div class="out-h"><span class="out-label">Brand</span><span class="out-badge">ready</span></div>
+                <div class="out-preview"><code>#635BFF</code> · Inter · logo SVG · social links</div>
+              </div>
+              <div class="out">
+                <div class="out-h"><span class="out-label">Extract</span><span class="out-badge">schema</span></div>
+                <div class="out-preview">pricing tiers · CTAs · nav · meta</div>
+              </div>
+              <div class="out">
+                <div class="out-h"><span class="out-label">Screenshot</span><span class="out-badge">1280</span></div>
+                <div class="out-preview">Hero clip + full-page capture</div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-foot">
+            <div class="foot-l"><b>8 context types</b> from one request</div>
+            <div class="foot-r">+ Monitors · Crawl · Search</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="strip-label">Teams use Context for</div>
+      <div class="logos">
+        <span>Agent tooling</span>
+        <span>Onboarding crawls</span>
+        <span>Brand enrichment</span>
+        <span>Eval datasets</span>
+        <span>Competitive intel</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="wrap">
+    <div class="stat">
+      <div class="stat-n">1</div>
+      <div class="stat-l">API call replaces your<br>scrape + parse + screenshot stack</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">500</div>
+      <div class="stat-l">Free credits to prove it<br>on your URLs</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">JSON</div>
+      <div class="stat-l">Structured outputs your<br>agents can actually use</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">Monitors</div>
+      <div class="stat-l">Watch any site for changes<br>without rebuilding pipelines</div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

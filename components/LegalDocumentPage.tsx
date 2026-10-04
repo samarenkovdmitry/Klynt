@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { REPORT_PAGE_CONTAINER_CLASS } from "@/components/report/reportStyles";
+import { logoSrc } from "@/lib/market";
+import { t } from "@/lib/i18n";
+const CONTENT_CONTAINER_CLASS = "mx-auto w-full max-w-[1040px]";
 
 export type LegalSectionNav = {
   id: string;
@@ -22,12 +24,24 @@ export function LegalDocumentPage({
 }: LegalDocumentPageProps) {
   return (
     <>
+      <header className="sticky top-0 z-20 border-b border-ink/5 bg-white/85 px-4 backdrop-blur-md md:px-6">
+        <div className={`${CONTENT_CONTAINER_CLASS} flex items-center justify-between py-4`}>
+          <Link href="/" aria-label="Klynt home">
+            <img src={logoSrc()} alt="Klynt" className="h-7 w-auto" />
+          </Link>
+          <nav className="flex items-center gap-5 text-sm">
+            <Link href="/login" className="font-medium text-ink-secondary transition hover:text-[var(--accent-link)]">
+              {t('landing.login')}
+            </Link>
+          </nav>
+        </div>
+      </header>
       <main className="min-h-[calc(100dvh-68px)] bg-white px-4 pb-12 pt-6 text-[var(--ink-primary)] md:px-6 md:pt-10">
-        <div className={REPORT_PAGE_CONTAINER_CLASS}>
+        <div className={CONTENT_CONTAINER_CLASS}>
           <div className="grid min-w-0 gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[240px_minmax(0,1fr)]">
             <aside className="hidden min-w-0 lg:block lg:sticky lg:top-[88px] lg:self-start">
               <nav
-                aria-label="Table of contents"
+                aria-label={t('legal.toc')}
                 className="flex flex-col gap-0.5"
               >
                 {sections.map((section) => (
@@ -59,6 +73,17 @@ export function LegalDocumentPage({
           </div>
         </div>
       </main>
+      <footer className="border-t border-ink/10 bg-white px-4 py-5 md:px-6">
+        <div className={`${CONTENT_CONTAINER_CLASS} flex flex-col items-center justify-between gap-3 text-sm text-ink-muted md:flex-row`}>
+          <p>© 2026 Klynt</p>
+          <div className="flex items-center gap-4">
+            <a href="mailto:hello@klynt.one" className="hover:text-[var(--accent-link)]">hello@klynt.one</a>
+            <Link href="/terms" className="hover:text-[var(--accent-link)]">Terms</Link>
+            <Link href="/privacy" className="hover:text-[var(--accent-link)]">Privacy</Link>
+            <Link href="/security" className="hover:text-[var(--accent-link)]">{t('landing.security')}</Link>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }
