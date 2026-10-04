@@ -173,6 +173,7 @@ const en: Dict = {
   'landing.alreadyIn': 'Already in?',
   'landing.comingSoon': 'coming soon',
   'landing.trustLine': 'Read-only on the channels you pick — no DMs, no history import. Disconnect deletes the data.',
+  'landing.learnMore': 'Learn more',
   'landing.terms': 'Terms',
   'landing.privacy': 'Privacy',
 
@@ -516,6 +517,7 @@ const ru: Dict = {
   'landing.alreadyIn': 'Уже есть доступ?',
   'landing.comingSoon': 'скоро',
   'landing.trustLine': 'Только чтение и только выбранные каналы — без лички и истории. Отключение удаляет данные.',
+  'landing.learnMore': 'Подробнее',
   'landing.terms': 'Условия',
   'landing.privacy': 'Конфиденциальность',
 

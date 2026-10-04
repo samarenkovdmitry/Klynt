@@ -7,7 +7,7 @@ import { FigmaIcon, LinearIcon, SlackIcon, TelegramIcon } from '@/components/ico
 import { t, getLocale } from '@/lib/i18n'
 import { logoSrc } from '@/lib/market'
 import { siNotion, siGmail, siGoogledrive, siZoom } from 'simple-icons'
-import { RiShieldCheckLine } from '@remixicon/react'
+import { RiShieldCheckLine, RiArrowRightUpLine } from '@remixicon/react'
 
 function SiIcon({ icon, size = 16 }: { icon: { path: string; hex: string; title: string }; size?: number }) {
   return (
@@ -162,13 +162,19 @@ export default function LandingPage() {
               </Link>
             </p>
 
-            <Link
-              href="/security"
-              className="mt-4 inline-flex max-w-md items-start gap-1.5 text-xs leading-snug text-ink-faint transition hover:text-ink-secondary"
-            >
-              <RiShieldCheckLine size={13} className="mt-px shrink-0" />
-              <span className="hover:underline">{t('landing.trustLine')}</span>
-            </Link>
+            <p className="mt-4 flex max-w-md items-start gap-2 text-xs leading-snug text-ink-faint">
+              <RiShieldCheckLine size={15} className="mt-[1px] shrink-0" />
+              <span>
+                {t('landing.trustLine')}{' '}
+                <Link
+                  href="/security"
+                  className="inline-flex items-center gap-0.5 font-medium text-[var(--accent-link)] hover:underline"
+                >
+                  {t('landing.learnMore')}
+                  <RiArrowRightUpLine size={12} />
+                </Link>
+              </span>
+            </p>
 
             <div className="mt-12 flex items-center gap-4">
               {getLocale() === 'ru' ? (
