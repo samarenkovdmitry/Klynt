@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { siNotion, siLinear, siGoogledocs, siTelegram } from 'simple-icons';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
-import { RiArrowDownSLine } from '@remixicon/react';
+import { RiArrowDownSLine, RiDeleteBinLine, RiEyeLine, RiForbidLine } from '@remixicon/react';
+import { track } from '@vercel/analytics';
 import { getEnabledConnectors, getLocale } from '@/lib/market';
 import { t } from '@/lib/i18n';
 
@@ -16,8 +17,101 @@ interface Integration {
   status: string;
   last_sync_at: string | null;
   config: any;
+  event_count?: number;
   created_at: string;
   updated_at: string;
+}
+
+// What Klynt reads / never does / how to leave — shown on unconnected cards
+// so the OAuth screen isn't the first place a user learns the scope.
+function TrustList({ source }: { source: string }) {
+  const rows = [
+    { icon: <RiEyeLine size={13} />, label: t('trust.reads'), text: t(`trust.${source}.reads`) },
+    { icon: <RiForbidLine size={13} />, label: t('trust.never'), text: t(`trust.${source}.never`) },
+    { icon: <RiDeleteBinLine size={13} />, label: t('trust.exit'), text: t('trust.exitText') },
+  ];
+  return (
+    <div className="mt-3 space-y-1.5 rounded-xl bg-fill-soft px-4 py-3">
+      {rows.map((r, i) => (
+        <div key={i} className="flex items-baseline gap-2 text-[11px] leading-snug">
+          <span className="mt-px shrink-0 translate-y-0.5 text-ink-faint">{r.icon}</span>
+          <span className="w-12 shrink-0 font-semibold uppercase tracking-wide text-ink-faint">{r.label}</span>
+          <span className="text-ink-muted">{r.text}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Keyword denylist — matching messages are dropped at ingestion, never stored.
+function PrivacyPanel({ projectId, integration, onChanged }: {
+  projectId: string;
+  integration: Integration;
+  onChanged: () => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const keywords: string[] = integration.config?.excluded_keywords || [];
+  const [value, setValue] = useState(keywords.join(', '));
+
+  useEffect(() => {
+    setValue(keywords.join(', '));
+  }, [integration.config?.excluded_keywords]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const save = async () => {
+    setBusy(true);
+    await fetch('/api/integrations', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        projectId,
+        source: integration.source,
+        excludedKeywords: value.split(',').map((k) => k.trim()).filter(Boolean),
+      }),
+    });
+    track('integration_privacy_saved', { source: integration.source });
+    await onChanged();
+    setOpen(false);
+    setBusy(false);
+  };
+
+  return (
+    <div className="mt-3 rounded-xl bg-fill-soft px-4 py-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-ink-muted">
+          {t('integrations.privacy.title')}
+          {keywords.length > 0 && (
+            <span className="ml-2 text-ink-faint">
+              {t('integrations.privacy.active', { count: keywords.length })} — {keywords.slice(0, 3).join(', ')}{keywords.length > 3 ? '…' : ''}
+            </span>
+          )}
+        </p>
+        <button onClick={() => setOpen(!open)} className="text-xs font-medium text-ink-secondary hover:text-ink">
+          {open ? t('integrations.slack.close') : t('settings.edit')}
+        </button>
+      </div>
+      {open && (
+        <>
+          <input
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={t('integrations.privacy.placeholder')}
+            className="mt-3 w-full rounded-lg border border-line bg-white px-3 py-2 text-xs text-ink placeholder:text-ink-faint focus:outline-none"
+          />
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-[11px] text-ink-faint">{t('integrations.privacy.hint')}</p>
+            <button
+              onClick={save}
+              disabled={busy}
+              className="ml-3 shrink-0 rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
+            >
+              {t('integrations.slack.save')}
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 // Figma and Slack have multi-colour marks, so they come from BrandIcons.
@@ -172,6 +266,12 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
   const names = integration.config?.channel_names || {};
   const selectedNames = selected.map((id) => names[id] || id).slice(0, 3);
 
+  // First connect: no channels picked yet — open the picker so the user
+  // starts with one channel instead of silently tracking everything.
+  useEffect(() => {
+    if (integration.config?.channel_ids === undefined) load();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const load = async () => {
     setBusy(true);
     setLoadErr(null);
@@ -194,6 +294,7 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ projectId, channelIds: selected }),
     });
+    track('slack_channels_saved', { count: selected.length });
     await onChanged();
     setOpen(false);
     setBusy(false);
@@ -217,7 +318,10 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
       {loadErr && <p className="mt-2 text-xs text-red-500">{loadErr}</p>}
       {open && (
         <>
-          <div className="mt-3 max-h-48 space-y-1 overflow-y-auto">
+          <p className="mt-3 text-[11px] text-ink-faint">
+            {t('integrations.slack.firstHint')}
+          </p>
+          <div className="mt-1.5 max-h-48 space-y-1 overflow-y-auto">
             {channels.map((ch) => (
               <label key={ch.id} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-ink hover:bg-white/60">
                 <input
@@ -373,6 +477,7 @@ function TelegramConnectPanel({ projectId, integration, onChanged, onNotice }: {
     });
     const data = await res.json();
     if (res.ok) {
+      track('integration_connected', { source: 'telegram' });
       onNotice({ kind: 'success', text: t('integrations.telegram.connectedNotice', { bot: data.bot_username }) });
       setToken('');
       await onChanged();
@@ -448,6 +553,7 @@ export default function IntegrationsPage() {
     const errorParam = params.get('error');
     if (successParam) {
       const name = successParam.replace(/_connected$/, '');
+      track('integration_connected', { source: name });
       setNotice({ kind: 'success', text: t('integrations.connectedNotice', { name: name.charAt(0).toUpperCase() + name.slice(1) }) });
       if (queryProjectId) {
         fetch('/api/jobs/process-events', {
@@ -519,6 +625,9 @@ export default function IntegrationsPage() {
       <main className="mx-auto w-full max-w-3xl flex-1 px-3 py-6 sm:px-8 sm:py-8">
         <h1 className="text-2xl font-semibold text-ink">{t('integrations.title')}</h1>
         <p className="mt-1 text-sm text-ink-muted">{t('integrations.subtitle')}</p>
+        <a href="/security" target="_blank" rel="noreferrer" className="mt-1 inline-block text-xs font-medium text-[var(--accent-link)] hover:underline">
+          {t('integrations.securityLink')}
+        </a>
 
         {notice && (
           <div className={`mt-4 flex items-center justify-between rounded-xl px-4 py-3 text-sm ${
@@ -575,7 +684,7 @@ export default function IntegrationsPage() {
                         <p className="font-medium text-ink">{service.name}</p>
                         <p className="text-xs text-ink-muted">
                           {integration
-                            ? `${integration.status === 'active' ? t('integrations.connected') : integration.status} · ${t('integrations.lastSync')} ${formatDate(integration.last_sync_at)}`
+                            ? `${integration.status === 'active' ? t('integrations.connected') : integration.status} · ${t('integrations.lastSync')} ${formatDate(integration.last_sync_at)}${integration.event_count ? ` · ${t('integrations.imported', { count: integration.event_count })}` : ''}`
                             : t(`integrations.${service.source}.desc`)}
                         </p>
                       </div>
@@ -586,6 +695,7 @@ export default function IntegrationsPage() {
                         {service.source !== 'telegram' && (
                           <a
                             href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
+                            onClick={() => track('integration_connect_clicked', { source: service.source })}
                             className="rounded-full bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             {t('integrations.reconnect')}
@@ -602,6 +712,7 @@ export default function IntegrationsPage() {
                       service.source === 'telegram' ? null : (
                         <a
                           href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
+                          onClick={() => track('integration_connect_clicked', { source: service.source })}
                           className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {t('integrations.connect')}
@@ -616,6 +727,14 @@ export default function IntegrationsPage() {
                       </button>
                     )}
                     </div>
+                    {!integration && service.implemented && <TrustList source={service.source} />}
+                    {integration && ['slack', 'telegram'].includes(service.source) && selectedProjectId && (
+                      <PrivacyPanel
+                        projectId={selectedProjectId}
+                        integration={integration}
+                        onChanged={refreshIntegrations}
+                      />
+                    )}
                     {integration && service.source === 'figma' && selectedProjectId && (
                       <FigmaWatchPanel
                         projectId={selectedProjectId}

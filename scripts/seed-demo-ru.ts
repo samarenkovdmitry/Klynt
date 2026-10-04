@@ -23,7 +23,7 @@ async function main() {
 
   const { createDemoProject } = await import('../lib/demo-project');
   const project = await createDemoProject(user.id);
-  console.log('Demo project created:', project.id, project.slug);
+  console.log('Demo project created:', project.id);
 }
 
 main().catch((e) => {

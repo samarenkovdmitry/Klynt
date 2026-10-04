@@ -2,6 +2,7 @@ import { supabase } from '@/lib/db/supabase';
 import { createRawEvent, updateIntegrationLastSync } from '@/lib/db/queries';
 import { telegramApi, type TgUpdate } from '@/lib/telegram/client';
 import { decryptToken } from '@/lib/crypto';
+import { isContentExcluded } from '@/lib/filters';
 
 // Shared update handler used by both the webhook route and the getUpdates
 // polling job (local dev / deployments without a public URL).
@@ -41,6 +42,9 @@ export async function processTelegramUpdate(integration: any, update: TgUpdate):
   // Only new text messages from people — skip bots, service messages, media-only
   if (!message.text || message.from?.is_bot) return;
   if (message.text.startsWith('/')) return;
+
+  // Privacy filter: keyword-denylisted messages are dropped before storage
+  if (isContentExcluded(message.text, integration.config)) return;
 
   const authorName = message.from
     ? [message.from.first_name, message.from.last_name].filter(Boolean).join(' ')

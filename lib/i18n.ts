@@ -31,7 +31,7 @@ const en: Dict = {
   'integrations.justNow': 'Just now',
   'integrations.connectedNotice': '{name} connected. Importing recent activity…',
   'integrations.disconnectedNotice': '{name} disconnected.',
-  'integrations.disconnectConfirm': 'Disconnect {source} from this project?',
+  'integrations.disconnectConfirm': 'Disconnect {source}? Messages imported from it will be deleted.',
   'integrations.disconnectFailed': 'Failed to disconnect. Try again.',
   'integrations.connectionFailed': 'Connection failed: {error}',
   'integrations.connectFailed': 'Connection failed',
@@ -305,6 +305,47 @@ const en: Dict = {
   'integrations.watchFailed': 'Failed to watch file',
   'integrations.loadChannelsFailed': 'Failed to load channels',
   'integrations.loadTeamsFailed': 'Failed to load teams',
+
+  // Trust block shown next to Connect
+  'trust.reads': 'Reads',
+  'trust.never': 'Never',
+  'trust.exit': 'Exit',
+  'trust.exitText': 'Disconnect in one click — imported messages are deleted',
+  'trust.slack.reads': 'New messages in channels you pick — no chat history',
+  'trust.slack.never': 'DMs, unselected channels, posting or reacting',
+  'trust.telegram.reads': 'New text messages in the one chat you add the bot to',
+  'trust.telegram.never': 'Other chats, media, commands, messages from before the bot joined',
+  'trust.figma.reads': 'Comments and versions of the file you link',
+  'trust.figma.never': 'Other files, editing, anything outside Figma',
+  'trust.linear.reads': 'Issue updates and comments in the teams you pick',
+  'trust.linear.never': 'Teams you did not pick, editing issues',
+
+  // Imported transparency + privacy filters
+  'integrations.imported': '{count} events imported',
+  'integrations.privacy.title': 'Privacy filters',
+  'integrations.privacy.active': '{count} excluded',
+  'integrations.privacy.hint': 'Messages containing these words are never imported or stored. Comma-separated.',
+  'integrations.privacy.placeholder': 'e.g. salary, hiring, layoffs',
+  'integrations.slack.firstHint': 'Start with one channel — add more anytime.',
+  'integrations.securityLink': 'How Klynt handles your data →',
+  'landing.security': 'Security',
+
+  // Security page
+  'security.h1': 'Security & data access',
+  'security.s1.title': 'What Klynt reads',
+  'security.s1.items': 'Slack — new text messages in channels you explicitly pick. No history is imported, only messages sent after you connect.\nTelegram — new text messages in the single project chat the bot was added to.\nFigma — comments and version history of the file you link.\nLinear — issue status changes and comments in the teams you pick.',
+  'security.s2.title': 'What Klynt never does',
+  'security.s2.items': 'No DMs or private chats — the Slack app never requests those permissions.\nNo messages outside the channels you picked — filtered in code, not just by policy.\nNo posting or reacting in Slack on your behalf. (The Telegram bot sends one confirmation message when a chat connects.)\nWe never sell your data or share it with third parties.',
+  'security.s3.title': 'How your data is stored',
+  'security.s3.body': 'Project data lives in a Postgres database (Supabase). Access tokens are encrypted at rest with AES-256-GCM and all traffic is served over TLS. Raw messages are kept so every fact has verifiable evidence behind it — and so you can inspect or delete them.',
+  'security.s4.title': 'How AI processes your data',
+  'security.s4.body': 'Incoming events are sent to a language model provider (Anthropic by default) which extracts decisions and state changes into structured facts. Your data is not used to train models. Only the message text needed for interpretation leaves the database; what Klynt stores are structured facts linked back to the original events.',
+  'security.s5.title': 'Who can see imported data',
+  'security.s5.body': 'Only members of the project see its events and facts. People appearing in imported messages are shown as attribution names — they get no access to the project. Nothing imported is visible to other projects or other Klynt customers.',
+  'security.s6.title': 'Disconnect and deletion',
+  'security.s6.body': 'Disconnect a source in one click from Integrations: the connection is revoked and messages imported from it are deleted. Deleting a project removes everything — events, facts, members and integrations.',
+  'security.s7.title': 'Questions?',
+  'security.s7.body': 'For security questions or a review, write to hello@klynt.one — we are happy to walk your security team through this document.',
 };
 
 const ru: Dict = {
@@ -332,7 +373,7 @@ const ru: Dict = {
   'integrations.justNow': 'Только что',
   'integrations.connectedNotice': '{name} подключён. Импортируем недавнюю активность…',
   'integrations.disconnectedNotice': '{name} отключён.',
-  'integrations.disconnectConfirm': 'Отключить {source} от этого проекта?',
+  'integrations.disconnectConfirm': 'Отключить {source}? Импортированные из него сообщения будут удалены.',
   'integrations.disconnectFailed': 'Не удалось отключить. Попробуйте ещё раз.',
   'integrations.connectionFailed': 'Ошибка подключения: {error}',
   'integrations.connectFailed': 'Ошибка подключения',
@@ -606,6 +647,47 @@ const ru: Dict = {
   'integrations.watchFailed': 'Не удалось подключить файл',
   'integrations.loadChannelsFailed': 'Не удалось загрузить каналы',
   'integrations.loadTeamsFailed': 'Не удалось загрузить команды',
+
+  // Trust block shown next to Connect
+  'trust.reads': 'Читает',
+  'trust.never': 'Никогда',
+  'trust.exit': 'Выход',
+  'trust.exitText': 'Отключается в один клик — импортированные сообщения удаляются',
+  'trust.slack.reads': 'Новые сообщения в выбранных каналах — без истории переписки',
+  'trust.slack.never': 'Личку, невыбранные каналы, отправку и реакции',
+  'trust.telegram.reads': 'Новые текстовые сообщения в одном чате, куда добавлен бот',
+  'trust.telegram.never': 'Другие чаты, медиа, команды и сообщения до добавления бота',
+  'trust.figma.reads': 'Комментарии и версии связанного файла',
+  'trust.figma.never': 'Другие файлы, редактирование, всё за пределами Figma',
+  'trust.linear.reads': 'Обновления задач и комментарии в выбранных командах',
+  'trust.linear.never': 'Невыбранные команды, редактирование задач',
+
+  // Imported transparency + privacy filters
+  'integrations.imported': 'Событий импортировано: {count}',
+  'integrations.privacy.title': 'Фильтры приватности',
+  'integrations.privacy.active': 'исключено: {count}',
+  'integrations.privacy.hint': 'Сообщения с этими словами не импортируются и не сохраняются. Через запятую.',
+  'integrations.privacy.placeholder': 'напр. зарплата, найм, сокращения',
+  'integrations.slack.firstHint': 'Начните с одного канала — добавить остальные можно в любой момент.',
+  'integrations.securityLink': 'Как Klynt обращается с вашими данными →',
+  'landing.security': 'Безопасность',
+
+  // Security page
+  'security.h1': 'Безопасность и доступ к данным',
+  'security.s1.title': 'Что читает Klynt',
+  'security.s1.items': 'Slack — новые текстовые сообщения в каналах, которые вы явно выбрали. История не импортируется — только сообщения после подключения.\nTelegram — новые текстовые сообщения в единственном проектном чате, куда добавлен бот.\nFigma — комментарии и история версий связанного файла.\nLinear — изменения статусов задач и комментарии в выбранных командах.',
+  'security.s2.title': 'Чего Klynt никогда не делает',
+  'security.s2.items': 'Не читает личные переписки — Slack-приложение вообще не запрашивает такие разрешения.\nНе читает сообщения вне выбранных каналов — фильтрация в коде, а не только в политике.\nНе пишет и не ставит реакции в Slack от вашего имени. (Telegram-бот отправляет одно подтверждение при подключении чата.)\nНе продаёт данные и не передаёт их третьим лицам.',
+  'security.s3.title': 'Как хранятся данные',
+  'security.s3.body': 'Данные проекта хранятся в Postgres (Supabase). Токены доступа зашифрованы AES-256-GCM, весь трафик идёт по TLS. Исходные сообщения хранятся, чтобы за каждым фактом стояло проверяемое доказательство — и чтобы их можно было посмотреть или удалить.',
+  'security.s4.title': 'Как AI обрабатывает данные',
+  'security.s4.body': 'Входящие события отправляются в LLM (по умолчанию Anthropic), которая выделяет решения и изменения состояния в структурированные факты. Ваши данные не используются для обучения моделей. Из базы уходит только текст, необходимый для интерпретации; в Klynt сохраняются структурированные факты со ссылками на исходные события.',
+  'security.s5.title': 'Кто видит импортированные данные',
+  'security.s5.body': 'События и факты видят только участники проекта. Люди из импортированных сообщений отображаются как имена для атрибуции — доступа к проекту у них нет. Ничто импортированное не видно другим проектам и клиентам Klynt.',
+  'security.s6.title': 'Отключение и удаление',
+  'security.s6.body': 'Отключите источник одним кликом в «Интеграциях»: подключение отзывается, а импортированные из него сообщения удаляются. Удаление проекта стирает всё — события, факты, участников и интеграции.',
+  'security.s7.title': 'Вопросы?',
+  'security.s7.body': 'По вопросам безопасности или для аудита пишите на hello@klynt.one — пройдём этот документ вместе с вашей командой безопасности.',
 };
 
 const dicts: Record<string, Dict> = { en, ru };

@@ -4,6 +4,7 @@ import { getIntegration, getProject, listOwnedProjectIds } from '@/lib/db/querie
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { decryptToken } from '@/lib/crypto';
 import { linearGraphQL } from '@/lib/linear/client';
+import { normalizeKeywords } from '@/lib/filters';
 
 export async function GET() {
   try {
@@ -22,9 +23,62 @@ export async function GET() {
 
     if (error) throw error;
 
-    return NextResponse.json({ integrations: integrations || [] });
+    // Attach imported-event counts so the UI can show exactly what came in
+    const withCounts = await Promise.all(
+      (integrations || []).map(async (i) => {
+        const { count } = await supabase
+          .from('raw_events')
+          .select('id', { count: 'exact', head: true })
+          .eq('project_id', i.project_id)
+          .eq('source', i.source);
+        return { ...i, event_count: count ?? 0 };
+      }),
+    );
+
+    return NextResponse.json({ integrations: withCounts });
   } catch (error) {
     console.error('Error listing integrations:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+// PATCH /api/integrations — update per-integration settings.
+// Currently: privacy keyword denylist in config.excluded_keywords.
+export async function PATCH(request: NextRequest) {
+  try {
+    const user = await getSessionUser();
+    if (!user) return unauthorizedResponse();
+
+    const { projectId, source, excludedKeywords } = await request.json();
+    if (!projectId || !source || !Array.isArray(excludedKeywords)) {
+      return NextResponse.json(
+        { error: 'projectId, source and excludedKeywords[] required' },
+        { status: 400 },
+      );
+    }
+
+    const project = await getProject(projectId, user.id);
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    const integration = await getIntegration(projectId, source);
+    if (!integration) {
+      return NextResponse.json({ error: 'Integration not found' }, { status: 404 });
+    }
+
+    const keywords = normalizeKeywords(excludedKeywords);
+
+    const { error } = await supabase
+      .from('integrations')
+      .update({ config: { ...integration.config, excluded_keywords: keywords } })
+      .eq('id', integration.id);
+
+    if (error) throw error;
+
+    return NextResponse.json({ excluded_keywords: keywords });
+  } catch (error) {
+    console.error('Error updating integration:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -87,6 +141,36 @@ export async function DELETE(request: NextRequest) {
       }
     } catch (e) {
       console.error(`Provider cleanup failed for ${source}:`, e);
+    }
+
+    // Purge data imported from this source: raw_events → candidate_events
+    // (cascade), fact_evidence (cascade via raw_events). Blocking FKs are
+    // severed first: conflicts/facts keep their rows but lose the evidence.
+    try {
+      const { data: sourceEvents } = await supabase
+        .from('raw_events')
+        .select('id')
+        .eq('project_id', projectId)
+        .eq('source', source);
+      const eventIds = (sourceEvents || []).map((e) => e.id);
+
+      if (eventIds.length > 0) {
+        const { data: cands } = await supabase
+          .from('candidate_events')
+          .select('id')
+          .in('raw_event_id', eventIds);
+        const candIds = (cands || []).map((c) => c.id);
+
+        if (candIds.length > 0) {
+          await supabase.from('conflicts').update({ new_event_id: null }).in('new_event_id', candIds);
+          await supabase.from('project_facts').update({ primary_event_id: null }).in('primary_event_id', candIds);
+          await supabase.from('fact_history').delete().in('event_id', candIds);
+          await supabase.from('candidate_events').delete().in('id', candIds);
+        }
+        await supabase.from('raw_events').delete().in('id', eventIds);
+      }
+    } catch (e) {
+      console.error(`Data purge failed for ${source}:`, e);
     }
 
     const { error } = await supabase

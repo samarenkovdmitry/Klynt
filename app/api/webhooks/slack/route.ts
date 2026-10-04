@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { SlackWebhookEvent } from '@/lib/types/events';
 import { createRawEvent, getIntegrationByTeamId } from '@/lib/db/queries';
 import { decryptToken } from '@/lib/crypto';
+import { isContentExcluded } from '@/lib/filters';
 
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 const MAX_SIGNATURE_AGE_MS = 5 * 60 * 1000;
@@ -72,10 +73,15 @@ export async function POST(request: NextRequest) {
     }
 
     // If the user picked specific channels, ignore messages from the rest.
-    // No selection (undefined) = legacy accept-all behavior.
+    // No selection (undefined or []) = accept-all behavior.
     const channelIds: string[] | undefined = integration.config?.channel_ids;
-    if (channelIds && !channelIds.includes(slackEvent.channel)) {
+    if (channelIds?.length && !channelIds.includes(slackEvent.channel)) {
       return NextResponse.json({ received: true });
+    }
+
+    // Privacy filter: keyword-denylisted messages are dropped before storage
+    if (isContentExcluded(slackEvent.text, integration.config)) {
+      return NextResponse.json({ received: true, filtered: true });
     }
 
     const projectId = integration.project_id;
