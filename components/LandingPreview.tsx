@@ -45,6 +45,8 @@ function FactCard({
   approved,
   actor,
   source,
+  accent,
+  dimmed,
 }: {
   subject: string;
   label: string;
@@ -55,9 +57,11 @@ function FactCard({
   approved?: boolean;
   actor?: string;
   source?: SourceIcon;
+  accent?: string;
+  dimmed?: boolean;
 }) {
   return (
-    <div className="flex flex-col rounded-xl border border-line bg-white px-4 py-3">
+    <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${accent ? `border-l-[3px] ${accent}` : ''} ${dimmed ? 'opacity-75' : ''}`}>
       <p className="text-[15px] font-semibold leading-snug text-ink">{subject}</p>
       <span className={`mt-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
         {approved && <RiCheckLine size={11} />}
@@ -127,6 +131,15 @@ function LatestEvent({
 const NEUTRAL_PILL = 'bg-fill text-ink-secondary';
 const AMBER_PILL = 'bg-amber-50 text-amber-700';
 const VIOLET_PILL = 'bg-violet-50 text-violet-700';
+const BLUE_PILL = 'bg-blue-50 text-blue-700';
+
+// Mirrors the real dashboard's state-bar palette (done → work left).
+const STATE_BAR_COLORS: Record<string, string> = {
+  approved: 'bg-emerald-300',
+  review: 'bg-amber-400',
+  added: 'bg-blue-400',
+  pending: 'bg-violet-400',
+};
 
 export default function LandingPreview() {
   const msgSource: SourceIcon = getLocale() === 'ru' ? 'telegram' : 'slack';
@@ -208,11 +221,29 @@ export default function LandingPreview() {
               )}
             </div>
             <p className="mt-1 text-[15px] text-ink-secondary">{t('preview.subtitle')}</p>
-            <div className="mt-2.5 flex items-baseline justify-between gap-4">
-              <p className="text-[13px] text-ink-muted">
-                {t('preview.stats')}
+            <div className="mt-3">
+              <div className="flex items-baseline justify-between gap-4">
+                <p className="text-[15px] font-medium text-ink">
+                  {t('dashboard.verdict', { a: 4, n: 8 })}
+                  <span className="text-amber-700"> · {t('dashboard.toResolve', { c: 2 })}</span>
+                </p>
+                <p className="text-xs text-ink-faint">{t('preview.updated')}</p>
+              </div>
+              <div className="mt-2.5 flex h-1.5 overflow-hidden rounded-full bg-fill">
+                {([['approved', 4], ['review', 2], ['added', 1], ['pending', 1]] as const).map(([k, n]) => (
+                  <div key={k} className={STATE_BAR_COLORS[k]} style={{ width: `${(n / 8) * 100}%` }} />
+                ))}
+              </div>
+              <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-ink-muted">
+                <span>8 {tp(8, 'plural.area')}</span>
+                {([['approved', 4, t('dashboard.approved')], ['review', 2, t('dashboard.needReview')], ['added', 1, t('dashboard.new')], ['pending', 1, t('dashboard.pending')]] as const).map(([k, n, label]) => (
+                  <span key={k} className="inline-flex items-center gap-1">
+                    <span className="text-ink-faint">·</span>
+                    <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
+                    {n} {label}
+                  </span>
+                ))}
               </p>
-              <p className="text-xs text-ink-faint">{t('preview.updated')}</p>
             </div>
           </div>
 
@@ -229,6 +260,7 @@ export default function LandingPreview() {
                     ago={t('preview.card1.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
+                    accent="border-l-amber-300"
                   />
                   <FactCard
                     subject={t('preview.card2.subject')}
@@ -239,6 +271,7 @@ export default function LandingPreview() {
                     ago={t('preview.card2.ago')}
                     actor={t('preview.actor3')}
                     source={msgSource}
+                    accent="border-l-violet-300"
                   />
                   <FactCard
                     subject={t('preview.card3.subject')}
@@ -248,6 +281,7 @@ export default function LandingPreview() {
                     ago={t('preview.card3.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
+                    accent="border-l-amber-300"
                   />
                   <FactCard
                     subject={t('preview.card4.subject')}
@@ -258,6 +292,7 @@ export default function LandingPreview() {
                     approved
                     actor={t('preview.actor2')}
                     source={msgSource}
+                    dimmed
                   />
                   <FactCard
                     subject={t('preview.card5.subject')}
@@ -268,15 +303,17 @@ export default function LandingPreview() {
                     approved
                     actor={t('preview.actor2')}
                     source={msgSource}
+                    dimmed
                   />
                   <FactCard
                     subject={t('preview.card6.subject')}
                     label={t('preview.card6.label')}
-                    pillStyle={NEUTRAL_PILL}
+                    pillStyle={BLUE_PILL}
                     changes={2}
                     ago={t('preview.card6.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
+                    accent="border-l-blue-300"
                   />
                 </div>
               </section>
