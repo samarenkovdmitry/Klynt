@@ -275,6 +275,15 @@ export default function LandingPreview() {
                     source="figma"
                   />
                   <FactCard
+                    subject={t('preview.card6.subject')}
+                    label={t('preview.card6.label')}
+                    pillStyle={BLUE_PILL}
+                    changes={2}
+                    ago={t('preview.card6.ago')}
+                    actor={t('preview.actor1')}
+                    source="figma"
+                  />
+                  <FactCard
                     subject={t('preview.card4.subject')}
                     label={t('preview.card4.label')}
                     pillStyle={NEUTRAL_PILL}
@@ -295,15 +304,6 @@ export default function LandingPreview() {
                     actor={t('preview.actor2')}
                     source={msgSource}
                     dimmed
-                  />
-                  <FactCard
-                    subject={t('preview.card6.subject')}
-                    label={t('preview.card6.label')}
-                    pillStyle={BLUE_PILL}
-                    changes={2}
-                    ago={t('preview.card6.ago')}
-                    actor={t('preview.actor1')}
-                    source="figma"
                   />
                 </div>
               </section>
