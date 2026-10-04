@@ -45,7 +45,6 @@ function FactCard({
   approved,
   actor,
   source,
-  accent,
   dimmed,
 }: {
   subject: string;
@@ -57,11 +56,10 @@ function FactCard({
   approved?: boolean;
   actor?: string;
   source?: SourceIcon;
-  accent?: string;
   dimmed?: boolean;
 }) {
   return (
-    <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${accent ? `border-l-[3px] ${accent}` : ''} ${dimmed ? 'opacity-75' : ''}`}>
+    <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${dimmed ? 'opacity-75' : ''}`}>
       <p className="text-[15px] font-semibold leading-snug text-ink">{subject}</p>
       <span className={`mt-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
         {approved && <RiCheckLine size={11} />}
@@ -260,7 +258,6 @@ export default function LandingPreview() {
                     ago={t('preview.card1.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
-                    accent="border-l-amber-300"
                   />
                   <FactCard
                     subject={t('preview.card2.subject')}
@@ -271,7 +268,6 @@ export default function LandingPreview() {
                     ago={t('preview.card2.ago')}
                     actor={t('preview.actor3')}
                     source={msgSource}
-                    accent="border-l-violet-300"
                   />
                   <FactCard
                     subject={t('preview.card3.subject')}
@@ -281,7 +277,6 @@ export default function LandingPreview() {
                     ago={t('preview.card3.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
-                    accent="border-l-amber-300"
                   />
                   <FactCard
                     subject={t('preview.card4.subject')}
@@ -313,7 +308,6 @@ export default function LandingPreview() {
                     ago={t('preview.card6.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
-                    accent="border-l-blue-300"
                   />
                 </div>
               </section>

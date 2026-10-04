@@ -98,15 +98,6 @@ const STATE_PILL_STYLES: Record<string, string> = {
 
 const DEFAULT_PILL_STYLE = 'bg-fill text-ink-secondary';
 
-// Left accent strip on state cards — colour only where a decision is open.
-// Approved has none: settled areas recede instead of competing for attention.
-const STATE_ACCENT: Record<string, string> = {
-  added: 'border-l-blue-300',
-  modify: 'border-l-amber-300',
-  modified: 'border-l-amber-300',
-  removed: 'border-l-violet-300',
-};
-
 // Segment colours of the header state bar. Approved is a calm green on the
 // left — the bar then reads as a progress bar (done → work left), and colour
 // still belongs to what needs deciding.
@@ -781,7 +772,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       <div
                         key={fact.id}
                         onClick={hasHistory ? () => setSelectedFactId(fact.id) : undefined}
-                        className={`group relative flex w-[74%] max-w-[300px] flex-shrink-0 snap-start flex-col rounded-xl border border-line bg-white px-4 py-3 transition sm:w-auto sm:max-w-none ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''} ${STATE_ACCENT[fact.current_state?.toLowerCase()] ? 'border-l-[3px] ' + STATE_ACCENT[fact.current_state?.toLowerCase()] : ''} ${isApproved ? 'opacity-75 hover:opacity-100' : ''}`}
+                        className={`group relative flex w-[74%] max-w-[300px] flex-shrink-0 snap-start flex-col rounded-xl border border-line bg-white px-4 py-3 transition sm:w-auto sm:max-w-none ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''} ${isApproved ? 'opacity-75 hover:opacity-100' : ''}`}
                       >
                         <p className="text-[15px] font-semibold leading-snug text-ink">{capitalize(fact.subject)}</p>
                         <span className={`relative mt-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
