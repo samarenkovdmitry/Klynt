@@ -73,14 +73,7 @@ function FactCard({
           <span>{changes} {tp(changes, 'plural.change')}{ago ? ` · ${ago}` : ''}</span>
           {(actor || source) && (
             <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
-              {actor && (
-                <>
-                  <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
-                    <Avatar name={actor} email={`${actor.toLowerCase()}@lunar.app`} className="text-[8px]" />
-                  </span>
-                  <span className="max-w-[80px] truncate">{actor}</span>
-                </>
-              )}
+              {actor && <span className="max-w-[80px] truncate">{actor}</span>}
               {source && <SourceGlyph source={source} size={12} />}
             </span>
           )}

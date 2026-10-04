@@ -797,12 +797,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             {(lastActor || lastSource) && (
                               <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
                                 {lastActor && !isRawExternalId(lastActor) && (
-                                  <>
-                                    <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
-                                      <Avatar name={lastActor} email={lastActor} className="text-[8px]" />
-                                    </span>
-                                    <span className="max-w-[80px] truncate">{lastActor}</span>
-                                  </>
+                                  <span className="max-w-[80px] truncate">{lastActor}</span>
                                 )}
                                 {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource === 'linear' ? <LinearIcon size={12} /> : lastSource === 'telegram' ? <TelegramIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
                               </span>
