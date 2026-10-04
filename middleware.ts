@@ -8,6 +8,7 @@ const PUBLIC_PATHS = new Set([
   '/auth/confirm',
   '/terms',
   '/privacy',
+  '/security',
   '/robots.txt',
   '/favicon.ico',
   '/klynt-logo-dark.svg',
