@@ -106,12 +106,7 @@ function LatestEvent({
         <p className="mt-0.5 truncate text-xs text-ink-muted">{meta}</p>
       </div>
       <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
-        <span className="flex items-center gap-1">
-          <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-full">
-            <Avatar name={author} email={`${author.toLowerCase()}@lunar.app`} className="text-[8px]" />
-          </span>
-          {author}
-        </span>
+        {author}
         <SourceGlyph source={source} size={14} />
         {ago}
       </span>

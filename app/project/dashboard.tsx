@@ -684,12 +684,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         </div>
                         <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
                           {event.author && !isRawExternalId(event.author) && (
-                            <span className="flex items-center gap-1">
-                              <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
-                                <Avatar name={event.author} email={event.author} className="text-[8px]" />
-                              </span>
-                              <span className="max-w-[84px] truncate">{event.author}</span>
-                            </span>
+                            <span className="max-w-[84px] truncate">{event.author}</span>
                           )}
                           {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : source === 'telegram' ? <TelegramIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
                           {formatRelative(eventTime)}
@@ -889,12 +884,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                                 </div>
                                 <span className="flex flex-shrink-0 items-center gap-2.5 text-xs text-ink-faint">
                                   {event.author && !isRawExternalId(event.author) && (
-                                    <span className="flex items-center gap-1">
-                                      <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
-                                        <Avatar name={event.author} email={event.author} className="text-[8px]" />
-                                      </span>
-                                      <span className="max-w-[84px] truncate">{event.author}</span>
-                                    </span>
+                                    <span className="max-w-[84px] truncate">{event.author}</span>
                                   )}
                                   {source === 'figma' ? <FigmaIcon size={14} /> : source === 'slack' ? <SlackIcon size={14} /> : source === 'linear' ? <LinearIcon size={14} /> : source === 'telegram' ? <TelegramIcon size={14} /> : <RiFileTextLine size={12} className="text-green-600" />}
                                 </span>
@@ -1126,12 +1116,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             );
                           })()}
                           {group.author && !isRawExternalId(group.author) && (
-                            <span className="flex items-center gap-1.5">
-                              <span className="flex h-4 w-4 items-center justify-center rounded-full overflow-hidden">
-                                <Avatar name={group.author} email={group.author} className="text-[8px]" />
-                              </span>
-                              {group.author}
-                            </span>
+                            <span>{group.author}</span>
                           )}
                         </div>
                       </div>
