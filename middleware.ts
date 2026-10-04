@@ -9,6 +9,7 @@ const PUBLIC_PATHS = new Set([
   '/terms',
   '/privacy',
   '/security',
+  '/fonts-ru',
   '/robots.txt',
   '/favicon.ico',
   '/klynt-logo-dark.svg',
