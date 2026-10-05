@@ -42,7 +42,7 @@ function KlyntLogo() {
     <img
       src={logoSrc()}
       alt="Klynt"
-      className="h-7 w-auto"
+      className="h-[30px] w-auto"
     />
   );
 }
