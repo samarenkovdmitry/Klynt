@@ -459,11 +459,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     const diff = Date.now() - new Date(date).getTime();
     const m = Math.floor(diff / 60000);
     if (m < 1) return t('dashboard.justNow');
-    if (m < 60) return t('dashboard.minAgo', { m });
+    if (m < 60) return `${m} ${tp(m, 'plural.minAgo')}`;
     const h = Math.floor(m / 60);
-    if (h < 24) return t('dashboard.hAgo', { h });
+    if (h < 24) return `${h} ${tp(h, 'plural.hAgo')}`;
     const d = Math.floor(h / 24);
-    return t('dashboard.dAgo', { d });
+    return `${d} ${tp(d, 'plural.dAgo')}`;
   };
 
   const formatDateTime = (date: string) => {
@@ -784,7 +784,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                           <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
                             {hasHistory && (
                               <span className="font-medium transition-colors group-hover:text-[var(--accent-link)]">
-                                {factHistory.length} {factHistory.length === 1 ? 'change' : 'changes'}
+                                {factHistory.length} {tp(factHistory.length, 'plural.change')}
                               </span>
                             )}
                             {hasHistory && showUpdated && <span>·</span>}

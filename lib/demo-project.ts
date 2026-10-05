@@ -98,14 +98,14 @@ const EVENTS: DemoEvent[] = [
 // Final fact states: subject -> { state, display, confidence, importance }
 // Keys use the same S() subjects as EVENTS so lookups work in any locale.
 const FACTS: Record<string, { state: string; display: string; confidence: number; importance: string }> = {
-  [S('home screen', 'главный экран')]:       { state: 'approved', display: S('Approved', 'Подтверждено'),        confidence: 0.95, importance: 'high' },
-  [S('bottom navigation', 'нижняя навигация')]: { state: 'approved', display: S('Approved', 'Подтверждено'),   confidence: 0.95, importance: 'high' },
-  [S('avatar upload', 'загрузка аватара')]:  { state: 'removed',  display: S('Out of scope', 'Вне объёма'),    confidence: 0.85, importance: 'medium' },
-  [S('checkout flow', 'флоу оплаты')]:       { state: 'approved', display: S('Approved', 'Подтверждено'),      confidence: 0.92, importance: 'high' },
+  [S('home screen', 'главный экран')]:       { state: 'approved', display: S('Approved', 'Согласовано'),        confidence: 0.95, importance: 'high' },
+  [S('bottom navigation', 'нижняя навигация')]: { state: 'approved', display: S('Approved', 'Согласовано'),   confidence: 0.95, importance: 'high' },
+  [S('avatar upload', 'загрузка аватара')]:  { state: 'removed',  display: S('Out of scope', 'Вне рамок проекта'),    confidence: 0.85, importance: 'medium' },
+  [S('checkout flow', 'флоу оплаты')]:       { state: 'approved', display: S('Approved', 'Согласовано'),      confidence: 0.92, importance: 'high' },
   [S('payment method', 'способ оплаты')]:    { state: 'added',    display: S('Added', 'Добавлено'),            confidence: 0.88, importance: 'high' },
-  [S('dark mode', 'тёмная тема')]:           { state: 'approved', display: S('Approved', 'Подтверждено'),      confidence: 0.80, importance: 'low' },
+  [S('dark mode', 'тёмная тема')]:           { state: 'approved', display: S('Approved', 'Согласовано'),      confidence: 0.80, importance: 'low' },
   [S('settings screen', 'экран настроек')]:  { state: 'modify',   display: S('In progress', 'В работе'),       confidence: 0.78, importance: 'medium' },
-  [S('app icon', 'иконка приложения')]:      { state: 'modify',   display: S('Decision pending', 'Решение не принято'), confidence: 0.55, importance: 'high' },
+  [S('app icon', 'иконка приложения')]:      { state: 'modify',   display: S('Decision pending', 'Ждёт решения'), confidence: 0.55, importance: 'high' },
 };
 
 const CONFLICTS = [
@@ -114,7 +114,7 @@ const CONFLICTS = [
     conflict_type: 'state_change',
     description: S(
       'App icon flipped blue → green → blue in 3 days. Client and PM disagree; final decision still pending.',
-      'Иконка приложения менялась: синий → зелёный → синий за 3 дня. Клиент и PM не согласны; финальное решение не принято.',
+      'Клиент просит вернуть синюю иконку. В плане остаётся зелёная.',
     ),
   },
   {
@@ -122,7 +122,7 @@ const CONFLICTS = [
     conflict_type: 'scope_change',
     description: S(
       'Designer added avatar upload to the profile screen, but the PM marked it out of scope for MVP.',
-      'Дизайнер добавила загрузку аватара на экран профиля, но PM вынес её из объёма MVP.',
+      'В макете появилась загрузка фото. В согласованный объём она не входит.',
     ),
   },
 ];
@@ -132,7 +132,7 @@ export async function createDemoProject(ownerId: string) {
     name: 'Lunar mobile',
     description: S(
       'Sample project — a mobile app redesign tracked from Figma and Slack.',
-      'Пример проекта — редизайн мобильного приложения, события из Figma и Telegram.',
+      'Редизайн мобильного приложения. Решения и изменения из Figma и Telegram.',
     ),
     owner_id: ownerId,
     slug: `sample-lunar-mobile-${Date.now().toString(36)}`,
