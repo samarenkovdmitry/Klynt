@@ -218,7 +218,7 @@ export default function LandingPreview() {
               <p className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[13px] text-ink-muted">
                 <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
                   <span>8 {tp(8, 'plural.area')}</span>
-                  {([['approved', 4, t('dashboard.approved')], ['review', 2, t('dashboard.needReview')], ['added', 1, t('dashboard.new')], ['pending', 1, t('dashboard.pending')]] as const).map(([k, n, label]) => (
+                  {([['approved', 4, t('dashboard.approved')], ['review', 2, t('dashboard.needReview')], ['added', 1, t('dashboard.new')], ['pending', 1, tp(1, 'plural.pendingLabel')]] as const).map(([k, n, label]) => (
                     <span key={k} className="inline-flex items-center gap-1">
                       <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
                       {n} {label}
