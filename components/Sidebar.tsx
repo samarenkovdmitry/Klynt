@@ -10,6 +10,7 @@ import {
   RiLogoutBoxRLine,
   RiAddLine,
   RiFolderLine,
+  RiMoreLine,
 } from '@remixicon/react';
 
 import { createClient } from '@/lib/supabase/client';
@@ -41,7 +42,7 @@ function KlyntLogo() {
     <img
       src={logoSrc()}
       alt="Klynt"
-      className="h-8 w-auto"
+      className="h-7 w-auto"
     />
   );
 }
@@ -49,6 +50,7 @@ function KlyntLogo() {
 export default function Sidebar({ projects, selectedProjectId, activeItem, onProjectChange, loading }: SidebarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const router = useRouter();
 
@@ -83,6 +85,45 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
     return selectedProjectId ? `${path}?projectId=${selectedProjectId}` : path;
   };
 
+  const userChip = (onNavigate?: () => void) => userEmail && (
+    <div className="relative">
+      {userMenuOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+          <div className="absolute bottom-full left-0 right-0 z-50 mb-1.5 overflow-hidden rounded-xl border border-line bg-white py-1 shadow-lg">
+            <Link
+              href={pageHref('/settings')}
+              onClick={() => { setUserMenuOpen(false); onNavigate?.(); }}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-medium text-ink-secondary transition-colors hover:bg-fill-soft"
+            >
+              <RiSettings3Line size={14} className="text-ink-faint" />
+              {t('sidebar.settings')}
+            </Link>
+            <button
+              onClick={() => { handleLogout(); onNavigate?.(); }}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-medium text-ink-secondary transition-colors hover:bg-fill-soft hover:text-red-600"
+            >
+              <RiLogoutBoxRLine size={14} className="text-ink-faint" />
+              {t('sidebar.logout')}
+            </button>
+          </div>
+        </>
+      )}
+      <button
+        onClick={() => setUserMenuOpen(v => !v)}
+        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition-colors ${userMenuOpen ? 'bg-fill' : 'bg-fill-soft hover:bg-fill'}`}
+      >
+        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
+          <Avatar name={userEmail} email={userEmail} className="text-[10px]" />
+        </span>
+        <span className="min-w-0 flex-1 truncate text-xs text-ink-secondary">
+          {userEmail}
+        </span>
+        <RiMoreLine size={16} className="flex-shrink-0 text-ink-faint" />
+      </button>
+    </div>
+  );
+
   const navItem = (href: string, label: string, isActive: boolean, icon?: React.ReactNode) => (
     <Link
       href={href}
@@ -98,8 +139,8 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
   return (
     <>
       {/* Sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-[240px] flex-shrink-0 self-start overflow-y-auto bg-white px-4 py-8 shadow-[1px_0_0_0_rgba(0,0,0,0.03),2px_0_8px_-4px_rgba(0,0,0,0.03)] lg:flex lg:flex-col">
-        <div className="mb-8 px-2">
+      <aside className="sticky top-0 hidden h-screen w-[240px] flex-shrink-0 self-start overflow-y-auto bg-white px-4 py-6 shadow-[1px_0_0_0_rgba(0,0,0,0.03),2px_0_8px_-4px_rgba(0,0,0,0.03)] lg:flex lg:flex-col">
+        <div className="mb-6 px-2">
           <Link href={pageHref('/project')}>
             <KlyntLogo />
           </Link>
@@ -159,23 +200,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
           {navItem(pageHref('/settings'), t('sidebar.settings'), activeItem === 'settings', <RiSettings3Line size={16} />)}
         </nav>
 
-        {userEmail && (
-          <div className="mt-auto flex items-center gap-2.5 rounded-xl bg-fill-soft px-3 py-2.5">
-            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
-              <Avatar name={userEmail} email={userEmail} className="text-[10px]" />
-            </span>
-            <p className="min-w-0 flex-1 truncate text-xs text-ink-secondary" title={userEmail}>
-              {userEmail}
-            </p>
-            <button
-              onClick={handleLogout}
-              className="flex-shrink-0 text-ink-faint transition-colors hover:text-ink-secondary"
-              title={t('sidebar.logout')}
-            >
-              <RiLogoutBoxRLine size={16} />
-            </button>
-          </div>
-        )}
+        {userEmail && <div className="mt-auto">{userChip()}</div>}
 
       </aside>
 
@@ -267,21 +292,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
               {t('sidebar.settings')}
             </Link>
           </div>
-          {userEmail && (
-            <div className="mt-3 flex items-center gap-2.5 rounded-xl bg-fill-soft px-3 py-2.5">
-              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
-                <Avatar name={userEmail} email={userEmail} className="text-[10px]" />
-              </span>
-              <p className="min-w-0 flex-1 truncate text-xs text-ink-secondary" title={userEmail}>{userEmail}</p>
-              <button
-                onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
-                className="flex-shrink-0 text-ink-faint transition-colors hover:text-ink-secondary"
-                title={t('sidebar.logout')}
-              >
-                <RiLogoutBoxRLine size={16} />
-              </button>
-            </div>
-          )}
+          {userEmail && <div className="mt-3">{userChip(() => setMobileMenuOpen(false))}</div>}
         </div>
 
         {/* Mobile menu overlay */}

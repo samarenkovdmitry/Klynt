@@ -1,7 +1,7 @@
 import {
   RiPlugLine,
   RiSettings3Line,
-  RiLogoutBoxRLine,
+  RiMoreLine,
   RiAddLine,
   RiFolderLine,
   RiCheckLine,
@@ -132,12 +132,12 @@ export default function LandingPreview() {
   return (
     <div className="pointer-events-none select-none overflow-hidden rounded-xl border border-line bg-white shadow-[0_1px_2px_rgba(27,26,23,0.04),0_12px_32px_-8px_rgba(27,26,23,0.12)]">
       <div className="flex h-[640px] bg-app-bg">
-        <aside className="flex h-full w-[200px] flex-shrink-0 flex-col self-start overflow-y-auto bg-white px-4 py-8 shadow-[1px_0_0_0_rgba(0,0,0,0.03),2px_0_8px_-4px_rgba(0,0,0,0.03)]">
-          <div className="mb-8 px-2">
+        <aside className="flex h-full w-[200px] flex-shrink-0 flex-col self-start overflow-y-auto bg-white px-4 py-6 shadow-[1px_0_0_0_rgba(0,0,0,0.03),2px_0_8px_-4px_rgba(0,0,0,0.03)]">
+          <div className="mb-6 px-2">
             <img
               src={logoSrc()}
               alt="Klynt"
-              className="h-8 w-auto"
+              className="h-7 w-auto"
             />
           </div>
 
@@ -183,7 +183,7 @@ export default function LandingPreview() {
               <Avatar name="demo@klynt.one" email="demo@klynt.one" className="text-[10px]" />
             </span>
             <p className="min-w-0 flex-1 truncate text-xs text-ink-secondary">demo@klynt.one</p>
-            <RiLogoutBoxRLine size={16} className="flex-shrink-0 text-ink-faint" />
+            <RiMoreLine size={16} className="flex-shrink-0 text-ink-faint" />
           </div>
         </aside>
 
