@@ -318,7 +318,7 @@ const en: Dict = {
   // Trust block shown next to Connect
   'trust.reads': 'Reads',
   'trust.never': 'Never',
-  'trust.exit': 'Exit',
+  'trust.exit': 'Disconnect',
   'trust.exitText': 'Disconnect in one click — imported messages are deleted',
   'trust.slack.reads': 'New messages in channels you pick — no chat history',
   'trust.slack.never': 'DMs, unselected channels, posting or reacting',
@@ -669,7 +669,7 @@ const ru: Dict = {
   // Trust block shown next to Connect
   'trust.reads': 'Читает',
   'trust.never': 'Никогда',
-  'trust.exit': 'Выход',
+  'trust.exit': 'Отключение',
   'trust.exitText': 'Отключается в один клик — импортированные сообщения удаляются',
   'trust.slack.reads': 'Новые сообщения в выбранных каналах — без истории переписки',
   'trust.slack.never': 'Личку, невыбранные каналы, отправку и реакции',

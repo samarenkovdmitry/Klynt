@@ -35,8 +35,9 @@ function TrustList({ source }: { source: string }) {
       {rows.map((r, i) => (
         <div key={i} className="flex items-baseline gap-2 text-[11px] leading-snug">
           <span className="mt-px shrink-0 translate-y-0.5 text-ink-faint">{r.icon}</span>
-          <span className="w-12 shrink-0 font-semibold uppercase tracking-wide text-ink-faint">{r.label}</span>
-          <span className="text-ink-muted">{r.text}</span>
+          <span className="text-ink-muted">
+            <span className="font-semibold text-ink-secondary">{r.label}</span> — {r.text}
+          </span>
         </div>
       ))}
     </div>
