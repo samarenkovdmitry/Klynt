@@ -2,6 +2,9 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // The ru dev server (npm run dev:ru) needs its own build dir — sharing
+  // .next with the en server mixes locale-baked chunks and breaks hydration.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   async rewrites() {
     // Safari/iOS probes these icon paths without extensions; they
     // 404ed and noised up the logs.
