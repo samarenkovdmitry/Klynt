@@ -986,7 +986,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             <button
                               onClick={() => resolveConflict(conflict.id, 'accept_new', conflict.proposedEvent.action)}
                               disabled={resolving === conflict.id}
-                              className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
+                              className="whitespace-nowrap rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
                             >
                               {t('dashboard.accept')}
                             </button>
@@ -994,14 +994,14 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                           <button
                             onClick={() => resolveConflict(conflict.id, 'keep_current')}
                             disabled={resolving === conflict.id}
-                            className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-line-strong hover:bg-fill-soft disabled:opacity-50"
+                            className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-line-strong hover:bg-fill-soft disabled:opacity-50"
                           >
                             {t('dashboard.keepAsIs')}
                           </button>
                           <button
                             onClick={() => resolveConflict(conflict.id, 'unclear')}
                             disabled={resolving === conflict.id}
-                            className="px-2 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink-secondary disabled:opacity-50"
+                            className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink-secondary disabled:opacity-50"
                           >
                             {t('dashboard.notSure')}
                           </button>
