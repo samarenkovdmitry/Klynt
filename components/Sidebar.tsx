@@ -140,7 +140,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
     <>
       {/* Sidebar */}
       <aside className="sticky top-0 hidden h-screen w-[240px] flex-shrink-0 self-start overflow-y-auto bg-white px-4 py-6 shadow-[1px_0_0_0_rgba(0,0,0,0.03),2px_0_8px_-4px_rgba(0,0,0,0.03)] lg:flex lg:flex-col">
-        <div className="mb-6 px-2">
+        <div className="mb-6 -mt-[5px] px-2">
           <Link href={pageHref('/project')}>
             <KlyntLogo />
           </Link>
