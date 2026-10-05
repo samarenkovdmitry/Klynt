@@ -1,7 +1,7 @@
 import {
   RiPlugLine,
   RiSettings3Line,
-  RiLogoutBoxRLine,
+  RiMoreLine,
   RiAddLine,
   RiFolderLine,
   RiCheckLine,
@@ -116,7 +116,7 @@ function LatestEvent({
 
 const NEUTRAL_PILL = 'bg-fill text-ink-secondary';
 const AMBER_PILL = 'bg-amber-50 text-amber-700';
-const VIOLET_PILL = 'bg-violet-50 text-violet-700';
+const ROSE_PILL = 'bg-rose-50 text-rose-700';
 const BLUE_PILL = 'bg-blue-50 text-blue-700';
 
 // Mirrors the real dashboard's state-bar palette (done → work left).
@@ -124,7 +124,7 @@ const STATE_BAR_COLORS: Record<string, string> = {
   approved: 'bg-emerald-300',
   review: 'bg-amber-400',
   added: 'bg-blue-400',
-  pending: 'bg-violet-400',
+  pending: 'bg-rose-400',
 };
 
 export default function LandingPreview() {
@@ -183,32 +183,34 @@ export default function LandingPreview() {
               <Avatar name="demo@klynt.one" email="demo@klynt.one" className="text-[10px]" />
             </span>
             <p className="min-w-0 flex-1 truncate text-xs text-ink-secondary">demo@klynt.one</p>
-            <RiLogoutBoxRLine size={16} className="flex-shrink-0 text-ink-faint" />
+            <RiMoreLine size={16} className="flex-shrink-0 text-ink-faint" />
           </div>
         </aside>
 
         <main className="relative w-full flex-1 overflow-hidden px-5 py-5">
           <div className="mb-5">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-3">
               <h1 className="text-2xl font-bold tracking-tight text-ink">{t('preview.p4')}</h1>
               {getLocale() === 'ru' ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
-                  <TelegramIcon size={11} /> Telegram
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
+                    <TelegramIcon size={12} /> Telegram
+                  </span>
+                </div>
               ) : (
-                <>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
-                    <FigmaIcon size={11} /> Figma
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
+                    <FigmaIcon size={12} /> Figma
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
-                    <SlackIcon size={11} /> Slack
+                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
+                    <SlackIcon size={12} /> Slack
                   </span>
-                </>
+                </div>
               )}
             </div>
             <p className="mt-1 text-[15px] text-ink-secondary">{t('preview.subtitle')}</p>
             <div className="mt-3">
-              <div className="flex h-1.5 overflow-hidden rounded-full bg-fill">
+              <div className="flex h-1.5 gap-[2px] overflow-hidden rounded-full bg-white">
                 {([['approved', 4], ['review', 2], ['added', 1], ['pending', 1]] as const).map(([k, n]) => (
                   <div key={k} className={STATE_BAR_COLORS[k]} style={{ width: `${(n / 8) * 100}%` }} />
                 ))}
@@ -245,7 +247,7 @@ export default function LandingPreview() {
                   <FactCard
                     subject={t('preview.card2.subject')}
                     label={t('preview.card2.label')}
-                    pillStyle={VIOLET_PILL}
+                    pillStyle={ROSE_PILL}
                     context={t('preview.card2.context')}
                     changes={2}
                     ago={t('preview.card2.ago')}
@@ -369,7 +371,6 @@ export default function LandingPreview() {
                 <div className="space-y-3">
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-semibold tabular-nums text-line-strong">01</span>
                       <p className="text-sm font-semibold text-ink">{t('preview.card1.subject')}</p>
                       <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         {t('conflict.contradiction')}
@@ -377,6 +378,10 @@ export default function LandingPreview() {
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
                       {t('preview.conflict1.text')}
+                    </p>
+                    <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
+                      <SourceGlyph source="figma" size={12} />
+                      {t('dashboard.flaggedAgo', { time: t('preview.card1.ago') })}
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
                       <span className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
@@ -393,7 +398,6 @@ export default function LandingPreview() {
 
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-semibold tabular-nums text-line-strong">02</span>
                       <p className="text-sm font-semibold text-ink">{t('preview.card2.subject')}</p>
                       <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         {t('conflict.scope_change')}
@@ -401,6 +405,10 @@ export default function LandingPreview() {
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
                       {t('preview.conflict2.text')}
+                    </p>
+                    <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
+                      <SourceGlyph source={msgSource} size={12} />
+                      {t('dashboard.flaggedAgo', { time: t('preview.card2.ago') })}
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
                       <span className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
