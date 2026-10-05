@@ -380,6 +380,10 @@ export default function LandingPreview() {
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
                       {t('preview.conflict1.text')}
                     </p>
+                    <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
+                      <SourceGlyph source="figma" size={12} />
+                      {t('dashboard.flaggedAgo', { time: t('preview.card1.ago') })}
+                    </p>
                     <div className="mt-3 flex items-center gap-1.5">
                       <span className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
                         {t('dashboard.accept')}
@@ -403,6 +407,10 @@ export default function LandingPreview() {
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
                       {t('preview.conflict2.text')}
+                    </p>
+                    <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
+                      <SourceGlyph source={msgSource} size={12} />
+                      {t('dashboard.flaggedAgo', { time: t('preview.card2.ago') })}
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
                       <span className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">

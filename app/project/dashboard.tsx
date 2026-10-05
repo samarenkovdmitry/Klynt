@@ -957,77 +957,80 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {state.conflicts.slice().sort((a: any, b: any) => {
-                    return Number(a.status === 'resolved') - Number(b.status === 'resolved');
-                  }).map((conflict: any) => {
-                    const isResolved = conflict.status === 'resolved';
-                    const decisionIndex = isResolved ? null : ++decisionCounter;
+                  {state.conflicts.filter((c: any) => c.status !== 'resolved').map((conflict: any) => {
+                    const decisionIndex = ++decisionCounter;
                     const relatedFact = state.currentState.find((f: any) => f.subject === conflict.subject);
+                    const conflictSource = conflict.proposedEvent?.source;
                     return (
                       <div
                         key={conflict.id}
                         onClick={relatedFact ? () => setSelectedFactId(relatedFact.id) : undefined}
-                        className={`rounded-xl border border-line bg-white p-3.5 transition-colors ${relatedFact ? 'cursor-pointer hover:border-line-strong' : ''}`}
+                        className={`group rounded-xl border border-line bg-white p-3.5 transition-colors ${relatedFact ? 'cursor-pointer hover:border-line-strong' : ''}`}
                       >
                         <div className="flex items-center gap-2">
-                          {decisionIndex !== null && (
-                            <span className="text-[11px] font-semibold tabular-nums text-line-strong">
-                              {String(decisionIndex).padStart(2, '0')}
-                            </span>
-                          )}
-                          <p className={`text-sm font-semibold ${isResolved ? 'text-ink-muted' : 'text-ink'}`}>
-                            {capitalize(conflict.subject)}
-                          </p>
-                          <span className={`ml-auto inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${isResolved ? 'bg-fill text-ink-muted' : 'bg-amber-50 text-amber-700'}`}>
-                            {isResolved ? t('dashboard.resolved') : (conflictTypeLabel(conflict.conflict_type) || t('dashboard.needsDecision'))}
+                          <span className="text-[11px] font-semibold tabular-nums text-line-strong">
+                            {String(decisionIndex).padStart(2, '0')}
+                          </span>
+                          <p className="text-sm font-semibold text-ink">{capitalize(conflict.subject)}</p>
+                          <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                            {conflictTypeLabel(conflict.conflict_type) || t('dashboard.needsDecision')}
                           </span>
                         </div>
-                        <p className={`mt-1.5 text-[13px] leading-[1.55] ${isResolved ? 'text-ink-faint' : 'text-ink-secondary'}`}>
+                        <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
                           {conflict.description}
                         </p>
-                        {conflict.resolution && isResolved && (
-                          <p className="mt-1 text-xs text-ink-faint">{conflict.resolution}</p>
+                        {(conflictSource || conflict.detected_at) && (
+                          <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
+                            {conflictSource === 'figma' ? <FigmaIcon size={12} /> : conflictSource === 'slack' ? <SlackIcon size={12} /> : conflictSource === 'linear' ? <LinearIcon size={12} /> : conflictSource === 'telegram' ? <TelegramIcon size={12} /> : null}
+                            {t('dashboard.flaggedAgo', { time: formatRelative(conflict.detected_at || conflict.created_at) })}
+                            {relatedFact && <RiArrowRightSLine size={12} className="ml-auto opacity-0 transition-opacity group-hover:opacity-100" />}
+                          </p>
                         )}
                         <div className="mt-3 flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                          {isResolved ? (
+                          {conflict.proposedEvent?.action && conflict.proposedEvent.action !== conflict.currentState && (
                             <button
-                              onClick={() => unresolveConflict(conflict.id)}
+                              onClick={() => resolveConflict(conflict.id, 'accept_new', conflict.proposedEvent.action)}
                               disabled={resolving === conflict.id}
-                              className="rounded-lg px-2 py-1 text-xs font-medium text-ink-muted transition-colors hover:bg-fill disabled:opacity-50"
+                              className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
                             >
-                              {resolving === conflict.id ? t('dashboard.updating') : t('dashboard.undo')}
+                              {t('dashboard.accept')}
                             </button>
-                          ) : (
-                            <>
-                              {conflict.proposedEvent?.action && conflict.proposedEvent.action !== conflict.currentState && (
-                                <button
-                                  onClick={() => resolveConflict(conflict.id, 'accept_new', conflict.proposedEvent.action)}
-                                  disabled={resolving === conflict.id}
-                                  className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
-                                >
-                                  {t('dashboard.accept')}
-                                </button>
-                              )}
-                              <button
-                                onClick={() => resolveConflict(conflict.id, 'keep_current')}
-                                disabled={resolving === conflict.id}
-                                className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-line-strong hover:bg-fill-soft disabled:opacity-50"
-                              >
-                                {t('dashboard.keepAsIs')}
-                              </button>
-                              <button
-                                onClick={() => resolveConflict(conflict.id, 'unclear')}
-                                disabled={resolving === conflict.id}
-                                className="px-2 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink-secondary disabled:opacity-50"
-                              >
-                                {t('dashboard.notSure')}
-                              </button>
-                            </>
                           )}
+                          <button
+                            onClick={() => resolveConflict(conflict.id, 'keep_current')}
+                            disabled={resolving === conflict.id}
+                            className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-line-strong hover:bg-fill-soft disabled:opacity-50"
+                          >
+                            {t('dashboard.keepAsIs')}
+                          </button>
+                          <button
+                            onClick={() => resolveConflict(conflict.id, 'unclear')}
+                            disabled={resolving === conflict.id}
+                            className="px-2 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink-secondary disabled:opacity-50"
+                          >
+                            {t('dashboard.notSure')}
+                          </button>
                         </div>
                       </div>
                     );
                   })}
+                  {state.conflicts.some((c: any) => c.status === 'resolved') && (
+                    <div className="space-y-0.5 pt-1">
+                      {state.conflicts.filter((c: any) => c.status === 'resolved').map((conflict: any) => (
+                        <div key={conflict.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5">
+                          <RiCheckLine size={14} className="flex-shrink-0 text-emerald-600" />
+                          <span className="min-w-0 flex-1 truncate text-xs text-ink-muted">{capitalize(conflict.subject)}</span>
+                          <button
+                            onClick={() => unresolveConflict(conflict.id)}
+                            disabled={resolving === conflict.id}
+                            className="flex-shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium text-ink-faint transition-colors hover:bg-fill hover:text-ink-secondary disabled:opacity-50"
+                          >
+                            {resolving === conflict.id ? t('dashboard.updating') : t('dashboard.undo')}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </section>
