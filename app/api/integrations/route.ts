@@ -137,7 +137,15 @@ export async function DELETE(request: NextRequest) {
         }
       } else if (source === 'telegram' && token) {
         const { telegramApi } = await import('@/lib/telegram/client');
-        await telegramApi(token, 'deleteWebhook', { drop_pending_updates: true });
+        if (integration.config?.shared_bot) {
+          // Shared app bot serves every project — leave the bound chat only,
+          // never deleteWebhook (that would break all other projects).
+          if (integration.config?.chat_id) {
+            await telegramApi(token, 'leaveChat', { chat_id: integration.config.chat_id });
+          }
+        } else {
+          await telegramApi(token, 'deleteWebhook', { drop_pending_updates: true });
+        }
       }
     } catch (e) {
       console.error(`Provider cleanup failed for ${source}:`, e);

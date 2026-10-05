@@ -61,3 +61,6 @@ debug_*
 *.bin
 *.webp
 *.heic
+
+# local dev caches
+.cache/

@@ -48,10 +48,15 @@ const en: Dict = {
   'integrations.telegram.bot': 'Bot',
   'integrations.telegram.tracking': 'Tracking {chat}',
   'integrations.telegram.waiting': 'Waiting for chat',
+  'integrations.telegram.addToChat': 'Add @{bot} to a chat',
+  'integrations.telegram.addHint': 'Opens Telegram — pick the project chat. The bot links it automatically.',
   'integrations.telegram.addBot': 'Add @{bot} to the project chat — it binds automatically.',
   'integrations.telegram.tokenPlaceholder': 'Paste bot token from @BotFather…',
+  'integrations.telegram.howtoShared': 'Connects the Klynt bot — then you pick the project chat in Telegram.',
   'integrations.telegram.howto': '1. Create a bot via @BotFather in Telegram. 2. Paste the token here. 3. Add the bot to the project chat (disable its privacy mode so it can read messages).',
-  'integrations.telegram.connectedNotice': 'Bot @{bot} connected. Add it to the project chat.',
+  'integrations.telegram.connectedNotice': 'Bot @{bot} is ready — add it to the project chat.',
+  'telegram.botLinked': 'This chat is now linked to project "{project}". New messages are tracked.',
+  'telegram.botHint': 'This chat is not linked to a Klynt project yet. Open {url} → Integrations → Telegram and add the bot with the connect button.',
 
   // Integrations — Figma panel
   'integrations.figma.watching': 'Watching',
@@ -399,10 +404,15 @@ const ru: Dict = {
   'integrations.telegram.bot': 'Бот',
   'integrations.telegram.tracking': 'Следим за {chat}',
   'integrations.telegram.waiting': 'Ждём чат',
+  'integrations.telegram.addToChat': 'Добавить @{bot} в чат',
+  'integrations.telegram.addHint': 'Откроется Telegram — выберите чат проекта. Бот привяжет его автоматически.',
   'integrations.telegram.addBot': 'Добавьте @{bot} в проектный чат — привяжется автоматически.',
   'integrations.telegram.tokenPlaceholder': 'Вставьте токен бота от @BotFather…',
+  'integrations.telegram.howtoShared': 'Подключает бота Klynt — затем вы выбираете чат проекта в Telegram.',
   'integrations.telegram.howto': '1. Создайте бота через @BotFather в Telegram. 2. Вставьте токен сюда. 3. Добавьте бота в проектный чат (отключите privacy mode, чтобы он мог читать сообщения).',
-  'integrations.telegram.connectedNotice': 'Бот @{bot} подключён. Добавьте его в проектный чат.',
+  'integrations.telegram.connectedNotice': 'Бот @{bot} готов — добавьте его в чат проекта.',
+  'telegram.botLinked': 'Чат привязан к проекту «{project}». Новые сообщения отслеживаются.',
+  'telegram.botHint': 'Этот чат ещё не привязан к проекту Klynt. Откройте {url} → «Интеграции» → Telegram и добавьте бота кнопкой подключения.',
 
   // Integrations — Figma panel
   'integrations.figma.watching': 'Следим за',

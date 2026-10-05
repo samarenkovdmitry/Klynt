@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { processTelegramUpdate } from '@/lib/telegram/process-update';
+import { processSharedBotUpdate } from '@/lib/telegram/shared';
 import type { TgUpdate } from '@/lib/telegram/client';
 
-// Telegram webhook. Security: the secret is registered via setWebhook's
-// secret_token and arrives as X-Telegram-Bot-Api-Secret-Token — we match it
-// against config.webhook_secret to find the integration and reject forgery.
+// Telegram webhook. Two modes:
+// - Shared app bot: TELEGRAM_WEBHOOK_SECRET matches → one update stream is
+//   routed to integrations by chat_id / link_code.
+// - Legacy per-project bots: the per-integration secret (registered via
+//   setWebhook's secret_token) arrives as X-Telegram-Bot-Api-Secret-Token or
+//   ?s= and identifies the integration directly.
 export async function POST(request: NextRequest) {
   try {
     const secret =
@@ -13,6 +17,13 @@ export async function POST(request: NextRequest) {
       new URL(request.url).searchParams.get('s');
     if (!secret) {
       return NextResponse.json({ error: 'Missing secret' }, { status: 401 });
+    }
+
+    const update = (await request.json()) as TgUpdate;
+
+    if (process.env.TELEGRAM_WEBHOOK_SECRET && secret === process.env.TELEGRAM_WEBHOOK_SECRET) {
+      await processSharedBotUpdate(update);
+      return NextResponse.json({ received: true });
     }
 
     const { data: integration } = await supabase
@@ -26,7 +37,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unknown integration' }, { status: 401 });
     }
 
-    const update = (await request.json()) as TgUpdate;
     await processTelegramUpdate(integration, update);
 
     return NextResponse.json({ received: true });

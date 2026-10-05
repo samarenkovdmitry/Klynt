@@ -464,17 +464,30 @@ function TelegramConnectPanel({ projectId, integration, onChanged, onNotice }: {
 }) {
   const [token, setToken] = useState('');
   const [busy, setBusy] = useState(false);
+  // Manual-token mode is only revealed when the deployment has no shared bot
+  const [manualToken, setManualToken] = useState(false);
 
   const botUsername = integration?.config?.bot_username;
   const chatTitle = integration?.config?.chat_title;
   const chatBound = Boolean(integration?.config?.chat_id);
+  const linkCode = integration?.config?.link_code;
+  const deepLink = botUsername && linkCode
+    ? `https://t.me/${botUsername}?startgroup=${linkCode}`
+    : null;
+
+  // While waiting for the chat to bind, keep refreshing the card
+  useEffect(() => {
+    if (!integration || chatBound) return;
+    const id = setInterval(() => onChanged(), 4000);
+    return () => clearInterval(id);
+  }, [integration, chatBound, onChanged]);
 
   const connect = async () => {
     setBusy(true);
     const res = await fetch('/api/integrations/telegram/connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ projectId, botToken: token.trim() }),
+      body: JSON.stringify({ projectId, ...(manualToken ? { botToken: token.trim() } : {}) }),
     });
     const data = await res.json();
     if (res.ok) {
@@ -482,6 +495,8 @@ function TelegramConnectPanel({ projectId, integration, onChanged, onNotice }: {
       onNotice({ kind: 'success', text: t('integrations.telegram.connectedNotice', { bot: data.bot_username }) });
       setToken('');
       await onChanged();
+    } else if (data.code === 'token_required') {
+      setManualToken(true);
     } else {
       onNotice({ kind: 'error', text: data.error || t('integrations.connectFailed') });
     }
@@ -499,12 +514,26 @@ function TelegramConnectPanel({ projectId, integration, onChanged, onNotice }: {
             </span>
           </div>
           {!chatBound && (
-            <p className="w-full text-[11px] text-ink-faint">
-              {t('integrations.telegram.addBot', { bot: botUsername })}
-            </p>
+            <>
+              {deepLink ? (
+                <a
+                  href={deepLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)]"
+                >
+                  {t('integrations.telegram.addToChat', { bot: botUsername })}
+                </a>
+              ) : null}
+              <p className="w-full text-[11px] text-ink-faint">
+                {deepLink
+                  ? t('integrations.telegram.addHint')
+                  : t('integrations.telegram.addBot', { bot: botUsername })}
+              </p>
+            </>
           )}
         </div>
-      ) : (
+      ) : manualToken ? (
         <>
           <div className="flex gap-2">
             <input
@@ -524,6 +553,19 @@ function TelegramConnectPanel({ projectId, integration, onChanged, onNotice }: {
           </div>
           <p className="mt-1.5 text-[11px] text-ink-faint">
             {t('integrations.telegram.howto')}
+          </p>
+        </>
+      ) : (
+        <>
+          <button
+            onClick={connect}
+            disabled={busy}
+            className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
+          >
+            {t('integrations.connect')}
+          </button>
+          <p className="mt-1.5 text-[11px] text-ink-faint">
+            {t('integrations.telegram.howtoShared')}
           </p>
         </>
       )}
