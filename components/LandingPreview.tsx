@@ -371,7 +371,6 @@ export default function LandingPreview() {
                 <div className="space-y-3">
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-semibold tabular-nums text-line-strong">01</span>
                       <p className="text-sm font-semibold text-ink">{t('preview.card1.subject')}</p>
                       <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         {t('conflict.contradiction')}
@@ -399,7 +398,6 @@ export default function LandingPreview() {
 
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-semibold tabular-nums text-line-strong">02</span>
                       <p className="text-sm font-semibold text-ink">{t('preview.card2.subject')}</p>
                       <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         {t('conflict.scope_change')}

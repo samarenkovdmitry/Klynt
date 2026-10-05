@@ -539,7 +539,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const selectedStateLabel = selectedFact
     ? (selectedFact.current_value?.display_state || getStateLabel(selectedFact.current_state?.toLowerCase()) || capitalize(selectedFact.current_state))
     : null;
-  let decisionCounter = 0;
 
   const groupedWhy = selectedFact
     ? [...selectedHistory].reverse().reduce((acc: any[], h: any) => {
@@ -958,7 +957,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               ) : (
                 <div className="space-y-3">
                   {state.conflicts.filter((c: any) => c.status !== 'resolved').map((conflict: any) => {
-                    const decisionIndex = ++decisionCounter;
                     const relatedFact = state.currentState.find((f: any) => f.subject === conflict.subject);
                     const conflictSource = conflict.proposedEvent?.source;
                     return (
@@ -968,10 +966,8 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         className={`group rounded-xl border border-line bg-white p-3.5 transition-colors ${relatedFact ? 'cursor-pointer hover:border-line-strong' : ''}`}
                       >
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-semibold tabular-nums text-line-strong">
-                            {String(decisionIndex).padStart(2, '0')}
-                          </span>
                           <p className="text-sm font-semibold text-ink">{capitalize(conflict.subject)}</p>
+                          {relatedFact && <RiArrowRightSLine size={14} className="text-ink-faint opacity-0 transition-opacity group-hover:opacity-100" />}
                           <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                             {conflictTypeLabel(conflict.conflict_type) || t('dashboard.needsDecision')}
                           </span>
@@ -983,7 +979,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                           <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
                             {conflictSource === 'figma' ? <FigmaIcon size={12} /> : conflictSource === 'slack' ? <SlackIcon size={12} /> : conflictSource === 'linear' ? <LinearIcon size={12} /> : conflictSource === 'telegram' ? <TelegramIcon size={12} /> : null}
                             {t('dashboard.flaggedAgo', { time: formatRelative(conflict.detected_at || conflict.created_at) })}
-                            {relatedFact && <RiArrowRightSLine size={12} className="ml-auto opacity-0 transition-opacity group-hover:opacity-100" />}
                           </p>
                         )}
                         <div className="mt-3 flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
