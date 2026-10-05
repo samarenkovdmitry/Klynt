@@ -92,7 +92,7 @@ const STATE_PILL_STYLES: Record<string, string> = {
   added: 'bg-blue-50 text-blue-700',
   modify: 'bg-amber-50 text-amber-700',
   modified: 'bg-amber-50 text-amber-700',
-  removed: 'bg-violet-50 text-violet-700',
+  removed: 'bg-rose-50 text-rose-700',
 };
 
 const DEFAULT_PILL_STYLE = 'bg-fill text-ink-secondary';
@@ -104,7 +104,7 @@ const STATE_BAR_COLORS: Record<string, string> = {
   approved: 'bg-emerald-300',
   review: 'bg-amber-400',
   added: 'bg-blue-400',
-  pending: 'bg-violet-400',
+  pending: 'bg-rose-400',
 };
 
 const ACTION_ICONS: Record<string, ReactNode> = {
@@ -585,21 +585,23 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           </div>
         )}
         <div className="mb-8">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="text-[26px] font-bold tracking-tight text-ink">{selectedProject?.name || 'Project'}</h1>
-            {(selectedProject?.is_demo || selectedProject?.name?.startsWith('Sample ·')) && (
-              <span className="rounded-full border border-dashed border-line px-2.5 py-1 text-[11px] font-medium text-ink-faint">
-                Sample
-              </span>
-            )}
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+            <div className="flex items-center gap-3">
+              <h1 className="text-[26px] font-bold tracking-tight text-ink">{selectedProject?.name || 'Project'}</h1>
+              {(selectedProject?.is_demo || selectedProject?.name?.startsWith('Sample ·')) && (
+                <span className="rounded-full bg-fill px-2.5 py-1 text-[11px] font-medium text-ink-faint">
+                  Sample
+                </span>
+              )}
+            </div>
             {activeSources.length > 0 && (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-3">
                 {activeSources.map((s: string) => (
                   <span
                     key={s}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary"
+                    className="inline-flex items-center gap-1.5 text-xs text-ink-faint"
                   >
-                    {s === 'figma' ? <FigmaIcon size={11} /> : s === 'slack' ? <SlackIcon size={11} /> : s === 'linear' ? <LinearIcon size={11} /> : s === 'telegram' ? <TelegramIcon size={11} /> : <RiFileTextLine size={11} className="text-green-600" />}
+                    {s === 'figma' ? <FigmaIcon size={12} /> : s === 'slack' ? <SlackIcon size={12} /> : s === 'linear' ? <LinearIcon size={12} /> : s === 'telegram' ? <TelegramIcon size={12} /> : <RiFileTextLine size={12} className="text-green-600" />}
                     {s === 'gdocs' ? 'Google Docs' : capitalize(s)}
                   </span>
                 ))}
@@ -613,7 +615,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             <div className="mt-3">
               {/* Segmented state bar — settled on the left like a progress
                   bar, undecided states keep the attention colours on the right */}
-              <div className="mt-2.5 flex h-1.5 overflow-hidden rounded-full bg-fill" role="img"
+              <div className="mt-2.5 flex h-1.5 gap-[2px] overflow-hidden rounded-full bg-white" role="img"
                 aria-label={`${stateCounts.approved} ${t('dashboard.approved')}, ${stateCounts.review} ${t('dashboard.needReview')}, ${stateCounts.added} ${t('dashboard.new')}, ${stateCounts.pending} ${t('dashboard.pending')}`}>
                 {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
                   stateCounts[k] > 0 && (

@@ -116,7 +116,7 @@ function LatestEvent({
 
 const NEUTRAL_PILL = 'bg-fill text-ink-secondary';
 const AMBER_PILL = 'bg-amber-50 text-amber-700';
-const VIOLET_PILL = 'bg-violet-50 text-violet-700';
+const ROSE_PILL = 'bg-rose-50 text-rose-700';
 const BLUE_PILL = 'bg-blue-50 text-blue-700';
 
 // Mirrors the real dashboard's state-bar palette (done → work left).
@@ -124,7 +124,7 @@ const STATE_BAR_COLORS: Record<string, string> = {
   approved: 'bg-emerald-300',
   review: 'bg-amber-400',
   added: 'bg-blue-400',
-  pending: 'bg-violet-400',
+  pending: 'bg-rose-400',
 };
 
 export default function LandingPreview() {
@@ -189,26 +189,28 @@ export default function LandingPreview() {
 
         <main className="relative w-full flex-1 overflow-hidden px-5 py-5">
           <div className="mb-5">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-3">
               <h1 className="text-2xl font-bold tracking-tight text-ink">{t('preview.p4')}</h1>
               {getLocale() === 'ru' ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
-                  <TelegramIcon size={11} /> Telegram
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
+                    <TelegramIcon size={12} /> Telegram
+                  </span>
+                </div>
               ) : (
-                <>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
-                    <FigmaIcon size={11} /> Figma
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
+                    <FigmaIcon size={12} /> Figma
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
-                    <SlackIcon size={11} /> Slack
+                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
+                    <SlackIcon size={12} /> Slack
                   </span>
-                </>
+                </div>
               )}
             </div>
             <p className="mt-1 text-[15px] text-ink-secondary">{t('preview.subtitle')}</p>
             <div className="mt-3">
-              <div className="flex h-1.5 overflow-hidden rounded-full bg-fill">
+              <div className="flex h-1.5 gap-[2px] overflow-hidden rounded-full bg-white">
                 {([['approved', 4], ['review', 2], ['added', 1], ['pending', 1]] as const).map(([k, n]) => (
                   <div key={k} className={STATE_BAR_COLORS[k]} style={{ width: `${(n / 8) * 100}%` }} />
                 ))}
@@ -245,7 +247,7 @@ export default function LandingPreview() {
                   <FactCard
                     subject={t('preview.card2.subject')}
                     label={t('preview.card2.label')}
-                    pillStyle={VIOLET_PILL}
+                    pillStyle={ROSE_PILL}
                     context={t('preview.card2.context')}
                     changes={2}
                     ago={t('preview.card2.ago')}
