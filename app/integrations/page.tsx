@@ -211,7 +211,7 @@ function FigmaWatchPanel({ projectId, integration, onChanged }: {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs text-ink-muted">
             {t('integrations.figma.watching')} <span className="font-medium text-ink">{fileName}</span>
-            <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${mode === 'webhooks' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+            <span className={`ml-2 rounded-full border px-2 py-0.5 text-[10px] font-medium ${mode === 'webhooks' ? 'border-green-300 bg-white text-green-700' : 'border-amber-300 bg-white text-amber-700'}`}>
               {mode === 'webhooks' ? t('integrations.figma.live') : t('integrations.figma.polling')}
             </span>
           </div>
@@ -413,7 +413,7 @@ function LinearTeamsPanel({ projectId, integration, onChanged }: {
             : t('integrations.linear.allTeams')}
         </p>
         <div className="flex items-center gap-2">
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${integration.config?.webhook_id ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${integration.config?.webhook_id ? 'border-green-300 bg-white text-green-700' : 'border-amber-300 bg-white text-amber-700'}`}>
             {integration.config?.webhook_id ? t('integrations.linear.live') : t('integrations.linear.noWebhook')}
           </span>
           <button onClick={open ? () => setOpen(false) : load} disabled={busy} className="text-xs font-medium text-ink-secondary hover:text-ink disabled:opacity-50">
@@ -509,7 +509,7 @@ function TelegramConnectPanel({ projectId, integration, onChanged, onNotice }: {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs text-ink-muted">
             {t('integrations.telegram.bot')} <span className="font-medium text-ink">@{botUsername}</span>
-            <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${chatBound ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+            <span className={`ml-2 rounded-full border px-2 py-0.5 text-[10px] font-medium ${chatBound ? 'border-green-300 bg-white text-green-700' : 'border-amber-300 bg-white text-amber-700'}`}>
               {chatBound ? t('integrations.telegram.tracking', { chat: chatTitle || 'chat' }) : t('integrations.telegram.waiting')}
             </span>
           </div>
