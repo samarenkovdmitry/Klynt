@@ -156,6 +156,7 @@ const en: Dict = {
 
   // Dashboard — state/conflict labels
   'state.approved': 'Approved',
+  'state.approve': 'Approved',
   'state.added': 'New',
   'state.modify': 'Needs review',
   'state.modified': 'Needs review',
@@ -512,6 +513,7 @@ const ru: Dict = {
 
   // Dashboard — state/conflict labels
   'state.approved': 'Согласовано',
+  'state.approve': 'Согласовано',
   'state.added': 'Добавлено',
   'state.modify': 'На проверке',
   'state.modified': 'На проверке',

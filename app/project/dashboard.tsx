@@ -1076,7 +1076,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   {selectedHistory[0]?.previous_state && (
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-ink-muted">{t('dashboard.previousState')}</span>
-                      <span className="text-sm text-ink-secondary">{capitalize(selectedHistory[0].previous_state)}</span>
+                      <span className="text-sm text-ink-secondary">{getStateLabel(selectedHistory[0].previous_state?.toLowerCase()) || capitalize(selectedHistory[0].previous_state)}</span>
                     </div>
                   )}
                   {selectedHistory.length > 0 && (
