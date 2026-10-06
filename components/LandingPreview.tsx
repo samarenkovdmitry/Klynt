@@ -61,7 +61,7 @@ function FactCard({
   return (
     <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${dimmed ? 'opacity-75' : ''}`}>
       <p className="text-[15px] font-semibold leading-snug text-ink">{subject}</p>
-      <span className={`mt-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
+      <span className={`mt-1.5 inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
         {approved && <RiCheckLine size={11} />}
         {label}
       </span>
@@ -70,7 +70,7 @@ function FactCard({
       )}
       {changes && (
         <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
-          <span>{changes} {tp(changes, 'plural.change')}{ago ? ` · ${ago}` : ''}</span>
+          <span className="min-w-0 truncate">{changes} {tp(changes, 'plural.change')}{ago ? ` · ${ago}` : ''}</span>
           {(actor || source) && (
             <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
               {actor && <span className="max-w-[80px] truncate">{actor}</span>}
@@ -121,7 +121,7 @@ const BLUE_PILL = 'bg-blue-50 text-blue-700';
 
 // Mirrors the real dashboard's state-bar palette (done → work left).
 const STATE_BAR_COLORS: Record<string, string> = {
-  approved: 'bg-emerald-300',
+  approved: 'bg-emerald-400',
   review: 'bg-amber-400',
   added: 'bg-blue-400',
   pending: 'bg-rose-400',
@@ -193,6 +193,9 @@ export default function LandingPreview() {
               <h1 className="text-2xl font-bold tracking-tight text-ink">{t('preview.p4')}</h1>
               {getLocale() === 'ru' ? (
                 <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
+                    <FigmaIcon size={12} /> Figma
+                  </span>
                   <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
                     <TelegramIcon size={12} /> Telegram
                   </span>
@@ -372,7 +375,7 @@ export default function LandingPreview() {
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-ink">{t('preview.card1.subject')}</p>
-                      <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                      <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         {t('conflict.contradiction')}
                       </span>
                     </div>
@@ -384,13 +387,13 @@ export default function LandingPreview() {
                       {t('dashboard.flaggedAgo', { time: t('preview.card1.ago') })}
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
-                      <span className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
+                      <span className="whitespace-nowrap rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
                         {t('dashboard.accept')}
                       </span>
-                      <span className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
+                      <span className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
                         {t('dashboard.keepAsIs')}
                       </span>
-                      <span className="px-2 py-1.5 text-xs font-medium text-ink-faint">
+                      <span className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint">
                         {t('dashboard.notSure')}
                       </span>
                     </div>
@@ -399,7 +402,7 @@ export default function LandingPreview() {
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-ink">{t('preview.card2.subject')}</p>
-                      <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                      <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         {t('conflict.scope_change')}
                       </span>
                     </div>
@@ -411,10 +414,10 @@ export default function LandingPreview() {
                       {t('dashboard.flaggedAgo', { time: t('preview.card2.ago') })}
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
-                      <span className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
+                      <span className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
                         {t('dashboard.keepAsIs')}
                       </span>
-                      <span className="px-2 py-1.5 text-xs font-medium text-ink-faint">
+                      <span className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint">
                         {t('dashboard.notSure')}
                       </span>
                     </div>

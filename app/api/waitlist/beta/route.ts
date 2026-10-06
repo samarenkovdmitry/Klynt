@@ -100,8 +100,9 @@ export async function POST(req: Request) {
       console.error('[waitlist/beta] demo seed failed:', demoError)
     }
 
-    // One-click sign-in link
-    const siteUrl = getSiteUrl()
+    // One-click sign-in link — keep it on the origin the request came to,
+    // getSiteUrl() falls back to the EN domain in local dev.
+    const siteUrl = new URL(req.url).origin || getSiteUrl()
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email,

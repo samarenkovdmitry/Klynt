@@ -74,7 +74,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Failed to create invite' }, { status: 500 });
   }
 
-  const acceptUrl = `${getSiteUrl()}/invite/${token}`;
+  // Keep the link on the request's origin — getSiteUrl() falls back to the
+  // EN domain in local dev.
+  const acceptUrl = `${new URL(request.url).origin || getSiteUrl()}/invite/${token}`;
   try {
     await sendProjectInviteEmail(cleanEmail, project.name, user.email?.split('@')[0] || null, acceptUrl);
   } catch (e) {

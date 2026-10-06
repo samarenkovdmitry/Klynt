@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 
 import { buildPageMetadata } from "@/lib/seo";
+import { getLocale } from "@/lib/market";
+
+const ru = getLocale() === "ru";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Terms of Service",
-  description:
-    "Terms and conditions for using Klynt, the project truth layer.",
+  title: ru ? "Условия использования" : "Terms of Service",
+  description: ru
+    ? "Условия использования Klynt — слоя правды о проекте."
+    : "Terms and conditions for using Klynt, the project truth layer.",
   path: "/terms",
 });
 

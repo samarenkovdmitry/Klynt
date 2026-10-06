@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import NewProjectModal from '@/components/NewProjectModal';
+import LandingPreview from '@/components/LandingPreview';
 import { FigmaIcon, SlackIcon, LinearIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import { emojify } from 'node-emoji';
 import { t, getLocale, tp } from '@/lib/i18n';
@@ -101,7 +102,7 @@ const DEFAULT_PILL_STYLE = 'bg-fill text-ink-secondary';
 // left — the bar then reads as a progress bar (done → work left), and colour
 // still belongs to what needs deciding.
 const STATE_BAR_COLORS: Record<string, string> = {
-  approved: 'bg-emerald-300',
+  approved: 'bg-emerald-400',
   review: 'bg-amber-400',
   added: 'bg-blue-400',
   pending: 'bg-rose-400',
@@ -413,25 +414,35 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     return (
       <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
         <Sidebar projects={[]} selectedProjectId={null} activeItem="project" />
-        <main className="flex flex-1 items-center justify-center px-4 py-16">
-          <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">{t('dashboard.createFirst')}</h2>
-            <p className="mt-2 text-sm text-ink-muted">
+        <main className="flex flex-1 flex-col items-center overflow-hidden px-4 pb-0 pt-16 sm:pt-20">
+          <div className="w-full max-w-lg text-center">
+            <h1 className="text-2xl font-semibold text-ink">{t('dashboard.createFirst')}</h1>
+            <p className="mt-3 text-sm leading-relaxed text-ink-muted">
               {t('dashboard.emptyProjectText')}
             </p>
-            <button
-              onClick={() => setCreateOpen(true)}
-              className="mt-6 rounded-full bg-[var(--accent)] px-6 py-3.5 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
-            >
-              {t('sidebar.newProject')}
-            </button>
-            <button
-              onClick={handleCreateDemo}
-              disabled={creatingDemo}
-              className="mt-3 block w-full text-sm font-medium text-[var(--accent-link)] transition hover:underline disabled:opacity-50"
-            >
-              {creatingDemo ? t('dashboard.preparingSample') : t('dashboard.seeExample')}
-            </button>
+            <div className="mt-7 flex items-center justify-center gap-3">
+              <button
+                onClick={() => setCreateOpen(true)}
+                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
+              >
+                {t('sidebar.newProject')}
+              </button>
+              <button
+                onClick={handleCreateDemo}
+                disabled={creatingDemo}
+                className="rounded-full border border-line bg-white px-6 py-3 text-sm font-medium text-ink-secondary transition hover:border-line-strong hover:text-ink disabled:opacity-50"
+              >
+                {creatingDemo ? t('dashboard.preparingSample') : t('dashboard.seeExample')}
+              </button>
+            </div>
+          </div>
+
+          {/* What they're about to get — the same mock as the landing hero */}
+          <div aria-hidden className="relative mt-12 w-full max-w-5xl flex-1 overflow-hidden">
+            <div className="pointer-events-none mx-auto w-[1100px] max-w-none origin-top scale-[0.55] sm:scale-[0.75]">
+              <LandingPreview />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-app-bg" />
           </div>
         </main>
         <NewProjectModal open={createOpen} onClose={() => setCreateOpen(false)} />
@@ -782,13 +793,15 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         ) : null}
                         {(hasHistory || fact.last_updated_at) && (
                           <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
-                            {hasHistory && (
-                              <span className="font-medium transition-colors group-hover:text-[var(--accent-link)]">
-                                {factHistory.length} {tp(factHistory.length, 'plural.change')}
-                              </span>
-                            )}
-                            {hasHistory && showUpdated && <span>·</span>}
-                            {showUpdated && <span>{formatRelative(fact.last_updated_at!)}</span>}
+                            <span className="min-w-0 truncate whitespace-nowrap">
+                              {hasHistory && (
+                                <span className="font-medium transition-colors group-hover:text-[var(--accent-link)]">
+                                  {factHistory.length} {tp(factHistory.length, 'plural.change')}
+                                </span>
+                              )}
+                              {hasHistory && showUpdated && <span> · </span>}
+                              {showUpdated && <span>{formatRelative(fact.last_updated_at!)}</span>}
+                            </span>
                             {(lastActor || lastSource) && (
                               <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
                                 {lastActor && !isRawExternalId(lastActor) && (
@@ -968,7 +981,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-semibold text-ink">{capitalize(conflict.subject)}</p>
                           {relatedFact && <RiArrowRightSLine size={14} className="text-ink-faint opacity-0 transition-opacity group-hover:opacity-100" />}
-                          <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                          <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                             {conflictTypeLabel(conflict.conflict_type) || t('dashboard.needsDecision')}
                           </span>
                         </div>
@@ -1065,7 +1078,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   {selectedHistory[0]?.previous_state && (
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-ink-muted">{t('dashboard.previousState')}</span>
-                      <span className="text-sm text-ink-secondary">{capitalize(selectedHistory[0].previous_state)}</span>
+                      <span className="text-sm text-ink-secondary">{getStateLabel(selectedHistory[0].previous_state?.toLowerCase()) || capitalize(selectedHistory[0].previous_state)}</span>
                     </div>
                   )}
                   {selectedHistory.length > 0 && (
