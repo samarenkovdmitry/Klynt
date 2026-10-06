@@ -41,9 +41,15 @@ export async function POST(request: NextRequest) {
     });
     if (createError) {
       if (createError.message?.toLowerCase().includes('already')) {
-        return NextResponse.json({ error: t('auth.alreadyRegistered') }, { status: 409 });
+        // Unconfirmed account → treat a repeat signup as "resend the link"
+        const { data: { users } } = await supabase.auth.admin.listUsers();
+        const existing = users.find((u) => u.email?.toLowerCase() === email);
+        if (!existing || existing.email_confirmed_at) {
+          return NextResponse.json({ error: t('auth.alreadyRegistered') }, { status: 409 });
+        }
+      } else {
+        throw createError;
       }
-      throw createError;
     }
 
     // Confirm link must land on the origin the user actually registered on —
