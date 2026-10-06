@@ -62,7 +62,7 @@ export function LegalDocumentPage({
                   {title}
                 </h1>
                 <p className="mt-3 text-[14px] text-[#8E99A2]">
-                  Last updated: {lastUpdated}
+                  {t('legal.updated')}: {lastUpdated}
                 </p>
               </header>
 
@@ -78,8 +78,8 @@ export function LegalDocumentPage({
           <p>© 2026 Klynt</p>
           <div className="flex items-center gap-4">
             <a href="mailto:hello@klynt.one" className="hover:text-[var(--accent-link)]">hello@klynt.one</a>
-            <Link href="/terms" className="hover:text-[var(--accent-link)]">Terms</Link>
-            <Link href="/privacy" className="hover:text-[var(--accent-link)]">Privacy</Link>
+            <Link href="/terms" className="hover:text-[var(--accent-link)]">{t('landing.terms')}</Link>
+            <Link href="/privacy" className="hover:text-[var(--accent-link)]">{t('landing.privacy')}</Link>
             <Link href="/security" className="hover:text-[var(--accent-link)]">{t('landing.security')}</Link>
           </div>
         </div>

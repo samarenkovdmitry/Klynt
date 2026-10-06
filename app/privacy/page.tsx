@@ -1,32 +1,361 @@
+import { getLocale } from "@/lib/market";
 import {
   LegalDocumentPage,
   LegalSection,
   type LegalSectionNav,
 } from "@/components/LegalDocumentPage";
 
-const SECTIONS: LegalSectionNav[] = [
-  { id: "introduction", title: "Introduction" },
-  { id: "information-we-collect", title: "Information we collect" },
-  { id: "connected-data", title: "Connected workspace data" },
-  { id: "how-we-use", title: "How we use information" },
-  { id: "ai-processing", title: "AI processing" },
-  { id: "legal-bases", title: "Legal bases" },
-  { id: "storage-retention", title: "Storage & retention" },
-  { id: "sharing", title: "Sharing" },
-  { id: "cookies-analytics", title: "Cookies & analytics" },
-  { id: "your-rights", title: "Your rights" },
-  { id: "children", title: "Children" },
-  { id: "changes", title: "Changes" },
-  { id: "contact", title: "Contact" },
-];
+const ru = getLocale() === "ru";
+
+const SECTIONS: LegalSectionNav[] = ru
+  ? [
+      { id: "introduction", title: "Введение" },
+      { id: "information-we-collect", title: "Какие данные мы собираем" },
+      { id: "connected-data", title: "Данные подключённых сервисов" },
+      { id: "how-we-use", title: "Как мы используем данные" },
+      { id: "ai-processing", title: "Обработка с помощью ИИ" },
+      { id: "legal-bases", title: "Правовые основания" },
+      { id: "storage-retention", title: "Хранение и сроки" },
+      { id: "sharing", title: "Передача данных" },
+      { id: "cookies-analytics", title: "Cookies и аналитика" },
+      { id: "your-rights", title: "Ваши права" },
+      { id: "children", title: "Дети" },
+      { id: "changes", title: "Изменения политики" },
+      { id: "contact", title: "Контакты" },
+    ]
+  : [
+      { id: "introduction", title: "Introduction" },
+      { id: "information-we-collect", title: "Information we collect" },
+      { id: "connected-data", title: "Connected workspace data" },
+      { id: "how-we-use", title: "How we use information" },
+      { id: "ai-processing", title: "AI processing" },
+      { id: "legal-bases", title: "Legal bases" },
+      { id: "storage-retention", title: "Storage & retention" },
+      { id: "sharing", title: "Sharing" },
+      { id: "cookies-analytics", title: "Cookies & analytics" },
+      { id: "your-rights", title: "Your rights" },
+      { id: "children", title: "Children" },
+      { id: "changes", title: "Changes" },
+      { id: "contact", title: "Contact" },
+    ];
 
 export default function PrivacyPage() {
   return (
     <LegalDocumentPage
-      title="Privacy Policy"
-      lastUpdated="September 20, 2026"
+      title={ru ? "Политика конфиденциальности" : "Privacy Policy"}
+      lastUpdated={ru ? "20 сентября 2026 г." : "September 20, 2026"}
       sections={SECTIONS}
     >
+      {ru ? <RuPrivacy /> : <EnPrivacy />}
+    </LegalDocumentPage>
+  );
+}
+
+function RuPrivacy() {
+  return (
+    <>
+      <LegalSection id="introduction" title="Введение">
+        <p>
+          Klynt (&laquo;Klynt&raquo;, &laquo;мы&raquo;) — сервис на klynt.ru,
+          слой правды о проекте: он подключается к инструментам вроде Figma и
+          Telegram, собирает значимые изменения и поддерживает актуальное
+          состояние проекта. Эта Политика конфиденциальности объясняет, какую
+          информацию мы собираем, как её используем и какие у вас есть
+          варианты.
+        </p>
+        <p>
+          Используя Klynt, вы соглашаетесь на сбор и использование информации в
+          соответствии с этой политикой. Если вы не согласны, пожалуйста, не
+          используйте Сервис.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="information-we-collect" title="Какие данные мы собираем">
+        <p>В зависимости от того, как вы пользуетесь Klynt, мы можем обрабатывать:</p>
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Данные аккаунта
+            </strong>{" "}
+            — адрес электронной почты и данные для входа при регистрации и
+            авторизации;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Данные проектов
+            </strong>{" "}
+            — созданные вами проекты, их названия и настройки, а также факты,
+            интерпретации и обнаруженные противоречия, которые Сервис для них
+            формирует;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Контактные данные
+            </strong>{" "}
+            — имя, адрес почты и содержимое сообщения, когда вы пишете нам;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Данные листа ожидания
+            </strong>{" "}
+            — адрес почты, если вы записались на бета-доступ;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Данные об использовании и устройстве
+            </strong>{" "}
+            — обобщённая аналитика: посещённые страницы, источник перехода, тип
+            браузера и примерная геолокация (страна/регион);
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Технические логи
+            </strong>{" "}
+            — IP-адрес, время запросов и логи ошибок, которые хранятся
+            недолго ради безопасности, защиты от злоупотреблений и стабильности
+            Сервиса.
+          </li>
+        </ul>
+      </LegalSection>
+
+      <LegalSection id="connected-data" title="Данные подключённых сервисов">
+        <p>
+          Подключая интеграцию, вы даёте Klynt доступ к части этого рабочего
+          пространства, чтобы Сервис мог находить значимые изменения в проекте.
+          Сейчас это:
+        </p>
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Figma
+            </strong>{" "}
+            — активность в файлах: сохранённые версии, комментарии и связанные
+            метаданные (названия файлов, имена пользователей);
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Telegram
+            </strong>{" "}
+            — сообщения в подключённых чатах: текст, имена авторов и время
+            отправки.
+          </li>
+        </ul>
+        <p>
+          Чтобы подключения работали, мы храним выданные Klynt токены доступа
+          (в зашифрованном виде). Они позволяют Сервису читать данные из
+          источников, пока вы не отключите интеграцию.
+        </p>
+        <p>
+          Контент из подключённых сервисов обрабатывается для обнаружения
+          событий проекта и обновления его состояния. Мы не используем его для
+          рекламы и не продаём.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="how-we-use" title="Как мы используем данные">
+        <p>Собранная информация нужна нам, чтобы:</p>
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            получать события из подключённых инструментов и поддерживать
+            актуальное состояние вашего проекта;
+          </li>
+          <li>обеспечивать работу, поддержку и развитие Сервиса;</li>
+          <li>отвечать на обращения и запросы;</li>
+          <li>
+            отправлять подтверждения и новости продукта, на которые вы
+            подписались;
+          </li>
+          <li>
+            следить за производительностью, исправлять ошибки и предотвращать
+            злоупотребления;
+          </li>
+          <li>выполнять требования законодательства.</li>
+        </ul>
+      </LegalSection>
+
+      <LegalSection id="ai-processing" title="Обработка с помощью ИИ">
+        <p>
+          Чтобы определить, что изменилось и почему это важно, содержимое
+          событий из подключённых источников передаётся нашему провайдеру ИИ
+          (Anthropic) для автоматической интерпретации. Результат —
+          классификация событий, факты и обнаруженные противоречия — хранится
+          вместе с данными вашего проекта.
+        </p>
+        <p>
+          Мы не используем контент ваших рабочих пространств для обучения
+          собственных моделей, а провайдер ИИ обрабатывает его на условиях
+          собственных правил работы с данными для API.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="legal-bases" title="Правовые основания">
+        <p>
+          Там, где законодательство о защите данных требует правового
+          основания, мы опираемся на:
+        </p>
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Договор / предоставление сервиса
+            </strong>{" "}
+            — чтобы оказывать Сервис, на который вы зарегистрировались, включая
+            обработку данных подключённых пространств;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Законные интересы
+            </strong>{" "}
+            — чтобы защищать, улучшать и измерять Сервис с уважением к вашей
+            конфиденциальности;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Согласие
+            </strong>{" "}
+            — там, где оно требуется для необязательных рассылок: листа
+            ожидания и новостей продукта.
+          </li>
+        </ul>
+        <p>
+          Подключая рабочее пространство от имени команды или компании, вы
+          отвечаете за наличие полномочий и необходимых уведомлений или согласий
+          на передачу этих данных в Klynt.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="storage-retention" title="Хранение и сроки">
+        <p>
+          Данные аккаунта, проектов, события и производные данные хранятся в
+          нашей базе данных (на инфраструктуре Supabase), пока ваш аккаунт
+          активен.
+        </p>
+        <p>
+          Отключение интеграции прекращает сбор новых данных из этого источника.
+          Уже собранные события и факты могут сохраняться, пока вы не удалите
+          проект или не попросите нас удалить данные. Токены доступа удаляются
+          при отключении интеграции или удалении проекта.
+        </p>
+        <p>
+          Обращения и адреса из листа ожидания хранятся ровно столько, сколько
+          нужно для ответа, работы Сервиса или выполнения требований закона.
+          Серверные логи хранятся ограниченное время для безопасности и
+          диагностики.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="sharing" title="Передача данных">
+        <p>
+          Мы передаём информацию только тем поставщикам, которые помогают
+          работе Klynt:
+        </p>
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Vercel
+            </strong>{" "}
+            — хостинг и доставка приложения;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Supabase
+            </strong>{" "}
+            — база данных и аутентификация;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Anthropic
+            </strong>{" "}
+            — интерпретация событий проекта с помощью ИИ;
+          </li>
+          <li>
+            <strong className="font-medium text-[var(--ink-primary)]">
+              Resend
+            </strong>{" "}
+            — доставка транзакционных писем и писем листа ожидания.
+          </li>
+        </ul>
+        <p>
+          Эти провайдеры обрабатывают данные по нашему поручению, с
+          договорными гарантиями и только для целей, описанных в этой политике.
+        </p>
+        <p>
+          Мы также можем раскрыть информацию, если этого требует закон, для
+          защиты наших прав или пользователей, либо в связи со слиянием,
+          поглощением или продажей активов — с уведомлением там, где оно
+          требуется.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="cookies-analytics" title="Cookies и аналитика">
+        <p>
+          Мы используем необходимые cookies для аутентификации и работы
+          Сервиса, а также бережную к приватности аналитику (Vercel Analytics и
+          Speed Insights) для понимания использования в обобщённом виде.
+        </p>
+        <p>
+          Cookies можно контролировать в настройках браузера. Отключение
+          необходимых cookies может помешать входу и базовым функциям.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="your-rights" title="Ваши права">
+        <p>
+          В зависимости от вашей страны вы можете иметь право запросить доступ
+          к своим персональным данным, их исправление, удаление или ограничение
+          обработки, а также возразить против отдельных видов обработки. Вы
+          также можете подать жалобу в надзорный орган.
+        </p>
+        <p>
+          Чтобы воспользоваться этими правами, напишите на{" "}
+          <a
+            href="mailto:hello@klynt.one"
+            className="font-medium text-[var(--accent-link)] hover:underline"
+          >
+            hello@klynt.one
+          </a>
+          . Прежде чем ответить, нам может понадобиться подтвердить вашу
+          личность.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="children" title="Дети">
+        <p>
+          Klynt не предназначен для детей младше 16 лет (или минимального
+          возраста по законодательству вашей страны). Мы сознательно не собираем
+          персональные данные детей. Если вы считаете, что ребёнок передал нам
+          свои данные, напишите нам — мы примем меры для их удаления.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="changes" title="Изменения политики">
+        <p>
+          Мы можем время от времени обновлять эту Политику конфиденциальности.
+          Дата последнего обновления вверху страницы показывает актуальную
+          редакцию. Существенные изменения публикуются на этой странице.
+          Продолжение использования Сервиса после их вступления в силу означает
+          принятие обновлённой политики.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="contact" title="Контакты">
+        <p>
+          Вопросы по этой Политике конфиденциальности? Пишите на{" "}
+          <a
+            href="mailto:hello@klynt.one"
+            className="font-medium text-[var(--accent-link)] hover:underline"
+          >
+            hello@klynt.one
+          </a>
+          .
+        </p>
+      </LegalSection>
+    </>
+  );
+}
+
+function EnPrivacy() {
+  return (
+    <>
       <LegalSection id="introduction" title="Introduction">
         <p>
           Klynt (&ldquo;Klynt&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;)
@@ -311,6 +640,6 @@ export default function PrivacyPage() {
           .
         </p>
       </LegalSection>
-    </LegalDocumentPage>
+    </>
   );
 }
