@@ -85,7 +85,7 @@ const EVENTS: DemoEvent[] = [
     content: S('Actually, the green app icon tested better in user research.', 'Вообще, зелёная иконка лучше показала себя в исследовании.'),
     reason: S('Green app icon proposed after user research', 'Предложена зелёная иконка после исследования') },
   { daysAgo: 2, hour: 10, source: 'figma', author: 'Anna', subject: S('app icon', 'иконка приложения'), event_type: 'change', action: 'modify', confidence: 0.9, importance: 'medium', figma: true,
-    content: S("Switched to green app icon based on John's research.", 'Переключила на зелёную иконку по исследованию Джона.'),
+    content: S("Switched to green app icon based on John's research.", 'Переключила на зелёную иконку по исследованию Игоря.'),
     reason: S('App icon switched to green', 'Иконка приложения заменена на зелёную') },
   { daysAgo: 1, hour: 9, source: 'slack', author: 'Sara', subject: S('app icon', 'иконка приложения'), event_type: 'request', action: 'modify', confidence: 0.85, importance: 'high',
     content: S('Wait, I liked blue better. Can we revert before the review?', 'Стоп, синяя нравилась больше. Можем вернуть до ревью?'),
@@ -129,13 +129,13 @@ const CONFLICTS = [
 
 export async function createDemoProject(ownerId: string) {
   const base = {
-    name: 'Lunar mobile',
+    name: S('Lunar mobile', 'Самовар'),
     description: S(
       'Sample project — a mobile app redesign tracked from Figma and Slack.',
-      'Редизайн мобильного приложения. Решения и изменения из Figma и Telegram.',
+      'Редизайн приложения доставки «Самовар». Решения и изменения из Figma и Telegram.',
     ),
     owner_id: ownerId,
-    slug: `sample-lunar-mobile-${Date.now().toString(36)}`,
+    slug: `sample-${isRu ? 'samovar' : 'lunar-mobile'}-${Date.now().toString(36)}`,
   };
 
   let { data: project, error } = await supabase
@@ -204,11 +204,11 @@ async function seedProjectData(project: { id: string }) {
       author: { name: AUTHORS[e.author].display },
       ...(e.source === 'slack'
         ? isRu
-          ? { channel: 'lunar-mobile', chat_id: -1000000000000 + i, message_id: `demo_${i}` }
+          ? { channel: 'samovar-app', chat_id: -1000000000000 + i, message_id: `demo_${i}` }
           : { channel: 'lunar-mobile', channel_id: 'C0DEMO', team_id: 'T0DEMO', message_id: `demo_${i}` }
         : {}),
       ...(e.source === 'figma'
-        ? { file_key: 'demoLunarFile', file_name: 'Lunar mobile', comment_id: `demo_c${i}` }
+        ? { file_key: isRu ? 'demoSamovarFile' : 'demoLunarFile', file_name: S('Lunar mobile', 'Самовар'), comment_id: `demo_c${i}` }
         : {}),
     };
 

@@ -559,7 +559,7 @@ const ru: Dict = {
   'preview.p1': 'Сайт юрфирмы',
   'preview.p2': 'Ребрендинг кофейни',
   'preview.p3': 'Лендинг застройщика',
-  'preview.p4': 'Приложение Lunar',
+  'preview.p4': 'Приложение «Самовар»',
   'preview.card1.subject': 'Иконка приложения',
   'preview.card1.label': 'Ждёт решения',
   'preview.card1.context': 'Синий → зелёный → синий за 3 дня',

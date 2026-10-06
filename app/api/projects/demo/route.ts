@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       .from('projects')
       .select('id, slug, name')
       .eq('owner_id', user.id)
-      .ilike('name', 'Lunar mobile%')
+      .or('name.ilike.Lunar mobile%,name.ilike.Самовар%')
       .limit(1)
       .maybeSingle();
     if (byName) {
