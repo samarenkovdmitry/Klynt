@@ -459,11 +459,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     const diff = Date.now() - new Date(date).getTime();
     const m = Math.floor(diff / 60000);
     if (m < 1) return t('dashboard.justNow');
-    if (m < 60) return t('dashboard.minAgo', { m });
+    if (m < 60) return `${m} ${tp(m, 'plural.minAgo')}`;
     const h = Math.floor(m / 60);
-    if (h < 24) return t('dashboard.hAgo', { h });
+    if (h < 24) return `${h} ${tp(h, 'plural.hAgo')}`;
     const d = Math.floor(h / 24);
-    return t('dashboard.dAgo', { d });
+    return `${d} ${tp(d, 'plural.dAgo')}`;
   };
 
   const formatDateTime = (date: string) => {
@@ -615,8 +615,8 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               {/* Segmented state bar — settled on the left like a progress
                   bar, undecided states keep the attention colours on the right */}
               <div className="mt-2.5 flex h-1.5 gap-[2px] overflow-hidden rounded-full bg-white" role="img"
-                aria-label={`${stateCounts.approved} ${t('dashboard.approved')}, ${stateCounts.review} ${t('dashboard.needReview')}, ${stateCounts.added} ${t('dashboard.new')}, ${stateCounts.pending} ${t('dashboard.pending')}`}>
-                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
+                aria-label={`${stateCounts.approved} ${t('dashboard.approved')}, ${stateCounts.review} ${t('dashboard.needReview')}, ${stateCounts.added} ${t('dashboard.new')}, ${stateCounts.pending} ${tp(stateCounts.pending, 'plural.pendingLabel')}`}>
+                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', tp(stateCounts.pending, 'plural.pendingLabel')]] as const).map(([k, label]) =>
                   stateCounts[k] > 0 && (
                     <div
                       key={k}
@@ -630,7 +630,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               <p className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[13px] text-ink-muted">
                 <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
                 <span>{state.currentState.length} {tp(state.currentState.length, 'plural.area')}</span>
-                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', t('dashboard.pending')]] as const).map(([k, label]) =>
+                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', tp(stateCounts.pending, 'plural.pendingLabel')]] as const).map(([k, label]) =>
                   stateCounts[k] > 0 && (
                     <span key={k} className="inline-flex items-center gap-1">
                       <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
@@ -784,7 +784,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                           <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
                             {hasHistory && (
                               <span className="font-medium transition-colors group-hover:text-[var(--accent-link)]">
-                                {factHistory.length} {factHistory.length === 1 ? 'change' : 'changes'}
+                                {factHistory.length} {tp(factHistory.length, 'plural.change')}
                               </span>
                             )}
                             {hasHistory && showUpdated && <span>·</span>}
@@ -986,7 +986,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             <button
                               onClick={() => resolveConflict(conflict.id, 'accept_new', conflict.proposedEvent.action)}
                               disabled={resolving === conflict.id}
-                              className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
+                              className="whitespace-nowrap rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
                             >
                               {t('dashboard.accept')}
                             </button>
@@ -994,14 +994,14 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                           <button
                             onClick={() => resolveConflict(conflict.id, 'keep_current')}
                             disabled={resolving === conflict.id}
-                            className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-line-strong hover:bg-fill-soft disabled:opacity-50"
+                            className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-line-strong hover:bg-fill-soft disabled:opacity-50"
                           >
                             {t('dashboard.keepAsIs')}
                           </button>
                           <button
                             onClick={() => resolveConflict(conflict.id, 'unclear')}
                             disabled={resolving === conflict.id}
-                            className="px-2 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink-secondary disabled:opacity-50"
+                            className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink-secondary disabled:opacity-50"
                           >
                             {t('dashboard.notSure')}
                           </button>

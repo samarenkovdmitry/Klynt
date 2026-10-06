@@ -44,7 +44,8 @@ export function isConnectorEnabled(source: string): boolean {
   return getEnabledConnectors().includes(source.toLowerCase());
 }
 
-// Brand assets per market — the ru deployment ships a localized logotype.
+// Brand assets — the logo is shared across markets now; the localized
+// /klynt-logo-ru.svg stays in the repo in case the ru brand diverges again.
 export function logoSrc(): string {
-  return getLocale() === 'ru' ? '/klynt-logo-ru.svg' : '/Klynt_logo.svg';
+  return '/Klynt_logo.svg';
 }

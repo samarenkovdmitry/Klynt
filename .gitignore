@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.next-ru/
 /out/
 
 # production
@@ -60,3 +61,6 @@ debug_*
 *.bin
 *.webp
 *.heic
+
+# local dev caches
+.cache/

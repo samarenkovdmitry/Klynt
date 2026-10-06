@@ -12,6 +12,6 @@ if (!ru) {
 
 const child = spawn('npx', ['next', 'dev', ...process.argv.slice(2)], {
   stdio: 'inherit',
-  env: { ...process.env, ...ru },
+  env: { ...process.env, NEXT_DIST_DIR: '.next-ru', ...ru },
 });
 child.on('exit', (code) => process.exit(code ?? 0));

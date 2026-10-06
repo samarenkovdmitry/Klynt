@@ -1,31 +1,99 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/db/supabase';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
-import { getProject, createIntegration } from '@/lib/db/queries';
+import { getProject, getIntegration, createIntegration } from '@/lib/db/queries';
 import { encryptToken } from '@/lib/crypto';
 import { telegramApi, type TgUser } from '@/lib/telegram/client';
 import { getSiteUrl } from '@/lib/site';
 import { randomBytes } from 'crypto';
 
 // POST /api/integrations/telegram/connect
-// Body: { projectId, botToken }
+// Body: { projectId, botToken? }
 //
-// Telegram connect is token-based, not OAuth: the user creates a bot via
-// @BotFather, pastes the token, adds the bot to the project chat. We verify
-// the token with getMe, store it encrypted, and register a webhook when a
-// public URL is available. Local dev falls back to /api/jobs/poll-telegram.
+// Two modes:
+// - Shared app bot (TELEGRAM_BOT_TOKEN set): the user never sees a token.
+//   We create an integration with a one-time link_code and return a
+//   t.me/<bot>?startgroup=<code> deep link — adding the bot to a chat
+//   delivers "/start <code>" into it and binds the chat automatically.
+// - Per-project bot (env not set): the user creates a bot via @BotFather
+//   and pastes the token; we verify it with getMe and register a webhook.
 export async function POST(request: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) return unauthorizedResponse();
 
     const { projectId, botToken } = await request.json();
-    if (!projectId || !botToken) {
-      return NextResponse.json({ error: 'projectId and botToken are required' }, { status: 400 });
+    if (!projectId) {
+      return NextResponse.json({ error: 'projectId is required' }, { status: 400 });
     }
 
     const project = await getProject(projectId, user.id);
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    const sharedToken = process.env.TELEGRAM_BOT_TOKEN;
+    if (sharedToken) {
+      const bot = await telegramApi<TgUser>(sharedToken, 'getMe');
+      const existing = await getIntegration(projectId, 'telegram');
+
+      let linkCode = existing?.config?.link_code as string | undefined;
+      if (existing?.config?.chat_id) {
+        // Already bound — nothing to do
+        return NextResponse.json({ connected: true, bot_username: bot.username });
+      }
+      if (!linkCode) linkCode = randomBytes(16).toString('hex');
+
+      if (existing) {
+        await supabase
+          .from('integrations')
+          .update({
+            config: {
+              ...existing.config,
+              shared_bot: true,
+              bot_username: bot.username,
+              link_code: linkCode,
+            },
+          })
+          .eq('id', existing.id);
+      } else {
+        await createIntegration({
+          project_id: projectId,
+          source: 'telegram',
+          access_token_encrypted: encryptToken(sharedToken),
+          config: {
+            shared_bot: true,
+            bot_id: bot.id,
+            bot_username: bot.username,
+            link_code: linkCode,
+          },
+        });
+      }
+
+      // Register the shared webhook once — idempotent, and on localhost it
+      // fails so the deployment falls back to /api/jobs/poll-telegram.
+      const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+      if (webhookSecret) {
+        try {
+          await telegramApi(sharedToken, 'setWebhook', {
+            url: `${getSiteUrl()}/api/webhooks/telegram`,
+            secret_token: webhookSecret,
+            allowed_updates: ['message', 'my_chat_member'],
+          });
+        } catch (e) {
+          console.warn('Telegram setWebhook failed (expected on localhost):', e);
+        }
+      }
+
+      return NextResponse.json({
+        connected: true,
+        bot_username: bot.username,
+        deep_link: `https://t.me/${bot.username}?startgroup=${linkCode}`,
+      });
+    }
+
+    if (!botToken) {
+      return NextResponse.json({ error: 'botToken required', code: 'token_required' }, { status: 400 });
     }
 
     const token = String(botToken).trim();
