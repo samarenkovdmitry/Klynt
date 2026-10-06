@@ -387,13 +387,13 @@ export default function LandingPreview() {
                       {t('dashboard.flaggedAgo', { time: t('preview.card1.ago') })}
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
-                      <span className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
+                      <span className="whitespace-nowrap rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
                         {t('dashboard.accept')}
                       </span>
-                      <span className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
+                      <span className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
                         {t('dashboard.keepAsIs')}
                       </span>
-                      <span className="px-2 py-1.5 text-xs font-medium text-ink-faint">
+                      <span className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint">
                         {t('dashboard.notSure')}
                       </span>
                     </div>
@@ -414,10 +414,10 @@ export default function LandingPreview() {
                       {t('dashboard.flaggedAgo', { time: t('preview.card2.ago') })}
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
-                      <span className="rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
+                      <span className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
                         {t('dashboard.keepAsIs')}
                       </span>
-                      <span className="px-2 py-1.5 text-xs font-medium text-ink-faint">
+                      <span className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint">
                         {t('dashboard.notSure')}
                       </span>
                     </div>
