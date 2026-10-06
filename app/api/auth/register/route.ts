@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { sendConfirmEmail } from '@/lib/send-confirm-email';
-import { getSiteUrl } from '@/lib/site';
+
 import { checkRateLimit } from '@/lib/rate-limit';
 import { t } from '@/lib/i18n';
 
@@ -46,18 +46,20 @@ export async function POST(request: NextRequest) {
       throw createError;
     }
 
-    const siteUrl = getSiteUrl();
+    // Confirm link must land on the origin the user actually registered on —
+    // getSiteUrl() falls back to the EN domain in local dev.
+    const origin = new URL(request.url).origin;
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'signup',
       email,
       password,
-      options: { redirectTo: `${siteUrl}${next}` },
+      options: { redirectTo: `${origin}${next}` },
     });
     if (linkError || !linkData?.properties?.hashed_token) {
       throw linkError || new Error('Failed to generate confirmation link');
     }
 
-    const confirmUrl = `${siteUrl}/auth/confirm?token_hash=${linkData.properties.hashed_token}&type=signup&next=${encodeURIComponent(next)}`;
+    const confirmUrl = `${origin}/auth/confirm?token_hash=${linkData.properties.hashed_token}&type=signup&next=${encodeURIComponent(next)}`;
 
     try {
       await sendConfirmEmail(email, confirmUrl);
