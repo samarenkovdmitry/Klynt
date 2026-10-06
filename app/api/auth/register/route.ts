@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'signup',
       email,
+      password,
       options: { redirectTo: `${siteUrl}${next}` },
     });
     if (linkError || !linkData?.properties?.hashed_token) {
