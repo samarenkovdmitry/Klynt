@@ -2,19 +2,18 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { FloatingInput } from '@/components/ui/FloatingInput'
+import { RiMailCheckLine } from '@remixicon/react'
 import { t } from '@/lib/i18n'
 import { logoSrc } from '@/lib/market'
 
 export default function RegisterPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,22 +29,45 @@ export default function RegisterPage() {
     const next = new URLSearchParams(window.location.search).get('next')
     const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/project'
 
-    const supabase = createClient()
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(safeNext)}`,
-      },
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, next: safeNext }),
     })
+    const data = await res.json().catch(() => ({}))
 
     setLoading(false)
 
-    if (signUpError) {
-      setError(signUpError.message)
+    if (!res.ok) {
+      setError(data.error || t('auth.emailSendFailed'))
     } else {
-      router.push(safeNext)
+      setSent(true)
     }
+  }
+
+  if (sent) {
+    return (
+      <div className="relative flex min-h-screen flex-col items-center justify-center bg-cream px-4">
+        <div className="absolute inset-x-0 top-0">
+          <div className="mx-auto w-full max-w-7xl px-6 py-4">
+            <Link href="/">
+              <img src={logoSrc()} alt="Klynt" className="h-8 w-auto" />
+            </Link>
+          </div>
+        </div>
+        <div className="w-full max-w-sm text-center">
+          <RiMailCheckLine size={40} className="mx-auto text-ink-faint" />
+          <h1 className="mt-4 text-2xl font-semibold text-ink">{t('auth.checkEmailTitle')}</h1>
+          <p className="mt-2 text-sm text-ink-muted">{t('auth.checkEmailText', { email })}</p>
+          <Link
+            href="/login"
+            className="mt-6 inline-block text-sm font-medium text-[var(--accent-link)] hover:underline"
+          >
+            {t('auth.backToLogin')}
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (

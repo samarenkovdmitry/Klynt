@@ -2,46 +2,35 @@ import { buildEmailLogoHtml } from "@/lib/email-brand";
 import { getSiteUrl } from "@/lib/site";
 import { getLocale } from "@/lib/market";
 
-function escapeHtml(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
-function buildInviteContent(projectName: string, inviterName: string | null, acceptUrl: string) {
+function buildConfirmContent(confirmUrl: string) {
   const siteUrl = getSiteUrl();
   const logoHtml = buildEmailLogoHtml(siteUrl);
-  const safeName = escapeHtml(projectName);
   const ru = getLocale() === "ru";
 
   const lines = ru
     ? {
         greeting: "Здравствуйте!",
-        inviter: inviterName ? `${escapeHtml(inviterName)} приглашает вас` : "Вас пригласили",
-        body: "Klynt следит за тем, что действительно актуально в проекте: что изменилось, что согласовано и что требует внимания.",
-        button: "Принять приглашение",
+        body: "Подтвердите адрес, чтобы завершить регистрацию в Klynt.",
+        button: "Подтвердить почту",
+        note: "Ссылка одноразовая.",
         fallback: "Или откройте ссылку:",
         sign: "— Klynt",
       }
     : {
         greeting: "Hey,",
-        inviter: inviterName ? `${escapeHtml(inviterName)} invited you` : "You've been invited",
-        body: "Klynt keeps track of what is actually true in a project — what changed, what's approved, and what needs attention — from Figma, Slack and Linear.",
-        button: "Accept invite",
+        body: "Confirm your email to finish signing up for Klynt.",
+        button: "Confirm email",
+        note: "This link works once.",
         fallback: "Or paste this link:",
         sign: "— Klynt",
       };
 
-  const joinText = ru
-    ? `${inviterName ? inviterName + " приглашает вас" : "Вас пригласили"} в проект «${projectName}» в Klynt.`
-    : `${inviterName ? inviterName + " invited you" : "You've been invited"} to join "${projectName}" on Klynt.`;
-
   const text = [
     lines.greeting,
     "",
-    joinText,
-    "",
     lines.body,
     "",
-    `${lines.button}: ${acceptUrl}`,
+    `${lines.button}: ${confirmUrl}`,
     "",
     lines.sign,
   ].join("\n");
@@ -61,12 +50,12 @@ function buildInviteContent(projectName: string, inviterName: string | null, acc
             <tr>
               <td style="font-size:16px;line-height:1.7;color:#1C1B17;">
                 <p style="margin:0 0 16px;">${lines.greeting}</p>
-                <p style="margin:0 0 16px;">${lines.inviter} ${ru ? "в проект" : "to join"} <strong>${safeName}</strong> ${ru ? "в Klynt" : "on Klynt"}.</p>
                 <p style="margin:0 0 24px;">${lines.body}</p>
                 <p style="margin:0 0 24px;">
-                  <a href="${acceptUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#0F3D2E;color:#FFE79A;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:999px;">${lines.button}</a>
+                  <a href="${confirmUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#0F3D2E;color:#FFE79A;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:999px;">${lines.button}</a>
                 </p>
-                <p style="margin:0;font-size:13px;color:#8C887D;">${lines.fallback} ${acceptUrl}</p>
+                <p style="margin:0 0 12px;font-size:13px;color:#8C887D;">${lines.note}</p>
+                <p style="margin:0;font-size:13px;color:#8C887D;">${lines.fallback} ${confirmUrl}</p>
               </td>
             </tr>
           </table>
@@ -79,12 +68,7 @@ function buildInviteContent(projectName: string, inviterName: string | null, acc
   return { text, html };
 }
 
-export async function sendProjectInviteEmail(
-  email: string,
-  projectName: string,
-  inviterName: string | null,
-  acceptUrl: string,
-) {
+export async function sendConfirmEmail(email: string, confirmUrl: string) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new Error("Email is not configured. Set RESEND_API_KEY in the environment.");
@@ -94,7 +78,8 @@ export async function sendProjectInviteEmail(
     process.env.CONTACT_FROM_EMAIL?.trim() ||
     "Klynt <onboarding@resend.dev>";
 
-  const { text, html } = buildInviteContent(projectName, inviterName, acceptUrl);
+  const { text, html } = buildConfirmContent(confirmUrl);
+  const ru = getLocale() === "ru";
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -105,7 +90,7 @@ export async function sendProjectInviteEmail(
     body: JSON.stringify({
       from,
       to: [email],
-      subject: getLocale() === "ru" ? `Приглашение в проект «${projectName}» — Klynt` : `You're invited to ${projectName} on Klynt`,
+      subject: ru ? "Подтвердите почту — Klynt" : "Confirm your email — Klynt",
       text,
       html,
     }),

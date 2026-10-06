@@ -234,6 +234,14 @@ const en: Dict = {
   'auth.noAccount': "Don't have an account?",
   'auth.hasAccount': 'Already have an account?',
   'auth.passwordsMismatch': 'Passwords do not match',
+  'auth.checkEmailTitle': 'Check your inbox',
+  'auth.checkEmailText': 'We sent a confirmation link to {email}.',
+  'auth.backToLogin': 'Back to log in',
+  'auth.tooManyAttempts': 'Too many attempts — try again in a minute',
+  'auth.invalidEmail': 'Enter a valid email address',
+  'auth.passwordTooShort': 'At least 6 characters',
+  'auth.alreadyRegistered': 'This email is already registered — try logging in',
+  'auth.emailSendFailed': 'Could not send the confirmation email — try again',
 
   // Settings
   'settings.title': 'Settings',
@@ -591,6 +599,14 @@ const ru: Dict = {
   'auth.noAccount': 'Нет аккаунта?',
   'auth.hasAccount': 'Уже есть аккаунт?',
   'auth.passwordsMismatch': 'Пароли не совпадают',
+  'auth.checkEmailTitle': 'Проверьте почту',
+  'auth.checkEmailText': 'Мы отправили ссылку для подтверждения на {email}.',
+  'auth.backToLogin': 'Вернуться ко входу',
+  'auth.tooManyAttempts': 'Слишком много попыток — подождите минуту',
+  'auth.invalidEmail': 'Введите корректную почту',
+  'auth.passwordTooShort': 'Минимум 6 символов',
+  'auth.alreadyRegistered': 'Эта почта уже зарегистрирована — попробуйте войти',
+  'auth.emailSendFailed': 'Не удалось отправить письмо — попробуйте ещё раз',
 
   // Settings
   'settings.title': 'Настройки',
