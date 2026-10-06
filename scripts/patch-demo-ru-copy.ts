@@ -24,7 +24,7 @@ async function main() {
   console.log('Demo projects found:', projectIds);
 
   const DISPLAY: Record<string, string> = {
-    'загрузка аватара': 'Вне рамок проекта',
+    'загрузка аватара': 'Вне проекта',
     'иконка приложения': 'Ждёт решения',
     'главный экран': 'Согласовано',
     'нижняя навигация': 'Согласовано',

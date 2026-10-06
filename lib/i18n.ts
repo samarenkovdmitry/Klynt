@@ -566,7 +566,7 @@ const ru: Dict = {
   'preview.card1.context': 'Синий → зелёный → синий за 3 дня',
   'preview.card1.ago': '1 дн назад',
   'preview.card2.subject': 'Загрузка аватара',
-  'preview.card2.label': 'Вне рамок проекта',
+  'preview.card2.label': 'Вне проекта',
   'preview.card2.context': 'Дизайнер добавила, PM убрал из MVP',
   'preview.card2.ago': '10 дн назад',
   'preview.card3.subject': 'Экран настроек',

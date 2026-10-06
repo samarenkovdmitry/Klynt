@@ -100,7 +100,7 @@ const EVENTS: DemoEvent[] = [
 const FACTS: Record<string, { state: string; display: string; confidence: number; importance: string }> = {
   [S('home screen', 'главный экран')]:       { state: 'approved', display: S('Approved', 'Согласовано'),        confidence: 0.95, importance: 'high' },
   [S('bottom navigation', 'нижняя навигация')]: { state: 'approved', display: S('Approved', 'Согласовано'),   confidence: 0.95, importance: 'high' },
-  [S('avatar upload', 'загрузка аватара')]:  { state: 'removed',  display: S('Out of scope', 'Вне рамок проекта'),    confidence: 0.85, importance: 'medium' },
+  [S('avatar upload', 'загрузка аватара')]:  { state: 'removed',  display: S('Out of scope', 'Вне проекта'),    confidence: 0.85, importance: 'medium' },
   [S('checkout flow', 'флоу оплаты')]:       { state: 'approved', display: S('Approved', 'Согласовано'),      confidence: 0.92, importance: 'high' },
   [S('payment method', 'способ оплаты')]:    { state: 'added',    display: S('Added', 'Добавлено'),            confidence: 0.88, importance: 'high' },
   [S('dark mode', 'тёмная тема')]:           { state: 'approved', display: S('Approved', 'Согласовано'),      confidence: 0.80, importance: 'low' },
