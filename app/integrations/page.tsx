@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { siNotion, siLinear, siGoogledocs, siTelegram } from 'simple-icons';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
-import { RiArrowDownSLine, RiArrowRightUpLine, RiDeleteBinLine, RiEyeLine, RiForbidLine } from '@remixicon/react';
+import { RiArrowDownSLine, RiArrowRightUpLine, RiCheckboxCircleLine, RiDeleteBinLine, RiErrorWarningLine, RiEyeLine, RiForbidLine } from '@remixicon/react';
 import { track } from '@vercel/analytics';
 import { getEnabledConnectors, getLocale } from '@/lib/market';
 import { t } from '@/lib/i18n';
@@ -674,10 +674,13 @@ export default function IntegrationsPage() {
         </a>
 
         {notice && (
-          <div className={`mt-4 flex items-center justify-between rounded-xl px-4 py-3 text-sm ${
-            notice.kind === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-700'
+          <div className={`mt-4 flex items-center gap-2.5 rounded-xl border bg-white px-4 py-3 text-sm ${
+            notice.kind === 'success' ? 'border-green-300 text-green-800' : 'border-red-300 text-red-700'
           }`}>
-            <span>{notice.text}</span>
+            {notice.kind === 'success'
+              ? <RiCheckboxCircleLine size={18} className="shrink-0 text-green-600" />
+              : <RiErrorWarningLine size={18} className="shrink-0 text-red-500" />}
+            <span className="flex-1">{notice.text}</span>
             <button onClick={() => setNotice(null)} className="ml-3 text-current opacity-60 hover:opacity-100" aria-label="Dismiss">
               ×
             </button>
