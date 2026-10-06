@@ -121,7 +121,7 @@ const BLUE_PILL = 'bg-blue-50 text-blue-700';
 
 // Mirrors the real dashboard's state-bar palette (done → work left).
 const STATE_BAR_COLORS: Record<string, string> = {
-  approved: 'bg-emerald-300',
+  approved: 'bg-emerald-400',
   review: 'bg-amber-400',
   added: 'bg-blue-400',
   pending: 'bg-rose-400',

@@ -102,7 +102,7 @@ const DEFAULT_PILL_STYLE = 'bg-fill text-ink-secondary';
 // left — the bar then reads as a progress bar (done → work left), and colour
 // still belongs to what needs deciding.
 const STATE_BAR_COLORS: Record<string, string> = {
-  approved: 'bg-emerald-300',
+  approved: 'bg-emerald-400',
   review: 'bg-amber-400',
   added: 'bg-blue-400',
   pending: 'bg-rose-400',
