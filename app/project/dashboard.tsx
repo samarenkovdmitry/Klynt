@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import NewProjectModal from '@/components/NewProjectModal';
+import LandingPreview from '@/components/LandingPreview';
 import { FigmaIcon, SlackIcon, LinearIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import { emojify } from 'node-emoji';
 import { t, getLocale, tp } from '@/lib/i18n';
@@ -413,25 +414,35 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     return (
       <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
         <Sidebar projects={[]} selectedProjectId={null} activeItem="project" />
-        <main className="flex flex-1 items-center justify-center px-4 py-16">
-          <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">{t('dashboard.createFirst')}</h2>
-            <p className="mt-2 text-sm text-ink-muted">
+        <main className="flex flex-1 flex-col items-center overflow-hidden px-4 pb-0 pt-16 sm:pt-20">
+          <div className="w-full max-w-lg text-center">
+            <h1 className="text-2xl font-semibold text-ink">{t('dashboard.createFirst')}</h1>
+            <p className="mt-3 text-sm leading-relaxed text-ink-muted">
               {t('dashboard.emptyProjectText')}
             </p>
-            <button
-              onClick={() => setCreateOpen(true)}
-              className="mt-6 rounded-full bg-[var(--accent)] px-6 py-3.5 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
-            >
-              {t('sidebar.newProject')}
-            </button>
-            <button
-              onClick={handleCreateDemo}
-              disabled={creatingDemo}
-              className="mt-3 block w-full text-sm font-medium text-[var(--accent-link)] transition hover:underline disabled:opacity-50"
-            >
-              {creatingDemo ? t('dashboard.preparingSample') : t('dashboard.seeExample')}
-            </button>
+            <div className="mt-7 flex items-center justify-center gap-3">
+              <button
+                onClick={() => setCreateOpen(true)}
+                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
+              >
+                {t('sidebar.newProject')}
+              </button>
+              <button
+                onClick={handleCreateDemo}
+                disabled={creatingDemo}
+                className="rounded-full border border-line bg-white px-6 py-3 text-sm font-medium text-ink-secondary transition hover:border-line-strong hover:text-ink disabled:opacity-50"
+              >
+                {creatingDemo ? t('dashboard.preparingSample') : t('dashboard.seeExample')}
+              </button>
+            </div>
+          </div>
+
+          {/* What they're about to get — the same mock as the landing hero */}
+          <div aria-hidden className="relative mt-12 w-full max-w-5xl flex-1 overflow-hidden">
+            <div className="pointer-events-none mx-auto w-[1100px] max-w-none origin-top scale-[0.55] sm:scale-[0.75]">
+              <LandingPreview />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-app-bg" />
           </div>
         </main>
         <NewProjectModal open={createOpen} onClose={() => setCreateOpen(false)} />

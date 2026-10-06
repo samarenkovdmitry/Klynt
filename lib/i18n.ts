@@ -495,7 +495,7 @@ const ru: Dict = {
   'dashboard.showMore': 'Показать ещё {count}',
   'dashboard.showLess': 'Свернуть',
   'dashboard.viewSource': 'Открыть источник',
-  'dashboard.emptyProjectText': 'Собирает решения и изменения из рабочих инструментов и держит состояние проекта актуальным.',
+  'dashboard.emptyProjectText': 'Собирает решения и изменения из рабочего чата и держит состояние проекта актуальным.',
   'dashboard.accept': 'Принять',
   'dashboard.keepAsIs': 'Оставить',
   'dashboard.notSure': 'Уточнить',
