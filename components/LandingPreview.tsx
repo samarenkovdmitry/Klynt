@@ -233,7 +233,7 @@ export default function LandingPreview() {
           <div className="grid grid-cols-12 gap-8">
             <div className="order-1 col-span-8 flex flex-col gap-8">
               <section>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <FactCard
                     subject={t('preview.card1.subject')}
                     label={t('preview.card1.label')}
