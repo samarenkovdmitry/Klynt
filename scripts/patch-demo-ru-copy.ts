@@ -63,8 +63,36 @@ async function main() {
       .from('projects')
       .update({ description: 'Редизайн мобильного приложения. Решения и изменения из Figma и Telegram.' })
       .eq('id', pid);
+
+    // RU-studio author names: demo_john → Игорь (PM), demo_sara → Мария (client)
+    for (const [externalId, name] of [['demo_john', 'Игорь'], ['demo_sara', 'Мария']] as const) {
+      await sb
+        .from('project_members')
+        .update({ name })
+        .eq('project_id', pid)
+        .eq('external_user_id', externalId);
+    }
   }
-  console.log('Conflicts + project description updated');
+  console.log('Conflicts + project description + member names updated');
+
+  // Author names embedded in raw_events.metadata.author.name
+  const RENAME: Record<string, string> = { 'Джон': 'Игорь', 'Сара': 'Мария' };
+  const { data: events } = await sb
+    .from('raw_events')
+    .select('id, project_id, metadata')
+    .in('project_id', projectIds);
+  let renamed = 0;
+  for (const e of events || []) {
+    const name = e.metadata?.author?.name;
+    if (name && RENAME[name]) {
+      await sb
+        .from('raw_events')
+        .update({ metadata: { ...e.metadata, author: { ...e.metadata.author, name: RENAME[name] } } })
+        .eq('id', e.id);
+      renamed++;
+    }
+  }
+  console.log('Event authors renamed:', renamed);
 }
 
 main().catch((e) => {

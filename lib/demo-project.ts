@@ -31,8 +31,8 @@ interface DemoEvent {
 
 const AUTHORS = {
   Anna: { source: 'figma', role: 'designer', display: S('Anna', 'Анна') },
-  John: { source: isRu ? 'telegram' : 'slack', role: 'pm', display: S('John', 'Джон') },
-  Sara: { source: isRu ? 'telegram' : 'slack', role: 'client', display: S('Sara', 'Сара') },
+  John: { source: isRu ? 'telegram' : 'slack', role: 'pm', display: S('John', 'Игорь') },
+  Sara: { source: isRu ? 'telegram' : 'slack', role: 'client', display: S('Sara', 'Мария') },
 } as const;
 
 const EVENTS: DemoEvent[] = [
