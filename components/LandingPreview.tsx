@@ -61,7 +61,7 @@ function FactCard({
   return (
     <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${dimmed ? 'opacity-75' : ''}`}>
       <p className="text-[15px] font-semibold leading-snug text-ink">{subject}</p>
-      <span className={`mt-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
+      <span className={`mt-1.5 inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
         {approved && <RiCheckLine size={11} />}
         {label}
       </span>
@@ -70,7 +70,7 @@ function FactCard({
       )}
       {changes && (
         <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
-          <span>{changes} {tp(changes, 'plural.change')}{ago ? ` · ${ago}` : ''}</span>
+          <span className="min-w-0 truncate">{changes} {tp(changes, 'plural.change')}{ago ? ` · ${ago}` : ''}</span>
           {(actor || source) && (
             <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
               {actor && <span className="max-w-[80px] truncate">{actor}</span>}
@@ -372,7 +372,7 @@ export default function LandingPreview() {
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-ink">{t('preview.card1.subject')}</p>
-                      <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                      <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         {t('conflict.contradiction')}
                       </span>
                     </div>
@@ -399,7 +399,7 @@ export default function LandingPreview() {
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-ink">{t('preview.card2.subject')}</p>
-                      <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                      <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                         {t('conflict.scope_change')}
                       </span>
                     </div>

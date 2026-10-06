@@ -793,13 +793,15 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         ) : null}
                         {(hasHistory || fact.last_updated_at) && (
                           <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
-                            {hasHistory && (
-                              <span className="font-medium transition-colors group-hover:text-[var(--accent-link)]">
-                                {factHistory.length} {tp(factHistory.length, 'plural.change')}
-                              </span>
-                            )}
-                            {hasHistory && showUpdated && <span>·</span>}
-                            {showUpdated && <span>{formatRelative(fact.last_updated_at!)}</span>}
+                            <span className="min-w-0 truncate whitespace-nowrap">
+                              {hasHistory && (
+                                <span className="font-medium transition-colors group-hover:text-[var(--accent-link)]">
+                                  {factHistory.length} {tp(factHistory.length, 'plural.change')}
+                                </span>
+                              )}
+                              {hasHistory && showUpdated && <span> · </span>}
+                              {showUpdated && <span>{formatRelative(fact.last_updated_at!)}</span>}
+                            </span>
                             {(lastActor || lastSource) && (
                               <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
                                 {lastActor && !isRawExternalId(lastActor) && (
@@ -979,7 +981,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-semibold text-ink">{capitalize(conflict.subject)}</p>
                           {relatedFact && <RiArrowRightSLine size={14} className="text-ink-faint opacity-0 transition-opacity group-hover:opacity-100" />}
-                          <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                          <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                             {conflictTypeLabel(conflict.conflict_type) || t('dashboard.needsDecision')}
                           </span>
                         </div>
