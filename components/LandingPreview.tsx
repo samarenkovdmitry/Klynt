@@ -194,6 +194,9 @@ export default function LandingPreview() {
               {getLocale() === 'ru' ? (
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
+                    <FigmaIcon size={12} /> Figma
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
                     <TelegramIcon size={12} /> Telegram
                   </span>
                 </div>

@@ -529,8 +529,8 @@ const ru: Dict = {
   'state.removed': 'Ждёт решения',
   'conflict.state_change': 'Ждёт решения',
   'conflict.contradiction': 'Противоречие',
-  'conflict.scope_change': 'Изменение объёма',
-  'conflict.scope_question': 'Вопрос по объёму',
+  'conflict.scope_change': 'Скоуп',
+  'conflict.scope_question': 'Вопрос по скоупу',
   'conflict.missing_confirmation': 'Не подтверждено',
 
   // Landing
