@@ -45,10 +45,23 @@ export async function middleware(request: NextRequest) {
   const { user, response } = await updateSession(request, requestHeaders)
 
   if (!user) {
+    // API callers need a status code they can branch on, not a redirect
+    // to an HTML login page that res.json() then chokes on.
+    if (request.nextUrl.pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('next', request.nextUrl.pathname + request.nextUrl.search)
     return NextResponse.redirect(loginUrl)
   }
 
   return response
+}
+
+// Skip middleware entirely for build output and static files — isPublicRoute
+// would pass them anyway, this just avoids an edge invocation per asset.
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|_next/webpack-hmr|favicon.ico|.*\\.(?:png|jpe?g|svg|gif|webp|avif|ico|webmanifest|txt|xml|woff2?|mp4|webm)$).*)',
+  ],
 }

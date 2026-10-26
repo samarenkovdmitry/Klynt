@@ -3,6 +3,8 @@ import { createIntegration, getProject } from '@/lib/db/queries';
 import { getSessionUser } from '@/lib/api-auth';
 import { encryptToken } from '@/lib/crypto';
 
+export const dynamic = 'force-dynamic';
+
 const FIGMA_CLIENT_ID = process.env.FIGMA_CLIENT_ID;
 const FIGMA_CLIENT_SECRET = process.env.FIGMA_CLIENT_SECRET;
 const FIGMA_REDIRECT_URI = process.env.FIGMA_REDIRECT_URI;

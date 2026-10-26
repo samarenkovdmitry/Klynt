@@ -4,6 +4,8 @@ import { getSessionUser } from '@/lib/api-auth';
 import { encryptToken } from '@/lib/crypto';
 import { backfillSlack } from '@/lib/backfill';
 
+export const dynamic = 'force-dynamic';
+
 const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID;
 const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
 const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI;

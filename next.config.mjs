@@ -15,6 +15,26 @@ const nextConfig = {
     ];
   },
 
+  async headers() {
+    // Clickjacking hardening: the app never renders inside a frame.
+    // X-Frame-Options covers legacy browsers; CSP frame-ancestors is the
+    // modern equivalent and wins where both are present.
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'none'",
+          },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+    ];
+  },
+
   images: {
     remotePatterns: [
       {
@@ -27,9 +47,8 @@ const nextConfig = {
 
   experimental: {
     instrumentationHook: true,
-    serverActions: {
-      allowedOrigins: ["*"],
-    },
+    // No "use server" actions exist yet; keep allowedOrigins off until one
+    // does — "*" would let any site invoke them cross-origin.
   },
 
   output: "standalone",

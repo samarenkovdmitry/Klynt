@@ -9,6 +9,8 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
+    // The ru dev server uses its own distDir — same story as .next.
+    ".next-ru/**",
     "out/**",
     "build/**",
     "next-env.d.ts",

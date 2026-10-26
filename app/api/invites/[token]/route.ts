@@ -60,7 +60,9 @@ export async function POST(request: NextRequest, { params }: { params: { token: 
   const { error: memberError } = await supabase
     .from('project_users')
     .upsert(
-      { project_id: invite.project_id, user_id: user.id, email: invite.email, role: 'member' },
+      // The link is a bearer token — record the account that actually
+      // accepted, not the address the invite was sent to.
+      { project_id: invite.project_id, user_id: user.id, email: user.email ?? invite.email, role: 'member' },
       { onConflict: 'project_id,user_id' }
     );
 
