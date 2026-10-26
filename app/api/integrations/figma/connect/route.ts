@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomBytes } from 'crypto';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { getProject } from '@/lib/db/queries';
+
+export const dynamic = 'force-dynamic';
 
 const FIGMA_CLIENT_ID = process.env.FIGMA_CLIENT_ID;
 const FIGMA_REDIRECT_URI = process.env.FIGMA_REDIRECT_URI;
@@ -39,7 +42,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Generate state parameter for security
-    const state = Math.random().toString(36).substring(2, 15);
+    const state = randomBytes(16).toString('hex');
 
     // Build redirect URI (prefer env, fallback to dynamic)
     const redirectUri = getRedirectUri(request);

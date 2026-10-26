@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { getProject } from '@/lib/db/queries';
 
+export const dynamic = 'force-dynamic';
+
 const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID;
 const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI;
 

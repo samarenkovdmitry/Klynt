@@ -6,6 +6,8 @@ import { encryptToken } from '@/lib/crypto';
 import { linearGraphQL } from '@/lib/linear/client';
 import { backfillLinear } from '@/lib/backfill';
 
+export const dynamic = 'force-dynamic';
+
 const LINEAR_CLIENT_ID = process.env.LINEAR_CLIENT_ID;
 const LINEAR_CLIENT_SECRET = process.env.LINEAR_CLIENT_SECRET;
 const LINEAR_REDIRECT_URI = process.env.LINEAR_REDIRECT_URI;
