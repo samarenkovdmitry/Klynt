@@ -231,3 +231,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+// Vercel Cron invokes endpoints via GET — delegate to the same handler.
+export { POST as GET };
