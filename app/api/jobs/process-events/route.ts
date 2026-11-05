@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getUnprocessedEvents,
+  listProjectFacts,
   markEventProcessed,
   createCandidateEvent,
   getProjectFact,
@@ -26,6 +27,7 @@ const MAX_PROCESSING_ATTEMPTS = 5;
 
 async function processProjectEvents(projectId: string) {
   const events = await getUnprocessedEvents(projectId, 50);
+  const projectFacts = await listProjectFacts(projectId);
 
   const result = { processed: 0, factsCreated: 0, factsUpdated: 0, conflictsDetected: 0 };
   if (events.length === 0) return result;
@@ -37,9 +39,12 @@ async function processProjectEvents(projectId: string) {
   let factsUpdated = 0;
   let conflictsDetected = 0;
 
-    for (const event of events) {
+    for (const [i, event] of events.entries()) {
       try {
-        const interpretation = await interpretEvent(event);
+        const interpretation = await interpretEvent(event, {
+          previousEvents: events.slice(Math.max(0, i - 5), i),
+          projectFacts,
+        });
 
         console.log(`AI interpretation for event ${event.id}:`, {
           event_type: interpretation.event_type,
@@ -117,6 +122,9 @@ async function processProjectEvents(projectId: string) {
                 });
 
                 factsUpdated++;
+                const idx = projectFacts.findIndex((f: any) => f.id === existingFact.id);
+                const refreshed = { ...existingFact, current_state: newState, evidence_summary: interpretation.reason };
+                if (idx >= 0) projectFacts[idx] = refreshed; else projectFacts.push(refreshed);
               }
               // else: a conflicting proposal does not overwrite the confirmed
               // state — it waits in conflicts for human resolution.
@@ -150,6 +158,7 @@ async function processProjectEvents(projectId: string) {
             });
 
             factsCreated++;
+            projectFacts.push(newFact);
           }
         }
 
