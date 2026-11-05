@@ -139,7 +139,7 @@ const en: Dict = {
   'dashboard.showMore': 'Show {count} more',
   'dashboard.showLess': 'Show less',
   'dashboard.viewSource': 'View source',
-  'dashboard.emptyProjectText': 'Klynt will collect decisions and changes from Figma, Slack and docs, and keep the project state up to date.',
+  'dashboard.emptyProjectText': 'Klynt will collect decisions and changes from Figma and Slack, and keep the project state up to date.',
   'dashboard.accept': 'Accept',
   'dashboard.keepAsIs': 'Keep as is',
   'dashboard.notSure': 'Mark unclear',
