@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
-import { createRawEvent, getRawEvent, updateIntegrationLastSync } from '@/lib/db/queries';
+import { createRawEvent, getRawEvent, listOwnedProjectIds, updateIntegrationLastSync } from '@/lib/db/queries';
 import { getSessionUser } from '@/lib/api-auth';
 import { decryptToken } from '@/lib/crypto';
 
 const MAX_NEW_PER_RUN = 25; // cap inserts per file per run
 
-function isAuthorized(request: NextRequest): Promise<boolean> | boolean {
+// 'cron' = full scan; string[] = project ids the session user may touch
+async function scopeFor(request: NextRequest): Promise<'cron' | string[] | null> {
   const secret = process.env.CRON_SECRET;
-  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) {
-    return true;
-  }
-  return getSessionUser().then(Boolean);
+  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) return 'cron';
+  const user = await getSessionUser();
+  if (!user) return null;
+  return listOwnedProjectIds(user.id);
 }
 
 async function pollFileVersions(integration: any, fileKey: string, fileName: string) {
@@ -95,16 +96,22 @@ async function pollFileComments(integration: any, fileKey: string, fileName: str
 }
 
 async function run(request: NextRequest) {
-  if (!(await isAuthorized(request))) {
+  const scope = await scopeFor(request);
+  if (!scope) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  if (Array.isArray(scope) && scope.length === 0) {
+    return NextResponse.json({ results: [] });
   }
 
   try {
-    const { data: integrations, error } = await supabase
+    let q = supabase
       .from('integrations')
       .select()
       .eq('source', 'figma')
       .eq('status', 'active');
+    if (Array.isArray(scope)) q = q.in('project_id', scope);
+    const { data: integrations, error } = await q;
 
     if (error) throw error;
 

@@ -55,6 +55,9 @@ export async function interpretEvent(
     });
 
     const interpretation = JSON.parse(extractJson(text)) as AIInterpretation;
+    if (typeof interpretation.confidence !== 'number' || Number.isNaN(interpretation.confidence)) {
+      throw new Error('AI returned an invalid interpretation (missing confidence)');
+    }
 
     // Validate and normalize the interpretation
     return {
@@ -70,16 +73,9 @@ export async function interpretEvent(
     };
   } catch (error) {
     console.error('Error interpreting event:', error);
-    // Return a safe default interpretation
-    return {
-      event_type: 'discussion',
-      subject: 'unknown',
-      confidence: 0.3,
-      importance: 'low',
-      reason: 'AI interpretation failed',
-      related_entities: [],
-      potential_impacts: [],
-    };
+    // Do not fake an interpretation — the caller leaves the event
+    // unprocessed so it is retried instead of silently dropped.
+    throw error instanceof Error ? error : new Error(String(error));
   }
 }
 

@@ -24,6 +24,8 @@ function isPublicRoute(pathname: string): boolean {
   if (/\.(png|jpe?g|svg|gif|webp|avif|ico|webmanifest|txt|xml|woff2?|mp4|webm)$/i.test(pathname)) return true
   if (pathname.startsWith('/invite/')) return true
   if (pathname.startsWith('/api/waitlist/')) return true
+  // Auth API does its own session work (register/confirm must not 401)
+  if (pathname.startsWith('/api/auth/')) return true
   // Invite info lookup is public; accept does its own session check
   if (pathname.startsWith('/api/invites/')) return true
   if (pathname.startsWith('/api/webhooks/')) return true

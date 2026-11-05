@@ -20,6 +20,10 @@ const STATE_CHANGING_EVENTS = ['decision', 'approval', 'change', 'scope_change',
 // Minimum confidence to auto-confirm and update state
 const CONFIDENCE_THRESHOLD = 0.65;
 
+// An event that keeps failing interpretation is dead-lettered after this
+// many attempts instead of looping forever.
+const MAX_PROCESSING_ATTEMPTS = 5;
+
 async function processProjectEvents(projectId: string) {
   const events = await getUnprocessedEvents(projectId, 50);
 
@@ -86,32 +90,36 @@ async function processProjectEvents(projectId: string) {
                 conflictsDetected++;
               }
 
-              // Record history before updating
-              await createFactHistory({
-                fact_id: existingFact.id,
-                project_id: projectId,
-                previous_state: existingFact.current_state,
-                new_state: newState,
-                previous_value: existingFact.current_value,
-                event_id: candidateEvent.id,
-                decided_at: eventTimestamp,
-                confidence: interpretation.confidence,
-                reason: interpretation.reason,
-                evidence: [event.id],
-              });
+              if (conflicts.length === 0) {
+                // Record history before updating
+                await createFactHistory({
+                  fact_id: existingFact.id,
+                  project_id: projectId,
+                  previous_state: existingFact.current_state,
+                  new_state: newState,
+                  previous_value: existingFact.current_value,
+                  event_id: candidateEvent.id,
+                  decided_at: eventTimestamp,
+                  confidence: interpretation.confidence,
+                  reason: interpretation.reason,
+                  evidence: [event.id],
+                });
 
-              // Update existing fact with source event timestamp
-              await updateProjectFact(existingFact.id, {
-                current_state: newState,
-                current_value: { ...(existingFact.current_value || {}), ...(displayState ? { display_state: displayState } : {}) },
-                confidence: interpretation.confidence,
-                importance: interpretation.importance,
-                evidence_summary: interpretation.reason,
-                primary_event_id: candidateEvent.id,
-                last_updated_at: eventTimestamp,
-              });
+                // Update existing fact with source event timestamp
+                await updateProjectFact(existingFact.id, {
+                  current_state: newState,
+                  current_value: { ...(existingFact.current_value || {}), ...(displayState ? { display_state: displayState } : {}) },
+                  confidence: interpretation.confidence,
+                  importance: interpretation.importance,
+                  evidence_summary: interpretation.reason,
+                  primary_event_id: candidateEvent.id,
+                  last_updated_at: eventTimestamp,
+                });
 
-              factsUpdated++;
+                factsUpdated++;
+              }
+              // else: a conflicting proposal does not overwrite the confirmed
+              // state — it waits in conflicts for human resolution.
             }
           } else {
             // Create new fact
@@ -150,6 +158,21 @@ async function processProjectEvents(projectId: string) {
 
       } catch (error) {
         console.error(`Error processing event ${event.id}:`, error);
+        // Leave the event unprocessed so it is retried next run, but track
+        // attempts and dead-letter a permanently failing event.
+        const meta = typeof event.metadata === 'string' ? JSON.parse(event.metadata || '{}') : (event.metadata || {});
+        const attempts = (meta.processing_attempts || 0) + 1;
+        await supabase.from('raw_events').update({
+          metadata: {
+            ...meta,
+            processing_attempts: attempts,
+            processing_error: error instanceof Error ? error.message : String(error),
+          },
+        }).eq('id', event.id);
+        if (attempts >= MAX_PROCESSING_ATTEMPTS) {
+          console.error(`Dead-lettering event ${event.id} after ${attempts} attempts`);
+          await markEventProcessed(event.id);
+        }
       }
     }
 
@@ -208,3 +231,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+// Vercel Cron invokes endpoints via GET — delegate to the same handler.
+export { POST as GET };

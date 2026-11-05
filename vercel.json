@@ -3,6 +3,14 @@
     {
       "path": "/api/jobs/poll-figma",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/jobs/process-events",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/jobs/digest",
+      "schedule": "0 9 * * *"
     }
   ]
 }

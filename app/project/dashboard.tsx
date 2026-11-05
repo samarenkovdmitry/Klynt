@@ -285,9 +285,9 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             const url = initial.slug ? `/project/${initial.slug}` : `/project?projectId=${initial.id}`;
             window.history.replaceState(null, '', url);
           }
-          if (initial.id !== lastId) {
+          if (initial.id !== lastId || !optimisticFetch) {
             fetchData('7d', initial.id);
-          } else if (optimisticFetch) {
+          } else {
             optimisticFetch.then(ok => { if (!ok) fetchData('7d', initial.id); });
           }
         } else {
