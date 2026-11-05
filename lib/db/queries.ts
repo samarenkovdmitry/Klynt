@@ -251,9 +251,11 @@ export async function getProjectFact(projectId: string, subject: string, subject
     .from('project_facts')
     .select()
     .eq('project_id', projectId)
-    .eq('subject', subject)
+    .ilike('subject', subject.replace(/[%_]/g, ''))
     .eq('subject_type', subjectType)
-    .single();
+    .order('last_updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   if (error) return null;
   return data;
