@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser } from '@/lib/api-auth';
+import { listOwnedProjectIds } from '@/lib/db/queries';
 import { telegramApi, type TgUpdate } from '@/lib/telegram/client';
 import { processTelegramUpdate } from '@/lib/telegram/process-update';
 import { processSharedBotUpdate } from '@/lib/telegram/shared';
@@ -8,12 +9,13 @@ import { decryptToken } from '@/lib/crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-async function isAuthorized(request: NextRequest): Promise<boolean> {
+// 'cron' = full scan; string[] = project ids the session user may touch
+async function scopeFor(request: NextRequest): Promise<'cron' | string[] | null> {
   const secret = process.env.CRON_SECRET;
-  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) {
-    return true;
-  }
-  return !!(await getSessionUser());
+  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) return 'cron';
+  const user = await getSessionUser();
+  if (!user) return null;
+  return listOwnedProjectIds(user.id);
 }
 
 // getUpdates offset for the shared bot. Polling is a local-dev fallback —
@@ -41,14 +43,15 @@ async function writeSharedOffset(offset: number): Promise<void> {
 // (localhost, firewalled self-host): fetch pending updates via getUpdates
 // and run them through the same handler as the webhook route.
 export async function POST(request: NextRequest) {
-  if (!(await isAuthorized(request))) {
+  const scope = await scopeFor(request);
+  if (!scope) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     // Shared app bot: one update stream, dispatched by chat_id / link_code
     const sharedToken = process.env.TELEGRAM_BOT_TOKEN;
-    if (sharedToken) {
+    if (sharedToken && (scope === 'cron' || scope.length > 0)) {
       const offset = await readSharedOffset();
       const updates = await telegramApi<TgUpdate[]>(sharedToken, 'getUpdates', {
         offset: offset + 1,
@@ -71,10 +74,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ results: [{ shared_bot: true, fetched: updates.length }] });
     }
 
-    const { data: integrations, error } = await supabase
+    let q = supabase
       .from('integrations')
       .select('*')
       .eq('source', 'telegram');
+    if (Array.isArray(scope)) q = q.in('project_id', scope);
+    const { data: integrations, error } = await q;
 
     if (error) throw error;
 

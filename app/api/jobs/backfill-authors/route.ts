@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser } from '@/lib/api-auth';
+import { listOwnedProjectIds } from '@/lib/db/queries';
 import { decryptToken } from '@/lib/crypto';
 
-async function isAuthorized(request: NextRequest): Promise<boolean> {
+// 'cron' = full scan; string[] = project ids the session user may touch
+async function scopeFor(request: NextRequest): Promise<'cron' | string[] | null> {
   const secret = process.env.CRON_SECRET;
-  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) {
-    return true;
-  }
-  return !!(await getSessionUser());
+  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) return 'cron';
+  const user = await getSessionUser();
+  if (!user) return null;
+  return listOwnedProjectIds(user.id);
 }
 
 // Pull a Figma author out of whatever shape the metadata has.
@@ -23,17 +25,23 @@ function figmaAuthorFromMetadata(metadata: any) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!(await isAuthorized(request))) {
+  const scope = await scopeFor(request);
+  if (!scope) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  if (Array.isArray(scope) && scope.length === 0) {
+    return NextResponse.json({ updated: 0 });
   }
 
   try {
-    const { data: events, error } = await supabase
+    let q = supabase
       .from('raw_events')
       .select('id, project_id, source, author_id, metadata')
       .not('author_id', 'is', null)
       .order('created_at', { ascending: false })
       .limit(200);
+    if (Array.isArray(scope)) q = q.in('project_id', scope);
+    const { data: events, error } = await q;
 
     if (error) throw error;
 

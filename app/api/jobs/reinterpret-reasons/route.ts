@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser } from '@/lib/api-auth';
+import { listOwnedProjectIds } from '@/lib/db/queries';
 import { interpretEvent } from '@/lib/ai/event-processor';
 
-async function isAuthorized(request: NextRequest): Promise<boolean> {
+// 'cron' = full scan; string[] = project ids the session user may touch
+async function scopeFor(request: NextRequest): Promise<'cron' | string[] | null> {
   const secret = process.env.CRON_SECRET;
-  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) {
-    return true;
-  }
-  return !!(await getSessionUser());
+  if (secret && request.headers.get('authorization') === `Bearer ${secret}`) return 'cron';
+  const user = await getSessionUser();
+  if (!user) return null;
+  return listOwnedProjectIds(user.id);
 }
 
 const META_REASON_PATTERNS = [
@@ -39,16 +41,22 @@ function isVerbatimCopy(reason: string | null, content: string | null): boolean 
 }
 
 export async function POST(request: NextRequest) {
-  if (!(await isAuthorized(request))) {
+  const scope = await scopeFor(request);
+  if (!scope) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  if (Array.isArray(scope) && scope.length === 0) {
+    return NextResponse.json({ updated: 0 });
   }
 
   try {
-    const { data: candidates, error } = await supabase
+    let q = supabase
       .from('candidate_events')
       .select('id, raw_event_id, reason, raw_events(content)')
       .order('created_at', { ascending: false })
       .limit(300);
+    if (Array.isArray(scope)) q = q.in('project_id', scope);
+    const { data: candidates, error } = await q;
 
     if (error) throw error;
 
