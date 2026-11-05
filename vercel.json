@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/jobs/process-events",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 7 * * *"
     },
     {
       "path": "/api/jobs/digest",
