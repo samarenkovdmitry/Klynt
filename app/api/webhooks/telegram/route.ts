@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { processTelegramUpdate } from '@/lib/telegram/process-update';
 import { processSharedBotUpdate } from '@/lib/telegram/shared';
+import { triggerEventProcessing } from '@/lib/trigger-processing';
 import type { TgUpdate } from '@/lib/telegram/client';
 
 // Telegram webhook. Two modes:
@@ -23,6 +24,7 @@ export async function POST(request: NextRequest) {
 
     if (process.env.TELEGRAM_WEBHOOK_SECRET && secret === process.env.TELEGRAM_WEBHOOK_SECRET) {
       await processSharedBotUpdate(update);
+      triggerEventProcessing(undefined, request);
       return NextResponse.json({ received: true });
     }
 
@@ -38,6 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     await processTelegramUpdate(integration, update);
+    triggerEventProcessing(integration.project_id, request);
 
     return NextResponse.json({ received: true });
   } catch (error) {
