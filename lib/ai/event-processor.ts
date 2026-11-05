@@ -150,15 +150,18 @@ export async function detectConflicts(
     return conflicts;
   }
 
-  const newAction = (newEvent.action || newEvent.event_type).toLowerCase();
-  const currentState = existingFact.current_state.toLowerCase();
+  // States arrive in mixed shapes ("in_progress", "In Progress") — normalize
+  // to lowercase space-separated form before any comparison.
+  const norm = (s: string) => s.toLowerCase().replace(/_/g, ' ').trim();
+  const newAction = norm(newEvent.action || newEvent.event_type);
+  const currentState = norm(existingFact.current_state);
 
   // If state is the same, no conflict
   if (newAction === currentState) return conflicts;
 
   // Define normal state flows that are not conflicts
   const nonConflictingFlows: Record<string, string[]> = {
-    'modify': ['approve', 'review', 'in_progress'],
+    'modify': ['approve', 'review', 'in progress'],
     'in progress': ['approve', 'review', 'modify'],
     'undecided': ['modify', 'remove', 'add', 'approve', 'in progress'],
     'add': ['modify', 'approve', 'review', 'in progress'],
@@ -171,7 +174,7 @@ export async function detectConflicts(
   }
 
   // Strong conflicts: removing or rejecting something already approved/confirmed
-  const strongConflictingStates = ['approved', 'confirmed', 'done', 'completed'];
+  const strongConflictingStates = ['approve', 'approved', 'confirmed', 'done', 'completed'];
   if (strongConflictingStates.includes(currentState) && ['remove', 'reject', 'revert', 'cancel'].includes(newAction)) {
     conflicts.push({
       subject: newEvent.subject,
