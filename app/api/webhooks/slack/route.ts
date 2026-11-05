@@ -4,6 +4,7 @@ import { SlackWebhookEvent } from '@/lib/types/events';
 import { createRawEvent, getIntegrationByTeamId } from '@/lib/db/queries';
 import { decryptToken } from '@/lib/crypto';
 import { isContentExcluded } from '@/lib/filters';
+import { triggerEventProcessing } from '@/lib/trigger-processing';
 
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 const MAX_SIGNATURE_AGE_MS = 5 * 60 * 1000;
@@ -134,9 +135,7 @@ export async function POST(request: NextRequest) {
       event_id: rawEvent.id,
     });
 
-    // Queue event for AI processing
-    // TODO: Implement background job queue
-    // For now, events will be processed by a separate endpoint/cron job
+    triggerEventProcessing(projectId, request);
 
     return NextResponse.json({ received: true, event_id: rawEvent.id });
 

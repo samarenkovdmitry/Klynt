@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { createRawEvent, getIntegrationByLinearOrg, updateIntegrationLastSync } from '@/lib/db/queries';
+import { triggerEventProcessing } from '@/lib/trigger-processing';
 import { decryptToken } from '@/lib/crypto';
 
 // Linear-Signature: hex HMAC-SHA256 of the raw body with the webhook secret
@@ -184,6 +185,7 @@ export async function POST(request: NextRequest) {
     });
 
     await updateIntegrationLastSync(integration.id);
+    triggerEventProcessing(integration.project_id, request);
 
     console.log('Linear event stored:', {
       type,

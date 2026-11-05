@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FigmaWebhookEvent, EventType } from '@/lib/types/events';
 import { createRawEvent, getIntegrationByFileKey } from '@/lib/db/queries';
+import { triggerEventProcessing } from '@/lib/trigger-processing';
 
 // Figma webhook passcode should be stored in environment variables
 const FIGMA_WEBHOOK_PASSCODE = process.env.FIGMA_WEBHOOK_PASSCODE;
@@ -52,9 +53,7 @@ export async function POST(request: NextRequest) {
       event_id: rawEvent.id,
     });
 
-    // Queue event for AI processing
-    // TODO: Implement background job queue
-    // For now, events will be processed by a separate endpoint/cron job
+    triggerEventProcessing(projectId, request);
 
     return NextResponse.json({ received: true, event_id: rawEvent.id });
 
