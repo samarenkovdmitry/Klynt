@@ -40,26 +40,12 @@ const SLACK_BACKFILL_CHANNELS = 3;
 const SLACK_BACKFILL_MESSAGES = 10;
 
 export async function backfillSlack(projectId: string, token: string, config: any): Promise<number> {
-  let channelIds: string[] = config?.channel_ids || [];
+  const channelIds: string[] = config?.channel_ids || [];
 
-  if (channelIds.length === 0) {
-    const list = await slackApi(token, 'conversations.list', {
-      types: 'public_channel',
-      limit: '20',
-      exclude_archived: 'true',
-    });
-    channelIds = (list?.channels || [])
-      .filter((c: any) => c.is_member)
-      .slice(0, SLACK_BACKFILL_CHANNELS)
-      .map((c: any) => c.id);
-    // If the bot isn't in any channel yet, join the first few
-    if (channelIds.length === 0) {
-      channelIds = (list?.channels || []).slice(0, SLACK_BACKFILL_CHANNELS).map((c: any) => c.id);
-      for (const id of channelIds) {
-        await slackApi(token, 'conversations.join', { channel: id }).catch(() => {});
-      }
-    }
-  }
+  // Consent model: never auto-select or auto-join channels, and never import
+  // history unless the user explicitly opted in — matching the promise that
+  // only chosen channels are read and old chat is not loaded.
+  if (channelIds.length === 0 || config?.import_history !== true) return 0;
 
   let inserted = 0;
   for (const channel of channelIds.slice(0, 5)) {

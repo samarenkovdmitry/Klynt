@@ -115,7 +115,16 @@ export async function createRawEvent(event: Omit<RawEvent, 'id' | 'created_at'>)
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // Webhook redelivery or poll/webhook overlap: the unique constraint on
+    // (project_id, source, source_event_id) makes the insert idempotent —
+    // return the row that is already stored.
+    if (error.code === '23505') {
+      const existing = await getRawEvent(event.project_id, event.source, event.source_event_id);
+      if (existing) return existing;
+    }
+    throw error;
+  }
   return data;
 }
 

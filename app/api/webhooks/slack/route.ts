@@ -72,10 +72,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Integration not found' }, { status: 400 });
     }
 
-    // If the user picked specific channels, ignore messages from the rest.
-    // No selection (undefined or []) = accept-all behavior.
+    // Only messages from explicitly selected channels are ingested. An
+    // empty/absent selection means the user chose nothing yet — not "all".
     const channelIds: string[] | undefined = integration.config?.channel_ids;
-    if (channelIds?.length && !channelIds.includes(slackEvent.channel)) {
+    if (!channelIds?.length || !channelIds.includes(slackEvent.channel)) {
       return NextResponse.json({ received: true });
     }
 
