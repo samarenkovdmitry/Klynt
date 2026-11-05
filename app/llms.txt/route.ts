@@ -5,7 +5,7 @@ export function GET() {
   const lines = [
     `# ${SITE_NAME}`,
     "",
-    "> Project truth layer — keeps track of what is currently true across Figma, Slack, and docs.",
+    "> Project truth layer — keeps track of what is currently true across Figma and Slack.",
     "",
     "## Main pages",
     absoluteUrl("/", siteUrl),
