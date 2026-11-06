@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { SlackWebhookEvent } from '@/lib/types/events';
-import { createRawEvent, getIntegrationByTeamId } from '@/lib/db/queries';
+import { createRawEvent, getIntegrationsByTeamId } from '@/lib/db/queries';
 import { decryptToken } from '@/lib/crypto';
 import { isContentExcluded } from '@/lib/filters';
 import { triggerEventProcessing } from '@/lib/trigger-processing';
@@ -66,33 +66,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    // Find the integration by team ID
-    const integration = await getIntegrationByTeamId(body.team_id);
-    if (!integration) {
+    // One Slack workspace can serve several projects — fan the event out to
+    // every integration that explicitly selected this channel.
+    const integrations = await getIntegrationsByTeamId(body.team_id);
+    if (integrations.length === 0) {
       console.error('No Slack integration found for team:', body.team_id);
       return NextResponse.json({ error: 'Integration not found' }, { status: 400 });
     }
 
-    // Only messages from explicitly selected channels are ingested. An
-    // empty/absent selection means the user chose nothing yet — not "all".
-    const channelIds: string[] | undefined = integration.config?.channel_ids;
-    if (!channelIds?.length || !channelIds.includes(slackEvent.channel)) {
+    const eligible = integrations.filter((integration: any) => {
+      const channelIds: string[] | undefined = integration.config?.channel_ids;
+      if (!channelIds?.length || !channelIds.includes(slackEvent.channel)) return false;
+      return !isContentExcluded(slackEvent.text, integration.config);
+    });
+    if (!eligible.length) {
       return NextResponse.json({ received: true });
     }
-
-    // Privacy filter: keyword-denylisted messages are dropped before storage
-    if (isContentExcluded(slackEvent.text, integration.config)) {
-      return NextResponse.json({ received: true, filtered: true });
-    }
-
-    const projectId = integration.project_id;
 
     // Resolve the author's profile so the UI can show a name, not a U-id
     let author: { id: string; name: string; avatar_url?: string } | undefined;
     if (slackEvent.user) {
       const info = await fetch(
         `https://slack.com/api/users.info?user=${slackEvent.user}`,
-        { headers: { Authorization: `Bearer ${decryptToken(integration.access_token_encrypted)}` } },
+        { headers: { Authorization: `Bearer ${decryptToken(eligible[0].access_token_encrypted)}` } },
       ).then(r => r.json()).catch(() => null);
       if (info?.ok && info.user) {
         const profile = info.user.profile || {};
@@ -104,40 +100,34 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Transform Slack event to RawEvent
-    const rawEventData = {
-      project_id: projectId,
-      source: 'slack' as const,
-      source_event_id: slackEvent.ts,
-      event_type: 'message' as const,
-      author_id: slackEvent.user,
-      timestamp: new Date(parseFloat(slackEvent.ts) * 1000).toISOString(),
-      content: slackEvent.text,
-      metadata: {
-        channel: slackEvent.channel,
-        thread_ts: slackEvent.thread_ts,
-        parent_user_id: slackEvent.parent_user_id,
-        subtype: slackEvent.subtype,
-        team_id: body.team_id,
-        event_id: body.event_id,
-        ...(author ? { author } : {}),
-      },
-    };
+    // Store the raw event per subscribed project
+    const eventIds: string[] = [];
+    for (const integration of eligible) {
+      const rawEvent = await createRawEvent({
+        project_id: integration.project_id,
+        source: 'slack' as const,
+        source_event_id: slackEvent.ts,
+        event_type: 'message' as const,
+        author_id: slackEvent.user,
+        timestamp: new Date(parseFloat(slackEvent.ts) * 1000).toISOString(),
+        content: slackEvent.text,
+        metadata: {
+          channel: slackEvent.channel,
+          thread_ts: slackEvent.thread_ts,
+          parent_user_id: slackEvent.parent_user_id,
+          subtype: slackEvent.subtype,
+          team_id: body.team_id,
+          event_id: body.event_id,
+          ...(author ? { author } : {}),
+        },
+      });
+      eventIds.push(rawEvent.id);
+      triggerEventProcessing(integration.project_id, request);
+    }
 
-    // Store raw event in database
-    const rawEvent = await createRawEvent(rawEventData);
+    console.log('Slack message stored for', eventIds.length, 'project(s):', eventIds);
 
-    console.log('Slack message received and stored:', {
-      user: slackEvent.user,
-      text: slackEvent.text,
-      channel: slackEvent.channel,
-      timestamp: slackEvent.ts,
-      event_id: rawEvent.id,
-    });
-
-    triggerEventProcessing(projectId, request);
-
-    return NextResponse.json({ received: true, event_id: rawEvent.id });
+    return NextResponse.json({ received: true, event_ids: eventIds });
 
   } catch (error) {
     console.error('Error processing Slack webhook:', error);
