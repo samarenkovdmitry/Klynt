@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getUnprocessedEvents,
+  findFactForSubject,
+  recordEntityAlias,
   listProjectFacts,
   markEventProcessed,
   createCandidateEvent,
-  getProjectFact,
   createProjectFact,
   updateProjectFact,
   createConflict,
@@ -76,7 +77,10 @@ async function processProjectEvents(projectId: string) {
           const scope = interpretation.scope;
           const eventTimestamp = new Date(event.timestamp).toISOString();
 
-          const existingFact = await getProjectFact(projectId, interpretation.subject, 'design_component');
+          const existingFact = await findFactForSubject(projectId, interpretation.subject, 'design_component');
+          if (existingFact) {
+            await recordEntityAlias(projectId, existingFact.subject, interpretation.subject).catch(() => {});
+          }
 
           if (existingFact) {
             // Don't overwrite with older events
