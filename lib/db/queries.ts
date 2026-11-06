@@ -261,6 +261,82 @@ export async function getProjectFact(projectId: string, subject: string, subject
   return data;
 }
 
+// Entity resolution: one real-world thing may be named many ways in messages
+// ("pricing" vs "tariffs block"). Matches cascade — exact → known aliases →
+// token-set similarity (conservative; a wrong merge is worse than a duplicate).
+const SUBJECT_STOPWORDS = new Set(['the', 'a', 'an', 'of', 'for', 'block', 'section', 'screen', 'page', 'component', 'part', 'area', 'thing', 'feature']);
+
+function subjectTokens(subject: string): string[] {
+  return subject.toLowerCase().replace(/[^a-z0-9а-яё\s]+/giu, ' ').split(/\s+/)
+    .filter(t => t.length > 2 && !SUBJECT_STOPWORDS.has(t));
+}
+
+function tokenSimilarity(a: string[], b: string[]): number {
+  if (!a.length || !b.length) return 0;
+  const sb = new Set(b);
+  const inter = a.filter(t => sb.has(t)).length;
+  return inter / (a.length + b.length - inter);
+}
+
+export async function findFactForSubject(projectId: string, subject: string, subjectType: string): Promise<ProjectFact | null> {
+  const exact = await getProjectFact(projectId, subject, subjectType);
+  if (exact) return exact;
+
+  // 2. Alias lookup — an entity already maps this variant to a canonical name
+  const { data: aliasHits } = await supabase
+    .from('entities')
+    .select('canonical_name')
+    .eq('project_id', projectId)
+    .contains('aliases', [subject.toLowerCase().trim()]);
+  for (const hit of aliasHits || []) {
+    const fact = await getProjectFact(projectId, hit.canonical_name, subjectType);
+    if (fact) return fact;
+  }
+
+  // 3. Token-set similarity over all facts — catches "pricing block" vs
+  // "pricing widget". High threshold: we accept duplicates over wrong merges.
+  const facts = await listProjectFacts(projectId);
+  const target = subjectTokens(subject);
+  let best: { fact: ProjectFact | null; score: number } = { fact: null, score: 0 };
+  for (const f of facts) {
+    if (f.subject_type !== subjectType) continue;
+    const score = tokenSimilarity(target, subjectTokens(f.subject));
+    if (score > best.score) best = { fact: f, score };
+  }
+  return best.score >= 0.75 ? best.fact : null;
+}
+
+// Remember a name variant for an entity so the next event resolves faster.
+export async function recordEntityAlias(projectId: string, canonicalName: string, alias: string): Promise<void> {
+  const canon = canonicalName.toLowerCase().trim();
+  const variant = alias.toLowerCase().trim();
+  if (!variant || variant === canon) return;
+
+  const { data: existing } = await supabase
+    .from('entities')
+    .select('id, aliases')
+    .eq('project_id', projectId)
+    .eq('canonical_name', canonicalName)
+    .maybeSingle();
+
+  if (existing) {
+    if (!(existing.aliases || []).includes(variant)) {
+      await supabase.from('entities')
+        .update({ aliases: [...(existing.aliases || []), variant], updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+    }
+  } else {
+    await supabase.from('entities').insert({
+      project_id: projectId,
+      name: canonicalName,
+      type: 'concept',
+      canonical_name: canonicalName,
+      aliases: [variant],
+      related_entities: [],
+    });
+  }
+}
+
 export async function listProjectFacts(projectId: string): Promise<ProjectFact[]> {
   const { data, error } = await supabase
     .from('project_facts')

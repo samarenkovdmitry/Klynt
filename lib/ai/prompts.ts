@@ -11,6 +11,7 @@ Analyze the event and determine:
 1. event_type: One of: decision, request, discussion, approval, change, question, commitment, blocker, scope_change, idea
 2. subject: The entity being discussed (e.g., "pricing section", "homepage hero", "mobile navigation")
 3. action: The machine state this event represents. One of: add, remove, modify, approve, reject, in_progress, undecided. Keep it short and stable.
+Subject naming: when the event refers to an entity already listed under "Current project facts", reuse that fact's subject name exactly instead of inventing a variant.
 4. display_state: A short, human-readable status that answers "what is happening with this right now?" (2-5 words). Examples: "Approved", "Needs mobile review", "Decision pending", "Waiting for legal review", "New", "Removed"
 5. confidence: How confident you are in this interpretation (0.00 to 1.00)
 6. importance: How impactful this event is: "low", "medium", or "high"
