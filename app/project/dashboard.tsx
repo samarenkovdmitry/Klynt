@@ -548,7 +548,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     : [];
   const selectedMeta = selectedFact ? (FACT_META[selectedFact.current_state?.toLowerCase()] || DEFAULT_FACT_META) : null;
   const selectedStateLabel = selectedFact
-    ? (selectedFact.current_value?.display_state || getStateLabel(selectedFact.current_state?.toLowerCase()) || capitalize(selectedFact.current_state))
+    ? `${selectedFact.current_value?.display_state || getStateLabel(selectedFact.current_state?.toLowerCase()) || capitalize(selectedFact.current_state)}${selectedFact.current_value?.scope ? ` · ${selectedFact.current_value.scope}` : ''}`
     : null;
 
   const groupedWhy = selectedFact
@@ -744,7 +744,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     return (a.subject || '').toLowerCase().localeCompare((b.subject || '').toLowerCase());
                   }).map((fact: any) => {
                     const pillStyle = STATE_PILL_STYLES[fact.current_state?.toLowerCase()] || DEFAULT_PILL_STYLE;
-                    const stateLabel = fact.current_value?.display_state || getStateLabel(fact.current_state?.toLowerCase()) || capitalize(fact.current_state);
+                    const stateLabel = `${fact.current_value?.display_state || getStateLabel(fact.current_state?.toLowerCase()) || capitalize(fact.current_state)}${fact.current_value?.scope ? ` · ${fact.current_value.scope}` : ''}`;
                     const isApproved = fact.current_state?.toLowerCase() === 'approved';
                     const confidence = Math.round(fact.confidence * 100);
                     const confidenceText = confidence < 80 ? t('dashboard.confidence', { confidence }) : null;

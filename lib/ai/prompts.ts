@@ -18,6 +18,8 @@ Analyze the event and determine:
 8. related_entities: Array of related project entities (e.g., ["homepage", "mobile", "pricing"])
 9. potential_impacts: What parts of the project this might affect
 
+scope (optional field): when a decision or approval is limited — to a version, variant, platform, or with conditions — capture it in one short phrase: "mobile only", "for release 1.2", "except the export feature", "staging only", "pending legal review". Omit it or return null when the decision is unconditional. "Approved but only for mobile" → action: approve, scope: "mobile only".
+
 Guidelines for display_state:
 - It should describe the current situation, not the action to take.
 - Use specific, plain language.

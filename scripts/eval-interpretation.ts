@@ -25,6 +25,7 @@ interface Scenario {
     conflict?: boolean;
     stateChange?: boolean;
     maxConfidence?: number;
+    scopeIncludes?: string;
   };
   note?: string;
 }
@@ -37,7 +38,7 @@ const S: Scenario[] = [
   { id: 'a4', category: 'approval', content: 'Confirmed: avatar upload goes into the next release', expect: { action: 'approve', stateChange: true }, fact: { subject: 'avatar upload', current_state: 'undecided' } },
 
   // --- Conditional approvals ---
-  { id: 'c1', category: 'conditional', content: 'Pricing block is approved but only for the mobile version', expect: { stateChange: true } },
+  { id: 'c1', category: 'conditional', content: 'Pricing block is approved but only for the mobile version', expect: { stateChange: true, scopeIncludes: 'mobile' } },
   { id: 'c2', category: 'conditional', content: 'OK to merge if the header stays fixed on scroll', expect: { stateChange: true } },
 
   // --- Ideas, not decisions ---
@@ -76,7 +77,7 @@ const S: Scenario[] = [
   // --- More coverage ---
   { id: 'a5', category: 'approval', content: 'Final answer: yes, the new typography stays', expect: { action: 'approve', stateChange: true } },
   { id: 'a6', category: 'approval', content: 'Design approved by Anna on the call just now', expect: { eventType: 'approval', stateChange: true } },
-  { id: 'c3', category: 'conditional', content: 'Approved for release 1.2 - but the dark theme part waits', expect: { stateChange: true } },
+  { id: 'c3', category: 'conditional', content: 'Approved for release 1.2 - but the dark theme part waits', expect: { stateChange: true, scopeIncludes: 'release 1.2' } },
   { id: 'x4', category: 'cancel', content: 'Forget the onboarding rewrite I mentioned earlier, keep the old one', fact: { subject: 'onboarding', current_state: 'modify' }, expect: { conflict: true } },
   { id: 'm5', category: 'ambiguous', content: 'can someone check if the icons are the old set?', expect: { eventType: 'question', stateChange: false } },
   { id: 'i4', category: 'idea', content: 'we could also A/B test the hero copy later', expect: { stateChange: false } },
@@ -91,12 +92,12 @@ const S: Scenario[] = [
   { id: 'a10', category: 'approval', content: 'Sign-off received from legal on the terms page', expect: { stateChange: true } },
 
   // --- conditional: extended ---
-  { id: 'c4', category: 'conditional', content: 'Approved for web only - mobile version comes later', expect: { stateChange: true } },
-  { id: 'c5', category: 'conditional', content: 'You can ship it but without the export feature', expect: { stateChange: true } },
+  { id: 'c4', category: 'conditional', content: 'Approved for web only - mobile version comes later', expect: { stateChange: true, scopeIncludes: 'web' } },
+  { id: 'c5', category: 'conditional', content: 'You can ship it but without the export feature', expect: { stateChange: true, scopeIncludes: 'export' } },
   { id: 'c6', category: 'conditional', content: 'Yes for MVP, the full version needs more discussion', expect: { stateChange: true } },
   { id: 'c7', category: 'conditional', content: 'Approve the layout but NOT the colors', expect: { stateChange: true } },
-  { id: 'c8', category: 'conditional', content: 'Fine for staging, not for prod yet', expect: { stateChange: true } },
-  { id: 'c9', category: 'conditional', content: 'Approved pending a quick legal review', expect: { stateChange: true } },
+  { id: 'c8', category: 'conditional', content: 'Fine for staging, not for prod yet', expect: { stateChange: true, scopeIncludes: 'staging' } },
+  { id: 'c9', category: 'conditional', content: 'Approved pending a quick legal review', expect: { stateChange: true, scopeIncludes: 'legal' } },
   { id: 'c10', category: 'conditional', content: 'OK as long as we keep the existing search behavior', expect: { stateChange: true } },
 
   // --- idea: extended ---
@@ -169,6 +170,7 @@ function check(s: Scenario, interp: any, conflicts: any[], stateChanging: boolea
   if (e.stateChange === true && !stateChanging) issues.push('expected state change, got none');
   if (e.stateChange === false && stateChanging) issues.push(`unexpected state change (${interp.event_type}/${interp.action}@${interp.confidence.toFixed(2)})`);
   if (e.maxConfidence !== undefined && interp.confidence > e.maxConfidence) issues.push(`confidence ${interp.confidence.toFixed(2)} > ${e.maxConfidence}`);
+  if (e.scopeIncludes && !(interp.scope || '').toLowerCase().includes(e.scopeIncludes.toLowerCase())) issues.push(`scope "${interp.scope || '(none)'}" lacks "${e.scopeIncludes}"`);
   return { pass: issues.length === 0, detail: issues.join('; ') || 'ok' };
 }
 
