@@ -27,6 +27,7 @@ export interface AIInterpretation {
   subject: string;
   action?: string;
   display_state?: string;
+  scope?: string;
   confidence: number;
   importance: Importance;
   reason: string;
@@ -65,6 +66,7 @@ export async function interpretEvent(
       subject: interpretation.subject || 'unknown',
       action: interpretation.action,
       display_state: interpretation.display_state,
+      scope: interpretation.scope,
       confidence: Math.min(Math.max(interpretation.confidence, 0), 1),
       importance: interpretation.importance || 'medium',
       reason: interpretation.reason || '',

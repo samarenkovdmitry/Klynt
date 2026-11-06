@@ -73,6 +73,7 @@ async function processProjectEvents(projectId: string) {
         if (interpretation.confidence > CONFIDENCE_THRESHOLD && STATE_CHANGING_EVENTS.includes(interpretation.event_type)) {
           const newState = interpretation.action || interpretation.event_type;
           const displayState = interpretation.display_state;
+          const scope = interpretation.scope;
           const eventTimestamp = new Date(event.timestamp).toISOString();
 
           const existingFact = await getProjectFact(projectId, interpretation.subject, 'design_component');
@@ -113,7 +114,7 @@ async function processProjectEvents(projectId: string) {
                 // Update existing fact with source event timestamp
                 await updateProjectFact(existingFact.id, {
                   current_state: newState,
-                  current_value: { ...(existingFact.current_value || {}), ...(displayState ? { display_state: displayState } : {}) },
+                  current_value: { ...(existingFact.current_value || {}), ...(displayState ? { display_state: displayState } : {}), ...(scope ? { scope } : {}) },
                   confidence: interpretation.confidence,
                   importance: interpretation.importance,
                   evidence_summary: interpretation.reason,
@@ -137,7 +138,7 @@ async function processProjectEvents(projectId: string) {
               subject_type: 'design_component',
               fact_type: interpretation.event_type === 'decision' ? 'decision' : 'state',
               current_state: newState,
-              current_value: displayState ? { display_state: displayState } : {},
+              current_value: { ...(displayState ? { display_state: displayState } : {}), ...(scope ? { scope } : {}) },
               confidence: interpretation.confidence,
               importance: interpretation.importance,
               evidence_summary: interpretation.reason,
