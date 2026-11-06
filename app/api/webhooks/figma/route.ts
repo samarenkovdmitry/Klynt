@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FigmaWebhookEvent, EventType } from '@/lib/types/events';
-import { createRawEvent, getIntegrationByFileKey } from '@/lib/db/queries';
+import { createRawEvent, getIntegrationsByFileKey } from '@/lib/db/queries';
 import { triggerEventProcessing } from '@/lib/trigger-processing';
 
 // Figma webhook passcode should be stored in environment variables
@@ -22,40 +22,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    // Find project by Figma file key via integration config
-    const integration = await getIntegrationByFileKey(body.file_key, 'figma');
-    if (!integration) {
+    // The same Figma file may feed several projects — deliver to each
+    const integrations = await getIntegrationsByFileKey(body.file_key, 'figma');
+    if (integrations.length === 0) {
       console.error('No Figma integration found for file key:', body.file_key);
       return NextResponse.json({ error: 'Integration not found' }, { status: 400 });
     }
 
-    const projectId = integration.project_id;
+    const eventIds: string[] = [];
+    for (const integration of integrations) {
+      // Transform Figma event to RawEvent
+      const rawEvent = await createRawEvent({
+        project_id: integration.project_id,
+        source: 'figma' as const,
+        source_event_id: `${body.file_key}_${body.timestamp}`,
+        event_type: mapFigmaEventType(body.event_type),
+        author_id: extractAuthorId(body),
+        timestamp: new Date(body.timestamp).toISOString(),
+        content: extractContent(body),
+        metadata: { ...body, ...(extractAuthor(body) ? { author: extractAuthor(body) } : {}) },
+      });
+      eventIds.push(rawEvent.id);
+      triggerEventProcessing(integration.project_id, request);
+    }
 
-    // Transform Figma event to RawEvent
-    const rawEventData = {
-      project_id: projectId,
-      source: 'figma' as const,
-      source_event_id: `${body.file_key}_${body.timestamp}`,
-      event_type: mapFigmaEventType(body.event_type),
-      author_id: extractAuthorId(body),
-      timestamp: new Date(body.timestamp).toISOString(),
-      content: extractContent(body),
-      metadata: { ...body, ...(extractAuthor(body) ? { author: extractAuthor(body) } : {}) },
-    };
+    console.log('Figma event stored for', eventIds.length, 'project(s):', eventIds);
 
-    // Store raw event in database
-    const rawEvent = await createRawEvent(rawEventData);
-
-    console.log('Figma event received and stored:', {
-      type: body.event_type,
-      file: body.file_name,
-      timestamp: body.timestamp,
-      event_id: rawEvent.id,
-    });
-
-    triggerEventProcessing(projectId, request);
-
-    return NextResponse.json({ received: true, event_id: rawEvent.id });
+    return NextResponse.json({ received: true, event_ids: eventIds });
 
   } catch (error) {
     console.error('Error processing Figma webhook:', error);

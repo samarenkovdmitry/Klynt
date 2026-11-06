@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { createRawEvent, getIntegrationByLinearOrg, updateIntegrationLastSync } from '@/lib/db/queries';
+import { createRawEvent, getIntegrationsByLinearOrg, updateIntegrationLastSync } from '@/lib/db/queries';
 import { triggerEventProcessing } from '@/lib/trigger-processing';
 import { decryptToken } from '@/lib/crypto';
 
@@ -124,26 +124,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    // Route to the owning project by Linear org id
-    const integration = await getIntegrationByLinearOrg(organizationId);
-    if (!integration) {
+    // One Linear org can serve several projects — match the delivery's
+    // webhook id to the integration that registered it
+    const integrations = await getIntegrationsByLinearOrg(organizationId);
+    if (integrations.length === 0) {
       console.error('No Linear integration found for organization:', organizationId);
       return NextResponse.json({ error: 'Integration not found' }, { status: 400 });
     }
 
-    // Ignore deliveries from other webhooks pointed at this org
-    const knownWebhookIds: string[] =
-      integration.config?.webhook_ids ||
-      (integration.config?.webhook_id ? [integration.config.webhook_id] : []);
-    if (knownWebhookIds.length > 0 && !knownWebhookIds.includes(webhookId)) {
-      return NextResponse.json({ received: true });
-    }
-
-    const secret = integration.config?.webhook_secret
-      ? decryptToken(integration.config.webhook_secret)
-      : '';
     const signature = request.headers.get('linear-signature');
-    if (!verifyLinearSignature(rawBody, signature, secret)) {
+    const eligible = integrations.filter((integration: any) => {
+      const knownWebhookIds: string[] =
+        integration.config?.webhook_ids ||
+        (integration.config?.webhook_id ? [integration.config.webhook_id] : []);
+      if (knownWebhookIds.length > 0 && !knownWebhookIds.includes(webhookId)) return false;
+      const secret = integration.config?.webhook_secret
+        ? decryptToken(integration.config.webhook_secret)
+        : '';
+      return verifyLinearSignature(rawBody, signature, secret);
+    });
+    if (!eligible.length) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
@@ -161,41 +161,39 @@ export async function POST(request: NextRequest) {
       personName(data.user) ||
       personName(data.assignee);
 
-    const rawEvent = await createRawEvent({
-      project_id: integration.project_id,
-      source: 'linear' as const,
-      source_event_id: `${data.id}:${webhookTimestamp}`,
-      event_type: type === 'Comment' ? 'issue_comment' : 'issue',
-      author_id: data.creator?.id || data.user?.id || data.assignee?.id,
-      timestamp: new Date(webhookTimestamp || data.updatedAt || Date.now()).toISOString(),
-      content,
-      metadata: {
-        type,
-        action,
-        identifier: data.identifier,
-        title: data.title || data.issue?.title,
-        state: data.state?.name,
-        team: data.team?.name,
-        url: data.url,
-        updated_from: updatedFrom,
-        organization_id: organizationId,
-        webhook_id: webhookId,
-        ...(author ? { author: { name: author, id: data.creator?.id || data.user?.id || data.assignee?.id } } : {}),
-      },
-    });
+    const eventIds: string[] = [];
+    for (const integration of eligible) {
+      const rawEvent = await createRawEvent({
+        project_id: integration.project_id,
+        source: 'linear' as const,
+        source_event_id: `${data.id}:${webhookTimestamp}`,
+        event_type: type === 'Comment' ? 'issue_comment' : 'issue',
+        author_id: data.creator?.id || data.user?.id || data.assignee?.id,
+        timestamp: new Date(webhookTimestamp || data.updatedAt || Date.now()).toISOString(),
+        content,
+        metadata: {
+          type,
+          action,
+          identifier: data.identifier,
+          title: data.title || data.issue?.title,
+          state: data.state?.name,
+          team: data.team?.name,
+          url: data.url,
+          updated_from: updatedFrom,
+          organization_id: organizationId,
+          webhook_id: webhookId,
+          ...(author ? { author: { name: author, id: data.creator?.id || data.user?.id || data.assignee?.id } } : {}),
+        },
+      });
 
-    await updateIntegrationLastSync(integration.id);
-    triggerEventProcessing(integration.project_id, request);
+      await updateIntegrationLastSync(integration.id);
+      triggerEventProcessing(integration.project_id, request);
+      eventIds.push(rawEvent.id);
+    }
 
-    console.log('Linear event stored:', {
-      type,
-      action,
-      identifier: data.identifier,
-      content,
-      event_id: rawEvent.id,
-    });
+    console.log('Linear event stored for', eventIds.length, 'project(s):', eventIds);
 
-    return NextResponse.json({ received: true, event_id: rawEvent.id });
+    return NextResponse.json({ received: true, event_ids: eventIds });
   } catch (error) {
     console.error('Error processing Linear webhook:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

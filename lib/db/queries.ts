@@ -365,52 +365,49 @@ export async function getIntegration(projectId: string, source: string) {
   return data;
 }
 
-export async function getIntegrationByFileKey(fileKey: string, source: string = 'figma') {
+export async function getIntegrationsByFileKey(fileKey: string, source: string = 'figma') {
   const { data, error } = await supabase
     .from('integrations')
     .select()
     .filter('config->>file_key', 'eq', fileKey)
-    .eq('source', source)
-    .maybeSingle();
+    .eq('source', source);
 
   if (error) {
-    console.error('Error finding integration by file key:', error);
-    return null;
+    console.error('Error finding integrations by file key:', error);
+    return [];
   }
 
-  return data;
+  return data || [];
 }
 
-export async function getIntegrationByLinearOrg(organizationId: string) {
+export async function getIntegrationsByLinearOrg(organizationId: string) {
   const { data, error } = await supabase
     .from('integrations')
     .select()
     .filter('config->>organization_id', 'eq', organizationId)
-    .eq('source', 'linear')
-    .maybeSingle();
+    .eq('source', 'linear');
 
   if (error) {
-    console.error('Error finding Linear integration by organization id:', error);
-    return null;
+    console.error('Error finding Linear integrations by organization id:', error);
+    return [];
   }
 
-  return data;
+  return data || [];
 }
 
-export async function getIntegrationByTeamId(teamId: string) {
+export async function getIntegrationsByTeamId(teamId: string) {
   const { data, error } = await supabase
     .from('integrations')
     .select()
     .filter('config->>team_id', 'eq', teamId)
-    .eq('source', 'slack')
-    .maybeSingle();
+    .eq('source', 'slack');
 
   if (error) {
-    console.error('Error finding Slack integration by team id:', error);
-    return null;
+    console.error('Error finding Slack integrations by team id:', error);
+    return [];
   }
 
-  return data;
+  return data || [];
 }
 
 export async function updateIntegrationLastSync(integrationId: string): Promise<void> {
