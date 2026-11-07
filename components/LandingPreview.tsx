@@ -45,6 +45,7 @@ function FactCard({
   actor,
   source,
   dimmed,
+  needsDecision,
 }: {
   subject: string;
   status: string;
@@ -53,10 +54,16 @@ function FactCard({
   actor?: string;
   source?: SourceIcon;
   dimmed?: boolean;
+  needsDecision?: boolean;
 }) {
   return (
     <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${dimmed ? 'opacity-75' : ''}`}>
       <p className="text-[15px] font-semibold leading-snug text-ink">{subject}</p>
+      {needsDecision && (
+        <span className="mt-1.5 inline-flex w-fit whitespace-nowrap rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
+          {t('dashboard.needsDecision')}
+        </span>
+      )}
       <p className="mt-1 text-[13px] leading-snug text-ink-secondary">
         {approved && <RiCheckLine size={12} className="mr-0.5 inline -mt-0.5 text-emerald-600" />}
         {status}
@@ -252,11 +259,11 @@ export default function LandingPreview() {
                   <FactCard
                     subject={t('preview.card4.subject')}
                     status={t('preview.card4.label')}
-                    ago={t('preview.card5.ago')}
+                    ago={t('preview.ago2d')}
                     approved
-                    actor={t('preview.actor2')}
-                    source={msgSource}
-                    dimmed
+                    needsDecision
+                    actor={t('preview.actor1')}
+                    source="figma"
                   />
                   <FactCard
                     subject={t('preview.card5.subject')}
@@ -275,11 +282,11 @@ export default function LandingPreview() {
                 <div className="divide-y divide-line-soft">
                   <LatestEvent
                     icon={<RiEditLine size={14} />}
-                    title={t('preview.event1.title')}
-                    meta={t('preview.event1.meta')}
+                    title={t('preview.eventRemove.title')}
+                    meta={t('preview.eventRemove.meta')}
                     author={t('preview.actor1')}
-                    source="figma"
-                    ago={t('preview.ago1d')}
+                    source={msgSource}
+                    ago={t('preview.agoJustNow')}
                   />
                   <LatestEvent
                     icon={<RiEditLine size={14} />}
@@ -319,17 +326,17 @@ export default function LandingPreview() {
                 <div className="space-y-3">
                   <div className="rounded-xl border border-line bg-white p-3.5">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-ink">{t('preview.card1.subject')}</p>
-                      <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
-                        {t('conflict.contradiction')}
+                      <p className="text-sm font-semibold text-ink">{t('preview.card4.subject')}</p>
+                      <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
+                        {t('dashboard.needsDecision')}
                       </span>
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
-                      {t('preview.conflict1.text')}
+                      {t('preview.conflictDark.text')}
                     </p>
                     <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
                       <SourceGlyph source="figma" size={12} />
-                      {t('dashboard.flaggedAgo', { time: t('preview.card1.ago') })}
+                      {t('dashboard.flaggedAgo', { time: t('preview.agoJustNow') })}
                     </p>
                     <div className="mt-3 flex items-center gap-1.5">
                       <span className="whitespace-nowrap rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
