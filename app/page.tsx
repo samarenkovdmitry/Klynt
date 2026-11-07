@@ -20,11 +20,22 @@ export default function LandingPage() {
   const [previewScale, setPreviewScale] = useState(0)
 
   const heroPreviewRef = useRef<HTMLDivElement>(null)
+  const [heroScale, setHeroScale] = useState(0.6)
 
   useEffect(() => {
     const el = mobilePreviewRef.current
     if (!el) return
     const update = () => setPreviewScale(el.clientWidth / PREVIEW_WIDTH)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const el = heroPreviewRef.current
+    if (!el) return
+    const update = () => setHeroScale(el.clientWidth / PREVIEW_WIDTH)
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
@@ -100,7 +111,6 @@ export default function LandingPage() {
         <div className="relative mx-auto grid max-w-7xl gap-14 px-6 pb-20 pt-10 lg:min-h-[680px] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:pt-4">
           {/* Left: copy + capture */}
           <div className="relative z-10 max-w-xl pt-6">
-            <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-muted">{t('landing.eyebrow')}</p>
             <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl">
               {t('landing.h1')}
             </h1>
@@ -170,42 +180,29 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right: one focused story — agreed fact → new event → decision needed */}
+          {/* Right: dashboard preview + the Slack event it tracks */}
           <div ref={heroPreviewRef} className="relative hidden min-h-[600px] self-stretch lg:block">
-            <div className="absolute inset-0 flex items-center justify-end pr-6">
-              <div className="w-[360px]">
-                <p className="mb-3 text-[11px] font-medium uppercase tracking-widest text-ink-faint">Example project</p>
+            <div className="absolute inset-0">
+              <div
+                className="absolute right-0 top-1/2 w-[1100px]"
+                style={{
+                  transform: `translateY(-50%) scale(${heroScale})`,
+                  transformOrigin: 'right center',
+                }}
+              >
+                <LandingPreview />
+              </div>
+            </div>
 
-                <div className="rounded-2xl border border-line bg-white px-5 py-4 shadow-sm">
-                  <p className="text-[17px] font-semibold leading-snug text-ink">Pricing block</p>
-                  <p className="mt-1 text-sm text-ink-secondary">
-                    <span className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-400 align-middle" />
-                    Approved · mobile only
+            {/* Floating Slack event the dashboard reacts to */}
+            <div className="absolute right-8 top-[12%] w-[300px] rounded-2xl border border-line bg-white/95 px-4 py-3 shadow-[0_8px_24px_-8px_rgba(27,26,23,0.18)]">
+              <div className="flex items-start gap-2.5">
+                <SlackIcon size={16} />
+                <div className="min-w-0">
+                  <p className="text-[11px] text-ink-faint">Slack · #design · just now</p>
+                  <p className="mt-0.5 text-sm leading-snug text-ink-secondary">
+                    <span className="font-medium text-ink">Anna:</span> actually, remove the pricing block
                   </p>
-                  <div className="mt-3 flex items-center gap-1.5 text-xs text-ink-faint">
-                    <SlackIcon size={12} />
-                    <span>Slack · Anna · 2d ago</span>
-                  </div>
-                </div>
-
-                <div className="my-4 flex items-start gap-2.5 rounded-2xl border border-line/70 bg-white/60 px-4 py-3">
-                  <SlackIcon size={14} />
-                  <p className="text-sm leading-snug text-ink-muted">
-                    <span className="font-medium text-ink-secondary">Anna:</span> actually, remove the pricing block
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-amber-200 bg-white px-5 py-4 shadow-sm">
-                  <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-medium text-amber-800">
-                    Needs decision
-                  </span>
-                  <p className="mt-2 text-sm text-ink-muted">
-                    Approved → <span className="font-medium text-ink">Removal requested</span>
-                  </p>
-                  <div className="mt-3 flex gap-2">
-                    <span className="rounded-full border border-line px-3 py-1 text-xs text-ink-secondary">Keep current</span>
-                    <span className="rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-medium text-[var(--accent-fg)]">Accept change</span>
-                  </div>
                 </div>
               </div>
             </div>
