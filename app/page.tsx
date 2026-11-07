@@ -16,16 +16,15 @@ export default function LandingPage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
+  const heroPreviewRef = useRef<HTMLDivElement>(null)
+  const [heroScale, setHeroScale] = useState(0.6)
   const mobilePreviewRef = useRef<HTMLDivElement>(null)
   const [previewScale, setPreviewScale] = useState(0)
 
-  const heroPreviewRef = useRef<HTMLDivElement>(null)
-  const [heroScale, setHeroScale] = useState(0.6)
-
   useEffect(() => {
-    const el = mobilePreviewRef.current
+    const el = heroPreviewRef.current
     if (!el) return
-    const update = () => setPreviewScale(el.clientWidth / PREVIEW_WIDTH)
+    const update = () => setHeroScale(el.clientWidth / PREVIEW_WIDTH)
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
@@ -33,9 +32,9 @@ export default function LandingPage() {
   }, [])
 
   useEffect(() => {
-    const el = heroPreviewRef.current
+    const el = mobilePreviewRef.current
     if (!el) return
-    const update = () => setHeroScale(el.clientWidth / PREVIEW_WIDTH)
+    const update = () => setPreviewScale(el.clientWidth / PREVIEW_WIDTH)
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
@@ -180,7 +179,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right: dashboard preview + the Slack event it tracks */}
+          {/* Right: dashboard preview + the chat event it tracks */}
           <div ref={heroPreviewRef} className="relative hidden min-h-[600px] self-stretch lg:block">
             <div className="absolute inset-0">
               <div
@@ -194,14 +193,29 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Floating Slack event the dashboard reacts to */}
-            <div className="absolute right-8 top-[12%] w-[300px] rounded-2xl border border-line bg-white/95 px-4 py-3 shadow-[0_8px_24px_-8px_rgba(27,26,23,0.18)]">
+            {/* Figma event — where the existing agreement came from */}
+            <div className="absolute bottom-[12%] left-2 w-[290px] rounded-2xl bg-white/95 px-4 py-3 shadow-[0_10px_32px_-6px_rgba(27,26,23,0.22)]">
               <div className="flex items-start gap-2.5">
-                <SlackIcon size={16} />
+                <FigmaIcon size={16} />
                 <div className="min-w-0">
-                  <p className="text-[11px] text-ink-faint">Slack · #design · just now</p>
+                  <p className="text-[11px] text-ink-faint">{getLocale() === 'ru' ? 'Figma · комментарий · 2 дн назад' : 'Figma · comment · 2d ago'}</p>
                   <p className="mt-0.5 text-sm leading-snug text-ink-secondary">
-                    <span className="font-medium text-ink">Anna:</span> actually, remove the pricing block
+                    <span className="font-medium text-ink">{getLocale() === 'ru' ? 'Анна:' : 'Anna:'}</span>
+                    {' '}{getLocale() === 'ru' ? '«тёмная тема согласована для мобильной»' : '“dark mode approved for mobile”'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating chat event — names the same entity the dashboard shows */}
+            <div className="absolute right-8 top-[12%] w-[300px] rounded-2xl bg-white/95 px-4 py-3 shadow-[0_10px_32px_-6px_rgba(27,26,23,0.22)]">
+              <div className="flex items-start gap-2.5">
+                {getLocale() === 'ru' ? <TelegramIcon size={16} /> : <SlackIcon size={16} />}
+                <div className="min-w-0">
+                  <p className="text-[11px] text-ink-faint">{getLocale() === 'ru' ? 'Telegram · #design · сейчас' : 'Slack · #design · just now'}</p>
+                  <p className="mt-0.5 text-sm leading-snug text-ink-secondary">
+                    <span className="font-medium text-ink">{getLocale() === 'ru' ? 'Анна:' : 'Anna:'}</span>
+                    {' '}{t('landing.caseFromChat')}
                   </p>
                 </div>
               </div>
@@ -209,8 +223,21 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Scaled-down desktop preview for smaller screens */}
+        {/* Mobile: same story — scaled dashboard, chat event over its top, Figma event over its bottom */}
         <div className="px-4 pb-16 lg:hidden">
+          <div className="relative z-10 -mb-10 ml-auto w-full max-w-[300px] rounded-2xl bg-white/95 px-4 py-3 shadow-[0_10px_32px_-6px_rgba(27,26,23,0.22)]">
+            <div className="flex items-start gap-2.5">
+              {getLocale() === 'ru' ? <TelegramIcon size={15} /> : <SlackIcon size={15} />}
+              <div className="min-w-0">
+                <p className="text-[11px] text-ink-faint">{getLocale() === 'ru' ? 'Telegram · #design · сейчас' : 'Slack · #design · just now'}</p>
+                <p className="mt-0.5 text-[13px] leading-snug text-ink-secondary">
+                  <span className="font-medium text-ink">{getLocale() === 'ru' ? 'Анна:' : 'Anna:'}</span>
+                  {' '}{t('landing.caseFromChat')}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div
             ref={mobilePreviewRef}
             className="relative overflow-hidden"
@@ -225,6 +252,19 @@ export default function LandingPage() {
               }}
             >
               <LandingPreview />
+            </div>
+          </div>
+
+          <div className="relative z-10 -mt-10 w-full max-w-[300px] rounded-2xl bg-white/95 px-4 py-3 shadow-[0_10px_32px_-6px_rgba(27,26,23,0.22)]">
+            <div className="flex items-start gap-2.5">
+              <FigmaIcon size={15} />
+              <div className="min-w-0">
+                <p className="text-[11px] text-ink-faint">{getLocale() === 'ru' ? 'Figma · комментарий · 2 дн назад' : 'Figma · comment · 2d ago'}</p>
+                <p className="mt-0.5 text-[13px] leading-snug text-ink-secondary">
+                  <span className="font-medium text-ink">{getLocale() === 'ru' ? 'Анна:' : 'Anna:'}</span>
+                  {' '}{getLocale() === 'ru' ? '«тёмная тема согласована для мобильной»' : '“dark mode approved for mobile”'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
