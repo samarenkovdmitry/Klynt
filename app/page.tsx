@@ -223,21 +223,8 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Mobile: same story — scaled dashboard, chat event over its top, Figma event over its bottom */}
+        {/* Mobile: same story — scaled dashboard, both source events stacked centered below */}
         <div className="px-4 pb-16 lg:hidden">
-          <div className="relative z-10 -mb-10 ml-auto w-full max-w-[300px] rounded-2xl bg-white/95 px-4 py-3 shadow-[0_10px_32px_-6px_rgba(27,26,23,0.22)]">
-            <div className="flex items-start gap-2.5">
-              {getLocale() === 'ru' ? <TelegramIcon size={15} /> : <SlackIcon size={15} />}
-              <div className="min-w-0">
-                <p className="text-[11px] text-ink-faint">{getLocale() === 'ru' ? 'Telegram · #design · сейчас' : 'Slack · #design · just now'}</p>
-                <p className="mt-0.5 text-[13px] leading-snug text-ink-secondary">
-                  <span className="font-medium text-ink">{getLocale() === 'ru' ? 'Анна:' : 'Anna:'}</span>
-                  {' '}{t('landing.caseFromChat')}
-                </p>
-              </div>
-            </div>
-          </div>
-
           <div
             ref={mobilePreviewRef}
             className="relative overflow-hidden"
@@ -255,15 +242,29 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="relative z-10 -mt-10 w-full max-w-[300px] rounded-2xl bg-white/95 px-4 py-3 shadow-[0_10px_32px_-6px_rgba(27,26,23,0.22)]">
-            <div className="flex items-start gap-2.5">
-              <FigmaIcon size={15} />
-              <div className="min-w-0">
-                <p className="text-[11px] text-ink-faint">{getLocale() === 'ru' ? 'Figma · комментарий · 2 дн назад' : 'Figma · comment · 2d ago'}</p>
-                <p className="mt-0.5 text-[13px] leading-snug text-ink-secondary">
-                  <span className="font-medium text-ink">{getLocale() === 'ru' ? 'Анна:' : 'Anna:'}</span>
-                  {' '}{getLocale() === 'ru' ? '«тёмная тема согласована для мобильной»' : '“dark mode approved for mobile”'}
-                </p>
+          <div className="mx-auto mt-5 w-full max-w-[300px] space-y-3">
+            <div className="rounded-2xl bg-white/95 px-4 py-3 shadow-[0_10px_32px_-6px_rgba(27,26,23,0.22)]">
+              <div className="flex items-start gap-2.5">
+                <FigmaIcon size={15} />
+                <div className="min-w-0">
+                  <p className="text-[11px] text-ink-faint">{getLocale() === 'ru' ? 'Figma · комментарий · 2 дн назад' : 'Figma · comment · 2d ago'}</p>
+                  <p className="mt-0.5 text-[13px] leading-snug text-ink-secondary">
+                    <span className="font-medium text-ink">{getLocale() === 'ru' ? 'Анна:' : 'Anna:'}</span>
+                    {' '}{getLocale() === 'ru' ? '«тёмная тема согласована для мобильной»' : '“dark mode approved for mobile”'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-2xl bg-white/95 px-4 py-3 shadow-[0_10px_32px_-6px_rgba(27,26,23,0.22)]">
+              <div className="flex items-start gap-2.5">
+                {getLocale() === 'ru' ? <TelegramIcon size={15} /> : <SlackIcon size={15} />}
+                <div className="min-w-0">
+                  <p className="text-[11px] text-ink-faint">{getLocale() === 'ru' ? 'Telegram · #design · сейчас' : 'Slack · #design · just now'}</p>
+                  <p className="mt-0.5 text-[13px] leading-snug text-ink-secondary">
+                    <span className="font-medium text-ink">{getLocale() === 'ru' ? 'Анна:' : 'Anna:'}</span>
+                    {' '}{t('landing.caseFromChat')}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
