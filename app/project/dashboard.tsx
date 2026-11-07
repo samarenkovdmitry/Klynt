@@ -86,17 +86,17 @@ const getStateLabel = (key: string): string => {
   return label === `state.${key}` ? '' : label;
 };
 
-// Approved намеренно нейтральный: одобренное уже не требует внимания,
-// а зелёный занят брендом. Цвет остаётся только у того, что нужно решить.
-const STATE_PILL_STYLES: Record<string, string> = {
-  approved: 'bg-fill text-ink-secondary',
-  added: 'bg-blue-50 text-blue-700',
-  modify: 'bg-amber-50 text-amber-700',
-  modified: 'bg-amber-50 text-amber-700',
-  removed: 'bg-rose-50 text-rose-700',
+// On a conflicted card the arrow line reads "Approved → Removal requested":
+// the confirmed state vs what the new event proposes.
+const PROPOSED_LABELS: Record<string, string> = {
+  remove: 'Removal requested',
+  add: 'Addition proposed',
+  modify: 'Change proposed',
+  approve: 'Approval proposed',
+  reject: 'Rejection proposed',
+  in_progress: 'Work proposed',
+  undecided: 'Undecided proposal',
 };
-
-const DEFAULT_PILL_STYLE = 'bg-fill text-ink-secondary';
 
 // Segment colours of the header state bar. Approved is a calm green on the
 // left — the bar then reads as a progress bar (done → work left), and colour
@@ -743,30 +743,13 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     if (pa !== pb) return pa - pb;
                     return (a.subject || '').toLowerCase().localeCompare((b.subject || '').toLowerCase());
                   }).map((fact: any) => {
-                    const pillStyle = STATE_PILL_STYLES[fact.current_state?.toLowerCase()] || DEFAULT_PILL_STYLE;
                     const stateLabel = `${fact.current_value?.display_state || getStateLabel(fact.current_state?.toLowerCase()) || capitalize(fact.current_state)}${fact.current_value?.scope ? ` · ${fact.current_value.scope}` : ''}`;
                     const isApproved = fact.current_state?.toLowerCase() === 'approved';
-                    const confidence = Math.round(fact.confidence * 100);
-                    const confidenceText = confidence < 80 ? t('dashboard.confidence', { confidence }) : null;
                     const factHistory = state.history
                       .filter((h: any) => h.fact_id === fact.id && h.new_state && h.previous_state?.toLowerCase() !== h.new_state?.toLowerCase() && h.reason !== 'test')
                       .sort((a: any, b: any) => new Date(b.decided_at || b.created_at).getTime() - new Date(a.decided_at || a.created_at).getTime());
                     const hasHistory = factHistory.length > 0;
                     const relatedConflict = state.conflicts.find((c: any) => c.status !== 'resolved' && c.subject === fact.subject);
-                    const latestReason = state.history
-                      .filter((h: any) => h.fact_id === fact.id && h.reason && h.reason !== 'test')
-                      .sort((a: any, b: any) => new Date(b.decided_at || b.created_at).getTime() - new Date(a.decided_at || a.created_at).getTime())[0]?.reason;
-                    const contextLineRaw = relatedConflict?.description || latestReason || null;
-                    // The generated reason restates the subject, which the card
-                    // already shows as its title — drop the leading repetition
-                    // ("Pricing block approved…" → "Approved…").
-                    const contextLine = (() => {
-                      if (!contextLineRaw || !fact.subject) return contextLineRaw;
-                      const subj = fact.subject.toLowerCase();
-                      if (!contextLineRaw.toLowerCase().startsWith(subj)) return contextLineRaw;
-                      const stripped = contextLineRaw.slice(fact.subject.length).replace(/^[\s,:\-–—]+/, '');
-                      return stripped.length > 2 ? stripped : contextLineRaw;
-                    })();
                     const approvalEntry = isApproved
                       ? state.history
                           .filter((h: any) => h.fact_id === fact.id && h.new_state?.toLowerCase() === 'approved')
@@ -784,42 +767,36 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         className={`group relative flex w-[74%] max-w-[300px] flex-shrink-0 snap-start flex-col rounded-xl border border-line bg-white px-4 py-3 transition sm:w-auto sm:max-w-none ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''} ${isApproved ? 'opacity-75 hover:opacity-100' : ''}`}
                       >
                         <p className="text-[15px] font-semibold leading-snug text-ink">{capitalize(fact.subject)}</p>
-                        <span className={`relative mt-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
-                          {isApproved && <RiCheckLine size={11} />}
-                          {stateLabel}
-                          {confidenceText && (
-                            <span className="pointer-events-none absolute left-0 top-full z-20 mt-2 w-max rounded bg-gray-800 px-2 py-1 text-[10px] font-medium normal-case tracking-normal text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
-                              {confidenceText}
+                        {relatedConflict ? (
+                          <>
+                            <span className="relative mt-1.5 inline-flex w-fit items-center rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
+                              {t('dashboard.needsDecision')}
                             </span>
-                          )}
-                        </span>
-                        {isApproved && approvalEntry?.author ? (
-                          <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-muted">
-                            Approved{isRawExternalId(approvalEntry.author) ? '' : ` by ${approvalEntry.author}`}
-                            {approvalEntry.decided_at && ` · ${formatRelative(approvalEntry.decided_at)}`}
-                          </p>
-                        ) : contextLine ? (
-                          <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-muted line-clamp-2">{capitalize(contextLine)}</p>
-                        ) : null}
-                        {(hasHistory || fact.last_updated_at) && (
-                          <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
-                            <span className="min-w-0 truncate whitespace-nowrap">
-                              {hasHistory && (
-                                <span className="font-medium transition-colors group-hover:text-[var(--accent-link)]">
-                                  {factHistory.length} {tp(factHistory.length, 'plural.change')}
+                            <p className="mt-1 text-[13px] leading-[1.55] text-ink-muted">
+                              {stateLabel}
+                              {relatedConflict.proposedEvent?.action && (
+                                <span className="text-ink">
+                                  {' → '}
+                                  {PROPOSED_LABELS[relatedConflict.proposedEvent.action] || capitalize(relatedConflict.proposedEvent.action)}
                                 </span>
                               )}
-                              {hasHistory && showUpdated && <span> · </span>}
-                              {showUpdated && <span>{formatRelative(fact.last_updated_at!)}</span>}
-                            </span>
-                            {(lastActor || lastSource) && (
-                              <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
-                                {lastActor && !isRawExternalId(lastActor) && (
-                                  <span className="max-w-[80px] truncate">{lastActor}</span>
-                                )}
-                                {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource === 'linear' ? <LinearIcon size={12} /> : lastSource === 'telegram' ? <TelegramIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="mt-1 text-[13px] leading-[1.55] text-ink-secondary">
+                            {isApproved && <RiCheckLine size={12} className="mr-0.5 inline -mt-0.5 text-emerald-600" />}
+                            {stateLabel}
+                          </p>
+                        )}
+                        {(lastActor || lastSource || fact.last_updated_at) && (
+                          <div className="mt-auto flex items-center gap-1.5 pt-2.5 text-[11px] text-ink-faint">
+                            <span className="flex min-w-0 items-center gap-1">
+                              {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource === 'linear' ? <LinearIcon size={12} /> : lastSource === 'telegram' ? <TelegramIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
+                              <span className="truncate">
+                                {[lastSource ? capitalize(lastSource) : null, lastActor && !isRawExternalId(lastActor) ? lastActor : null].filter(Boolean).join(' · ')}
                               </span>
-                            )}
+                            </span>
+                            {showUpdated && <span className="ml-auto flex-shrink-0">{formatRelative(fact.last_updated_at!)}</span>}
                           </div>
                         )}
                       </div>
