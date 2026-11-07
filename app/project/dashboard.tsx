@@ -756,7 +756,17 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     const latestReason = state.history
                       .filter((h: any) => h.fact_id === fact.id && h.reason && h.reason !== 'test')
                       .sort((a: any, b: any) => new Date(b.decided_at || b.created_at).getTime() - new Date(a.decided_at || a.created_at).getTime())[0]?.reason;
-                    const contextLine = relatedConflict?.description || latestReason || null;
+                    const contextLineRaw = relatedConflict?.description || latestReason || null;
+                    // The generated reason restates the subject, which the card
+                    // already shows as its title — drop the leading repetition
+                    // ("Pricing block approved…" → "Approved…").
+                    const contextLine = (() => {
+                      if (!contextLineRaw || !fact.subject) return contextLineRaw;
+                      const subj = fact.subject.toLowerCase();
+                      if (!contextLineRaw.toLowerCase().startsWith(subj)) return contextLineRaw;
+                      const stripped = contextLineRaw.slice(fact.subject.length).replace(/^[\s,:\-–—]+/, '');
+                      return stripped.length > 2 ? stripped : contextLineRaw;
+                    })();
                     const approvalEntry = isApproved
                       ? state.history
                           .filter((h: any) => h.fact_id === fact.id && h.new_state?.toLowerCase() === 'approved')
