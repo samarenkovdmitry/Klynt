@@ -35,12 +35,11 @@ function MockSectionHeader({ title, right, caps = true }: { title: string; right
   );
 }
 
+const SOURCE_NAME: Record<SourceIcon, string> = { figma: 'Figma', slack: 'Slack', telegram: 'Telegram' };
+
 function FactCard({
   subject,
-  label,
-  pillStyle,
-  context,
-  changes,
+  status,
   ago,
   approved,
   actor,
@@ -48,11 +47,8 @@ function FactCard({
   dimmed,
 }: {
   subject: string;
-  label: string;
-  pillStyle: string;
-  context?: string;
-  changes?: number;
-  ago?: string;
+  status: string;
+  ago: string;
   approved?: boolean;
   actor?: string;
   source?: SourceIcon;
@@ -61,24 +57,17 @@ function FactCard({
   return (
     <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${dimmed ? 'opacity-75' : ''}`}>
       <p className="text-[15px] font-semibold leading-snug text-ink">{subject}</p>
-      <span className={`mt-1.5 inline-flex w-fit items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ${pillStyle}`}>
-        {approved && <RiCheckLine size={11} />}
-        {label}
-      </span>
-      {context && (
-        <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-muted line-clamp-2">{context}</p>
-      )}
-      {changes && (
-        <div className="mt-auto flex items-center gap-1.5 pt-3 text-[11px] text-ink-faint">
-          <span className="min-w-0 truncate">{changes} {tp(changes, 'plural.change')}{ago ? ` · ${ago}` : ''}</span>
-          {(actor || source) && (
-            <span className="ml-auto flex flex-shrink-0 items-center gap-1.5">
-              {actor && <span className="max-w-[80px] truncate">{actor}</span>}
-              {source && <SourceGlyph source={source} size={12} />}
-            </span>
-          )}
-        </div>
-      )}
+      <p className="mt-1 text-[13px] leading-snug text-ink-secondary">
+        {approved && <RiCheckLine size={12} className="mr-0.5 inline -mt-0.5 text-emerald-600" />}
+        {status}
+      </p>
+      <div className="mt-auto flex items-center gap-1.5 pt-2.5 text-[11px] text-ink-faint">
+        <span className="flex min-w-0 items-center gap-1">
+          {source && <SourceGlyph source={source} size={12} />}
+          <span className="truncate">{[source ? SOURCE_NAME[source] : null, actor].filter(Boolean).join(' · ')}</span>
+        </span>
+        <span className="ml-auto flex-shrink-0">{ago}</span>
+      </div>
     </div>
   );
 }
@@ -113,11 +102,6 @@ function LatestEvent({
     </div>
   );
 }
-
-const NEUTRAL_PILL = 'bg-fill text-ink-secondary';
-const AMBER_PILL = 'bg-amber-50 text-amber-700';
-const ROSE_PILL = 'bg-rose-50 text-rose-700';
-const BLUE_PILL = 'bg-blue-50 text-blue-700';
 
 // Mirrors the real dashboard's state-bar palette (done → work left).
 const STATE_BAR_COLORS: Record<string, string> = {
@@ -239,48 +223,36 @@ export default function LandingPreview() {
                 <div className="grid grid-cols-3 gap-2">
                   <FactCard
                     subject={t('preview.card1.subject')}
-                    label={t('preview.card1.label')}
-                    pillStyle={AMBER_PILL}
-                    context={t('preview.card1.context')}
-                    changes={4}
+                    status={t('preview.card1.label')}
                     ago={t('preview.card1.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
                   />
                   <FactCard
                     subject={t('preview.card2.subject')}
-                    label={t('preview.card2.label')}
-                    pillStyle={ROSE_PILL}
-                    context={t('preview.card2.context')}
-                    changes={2}
+                    status={t('preview.card2.label')}
                     ago={t('preview.card2.ago')}
                     actor={t('preview.actor3')}
                     source={msgSource}
                   />
                   <FactCard
                     subject={t('preview.card3.subject')}
-                    label={t('preview.card3.label')}
-                    pillStyle={AMBER_PILL}
-                    changes={2}
+                    status={t('preview.card3.label')}
                     ago={t('preview.card3.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
                   />
                   <FactCard
                     subject={t('preview.card6.subject')}
-                    label={t('preview.card6.label')}
-                    pillStyle={BLUE_PILL}
-                    changes={2}
+                    status={t('preview.card6.label')}
                     ago={t('preview.card6.ago')}
                     actor={t('preview.actor1')}
                     source="figma"
                   />
                   <FactCard
                     subject={t('preview.card4.subject')}
-                    label={t('preview.card4.label')}
-                    pillStyle={NEUTRAL_PILL}
-                    context={t('preview.card4.context')}
-                    changes={3}
+                    status={t('preview.card4.label')}
+                    ago={t('preview.card5.ago')}
                     approved
                     actor={t('preview.actor2')}
                     source={msgSource}
@@ -288,10 +260,8 @@ export default function LandingPreview() {
                   />
                   <FactCard
                     subject={t('preview.card5.subject')}
-                    label={t('preview.card5.label')}
-                    pillStyle={NEUTRAL_PILL}
-                    context={t('preview.card5.context')}
-                    changes={3}
+                    status={t('preview.card5.label')}
+                    ago={t('preview.card5.ago')}
                     approved
                     actor={t('preview.actor2')}
                     source={msgSource}
@@ -340,31 +310,6 @@ export default function LandingPreview() {
                     </div>
                   }
                 />
-                <div className="mb-6">
-                  <p className="mb-1 text-xs font-medium text-ink-faint">{t('preview.yesterday')}</p>
-                  <div className="divide-y divide-line-soft">
-                    <div className="flex items-center gap-3 py-1.5">
-                      <span className="w-10 flex-shrink-0 text-xs tabular-nums text-ink-faint">11:00</span>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium text-ink">{t('preview.event1.title')}</span>
-                      </div>
-                      <span className="flex flex-shrink-0 items-center gap-2.5 text-xs text-ink-faint">
-                        <span>{t('preview.actor1')}</span>
-                        <FigmaIcon size={14} />
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 py-1.5">
-                      <span className="w-10 flex-shrink-0 text-xs tabular-nums text-ink-faint">09:00</span>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium text-ink">{t('preview.event2.title')}</span>
-                      </div>
-                      <span className="flex flex-shrink-0 items-center gap-2.5 text-xs text-ink-faint">
-                        <span>{t('preview.actor2')}</span>
-                        <SourceGlyph source={msgSource} size={14} />
-                      </span>
-                    </div>
-                  </div>
-                </div>
               </section>
             </div>
 
