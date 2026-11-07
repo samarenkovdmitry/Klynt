@@ -74,7 +74,7 @@ const en: Dict = {
   // Integrations — Slack panel
   'integrations.slack.channelsTracked': '{count} channels tracked',
   'integrations.slack.channelTracked': '1 channel tracked',
-  'integrations.slack.allChannels': 'All channels tracked',
+  'integrations.slack.allChannels': 'No channels tracked yet — pick at least one',
   'integrations.slack.pickChannels': 'Pick channels',
   'integrations.slack.close': 'Close',
   'integrations.slack.private': 'private',
@@ -440,7 +440,7 @@ const ru: Dict = {
   // Integrations — Slack panel
   'integrations.slack.channelsTracked': 'Каналов отслеживается: {count}',
   'integrations.slack.channelTracked': 'Отслеживается 1 канал',
-  'integrations.slack.allChannels': 'Все каналы отслеживаются',
+  'integrations.slack.allChannels': 'Каналы не выбраны — укажите хотя бы один',
   'integrations.slack.pickChannels': 'Выбрать каналы',
   'integrations.slack.close': 'Закрыть',
   'integrations.slack.private': 'приватный',
