@@ -6,16 +6,7 @@ import LandingPreview from '@/components/LandingPreview'
 import { FigmaIcon, LinearIcon, SlackIcon, TelegramIcon } from '@/components/icons/BrandIcons'
 import { t, getLocale } from '@/lib/i18n'
 import { logoSrc } from '@/lib/market'
-import { siNotion, siGmail, siGoogledrive, siZoom } from 'simple-icons'
 import { RiShieldCheckLine, RiArrowRightUpLine } from '@remixicon/react'
-
-function SiIcon({ icon, size = 16 }: { icon: { path: string; hex: string; title: string }; size?: number }) {
-  return (
-    <svg viewBox="0 0 24 24" width={size} height={size} fill={`#${icon.hex}`} role="img" aria-label={icon.title}>
-      <path d={icon.path} />
-    </svg>
-  )
-}
 
 const PREVIEW_WIDTH = 1100
 const PREVIEW_HEIGHT = 680
@@ -29,22 +20,11 @@ export default function LandingPage() {
   const [previewScale, setPreviewScale] = useState(0)
 
   const heroPreviewRef = useRef<HTMLDivElement>(null)
-  const [heroScale, setHeroScale] = useState(0.6)
 
   useEffect(() => {
     const el = mobilePreviewRef.current
     if (!el) return
     const update = () => setPreviewScale(el.clientWidth / PREVIEW_WIDTH)
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
-  useEffect(() => {
-    const el = heroPreviewRef.current
-    if (!el) return
-    const update = () => setHeroScale(el.clientWidth / PREVIEW_WIDTH)
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
@@ -120,6 +100,7 @@ export default function LandingPage() {
         <div className="relative mx-auto grid max-w-7xl gap-14 px-6 pb-20 pt-10 lg:min-h-[680px] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:pt-4">
           {/* Left: copy + capture */}
           <div className="relative z-10 max-w-xl pt-6">
+            <p className="mb-4 text-xs font-medium uppercase tracking-widest text-ink-muted">{t('landing.eyebrow')}</p>
             <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl">
               {t('landing.h1')}
             </h1>
@@ -156,7 +137,7 @@ export default function LandingPage() {
             )}
 
             <p className="mt-5 text-sm text-ink-muted">
-              {t('landing.closedBeta')} {t('landing.alreadyIn')}{' '}
+              {t('landing.ctaHint')} {t('landing.alreadyIn')}{' '}
               <Link href="/login" className="font-medium text-[var(--accent-link)] hover:underline">
                 {t('landing.login')}
               </Link>
@@ -186,29 +167,47 @@ export default function LandingPage() {
                   <SlackIcon size={17} />
                 </>
               )}
-              <span className="flex items-center gap-4 opacity-30 grayscale">
-                <SiIcon icon={siNotion} />
-                <SiIcon icon={siGmail} />
-                <SiIcon icon={siGoogledrive} />
-                <SiIcon icon={siZoom} />
-              </span>
-              <span className="text-xs text-ink-faint">{t('landing.comingSoon')}</span>
             </div>
           </div>
 
-          {/* Right: tilted product preview + floating signals */}
+          {/* Right: one focused story — agreed fact → new event → decision needed */}
           <div ref={heroPreviewRef} className="relative hidden min-h-[600px] self-stretch lg:block">
-            <div className="absolute inset-0">
-              <div
-                className="absolute right-0 top-1/2 w-[1100px]"
-                style={{
-                  transform: `translateY(-50%) scale(${heroScale})`,
-                  transformOrigin: 'right center',
-                }}
-              >
-                <LandingPreview />
-              </div>
+            <div className="absolute inset-0 flex items-center justify-end pr-6">
+              <div className="w-[360px]">
+                <p className="mb-3 text-[11px] font-medium uppercase tracking-widest text-ink-faint">Example project</p>
 
+                <div className="rounded-2xl border border-line bg-white px-5 py-4 shadow-sm">
+                  <p className="text-[17px] font-semibold leading-snug text-ink">Pricing block</p>
+                  <p className="mt-1 text-sm text-ink-secondary">
+                    <span className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-400 align-middle" />
+                    Approved · mobile only
+                  </p>
+                  <div className="mt-3 flex items-center gap-1.5 text-xs text-ink-faint">
+                    <SlackIcon size={12} />
+                    <span>Slack · Anna · 2d ago</span>
+                  </div>
+                </div>
+
+                <div className="my-4 flex items-start gap-2.5 rounded-2xl border border-line/70 bg-white/60 px-4 py-3">
+                  <SlackIcon size={14} />
+                  <p className="text-sm leading-snug text-ink-muted">
+                    <span className="font-medium text-ink-secondary">Anna:</span> actually, remove the pricing block
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-amber-200 bg-white px-5 py-4 shadow-sm">
+                  <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-medium text-amber-800">
+                    Needs decision
+                  </span>
+                  <p className="mt-2 text-sm text-ink-muted">
+                    Approved → <span className="font-medium text-ink">Removal requested</span>
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <span className="rounded-full border border-line px-3 py-1 text-xs text-ink-secondary">Keep current</span>
+                    <span className="rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-medium text-[var(--accent-fg)]">Accept change</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
