@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import NewProjectModal from '@/components/NewProjectModal';
 import LandingPreview from '@/components/LandingPreview';
+import DecisionsToRevisit from '@/components/DecisionsToRevisit';
 import { FigmaIcon, SlackIcon, LinearIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import { emojify } from 'node-emoji';
 import { t, getLocale, tp } from '@/lib/i18n';
@@ -1078,6 +1079,15 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     </p>
                   )}
                 </div>
+
+                {process.env.NEXT_PUBLIC_IMPACT_ANALYSIS_ENABLED === 'true' && (
+                  <DecisionsToRevisit
+                    key={`${state.projectId}:${selectedFact.id}`}
+                    projectId={state.projectId}
+                    factId={selectedFact.id}
+                    onOpenFact={setSelectedFactId}
+                  />
+                )}
 
                 <div>
                   <p className="mb-3 text-sm font-medium text-ink">{t('dashboard.whyCurrentState')}</p>
