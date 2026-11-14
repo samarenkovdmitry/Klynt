@@ -45,7 +45,7 @@ function FactCard({
   actor,
   source,
   dimmed,
-  needsDecision,
+  disputed,
 }: {
   subject: string;
   status: string;
@@ -54,14 +54,14 @@ function FactCard({
   actor?: string;
   source?: SourceIcon;
   dimmed?: boolean;
-  needsDecision?: boolean;
+  disputed?: boolean;
 }) {
   return (
     <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${dimmed ? 'opacity-75' : ''}`}>
       <p className="text-[15px] font-semibold leading-snug text-ink">{subject}</p>
-      {needsDecision && (
-        <span className="mt-1.5 inline-flex w-fit whitespace-nowrap rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-          {t('dashboard.needsDecision')}
+      {disputed && (
+        <span className="mt-1.5 inline-flex w-fit whitespace-nowrap rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-medium text-rose-800">
+          {t('status.disputed')}
         </span>
       )}
       <p className="mt-1 text-[13px] leading-snug text-ink-secondary">
@@ -110,19 +110,13 @@ function LatestEvent({
   );
 }
 
-// Mirrors the real dashboard's state-bar palette (done → work left).
-const STATE_NUM_COLORS: Record<string, string> = {
-  approved: 'text-emerald-500',
-  review: 'text-amber-500',
-  added: 'text-blue-500',
-  pending: 'text-rose-500',
-};
-
-const STATE_BAR_COLORS: Record<string, string> = {
-  approved: 'bg-emerald-400',
-  review: 'bg-amber-400',
-  added: 'bg-blue-400',
-  pending: 'bg-rose-400',
+// Mirrors the dashboard's status palette (decision states, not events).
+const STATUS_COLORS: Record<string, { num: string; bar: string }> = {
+  approved: { num: 'text-emerald-500', bar: 'bg-emerald-400' },
+  inProgress: { num: 'text-blue-500', bar: 'bg-blue-400' },
+  needsDecision: { num: 'text-amber-500', bar: 'bg-amber-400' },
+  disputed: { num: 'text-rose-500', bar: 'bg-rose-400' },
+  outOfScope: { num: 'text-ink-faint', bar: 'bg-line-strong' },
 };
 
 export default function LandingPreview() {
@@ -213,21 +207,21 @@ export default function LandingPreview() {
             <div className="mt-3">
               <div className="flex items-baseline justify-between gap-4">
                 <p className="text-[11px] font-medium uppercase tracking-wider text-ink-faint">
-                  {t('dashboard.overview')} · 8 {tp(8, 'plural.area')}
+                  {t('dashboard.overview')} · 6 {tp(6, 'plural.area')}
                 </p>
                 <span className="flex-shrink-0 text-xs text-ink-faint">{t('preview.updated')}</span>
               </div>
               <div className="mt-2.5 flex items-end gap-6">
-                {([['approved', 4, t('dashboard.approved')], ['review', 2, t('dashboard.needReview')], ['added', 1, t('dashboard.new')], ['pending', 1, tp(1, 'plural.pendingLabel')]] as const).map(([k, n, label]) => (
+                {([['approved', 1], ['inProgress', 1], ['needsDecision', 2], ['disputed', 1], ['outOfScope', 1]] as const).map(([k, n]) => (
                   <span key={k} className="text-left">
-                    <span className={`block text-[24px] font-semibold leading-none ${STATE_NUM_COLORS[k]}`}>{String(n).padStart(2, '0')}</span>
-                    <span className="mt-1 block text-xs capitalize text-ink-muted">{label}</span>
+                    <span className={`block text-[24px] font-semibold leading-none ${STATUS_COLORS[k].num}`}>{String(n).padStart(2, '0')}</span>
+                    <span className="mt-1 block text-xs capitalize text-ink-muted">{t(`status.${k}`)}</span>
                   </span>
                 ))}
               </div>
               <div className="mt-3 flex h-1 gap-[2px] overflow-hidden rounded-full bg-white">
-                {([['approved', 4], ['review', 2], ['added', 1], ['pending', 1]] as const).map(([k, n]) => (
-                  <div key={k} className={STATE_BAR_COLORS[k]} style={{ width: `${(n / 8) * 100}%` }} />
+                {([['approved', 1], ['inProgress', 1], ['needsDecision', 2], ['disputed', 1], ['outOfScope', 1]] as const).map(([k, n]) => (
+                  <div key={k} className={STATUS_COLORS[k].bar} style={{ width: `${(n / 6) * 100}%` }} />
                 ))}
               </div>
             </div>
@@ -269,8 +263,7 @@ export default function LandingPreview() {
                     subject={t('preview.card4.subject')}
                     status={t('preview.card4.label')}
                     ago={t('preview.ago2d')}
-                    approved
-                    needsDecision
+                    disputed
                     actor={t('preview.actor1')}
                     source="figma"
                   />
