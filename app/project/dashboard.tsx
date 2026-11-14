@@ -99,26 +99,47 @@ const PROPOSED_LABELS: Record<string, string> = {
   undecided: 'Undecided proposal',
 };
 
-// Segment colours of the header state bar. Approved is a calm green on the
-// left — the bar then reads as a progress bar (done → work left), and colour
-// still belongs to what needs deciding.
-const STATE_BAR_COLORS: Record<string, string> = {
-  approved: 'bg-emerald-400',
-  review: 'bg-amber-400',
-  added: 'bg-blue-400',
-  pending: 'bg-rose-400',
-};
+// Unified status system:
+//   STATUS  — the state of the decision (approved / in progress / needs
+//             decision / disputed / out of scope)
+//   EVENT   — what happened (added / removed / scope changed / changed),
+//             shown next to the status, never instead of it.
+const SETTLED_STATES = new Set(['approved', 'approve', 'confirmed', 'in_progress', 'out_of_scope', 'reject', 'rejected', 'undecided']);
 
-const STATE_NUM_COLORS: Record<string, string> = {
-  approved: 'text-emerald-500',
-  review: 'text-amber-500',
-  added: 'text-blue-500',
-  pending: 'text-rose-500',
-};
+function settledStatus(s?: string): 'approved' | 'inProgress' | 'outOfScope' | 'needsDecision' {
+  if (s === 'approved' || s === 'approve' || s === 'confirmed') return 'approved';
+  if (s === 'in_progress') return 'inProgress';
+  if (s === 'out_of_scope' || s === 'reject' || s === 'rejected') return 'outOfScope';
+  return 'needsDecision'; // undecided and anything else unsettled
+}
 
-// One bucketing rule for the counts, the bar, the stat row and the grid filter.
-const stateBucket = (s?: string) =>
-  s === 'approved' ? 'approved' : s === 'added' ? 'added' : s === 'removed' ? 'pending' : 'review';
+// An unresolved conflict overrides the status — the decision is disputed.
+function displayStatus(fact: { current_state?: string }, hasConflict: boolean, prevSettled?: string | null) {
+  if (hasConflict) return 'disputed' as const;
+  const s = fact.current_state?.toLowerCase();
+  if (SETTLED_STATES.has(s || '')) return settledStatus(s);
+  if (prevSettled === 'approved' || prevSettled === 'inProgress' || prevSettled === 'outOfScope') return prevSettled;
+  return 'needsDecision' as const;
+}
+
+function displayEvent(fact: { current_state?: string }): 'added' | 'removed' | 'scopeChanged' | 'changed' | null {
+  const s = fact.current_state?.toLowerCase();
+  if (s === 'added' || s === 'add') return 'added';
+  if (s === 'removed' || s === 'remove') return 'removed';
+  if (s === 'scope_change') return 'scopeChanged';
+  if (s === 'modify' || s === 'modified' || s === 'change') return 'changed';
+  return null;
+}
+
+type StatusKey = 'approved' | 'inProgress' | 'needsDecision' | 'disputed' | 'outOfScope';
+
+const STATUS_COLORS: Record<StatusKey, { num: string; bar: string; text: string }> = {
+  approved:      { num: 'text-emerald-500', bar: 'bg-emerald-400', text: 'text-emerald-700' },
+  inProgress:    { num: 'text-blue-500',    bar: 'bg-blue-400',    text: 'text-blue-700' },
+  needsDecision: { num: 'text-amber-500',   bar: 'bg-amber-400',   text: 'text-amber-700' },
+  disputed:      { num: 'text-rose-500',    bar: 'bg-rose-400',    text: 'text-rose-700' },
+  outOfScope:    { num: 'text-ink-faint',   bar: 'bg-line-strong', text: 'text-ink-muted' },
+};
 
 const ACTION_ICONS: Record<string, ReactNode> = {
   added: <RiAddLine size={14} />,
@@ -506,8 +527,19 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     .filter((f: any) => f.last_updated_at)
     .sort((a: any, b: any) => new Date(b.last_updated_at).getTime() - new Date(a.last_updated_at).getTime())[0]?.last_updated_at;
 
-  const stateCounts = { approved: 0, review: 0, pending: 0, added: 0 };
-  for (const f of state.currentState) stateCounts[stateBucket(f.current_state?.toLowerCase()) as keyof typeof stateCounts]++;
+  const openConflictSubjects = new Set(state.conflicts.filter((c: any) => c.status !== 'resolved').map((c: any) => c.subject));
+  const factStatus = new Map<string, StatusKey>();
+  const prevSettledFor = (fact: any) => {
+    const h = state.history
+      .filter((x: any) => x.fact_id === fact.id && x.previous_state && SETTLED_STATES.has(x.previous_state?.toLowerCase()))
+      .sort((a: any, b: any) => new Date(b.decided_at || b.created_at).getTime() - new Date(a.decided_at || a.created_at).getTime())[0];
+    return h ? settledStatus(h.previous_state?.toLowerCase()) : null;
+  };
+  for (const f of state.currentState) {
+    factStatus.set(f.id, displayStatus(f, openConflictSubjects.has(f.subject), prevSettledFor(f)));
+  }
+  const stateCounts: Record<StatusKey, number> = { approved: 0, inProgress: 0, needsDecision: 0, disputed: 0, outOfScope: 0 };
+  for (const f of state.currentState) stateCounts[factStatus.get(f.id)!]++;
 
   const baseline = selectedProjectId ? visitBaseline[selectedProjectId] : undefined;
   const newSinceVisit = baseline
@@ -556,7 +588,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     : [];
   const selectedMeta = selectedFact ? (FACT_META[selectedFact.current_state?.toLowerCase()] || DEFAULT_FACT_META) : null;
   const selectedStateLabel = selectedFact
-    ? `${selectedFact.current_value?.display_state || getStateLabel(selectedFact.current_state?.toLowerCase()) || capitalize(selectedFact.current_state)}${selectedFact.current_value?.scope ? ` · ${selectedFact.current_value.scope}` : ''}`
+    ? `${t(`status.${factStatus.get(selectedFact.id) || 'needsDecision'}`)}${selectedFact.current_value?.scope ? ` · ${selectedFact.current_value.scope}` : ''}`
     : null;
 
   const groupedWhy = selectedFact
@@ -631,10 +663,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           )}
           {state.currentState.length > 0 && (() => {
             const stats = [
-              ['approved', t('dashboard.approved')],
-              ['review', t('dashboard.needReview')],
-              ['added', t('dashboard.new')],
-              ['pending', tp(stateCounts.pending, 'plural.pendingLabel')],
+              ['approved', t('status.approved')],
+              ['inProgress', t('status.inProgress')],
+              ['needsDecision', t('status.needsDecision')],
+              ['disputed', t('status.disputed')],
+              ['outOfScope', t('status.outOfScope')],
             ] as const;
             return (
             <div className="mt-4">
@@ -667,7 +700,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       onClick={() => setStateFilter(f => (f === k ? null : k))}
                       className={`text-left transition-opacity ${stateFilter && stateFilter !== k ? 'opacity-35 hover:opacity-70' : 'hover:opacity-75'}`}
                     >
-                      <span className={`block text-[28px] font-semibold leading-none ${STATE_NUM_COLORS[k]}`}>
+                      <span className={`block text-[28px] font-semibold leading-none ${STATUS_COLORS[k].num}`}>
                         {String(stateCounts[k]).padStart(2, '0')}
                       </span>
                       <span className={`mt-1 block text-xs capitalize ${stateFilter === k ? 'font-medium text-ink' : 'text-ink-muted'}`}>
@@ -689,13 +722,13 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               {/* Thin proportion bar stays below the numbers — it is context,
                   not the primary read of project state */}
               <div className="mt-3 flex h-1 gap-[2px] overflow-hidden rounded-full bg-white" role="img"
-                aria-label={`${stateCounts.approved} ${t('dashboard.approved')}, ${stateCounts.review} ${t('dashboard.needReview')}, ${stateCounts.added} ${t('dashboard.new')}, ${stateCounts.pending} ${tp(stateCounts.pending, 'plural.pendingLabel')}`}>
+                aria-label={stats.map(([k, label]) => `${stateCounts[k]} ${label}`).join(', ')}>
                 {stats.map(([k, label]) =>
                   stateCounts[k] > 0 && (
                     <div
                       key={k}
                       title={`${stateCounts[k]} ${label}`}
-                      className={STATE_BAR_COLORS[k]}
+                      className={STATUS_COLORS[k].bar}
                       style={{ width: `${(stateCounts[k] / state.currentState.length) * 100}%` }}
                     />
                   ),
@@ -774,15 +807,23 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 </div>
               ) : (
                 <div className="-mx-3 flex snap-x snap-mandatory scroll-px-3 gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:scroll-px-0 sm:px-0 sm:pb-0">
-                  {(stateFilter ? state.currentState.filter(f => stateBucket(f.current_state?.toLowerCase()) === stateFilter) : state.currentState).slice().sort((a: any, b: any) => {
+                  {(stateFilter ? state.currentState.filter(f => factStatus.get(f.id) === stateFilter) : state.currentState).slice().sort((a: any, b: any) => {
                     const priority: Record<string, number> = { removed: 0, modify: 1, modified: 1, added: 2, approved: 3 };
                     const pa = priority[a.current_state?.toLowerCase()] ?? 4;
                     const pb = priority[b.current_state?.toLowerCase()] ?? 4;
                     if (pa !== pb) return pa - pb;
                     return (a.subject || '').toLowerCase().localeCompare((b.subject || '').toLowerCase());
                   }).map((fact: any) => {
-                    const stateLabel = `${fact.current_value?.display_state || getStateLabel(fact.current_state?.toLowerCase()) || capitalize(fact.current_state)}${fact.current_value?.scope ? ` · ${fact.current_value.scope}` : ''}`;
-                    const isApproved = fact.current_state?.toLowerCase() === 'approved';
+                    const status = factStatus.get(fact.id) || 'needsDecision';
+                    const event = displayEvent(fact);
+                    // Under a "Disputed" pill the line still shows the settled state
+                    // the conflict is disputing (e.g. "Approved → Removal requested").
+                    const baseStatus = status === 'disputed'
+                      ? displayStatus(fact, false, prevSettledFor(fact))
+                      : status;
+                    const baseStatusLabel = `${t(`status.${baseStatus}`)}${fact.current_value?.scope ? ` · ${fact.current_value.scope}` : ''}`;
+                    const statusLabel = `${t(`status.${status}`)}${fact.current_value?.scope ? ` · ${fact.current_value.scope}` : ''}`;
+                    const isApproved = status === 'approved';
                     const factHistory = state.history
                       .filter((h: any) => h.fact_id === fact.id && h.new_state && h.previous_state?.toLowerCase() !== h.new_state?.toLowerCase() && h.reason !== 'test')
                       .sort((a: any, b: any) => new Date(b.decided_at || b.created_at).getTime() - new Date(a.decided_at || a.created_at).getTime());
@@ -807,11 +848,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                         <p className="text-[15px] font-semibold leading-snug text-ink">{capitalize(fact.subject)}</p>
                         {relatedConflict ? (
                           <>
-                            <span className="relative mt-1.5 inline-flex w-fit items-center rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-                              {t('dashboard.needsDecision')}
+                            <span className="relative mt-1.5 inline-flex w-fit items-center rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-medium text-rose-800">
+                              {t('status.disputed')}
                             </span>
                             <p className="mt-1 text-[13px] leading-[1.55] text-ink-muted">
-                              {stateLabel}
+                              {baseStatusLabel}
                               {relatedConflict.proposedEvent?.action && (
                                 <span className="text-ink">
                                   {' → '}
@@ -821,9 +862,12 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             </p>
                           </>
                         ) : (
-                          <p className="mt-1 text-[13px] leading-[1.55] text-ink-secondary">
+                          <p className={`mt-1 text-[13px] leading-[1.55] ${STATUS_COLORS[status].text}`}>
                             {isApproved && <RiCheckLine size={12} className="mr-0.5 inline -mt-0.5 text-emerald-600" />}
-                            {stateLabel}
+                            {statusLabel}
+                            {event && status !== 'disputed' && (
+                              <span className="text-ink-faint"> · {t(`event.${event}`)}</span>
+                            )}
                           </p>
                         )}
                         {(lastActor || lastSource || fact.last_updated_at) && (
