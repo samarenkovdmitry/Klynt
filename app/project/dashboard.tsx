@@ -109,6 +109,17 @@ const STATE_BAR_COLORS: Record<string, string> = {
   pending: 'bg-rose-400',
 };
 
+const STATE_NUM_COLORS: Record<string, string> = {
+  approved: 'text-emerald-500',
+  review: 'text-amber-500',
+  added: 'text-blue-500',
+  pending: 'text-rose-500',
+};
+
+// One bucketing rule for the counts, the bar, the stat row and the grid filter.
+const stateBucket = (s?: string) =>
+  s === 'approved' ? 'approved' : s === 'added' ? 'added' : s === 'removed' ? 'pending' : 'review';
+
 const ACTION_ICONS: Record<string, ReactNode> = {
   added: <RiAddLine size={14} />,
   approved: <RiCheckLine size={14} />,
@@ -231,6 +242,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const [resolving, setResolving] = useState<string | null>(null);
 
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
+  const [stateFilter, setStateFilter] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [selectedFactId, setSelectedFactId] = useState<string | null>(null);
@@ -336,6 +348,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
     try { localStorage.setItem('klynt:lastProject', projectId); } catch {}
+    setStateFilter(null);
     const target = projects.find(p => p.id === projectId);
     window.history.replaceState(null, '', target?.slug ? `/project/${target.slug}` : `/project?projectId=${projectId}`);
     fetchData(period, projectId);
@@ -494,13 +507,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     .sort((a: any, b: any) => new Date(b.last_updated_at).getTime() - new Date(a.last_updated_at).getTime())[0]?.last_updated_at;
 
   const stateCounts = { approved: 0, review: 0, pending: 0, added: 0 };
-  for (const f of state.currentState) {
-    const s = f.current_state?.toLowerCase();
-    if (s === 'approved') stateCounts.approved++;
-    else if (s === 'added') stateCounts.added++;
-    else if (s === 'removed') stateCounts.pending++;
-    else stateCounts.review++;
-  }
+  for (const f of state.currentState) stateCounts[stateBucket(f.current_state?.toLowerCase()) as keyof typeof stateCounts]++;
 
   const baseline = selectedProjectId ? visitBaseline[selectedProjectId] : undefined;
   const newSinceVisit = baseline
@@ -622,13 +629,68 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           {selectedProject?.description && (
             <p className="mt-1 text-[15px] text-ink-secondary">{selectedProject.description}</p>
           )}
-          {state.currentState.length > 0 && (
-            <div className="mt-3">
-              {/* Segmented state bar — settled on the left like a progress
-                  bar, undecided states keep the attention colours on the right */}
-              <div className="mt-2.5 flex h-1.5 gap-[2px] overflow-hidden rounded-full bg-white" role="img"
+          {state.currentState.length > 0 && (() => {
+            const stats = [
+              ['approved', t('dashboard.approved')],
+              ['review', t('dashboard.needReview')],
+              ['added', t('dashboard.new')],
+              ['pending', tp(stateCounts.pending, 'plural.pendingLabel')],
+            ] as const;
+            return (
+            <div className="mt-4">
+              <div className="flex items-baseline justify-between gap-4">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-ink-faint">
+                  {t('dashboard.overview')} · {state.currentState.length} {tp(state.currentState.length, 'plural.area')}
+                  {changesSinceVisit > 0 && (
+                    <span className="ml-1.5 normal-case tracking-normal text-[var(--accent-link)]">
+                      · {changesSinceVisit} {t('dashboard.sinceLastVisit')}
+                    </span>
+                  )}
+                </p>
+                {lastUpdated && (
+                  <span
+                    className="flex-shrink-0 text-xs text-ink-faint"
+                    title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  >
+                    {t('dashboard.updated')} {formatRelative(lastUpdated)}
+                  </span>
+                )}
+              </div>
+              <div className="mt-3 flex flex-wrap items-end gap-x-7 gap-y-2" role="group"
+                aria-label={t('dashboard.filterByState')}>
+                {stats.map(([k, label]) =>
+                  stateCounts[k] > 0 && (
+                    <button
+                      key={k}
+                      type="button"
+                      aria-pressed={stateFilter === k}
+                      onClick={() => setStateFilter(f => (f === k ? null : k))}
+                      className={`text-left transition-opacity ${stateFilter && stateFilter !== k ? 'opacity-35 hover:opacity-70' : 'hover:opacity-75'}`}
+                    >
+                      <span className={`block text-[28px] font-semibold leading-none ${STATE_NUM_COLORS[k]}`}>
+                        {String(stateCounts[k]).padStart(2, '0')}
+                      </span>
+                      <span className={`mt-1 block text-xs capitalize ${stateFilter === k ? 'font-medium text-ink' : 'text-ink-muted'}`}>
+                        {label}
+                      </span>
+                    </button>
+                  ),
+                )}
+                {stateFilter && (
+                  <button
+                    type="button"
+                    onClick={() => setStateFilter(null)}
+                    className="pb-0.5 text-xs font-medium text-[var(--accent-link)] hover:underline"
+                  >
+                    {t('dashboard.showAll')}
+                  </button>
+                )}
+              </div>
+              {/* Thin proportion bar stays below the numbers — it is context,
+                  not the primary read of project state */}
+              <div className="mt-3 flex h-1 gap-[2px] overflow-hidden rounded-full bg-white" role="img"
                 aria-label={`${stateCounts.approved} ${t('dashboard.approved')}, ${stateCounts.review} ${t('dashboard.needReview')}, ${stateCounts.added} ${t('dashboard.new')}, ${stateCounts.pending} ${tp(stateCounts.pending, 'plural.pendingLabel')}`}>
-                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', tp(stateCounts.pending, 'plural.pendingLabel')]] as const).map(([k, label]) =>
+                {stats.map(([k, label]) =>
                   stateCounts[k] > 0 && (
                     <div
                       key={k}
@@ -639,34 +701,9 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   ),
                 )}
               </div>
-              <p className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[13px] text-ink-muted">
-                <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                <span>{state.currentState.length} {tp(state.currentState.length, 'plural.area')}</span>
-                {([['approved', t('dashboard.approved')], ['review', t('dashboard.needReview')], ['added', t('dashboard.new')], ['pending', tp(stateCounts.pending, 'plural.pendingLabel')]] as const).map(([k, label]) =>
-                  stateCounts[k] > 0 && (
-                    <span key={k} className="inline-flex items-center gap-1">
-                      <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
-                      {stateCounts[k]} {label}
-                    </span>
-                  ),
-                )}
-                {changesSinceVisit > 0 && (
-                  <span className="font-medium text-[var(--accent-link)]">
-                    {' '}· {changesSinceVisit} {t('dashboard.sinceLastVisit')}
-                  </span>
-                )}
-                </span>
-                {lastUpdated && (
-                  <span
-                    className="text-xs text-ink-faint"
-                    title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                  >
-                    {t('dashboard.updated')} {formatRelative(lastUpdated)}
-                  </span>
-                )}
-              </p>
             </div>
-          )}
+          );
+          })()}
         </div>
 
 
@@ -737,7 +774,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 </div>
               ) : (
                 <div className="-mx-3 flex snap-x snap-mandatory scroll-px-3 gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:scroll-px-0 sm:px-0 sm:pb-0">
-                  {state.currentState.slice().sort((a: any, b: any) => {
+                  {(stateFilter ? state.currentState.filter(f => stateBucket(f.current_state?.toLowerCase()) === stateFilter) : state.currentState).slice().sort((a: any, b: any) => {
                     const priority: Record<string, number> = { removed: 0, modify: 1, modified: 1, added: 2, approved: 3 };
                     const pa = priority[a.current_state?.toLowerCase()] ?? 4;
                     const pb = priority[b.current_state?.toLowerCase()] ?? 4;
