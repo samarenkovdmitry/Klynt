@@ -1080,15 +1080,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   )}
                 </div>
 
-                {process.env.NEXT_PUBLIC_IMPACT_ANALYSIS_ENABLED === 'true' && (
-                  <DecisionsToRevisit
-                    key={`${state.projectId}:${selectedFact.id}`}
-                    projectId={state.projectId}
-                    factId={selectedFact.id}
-                    onOpenFact={setSelectedFactId}
-                  />
-                )}
-
                 <div>
                   <p className="mb-3 text-sm font-medium text-ink">{t('dashboard.whyCurrentState')}</p>
                   <div className="relative ml-1 space-y-4 border-l border-line pl-4">
@@ -1132,6 +1123,15 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     ))}
                   </div>
                 </div>
+
+                {process.env.NEXT_PUBLIC_IMPACT_ANALYSIS_ENABLED === 'true' && (
+                  <DecisionsToRevisit
+                    key={`${state.projectId}:${selectedFact.id}`}
+                    projectId={state.projectId}
+                    factId={selectedFact.id}
+                    onOpenFact={setSelectedFactId}
+                  />
+                )}
               </div>
             </>
           )}

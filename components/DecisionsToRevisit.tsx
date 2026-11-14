@@ -117,32 +117,38 @@ export default function DecisionsToRevisit({
   const reviewed = data?.recommendations.filter(r => r.review) || [];
   if (data && !active.length && !reviewed.length && !data.signals.length && !busy) return null;
   const open = expandedByUser || active.length > 0 || coverage !== null;
+  if (!open) {
+    return error ? (
+      <div role="alert" className="text-xs text-red-700">
+        {error}
+        <button type="button" onClick={() => setReload(n => n + 1)} className="ml-2 underline">{C.retry}</button>
+      </div>
+    ) : data ? (
+      <button type="button" onClick={() => setExpandedByUser(true)}
+        className="text-left text-xs font-medium text-[var(--accent-link)] hover:underline">
+        {C.checkDecisions} →
+      </button>
+    ) : null;
+  }
+
   return (
     <section aria-labelledby="impact-heading" className="rounded-xl border border-amber-200/70 bg-amber-50/30 p-4">
-      <div className="flex items-center justify-between gap-2">
-        <h3 id="impact-heading" className="text-sm font-semibold text-ink">
-          {C.title}{active.length > 0 && <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">{active.length}</span>}
-        </h3>
-        {data && !open && (
-          <button type="button" onClick={() => setExpandedByUser(true)}
-            className="flex-shrink-0 rounded-lg border border-line px-2.5 py-1 text-xs font-medium text-ink-secondary hover:bg-fill-soft">
-            {C.checkDecisions}
-          </button>
-        )}
-      </div>
-      {open && <p className="mt-1 text-xs leading-relaxed text-ink-muted">{C.intro}</p>}
-      {open && !data && !error && <p className="mt-3 text-xs text-ink-muted">{C.loading}</p>}
+      <h3 id="impact-heading" className="text-sm font-semibold text-ink">
+        {C.title}{active.length > 0 && <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">{active.length}</span>}
+      </h3>
+      <p className="mt-1 text-xs leading-relaxed text-ink-muted">{C.intro}</p>
+      {!data && !error && <p className="mt-3 text-xs text-ink-muted">{C.loading}</p>}
       {error && <div role="alert" className="mt-3 text-xs text-red-700">
         {error}
         <button type="button" onClick={() => setReload(n => n + 1)} className="ml-2 underline">{C.retry}</button>
       </div>}
-      {open && coverage && <div role="status" className="mt-3 space-y-1 text-xs text-ink-muted">
+      {coverage && <div role="status" className="mt-3 space-y-1 text-xs text-ink-muted">
         <p>{coverage.checked} {C.coverage}</p>
         {coverage.checked < coverage.eligible && <p>{C.more}</p>}
         {!active.length && <p>{C.noResult}</p>}
       </div>}
       <div className="mt-3 space-y-3">
-        {open && active.map(r => <article key={r.id} className="rounded-lg border border-line bg-white p-3">
+        {active.map(r => <article key={r.id} className="rounded-lg border border-line bg-white p-3">
           <button type="button" onClick={() => onOpenFact(r.targetFactId)} title={C.target}
             className="text-left text-sm font-semibold text-[var(--accent-link)] hover:underline">{r.targetSubject} ↗</button>
           <p className="mt-3 text-[11px] font-medium text-ink-muted">{C.previous}</p>
@@ -173,13 +179,13 @@ export default function DecisionsToRevisit({
           </div>
         </article>)}
       </div>
-      {open && reviewed.length > 0 && <details className="mt-3 text-xs text-ink-muted">
+      {reviewed.length > 0 && <details className="mt-3 text-xs text-ink-muted">
         <summary className="cursor-pointer">{C.reviewed} · {reviewed.length}</summary>
         <ul className="mt-2 space-y-2">
           {reviewed.map(r => <li key={r.id}>{r.targetSubject} — {r.review === 'reconsider' ? C.marked : C.dismissed}</li>)}
         </ul>
       </details>}
-      {open && data && (
+      {data && (
         <div className="mt-3 space-y-2 border-t border-line-soft pt-3">
           {data.signals.length ? <>
             <label htmlFor="impact-event" className="block text-xs font-medium text-ink-secondary">{C.signal}</label>
@@ -198,7 +204,7 @@ export default function DecisionsToRevisit({
           </> : <p className="text-xs text-ink-muted">{C.noSignal}</p>}
         </div>
       )}
-      {open && <p className="mt-3 text-[11px] leading-relaxed text-ink-faint">{C.advisory}</p>}
+      <p className="mt-3 text-[11px] leading-relaxed text-ink-faint">{C.advisory}</p>
     </section>
   );
 }
