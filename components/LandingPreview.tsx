@@ -111,6 +111,13 @@ function LatestEvent({
 }
 
 // Mirrors the real dashboard's state-bar palette (done → work left).
+const STATE_NUM_COLORS: Record<string, string> = {
+  approved: 'text-emerald-500',
+  review: 'text-amber-500',
+  added: 'text-blue-500',
+  pending: 'text-rose-500',
+};
+
 const STATE_BAR_COLORS: Record<string, string> = {
   approved: 'bg-emerald-400',
   review: 'bg-amber-400',
@@ -204,23 +211,25 @@ export default function LandingPreview() {
             </div>
             <p className="mt-1 text-[15px] text-ink-secondary">{t('preview.subtitle')}</p>
             <div className="mt-3">
-              <div className="flex h-1.5 gap-[2px] overflow-hidden rounded-full bg-white">
+              <div className="flex items-baseline justify-between gap-4">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-ink-faint">
+                  {t('dashboard.overview')} · 8 {tp(8, 'plural.area')}
+                </p>
+                <span className="flex-shrink-0 text-xs text-ink-faint">{t('preview.updated')}</span>
+              </div>
+              <div className="mt-2.5 flex items-end gap-6">
+                {([['approved', 4, t('dashboard.approved')], ['review', 2, t('dashboard.needReview')], ['added', 1, t('dashboard.new')], ['pending', 1, tp(1, 'plural.pendingLabel')]] as const).map(([k, n, label]) => (
+                  <span key={k} className="text-left">
+                    <span className={`block text-[24px] font-semibold leading-none ${STATE_NUM_COLORS[k]}`}>{String(n).padStart(2, '0')}</span>
+                    <span className="mt-1 block text-xs capitalize text-ink-muted">{label}</span>
+                  </span>
+                ))}
+              </div>
+              <div className="mt-3 flex h-1 gap-[2px] overflow-hidden rounded-full bg-white">
                 {([['approved', 4], ['review', 2], ['added', 1], ['pending', 1]] as const).map(([k, n]) => (
                   <div key={k} className={STATE_BAR_COLORS[k]} style={{ width: `${(n / 8) * 100}%` }} />
                 ))}
               </div>
-              <p className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[13px] text-ink-muted">
-                <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                  <span>8 {tp(8, 'plural.area')}</span>
-                  {([['approved', 4, t('dashboard.approved')], ['review', 2, t('dashboard.needReview')], ['added', 1, t('dashboard.new')], ['pending', 1, tp(1, 'plural.pendingLabel')]] as const).map(([k, n, label]) => (
-                    <span key={k} className="inline-flex items-center gap-1">
-                      <span className={`h-1.5 w-1.5 rounded-full ${STATE_BAR_COLORS[k]}`} />
-                      {n} {label}
-                    </span>
-                  ))}
-                </span>
-                <span className="text-xs text-ink-faint">{t('preview.updated')}</span>
-              </p>
             </div>
           </div>
 
