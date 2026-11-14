@@ -12,7 +12,7 @@ const copy = {
     noSignal: 'No eligible changes found for this area yet.',
     noResult: 'No grounded recommendations found in the checked decisions. This is not a guarantee that nothing is affected.',
     coverage: 'decisions checked', more: 'Only a subset was checked. Other decisions may also be affected.',
-    target: 'Open area', previous: 'Earlier decision', why: 'Why revisit', sources: 'Evidence and connection',
+    target: 'Open area', previous: 'Earlier decision', newSignal: 'New signal', why: 'Why revisit', sources: 'Evidence and connection',
     event: 'New signal', connection: 'Dependency', reconsider: 'Reconsider', unrelated: 'Not related',
     marked: 'Marked for review', dismissed: 'Dismissed for this change', saving: 'Saving…',
     advisory: 'Suggestions only. Existing approvals stay unchanged.',
@@ -29,7 +29,7 @@ const copy = {
     noSignal: 'Для этой области пока нет подходящих изменений.',
     noResult: 'В проверенных решениях не найдено рекомендаций с достаточными основаниями. Это не гарантирует отсутствие влияния.',
     coverage: 'решений проверено', more: 'Проверена только часть решений. Изменение может затрагивать и другие.',
-    target: 'Открыть область', previous: 'Прежнее решение', why: 'Почему стоит перепроверить', sources: 'Основания и связь',
+    target: 'Открыть область', previous: 'Прежнее решение', newSignal: 'Новое событие', why: 'Почему стоит перепроверить', sources: 'Основания и связь',
     event: 'Новое событие', connection: 'Зависимость', reconsider: 'Пересмотреть', unrelated: 'Не связано',
     marked: 'Отмечено для проверки', dismissed: 'Отклонено для этого изменения', saving: 'Сохраняем…',
     advisory: 'Это рекомендации. Действующие согласования не меняются.',
@@ -45,6 +45,10 @@ const copy = {
 type Signal = ImpactEvidence & { candidateId: string };
 type Data = { signals: Signal[]; recommendations: ImpactRecord[] };
 
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString(getLocale() === 'ru' ? 'ru-RU' : 'en-US',
+    { day: 'numeric', month: 'short', year: 'numeric' });
+
 function Evidence({ evidence, quote }: { evidence: ImpactEvidence; quote: string }) {
   return (
     <div className="rounded-lg border border-line-soft bg-white px-3 py-2">
@@ -56,7 +60,7 @@ function Evidence({ evidence, quote }: { evidence: ImpactEvidence; quote: string
           </a>
         ) : <span>{evidence.source}</span>}
         {evidence.author && <span>{evidence.author}</span>}
-        <time dateTime={evidence.timestamp}>{new Date(evidence.timestamp).toLocaleDateString(getLocale() === 'ru' ? 'ru-RU' : 'en-US')}</time>
+        <time dateTime={evidence.timestamp}>{fmtDate(evidence.timestamp)}</time>
       </div>
     </div>
   );
@@ -115,25 +119,6 @@ export default function DecisionsToRevisit({
       </h3>
       <p className="mt-1 text-xs leading-relaxed text-ink-muted">{C.intro}</p>
       {!data && !error && <p className="mt-3 text-xs text-ink-muted">{C.loading}</p>}
-      {data && (
-        <div className="mt-3 space-y-2">
-          {data.signals.length ? <>
-            <label htmlFor="impact-event" className="block text-xs font-medium text-ink-secondary">{C.signal}</label>
-            <select id="impact-event" value={eventId} disabled={!!busy}
-              onChange={e => { setEventId(e.target.value); setCoverage(null); }}
-              className="w-full rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink">
-              {data.signals.map(s => <option key={s.candidateId} value={s.candidateId}>
-                {new Date(s.timestamp).toLocaleDateString()} · {s.content.slice(0, 100)}
-              </option>)}
-            </select>
-            <button type="button" disabled={!!busy || !eventId}
-              onClick={() => submit('POST', { eventId }, 'analyze')}
-              className="rounded-lg border border-line bg-white px-3 py-2 text-xs font-medium text-ink-secondary hover:bg-fill-soft disabled:opacity-50">
-              {busy === 'analyze' ? C.checking : C.check}
-            </button>
-          </> : <p className="text-xs text-ink-muted">{C.noSignal}</p>}
-        </div>
-      )}
       {error && <div role="alert" className="mt-3 text-xs text-red-700">
         {error}
         <button type="button" onClick={() => setReload(n => n + 1)} className="ml-2 underline">{C.retry}</button>
@@ -149,6 +134,8 @@ export default function DecisionsToRevisit({
             className="text-left text-sm font-semibold text-[var(--accent-link)] hover:underline">{r.targetSubject} ↗</button>
           <p className="mt-3 text-[11px] font-medium text-ink-muted">{C.previous}</p>
           <blockquote className="mt-1 text-sm leading-relaxed text-ink-secondary">{r.assumptionQuote}</blockquote>
+          <p className="mt-3 text-[11px] font-medium text-ink-muted">{C.newSignal}</p>
+          <blockquote className="mt-1 text-sm leading-relaxed text-ink-secondary">{r.eventQuote}</blockquote>
           <p className="mt-3 text-[11px] font-medium text-ink-muted">{C.why}</p>
           <p className="mt-1 text-xs leading-relaxed text-ink-secondary">{r.reason}</p>
           <details className="mt-3 text-xs">
@@ -179,6 +166,25 @@ export default function DecisionsToRevisit({
           {reviewed.map(r => <li key={r.id}>{r.targetSubject} — {r.review === 'reconsider' ? C.marked : C.dismissed}</li>)}
         </ul>
       </details>}
+      {data && (
+        <div className="mt-3 space-y-2 border-t border-line-soft pt-3">
+          {data.signals.length ? <>
+            <label htmlFor="impact-event" className="block text-xs font-medium text-ink-secondary">{C.signal}</label>
+            <select id="impact-event" value={eventId} disabled={!!busy}
+              onChange={e => { setEventId(e.target.value); setCoverage(null); }}
+              className="w-full rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink">
+              {data.signals.map(s => <option key={s.candidateId} value={s.candidateId}>
+                {fmtDate(s.timestamp)} · {s.content.slice(0, 100)}
+              </option>)}
+            </select>
+            <button type="button" disabled={!!busy || !eventId}
+              onClick={() => submit('POST', { eventId }, 'analyze')}
+              className="rounded-lg border border-line bg-white px-3 py-2 text-xs font-medium text-ink-secondary hover:bg-fill-soft disabled:opacity-50">
+              {busy === 'analyze' ? C.checking : C.check}
+            </button>
+          </> : <p className="text-xs text-ink-muted">{C.noSignal}</p>}
+        </div>
+      )}
       <p className="mt-3 text-[11px] leading-relaxed text-ink-faint">{C.advisory}</p>
     </section>
   );
