@@ -1,16 +1,15 @@
 import {
-  RiPlugLine,
   RiSettings3Line,
-  RiMoreLine,
-  RiAddLine,
-  RiFolderLine,
+  RiArrowDownSLine,
+  RiArrowRightLine,
   RiCheckLine,
   RiEditLine,
+  RiInformationLine,
 } from '@remixicon/react';
 
 import { FigmaIcon, SlackIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import Avatar from '@/components/Avatar';
-import { t, tp, getLocale } from '@/lib/i18n';
+import { t, getLocale } from '@/lib/i18n';
 import { logoSrc } from '@/lib/market';
 
 type SourceIcon = 'figma' | 'slack' | 'telegram';
@@ -40,38 +39,51 @@ const SOURCE_NAME: Record<SourceIcon, string> = { figma: 'Figma', slack: 'Slack'
 function FactCard({
   subject,
   status,
+  statusKey,
+  event,
   ago,
   approved,
   actor,
   source,
-  dimmed,
   disputed,
 }: {
   subject: string;
-  status: string;
+  status: React.ReactNode;
+  statusKey?: string;
+  event?: string;
   ago: string;
   approved?: boolean;
   actor?: string;
   source?: SourceIcon;
-  dimmed?: boolean;
   disputed?: boolean;
 }) {
   return (
-    <div className={`flex flex-col rounded-xl border border-line bg-white px-4 py-3 ${dimmed ? 'opacity-75' : ''}`}>
+    <div className="flex flex-col rounded-xl border border-line bg-white px-4 py-3">
       <p className="text-[15px] font-semibold leading-snug text-ink">{subject}</p>
       {disputed && (
         <span className="mt-1.5 inline-flex w-fit whitespace-nowrap rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-medium text-rose-800">
           {t('status.disputed')}
         </span>
       )}
-      <p className="mt-1 text-[13px] leading-snug text-ink-secondary">
-        {approved && <RiCheckLine size={12} className="mr-0.5 inline -mt-0.5 text-emerald-600" />}
-        {status}
-      </p>
+      {disputed ? (
+        <p className="mt-1 overflow-hidden whitespace-nowrap text-[13px] leading-snug text-ink-secondary">{status}</p>
+      ) : (
+        <p className="mt-1.5 flex flex-wrap items-baseline gap-x-2">
+          <span className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${statusKey ? STATUS_COLORS[statusKey].pill : 'bg-fill text-ink-secondary'}`}>
+            {approved && <RiCheckLine size={11} className="mr-0.5 -mt-px text-emerald-600" />}
+            {status}
+          </span>
+          {event && <span className="text-[11px] text-ink-faint">{event}</span>}
+        </p>
+      )}
       <div className="mt-auto flex items-center gap-1.5 pt-2.5 text-[11px] text-ink-faint">
         <span className="flex min-w-0 items-center gap-1">
           {source && <SourceGlyph source={source} size={12} />}
-          <span className="truncate">{[source ? SOURCE_NAME[source] : null, actor].filter(Boolean).join(' · ')}</span>
+          <span className="truncate">
+            {source && SOURCE_NAME[source]}
+            {source && actor && <span className="mx-1.5" aria-hidden="true">·</span>}
+            {actor}
+          </span>
         </span>
         <span className="ml-auto flex-shrink-0">{ago}</span>
       </div>
@@ -111,182 +123,138 @@ function LatestEvent({
 }
 
 // Mirrors the dashboard's status palette (decision states, not events).
-const STATUS_COLORS: Record<string, { num: string; bar: string }> = {
-  approved: { num: 'text-emerald-500', bar: 'bg-emerald-400' },
-  inProgress: { num: 'text-blue-500', bar: 'bg-blue-400' },
-  needsDecision: { num: 'text-amber-500', bar: 'bg-amber-400' },
-  disputed: { num: 'text-rose-500', bar: 'bg-rose-400' },
-  outOfScope: { num: 'text-ink-faint', bar: 'bg-line-strong' },
+const STATUS_COLORS: Record<string, { bar: string; pill: string }> = {
+  approved: { bar: 'bg-emerald-400', pill: 'bg-emerald-100 text-emerald-800' },
+  inProgress: { bar: 'bg-blue-400', pill: 'bg-blue-100 text-blue-800' },
+  needsDecision: { bar: 'bg-amber-400', pill: 'bg-amber-100 text-amber-800' },
+  disputed: { bar: 'bg-rose-400', pill: 'bg-rose-100 text-rose-800' },
+  outOfScope: { bar: 'bg-line-strong', pill: 'bg-fill text-ink-secondary' },
 };
 
 export default function LandingPreview() {
   const msgSource: SourceIcon = getLocale() === 'ru' ? 'telegram' : 'slack';
   return (
-    <div className="pointer-events-none select-none overflow-hidden rounded-xl border border-line bg-white shadow-[0_1px_2px_rgba(27,26,23,0.04),0_12px_32px_-8px_rgba(27,26,23,0.12)]">
-      <div className="flex h-[640px] bg-app-bg">
-        <aside className="flex h-full w-[200px] flex-shrink-0 flex-col self-start overflow-y-auto bg-white px-4 py-8 shadow-[1px_0_0_0_rgba(0,0,0,0.03),2px_0_8px_-4px_rgba(0,0,0,0.03)]">
-          <div className="mb-8 px-2">
-            <img
-              src={logoSrc()}
-              alt="Klynt"
-              className="h-8 w-auto"
-            />
-          </div>
-
-          <nav className="flex-1 space-y-1">
-            <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">{t('sidebar.projects')}</p>
-            <div className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary">
-              <RiFolderLine size={15} className="flex-shrink-0 text-ink-faint" />
-              <span className="truncate">{t('preview.p1')}</span>
-            </div>
-            <div className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary">
-              <RiFolderLine size={15} className="flex-shrink-0 text-ink-faint" />
-              <span className="truncate">{t('preview.p2')}</span>
-            </div>
-            <div className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary">
-              <RiFolderLine size={15} className="flex-shrink-0 text-ink-faint" />
-              <span className="truncate">{t('preview.p3')}</span>
-              <span className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
-            </div>
-            <div className="relative flex w-full items-center gap-2 rounded-lg bg-[var(--accent-tint)] px-3 py-2 text-left text-sm font-medium text-[var(--accent-link)]">
-              <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-[var(--accent)]" />
-              <RiFolderLine size={15} className="flex-shrink-0 text-[var(--accent-link)]" />
-              <span className="truncate">{t('preview.p4')}</span>
-            </div>
-            <div className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-2 text-xs font-medium text-ink-muted">
-              <RiAddLine size={14} />
-              {t('sidebar.newProject')}
-            </div>
-
-            <div className="my-4 h-px bg-fill"></div>
-
-            <div className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary">
-              <RiPlugLine size={16} className="text-ink-faint" />
-              {t('sidebar.integrations')}
-            </div>
-            <div className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink-secondary">
-              <RiSettings3Line size={16} className="text-ink-faint" />
-              {t('sidebar.settings')}
-            </div>
-          </nav>
-
-          <div className="mt-auto flex items-center gap-2.5 rounded-xl bg-fill-soft px-3 py-2.5">
-            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
-              <Avatar name="demo@klynt.one" email="demo@klynt.one" className="text-[10px]" />
+    <div className="pointer-events-none select-none overflow-hidden rounded-xl border border-line bg-white">
+      <div className="flex h-[640px] flex-col bg-app-bg">
+        <header className="flex h-12 w-full flex-shrink-0 items-center gap-5 border-b border-line bg-white px-6">
+          <img src={logoSrc()} alt="Klynt" className="h-5 w-auto" />
+          <span className="flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-1 text-xs text-ink-secondary">
+            {t('preview.p4')}
+            <RiArrowDownSLine size={13} className="text-ink-faint" />
+          </span>
+          <div className="ml-auto flex items-center gap-5">
+            <span className="flex items-center gap-2.5">
+              <FigmaIcon size={14} />
+              {msgSource === 'telegram' ? <TelegramIcon size={14} /> : <SlackIcon size={14} />}
             </span>
-            <p className="min-w-0 flex-1 truncate text-xs text-ink-secondary">demo@klynt.one</p>
-            <RiMoreLine size={16} className="flex-shrink-0 text-ink-faint" />
+            <span className="flex items-center gap-2 text-sm text-ink-secondary">
+              <RiSettings3Line size={15} className="text-ink-faint" />
+              <span className="hidden lg:inline">{t('nav.projectSettings')}</span>
+            </span>
+            <span className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full">
+              <Avatar name="demo@klynt.one" email="demo@klynt.one" className="text-[9px]" />
+            </span>
           </div>
-        </aside>
+        </header>
 
-        <main className="relative w-full flex-1 overflow-hidden px-5 py-5">
-          <div className="mb-5">
-            <div className="flex items-center justify-between gap-3">
-              <h1 className="text-2xl font-bold tracking-tight text-ink">{t('preview.p4')}</h1>
-              {getLocale() === 'ru' ? (
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
-                    <FigmaIcon size={12} /> Figma
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
-                    <TelegramIcon size={12} /> Telegram
-                  </span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
-                    <FigmaIcon size={12} /> Figma
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-xs text-ink-faint">
-                    <SlackIcon size={12} /> Slack
-                  </span>
-                </div>
-              )}
-            </div>
-            <p className="mt-1 text-[15px] text-ink-secondary">{t('preview.subtitle')}</p>
-            <div className="mt-3">
-              <div className="flex items-baseline justify-between gap-4">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-ink-faint">
-                  {t('dashboard.overview')} · 6 {tp(6, 'plural.area')}
-                </p>
-                <span className="flex-shrink-0 text-xs text-ink-faint">{t('preview.updated')}</span>
-              </div>
-              <div className="mt-2.5 flex items-end gap-6">
-                {([['approved', 1], ['inProgress', 1], ['needsDecision', 2], ['disputed', 1], ['outOfScope', 1]] as const).map(([k, n]) => (
-                  <span key={k} className="text-left">
-                    <span className={`block text-[24px] font-semibold leading-none ${STATUS_COLORS[k].num}`}>{String(n).padStart(2, '0')}</span>
-                    <span className="mt-1 block text-xs capitalize text-ink-muted">{t(`status.${k}`)}</span>
-                  </span>
-                ))}
-              </div>
-              <div className="mt-3 flex h-1 gap-[2px] overflow-hidden rounded-full bg-white">
-                {([['approved', 1], ['inProgress', 1], ['needsDecision', 2], ['disputed', 1], ['outOfScope', 1]] as const).map(([k, n]) => (
-                  <div key={k} className={STATUS_COLORS[k].bar} style={{ width: `${(n / 6) * 100}%` }} />
-                ))}
-              </div>
-            </div>
-          </div>
-
+        <main className="relative w-full flex-1 overflow-hidden px-7 py-6">
           <div className="grid grid-cols-12 gap-8">
             <div className="order-1 col-span-8 flex flex-col gap-8">
+              <div>
+            <div className="flex items-center justify-between gap-3">
+              <h1 className="text-2xl font-bold tracking-tight text-ink">
+                {t('preview.p4')}
+                <sup className="relative -top-1.5 ml-2.5 text-[11px] font-medium tracking-normal text-ink-faint">Sample</sup>
+              </h1>
+            </div>
+            <p className="mt-1 text-[15px] text-ink-secondary">{t('preview.subtitle')}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-0.5">
+              <span className="inline-flex items-center rounded-full bg-fill px-2.5 py-1 text-xs font-medium text-ink">{t('dashboard.allAreas')} 16</span>
+              {([['approved', 7], ['inProgress', 3], ['needsDecision', 2], ['disputed', 3], ['outOfScope', 1]] as const).map(([k, n]) => (
+                <span key={k} className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs text-ink-secondary">
+                  <span className={`h-1.5 w-1.5 rounded-full ${STATUS_COLORS[k].bar}`} />
+                  {t(`status.${k}`)} {n}
+                </span>
+              ))}
+            </div>
+              </div>
+
               <section>
                 <div className="grid grid-cols-3 gap-2">
                   <FactCard
-                    subject={t('preview.card1.subject')}
-                    status={t('preview.card1.label')}
-                    ago={t('preview.card1.ago')}
-                    actor={t('preview.actor1')}
-                    source="figma"
+                    subject={t('preview.card4.subject')}
+                    status={
+                      <span className="flex items-center gap-1.5 text-ink-muted">
+                        <span className="inline-flex shrink-0 items-center gap-1">
+                          {t('status.approved')} · {t('preview.scope.mobile')}
+                          <RiArrowRightLine size={12} aria-hidden="true" />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-ink">{t('preview.proposal.removal')}</span>
+                      </span>
+                    }
+                    ago={t('preview.card4.ago')}
+                    disputed
+                    source={msgSource}
                   />
                   <FactCard
                     subject={t('preview.card2.subject')}
-                    status={t('preview.card2.label')}
+                    status={
+                      <span className="flex items-center gap-1.5 text-ink-muted">
+                        <span className="inline-flex shrink-0 items-center gap-1">
+                          {t('status.outOfScope')} · {t('preview.scope.mvp')}
+                          <RiArrowRightLine size={12} aria-hidden="true" />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-ink">{t('preview.proposal.addition')}</span>
+                      </span>
+                    }
                     ago={t('preview.card2.ago')}
-                    actor={t('preview.actor3')}
+                    disputed
                     source={msgSource}
                   />
                   <FactCard
                     subject={t('preview.card3.subject')}
-                    status={t('preview.card3.label')}
-                    ago={t('preview.card3.ago')}
-                    actor={t('preview.actor1')}
-                    source="figma"
+                    status={`${t('status.needsDecision')} · ${t('preview.scope.firstOrder')}`}
+                    statusKey="needsDecision"
+                    ago={t('preview.card5.ago')}
+                    source={msgSource}
+                  />
+                  <FactCard
+                    subject={t('preview.card10.subject')}
+                    status={`${t('status.inProgress')} · ${t('preview.scope.mobile')}`}
+                    statusKey="inProgress"
+                    event={t('event.changed')}
+                    ago={t('preview.card1.ago')}
+                    source={msgSource}
                   />
                   <FactCard
                     subject={t('preview.card6.subject')}
-                    status={t('preview.card6.label')}
+                    status={`${t('status.approved')} · ${t('preview.scope.pilot')}`}
+                    statusKey="approved"
                     ago={t('preview.card6.ago')}
-                    actor={t('preview.actor1')}
-                    source="figma"
-                  />
-                  <FactCard
-                    subject={t('preview.card4.subject')}
-                    status={t('preview.card4.label')}
-                    ago={t('preview.ago2d')}
-                    disputed
-                    actor={t('preview.actor1')}
-                    source="figma"
-                  />
-                  <FactCard
-                    subject={t('preview.card5.subject')}
-                    status={t('preview.card5.label')}
-                    ago={t('preview.card5.ago')}
                     approved
                     actor={t('preview.actor2')}
                     source={msgSource}
-                    dimmed
+                  />
+                  <FactCard
+                    subject={t('preview.card8.subject')}
+                    status={`${t('status.approved')} · ${t('preview.scope.mobile')}`}
+                    statusKey="approved"
+                    ago={t('preview.ago2d')}
+                    approved
+                    actor={t('preview.actor2')}
+                    source={msgSource}
                   />
                 </div>
               </section>
 
               <section>
-                <MockSectionHeader title={t('dashboard.latest')} />
+                <MockSectionHeader title={t('dashboard.newSinceVisit')} />
                 <div className="divide-y divide-line-soft">
                   <LatestEvent
                     icon={<RiEditLine size={14} />}
                     title={t('preview.eventRemove.title')}
                     meta={t('preview.eventRemove.meta')}
-                    author={t('preview.actor1')}
+                    author={t('preview.actor3')}
                     source={msgSource}
                     ago={t('preview.agoJustNow')}
                   />
@@ -294,9 +262,9 @@ export default function LandingPreview() {
                     icon={<RiEditLine size={14} />}
                     title={t('preview.event2.title')}
                     meta={t('preview.event2.meta')}
-                    author={t('preview.actor2')}
+                    author={t('preview.actor1')}
                     source={msgSource}
-                    ago={t('preview.ago1d')}
+                    ago={t('preview.ago2d')}
                   />
                 </div>
               </section>
@@ -324,55 +292,58 @@ export default function LandingPreview() {
 
             <div className="order-2 col-span-4">
               <section>
-                <MockSectionHeader title={t('preview.needYou')} caps={false} />
+                <MockSectionHeader title={t('dashboard.needsAttentionCount', { count: 2 })} caps={false} />
                 <div className="space-y-3">
-                  <div className="rounded-xl border border-line bg-white p-3.5">
+                  <div className="relative rounded-xl border border-line bg-white p-3.5">
+                    <span className="absolute -top-2.5 right-3 rounded-full border border-line bg-white px-2 py-0.5 text-[11px] font-medium text-ink-secondary">
+                      {t('decisionAction.state.approved')}
+                    </span>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-ink">{t('preview.card4.subject')}</p>
-                      <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-                        {t('dashboard.needsDecision')}
-                      </span>
+                      <p className="text-[15px] font-semibold leading-snug text-ink">{t('preview.card4.subject')}</p>
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
                       {t('preview.conflictDark.text')}
                     </p>
-                    <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
-                      <SourceGlyph source="figma" size={12} />
-                      {t('dashboard.flaggedAgo', { time: t('preview.agoJustNow') })}
-                    </p>
-                    <div className="mt-3 flex items-center gap-1.5">
-                      <span className="whitespace-nowrap rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
-                        {t('dashboard.accept')}
+                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg border border-transparent bg-[var(--accent)] px-3.5 py-2 text-sm font-medium text-[var(--accent-fg)]">
+                        {t('decisionAction.excludeScope')}
                       </span>
-                      <span className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
-                        {t('dashboard.keepAsIs')}
+                      <span className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg border border-line px-3.5 py-2 text-sm font-medium text-ink-secondary">
+                        {t('decisionAction.keepCurrent')}
                       </span>
-                      <span className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint">
+                    </div>
+                    <div className="mt-2.5 flex items-center gap-x-4">
+                      <span className="text-[13px] font-medium text-ink-faint">{t('decisionAction.viewEvidence')}</span>
+                      <span className="inline-flex items-center text-[13px] font-medium text-ink-faint">
                         {t('dashboard.notSure')}
+                        <span className="ml-1.5 flex items-center text-ink-faint opacity-60" aria-hidden="true"><RiInformationLine size={14} /></span>
                       </span>
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-line bg-white p-3.5">
+                  <div className="relative rounded-xl border border-line bg-white p-3.5">
+                    <span className="absolute -top-2.5 right-3 rounded-full border border-line bg-white px-2 py-0.5 text-[11px] font-medium text-ink-secondary">
+                      {t('decisionAction.state.outOfScope')}
+                    </span>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-ink">{t('preview.card2.subject')}</p>
-                      <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
-                        {t('conflict.scope_change')}
-                      </span>
+                      <p className="text-[15px] font-semibold leading-snug text-ink">{t('preview.card2.subject')}</p>
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
-                      {t('preview.conflict2.text')}
+                      {t('preview.conflict1.text')}
                     </p>
-                    <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
-                      <SourceGlyph source={msgSource} size={12} />
-                      {t('dashboard.flaggedAgo', { time: t('preview.card2.ago') })}
-                    </p>
-                    <div className="mt-3 flex items-center gap-1.5">
-                      <span className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary">
-                        {t('dashboard.keepAsIs')}
+                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg bg-[var(--accent)] px-3.5 py-2 text-sm font-medium text-[var(--accent-fg)]">
+                        {t('decisionAction.includeScope')}
                       </span>
-                      <span className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint">
+                      <span className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg border border-line px-3.5 py-2 text-sm font-medium text-ink-secondary">
+                        {t('decisionAction.keepCurrent')}
+                      </span>
+                    </div>
+                    <div className="mt-2.5 flex items-center gap-x-4">
+                      <span className="text-[13px] font-medium text-ink-faint">{t('decisionAction.viewEvidence')}</span>
+                      <span className="inline-flex items-center text-[13px] font-medium text-ink-faint">
                         {t('dashboard.notSure')}
+                        <span className="ml-1.5 flex items-center text-ink-faint opacity-60" aria-hidden="true"><RiInformationLine size={14} /></span>
                       </span>
                     </div>
                   </div>

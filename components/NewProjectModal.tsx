@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RiCloseLine } from '@remixicon/react';
+import { signalRouteStart } from '@/components/RouteProgress';
 import { t } from '@/lib/i18n';
 
 export default function NewProjectModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -28,6 +29,7 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t('newProject.failed'));
       onClose();
+      signalRouteStart();
       router.push(data.project.slug ? `/project/${data.project.slug}` : `/project?projectId=${data.project.id}`);
       router.refresh();
     } catch (err: any) {
@@ -51,7 +53,7 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1 text-ink-faint transition hover:bg-fill hover:text-ink-secondary"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-ink-faint transition hover:bg-fill hover:text-ink-secondary"
           >
             <RiCloseLine size={20} />
           </button>
@@ -72,7 +74,7 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
               required
               autoFocus
               placeholder={t('newProject.namePlaceholder')}
-              className="w-full rounded-2xl border border-line bg-field px-5 py-3.5 text-base text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+              className="w-full rounded-lg border border-line bg-field px-5 py-3.5 text-base text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
             />
           </div>
           <div>
@@ -85,14 +87,14 @@ export default function NewProjectModal({ open, onClose }: { open: boolean; onCl
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t('newProject.descPlaceholder')}
-              className="w-full rounded-2xl border border-line bg-field px-5 py-3.5 text-base text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+              className="w-full rounded-lg border border-line bg-field px-5 py-3.5 text-base text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
             />
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit"
             disabled={creating}
-            className="w-full rounded-full bg-[var(--accent)] px-6 py-3.5 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg bg-[var(--accent)] px-6 py-3.5 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {creating ? t('newProject.creating') : t('newProject.create')}
           </button>

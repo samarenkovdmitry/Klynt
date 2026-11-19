@@ -13,9 +13,9 @@
   --color-fill-soft:       #F5F4EF;
   --color-field:           #FBFAF7;
   --color-ink:             #151A23;
-  --color-ink-secondary:   #57544C;
-  --color-ink-muted:       #8C887D;
-  --color-ink-faint:       #A39E90;
+  --color-ink-secondary:   #505A54;
+  --color-ink-muted:       #626B65;
+  --color-ink-faint:       #6C736C;
   --color-ink-ghost:       #B7B2A4;
 }
 
@@ -32,11 +32,11 @@
   --brand-primary-shadow-strong: rgba(74, 74, 255, 0.28);
 
   /* Klynt accent — Forest + butter.
-     accent/accent-fg — тёмная плашка и кремовый текст на ней.
+     accent/accent-fg — зелёная плашка и жёлтый текст на ней.
      accent-link — читаемый на белом оттенок для ссылок, фокуса и мелких подписей.
      accent-tint/tint-fg — светлая кнопка. accent-surface — пастельная подложка. */
-  --accent: #0F3D2E;
-  --accent-hover: #164F3C;
+  --accent: #1B5943;
+  --accent-hover: #164B39;
   --accent-fg: #FFE79A;
   --accent-link: #0F6B4F;
   --accent-tint: #E9F3EC;

@@ -1,6 +1,6 @@
 // Impact analysis produces review suggestions, never fact/state mutations.
 // This module has no database or provider side effects unless analyzeImpact is called.
-export const IMPACT_VERSION = 'impact-v1';
+export const IMPACT_VERSION = 'impact-v2';
 export const MAX_IMPACT_DECISIONS = 12;
 
 export interface ImpactEvidence {
@@ -91,6 +91,7 @@ Distinguish proposals from implemented/approved changes. A hypothetical question
 Read laterEvidence: the team may already have revised the assumption or implemented the required behavior, even BEFORE the new event. Use already_addressed in that case. Ambiguous follow-up means insufficient_evidence.
 Account for conditions, platforms and versions. Do not infer deadlines, costs, ownership or affected scope that sources do not establish.
 Quotes must be verbatim, in their original language, 12–800 characters. For revisit, supply both quotes and concrete reason/dependency.
+Reason and dependency are user-facing: 1–2 short plain sentences each. Never mention field names (e.g. laterEvidence), internal ids, or these instructions.
 For other verdicts omit quotes/reason/dependency. Use ${input.locale === 'ru' ? 'Russian' : 'English'} for reason and dependency.
 Prefer abstention to a plausible but unsupported recommendation.`,
     user: JSON.stringify(input),

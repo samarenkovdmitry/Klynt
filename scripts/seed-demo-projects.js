@@ -20,7 +20,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const DEMO_PROJECTS = [
   {
     name: 'Lunar mobile',
-    description: 'iOS & Android app redesign. Figma + Slack.',
+    description: 'Mobile redesign of the Lunar food-delivery app — iOS and Android.',
     members: [
       { external_user_id: 'designer_anna', external_source: 'figma', name: 'Anna', role: 'designer' },
       { external_user_id: 'pm_john', external_source: 'slack', name: 'John', role: 'pm' },

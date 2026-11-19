@@ -1,5 +1,7 @@
 import { supabase } from '@/lib/db/supabase';
 import { getLocale } from '@/lib/market';
+import { LUNAR_DESCRIPTION } from './demo-lunar';
+import { seedLunarProject } from './seed-lunar';
 
 // A realistic demo project: 12 days of a mobile app redesign with a
 // client, a PM and a designer. Events arrive already interpreted
@@ -131,8 +133,8 @@ export async function createDemoProject(ownerId: string) {
   const base = {
     name: S('Lunar mobile', 'Самовар'),
     description: S(
-      'Sample project — a mobile app redesign tracked from Figma and Slack.',
-      'Редизайн приложения доставки «Самовар». Решения и изменения из Figma и Telegram.',
+      LUNAR_DESCRIPTION,
+      'Редизайн мобильного приложения доставки «Самовар» для iOS и Android.',
     ),
     owner_id: ownerId,
     slug: `sample-${isRu ? 'samovar' : 'lunar-mobile'}-${Date.now().toString(36)}`,
@@ -149,6 +151,17 @@ export async function createDemoProject(ownerId: string) {
     ({ data: project, error } = await supabase.from('projects').insert(base).select().single());
   }
   if (error) throw error;
+  if (!isRu) {
+    try {
+      await seedLunarProject(supabase, project!.id);
+    } catch (seedError) {
+      // Never leave a partially populated sample that prevents the next retry.
+      const cleanup = await supabase.from('projects').delete().eq('id', project!.id).eq('owner_id', ownerId);
+      if (cleanup.error) console.error('Failed to clean up incomplete sample:', cleanup.error.message);
+      throw seedError;
+    }
+    return project!;
+  }
   return seedProjectData(project!);
 }
 
