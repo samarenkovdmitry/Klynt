@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signalRouteStart } from '@/components/RouteProgress';
 import {
   RiArrowDownSLine,
   RiPlugLine,
@@ -64,6 +65,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+    signalRouteStart();
     router.push('/login');
   };
 
@@ -71,6 +73,7 @@ export default function Sidebar({ projects, selectedProjectId, activeItem, onPro
     if (onProjectChange) {
       onProjectChange(project.id);
     } else {
+      signalRouteStart();
       router.push(project.slug ? `/project/${project.slug}` : `/project?projectId=${project.id}`);
     }
   };

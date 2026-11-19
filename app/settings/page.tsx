@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
+import TopNavigation from '@/components/TopNavigation';
+import ProjectSettingsNav from '@/components/ProjectSettingsNav';
 import Avatar from '@/components/Avatar';
 import { RiArrowDownSLine } from '@remixicon/react';
 import { t } from '@/lib/i18n';
@@ -216,16 +217,18 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
-      <Sidebar
+    <div className="flex min-h-screen flex-col bg-app-bg">
+      <TopNavigation
         projects={projects}
         selectedProjectId={selectedProjectId}
         activeItem="settings"
+        onProjectChange={handleProjectChange}
         loading={loading}
       />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-3 py-6 sm:px-8 sm:py-8">
-        <h1 className="text-2xl font-semibold text-ink">{t('settings.title')}</h1>
+        <h1 className="text-2xl font-semibold text-ink">{t('nav.projectSettings')}</h1>
+        <ProjectSettingsNav projectId={selectedProjectId} active="general" />
         <p className="mt-1 text-sm text-ink-muted">{t('settings.subtitle')}</p>
 
         <section className="mt-8">
@@ -234,12 +237,12 @@ export default function SettingsPage() {
           </div>
           {projects.length > 0 ? (
             <div className="rounded-2xl border border-line bg-white p-4 space-y-4">
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-stretch justify-between gap-4">
                 <div className="relative flex-1">
                   <select
                     value={selectedProjectId || ''}
                     onChange={(e) => handleProjectChange(e.target.value)}
-                    className="w-full appearance-none rounded-xl border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    className="w-full appearance-none rounded-lg border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                   >
                     {projects.map((p) => (
                       <option key={p.id} value={p.id}>{p.name}</option>
@@ -252,7 +255,7 @@ export default function SettingsPage() {
                 {!editing && (
                   <button
                     onClick={() => setEditing(true)}
-                    className="rounded-xl bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {t('settings.edit')}
                   </button>
@@ -265,21 +268,21 @@ export default function SettingsPage() {
                     type="text"
                     value={editProject.name}
                     onChange={(e) => setEditProject({ ...editProject, name: e.target.value })}
-                    className="w-full rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    className="w-full rounded-lg border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     required
                   />
                   <input
                     type="text"
                     value={editProject.description}
                     onChange={(e) => setEditProject({ ...editProject, description: e.target.value })}
-                    className="w-full rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    className="w-full rounded-lg border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     placeholder={t('settings.description')}
                   />
                   <div className="flex gap-2">
                     <button
                       type="submit"
                       disabled={savingProject}
-                      className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {savingProject ? t('settings.saving') : t('settings.save')}
                     </button>
@@ -290,7 +293,7 @@ export default function SettingsPage() {
                         if (project) setEditProject({ name: project.name, description: project.description || '' });
                         setEditing(false);
                       }}
-                      className="rounded-xl bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
+                      className="rounded-lg bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {t('settings.cancel')}
                     </button>
@@ -308,7 +311,7 @@ export default function SettingsPage() {
                     placeholder={t('settings.projectName')}
                     value={newProject.name}
                     onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                    className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    className="rounded-lg border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     required
                   />
                   <input
@@ -316,12 +319,12 @@ export default function SettingsPage() {
                     placeholder={t('settings.descriptionOptional')}
                     value={newProject.description}
                     onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                    className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    className="rounded-lg border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                   />
                   <button
                     type="submit"
                     disabled={creating}
-                    className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {creating ? t('settings.creating') : t('settings.create')}
                   </button>
@@ -388,13 +391,13 @@ export default function SettingsPage() {
                     placeholder="teammate@company.com"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    className="flex-1 rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    className="flex-1 rounded-lg border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     required
                   />
                   <button
                     type="submit"
                     disabled={saving}
-                    className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {saving ? t('settings.sending') : t('settings.invite')}
                   </button>
@@ -436,7 +439,7 @@ export default function SettingsPage() {
                     placeholder={t('settings.name')}
                     value={person.name}
                     onChange={(e) => setPerson({ ...person, name: e.target.value })}
-                    className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    className="rounded-lg border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     required
                   />
                   <input
@@ -444,14 +447,14 @@ export default function SettingsPage() {
                     placeholder={t('auth.email')}
                     value={person.email}
                     onChange={(e) => setPerson({ ...person, email: e.target.value })}
-                    className="rounded-xl border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                    className="rounded-lg border border-line bg-field px-4 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     required
                   />
                   <div className="relative">
                     <select
                       value={person.role}
                       onChange={(e) => setPerson({ ...person, role: e.target.value })}
-                      className="w-full appearance-none rounded-xl border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
+                      className="w-full appearance-none rounded-lg border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition placeholder:text-ink-faint outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
                     >
                       <option value="pm">{t('settings.role.pm')}</option>
                       <option value="designer">{t('settings.role.designer')}</option>
@@ -464,7 +467,7 @@ export default function SettingsPage() {
                   </div>
                   <button
                     type="submit"
-                    className="rounded-xl bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {t('settings.add')}
                   </button>

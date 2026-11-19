@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { signalRouteStart } from '@/components/RouteProgress'
 import { t } from '@/lib/i18n'
 import { logoSrc } from '@/lib/market'
 
@@ -41,6 +42,7 @@ export default function InvitePage() {
     const res = await fetch(`/api/invites/${token}`, { method: 'POST' })
     const json = await res.json().catch(() => ({}))
     if (res.ok && json.slug) {
+      signalRouteStart()
       router.push(`/project/${json.slug}`)
     } else {
       setState({ status: 'error', message: json.error || t('invite.acceptFailed') })
@@ -55,7 +57,7 @@ export default function InvitePage() {
       <div className="absolute inset-x-0 top-0">
         <div className="mx-auto w-full max-w-7xl px-6 py-4">
           <Link href="/">
-            <img src={logoSrc()} alt="Klynt" className="h-8 w-auto" />
+            <img src={logoSrc()} alt="Klynt" className="h-7 w-auto" />
           </Link>
         </div>
       </div>
@@ -86,7 +88,7 @@ export default function InvitePage() {
               <button
                 onClick={accept}
                 disabled={accepting}
-                className="w-full rounded-full bg-[var(--accent)] px-6 py-4 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-lg bg-[var(--accent)] px-6 py-4 text-base font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {accepting ? t('invite.joining') : t('invite.accept')}
               </button>
@@ -94,7 +96,7 @@ export default function InvitePage() {
               <div className="space-y-3">
                 <Link
                   href={`/register?next=${encodeURIComponent(next)}`}
-                  className="block w-full rounded-full bg-[var(--accent)] px-6 py-4 text-base font-medium text-[var(--accent-fg)] transition duration-200 hover:bg-[var(--accent-hover)]"
+                  className="block w-full rounded-lg bg-[var(--accent)] px-6 py-4 text-base font-medium text-[var(--accent-fg)] transition duration-200 hover:bg-[var(--accent-hover)]"
                 >
                   {t('invite.signupToJoin')}
                 </Link>

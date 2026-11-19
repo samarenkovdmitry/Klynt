@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
     const EMPTY_UUID = '00000000-0000-0000-0000-000000000000';
 
     const [
-      { data: conflictingEvents },
+      { data: conflictingEvents, error: conflictingError },
       { data: candidateLinks, error: candError },
       { data: periodCandidates, error: periodCandError },
       { data: recentCandidates, error: recentCandError },
@@ -115,10 +115,9 @@ export async function GET(request: NextRequest) {
       conflictSubjects.length > 0
         ? supabase
             .from('candidate_events')
-            .select('*')
+            .select('*, raw:raw_events(source, author_id, content, timestamp, metadata)')
             .eq('project_id', projectId)
             .in('subject', conflictSubjects)
-            .in('event_type', ['change', 'decision', 'approval'])
             .order('created_at', { ascending: false })
         : Promise.resolve({ data: [] as any[], error: null }),
       supabase
@@ -134,22 +133,28 @@ export async function GET(request: NextRequest) {
     ]);
 
     if (candError) throw candError;
+    if (conflictingError) throw conflictingError;
     if (periodCandError) throw periodCandError;
     if (recentCandError) throw recentCandError;
 
     const latestEventBySubject = new Map<string, any>();
     for (const ev of (conflictingEvents || [])) {
-      if (!latestEventBySubject.has(ev.subject)) {
+      if (['change', 'decision', 'approval'].includes(ev.event_type) && !latestEventBySubject.has(ev.subject)) {
         latestEventBySubject.set(ev.subject, ev);
       }
     }
 
     const factBySubject = new Map((facts || []).map(f => [f.subject, f]));
+    const conflictEventById = new Map((conflictingEvents || []).map(e => [e.id, e]));
 
     const enrichedConflicts = (conflicts || []).map(c => ({
       ...c,
       currentState: factBySubject.get(c.subject)?.current_state || null,
-      proposedEvent: latestEventBySubject.get(c.subject) || null,
+      // An explicit conflict reference wins over a newer, unrelated message.
+      // Legacy conflicts without a reference retain their existing fallback.
+      proposedEvent: c.new_event_id
+        ? conflictEventById.get(c.new_event_id) || null
+        : latestEventBySubject.get(c.subject) || null,
     }));
 
     const rawTimestamps = new Map((rawEventsInPeriod || []).map(r => [r.id, r.timestamp]));

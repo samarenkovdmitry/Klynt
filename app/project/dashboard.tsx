@@ -2,14 +2,18 @@
 
 import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
+import TopNavigation from '@/components/TopNavigation';
 import NewProjectModal from '@/components/NewProjectModal';
 import LandingPreview from '@/components/LandingPreview';
 import DecisionsToRevisit from '@/components/DecisionsToRevisit';
+import { signalRouteStart } from '@/components/RouteProgress';
+import ClarificationHint from '@/components/ClarificationHint';
 import { FigmaIcon, SlackIcon, LinearIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import { emojify } from 'node-emoji';
 import { t, getLocale, tp } from '@/lib/i18n';
+import { conflictActions } from '@/lib/conflict-actions';
 import {
+  RiArrowRightLine,
   RiArrowRightSLine,
   RiArrowRightUpLine,
   RiArrowDownSLine,
@@ -21,6 +25,7 @@ import {
   RiLinksLine,
   RiHistoryLine,
   RiCloseLine,
+  RiTimeLine,
 } from '@remixicon/react';
 
 interface Project {
@@ -82,10 +87,6 @@ const FACT_META: Record<string, { bg: string; text: string; subject: string; bod
 const DEFAULT_FACT_META = { bg: 'bg-fill', text: 'text-ink-secondary', subject: 'text-ink/70', body: 'text-ink/60', muted: 'text-ink/45', border: 'border-ink/10' };
 
 // t() echoes the key back on a miss, so check before using as a label
-const getStateLabel = (key: string): string => {
-  const label = t(`state.${key}`);
-  return label === `state.${key}` ? '' : label;
-};
 
 // On a conflicted card the arrow line reads "Approved → Removal requested":
 // the confirmed state vs what the new event proposes.
@@ -133,13 +134,25 @@ function displayEvent(fact: { current_state?: string }): 'added' | 'removed' | '
 
 type StatusKey = 'approved' | 'inProgress' | 'needsDecision' | 'disputed' | 'outOfScope';
 
-const STATUS_COLORS: Record<StatusKey, { num: string; bar: string; text: string }> = {
-  approved:      { num: 'text-emerald-500', bar: 'bg-emerald-400', text: 'text-emerald-700' },
-  inProgress:    { num: 'text-blue-500',    bar: 'bg-blue-400',    text: 'text-blue-700' },
-  needsDecision: { num: 'text-amber-500',   bar: 'bg-amber-400',   text: 'text-amber-700' },
-  disputed:      { num: 'text-rose-500',    bar: 'bg-rose-400',    text: 'text-rose-700' },
-  outOfScope:    { num: 'text-ink-faint',   bar: 'bg-line-strong', text: 'text-ink-muted' },
+const STATUS_COLORS: Record<StatusKey, { bar: string; pill: string }> = {
+  approved:      { bar: 'bg-emerald-400', pill: 'bg-emerald-100 text-emerald-800' },
+  inProgress:    { bar: 'bg-blue-400',    pill: 'bg-blue-100 text-blue-800' },
+  needsDecision: { bar: 'bg-amber-400',   pill: 'bg-amber-100 text-amber-800' },
+  disputed:      { bar: 'bg-rose-400',    pill: 'bg-rose-100 text-rose-800' },
+  outOfScope:    { bar: 'bg-line-strong', pill: 'bg-fill text-ink-secondary' },
 };
+
+const statusWithScope = (statusKey: string, scope?: string | null, dot = 'mx-1.5'): ReactNode => (
+  <>
+    {t(`status.${statusKey}`)}
+    {scope && (
+      <>
+        <span className={dot} aria-hidden="true">·</span>
+        {scope}
+      </>
+    )}
+  </>
+);
 
 const ACTION_ICONS: Record<string, ReactNode> = {
   added: <RiAddLine size={14} />,
@@ -148,8 +161,9 @@ const ACTION_ICONS: Record<string, ReactNode> = {
 };
 const DEFAULT_ACTION_ICON = <RiEditLine size={14} />;
 
-// Raw external IDs (e.g. Figma user "1624093726897831277") aren't meaningful to show
-const isRawExternalId = (s: string) => /^[0-9_-]{10,}$/.test(s);
+// Raw external IDs aren't meaningful to show: Figma user "1624093726897831277",
+// Slack user/channel "U0C337Z8NGH" (letter + uppercase alnum).
+const isRawExternalId = (s: string) => /^[0-9_-]{10,}$/.test(s) || /^[A-Z][A-Z0-9_-]{9,}$/.test(s);
 
 // True when the original message adds nothing over the interpreted title —
 // identical text, or the title is fully contained in it (or vice versa).
@@ -159,11 +173,6 @@ const isDuplicateText = (a?: string, b?: string) => {
   const na = norm(a);
   const nb = norm(b);
   return na === nb || na.includes(nb) || nb.includes(na);
-};
-
-const conflictTypeLabel = (key: string): string => {
-  const label = t(`conflict.${key}`);
-  return label === `conflict.${key}` ? '' : label;
 };
 
 function SectionHeader({ title, meta, right, caps = true }: { title: string; meta?: ReactNode; right?: ReactNode; caps?: boolean }) {
@@ -192,13 +201,13 @@ function SkeletonCard({ className }: { className: string }) {
 export function ProjectSkeleton() {
   return (
     <>
-      <div className="mb-8">
-        <SkeletonBar className="h-8 w-56 max-w-[70%]" />
-        <SkeletonBar className="mt-3 h-4 w-80 max-w-[90%]" />
-      </div>
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+        <div className="order-1 lg:col-span-8 lg:col-start-1">
+          <SkeletonBar className="h-8 w-56 max-w-[70%]" />
+          <SkeletonBar className="mt-3 h-4 w-80 max-w-[90%]" />
+        </div>
         {/* Latest */}
-        <section className="order-3 lg:col-span-8">
+        <section className="order-4 lg:col-span-8 lg:col-start-1">
           <SkeletonBar className="mb-4 h-4 w-24" />
           <div className="space-y-4">
             {[0, 1, 2, 3].map((i) => (
@@ -215,7 +224,7 @@ export function ProjectSkeleton() {
         </section>
 
         {/* Current state */}
-        <section className="order-1 lg:col-span-8">
+        <section className="order-2 lg:order-3 lg:col-span-8 lg:col-start-1">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <SkeletonCard className="h-[104px]" />
             <SkeletonCard className="hidden h-[104px] sm:block" />
@@ -224,7 +233,7 @@ export function ProjectSkeleton() {
         </section>
 
         {/* Activity */}
-        <section className="order-4 lg:col-span-8">
+        <section className="order-5 lg:col-span-8 lg:col-start-1">
           <div className="mb-4 flex items-center justify-between">
             <SkeletonBar className="h-4 w-24" />
             <SkeletonBar className="h-7 w-44 rounded-lg" />
@@ -242,7 +251,7 @@ export function ProjectSkeleton() {
         </section>
 
         {/* Right column */}
-        <div className="order-2 lg:col-span-4 lg:row-span-3">
+        <div className="order-3 lg:order-2 lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-4">
           <SkeletonBar className="mb-4 h-4 w-36" />
           <SkeletonCard className="h-24 rounded-2xl" />
         </div>
@@ -270,7 +279,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const [createOpen, setCreateOpen] = useState(false);
   const [creatingDemo, setCreatingDemo] = useState(false);
   const [visitBaseline, setVisitBaseline] = useState<Record<string, string>>({});
-  const [integrations, setIntegrations] = useState<any[]>([]);
   const fetchData = useCallback(async (selectedPeriod: Period, projectId: string, optimistic = false) => {
     setLoading(true);
     try {
@@ -289,13 +297,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetch('/api/integrations')
-      .then(res => res.json())
-      .then(data => setIntegrations(data.integrations || []))
-      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -349,12 +350,22 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     });
   }, [selectedProjectId]);
 
+  // Lock page scroll while the fact drawer is open — otherwise wheel events
+  // over the sheet scroll the page behind it and the fixed drawer "detaches".
+  useEffect(() => {
+    if (!selectedFactId) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [selectedFactId]);
+
   const handleCreateDemo = async () => {
     setCreatingDemo(true);
     try {
       const res = await fetch('/api/projects/demo', { method: 'POST' });
       const data = await res.json();
       if (res.ok && data.project) {
+        signalRouteStart();
         router.push(`/project/${data.project.slug || data.project.id}`);
         return;
       }
@@ -384,7 +395,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     });
   };
 
-  const resolveConflict = async (conflictId: string, decision: 'keep_current' | 'accept_new' | 'unclear', newState?: string) => {
+  const resolveConflict = async (conflictId: string, decision: 'keep_current' | 'accept_new' | 'clarify' | 'reopen', newState?: string) => {
     setResolving(conflictId);
     try {
       const res = await fetch(`/api/conflicts/${conflictId}/resolve`, {
@@ -436,9 +447,9 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
 
   if (loading && !state) {
     return (
-      <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
-        <Sidebar projects={projects} selectedProjectId={selectedProjectId} activeItem="project" loading />
-        <main className="w-full flex-1 px-3 py-4 sm:px-8 sm:py-6">
+      <div className="flex min-h-screen flex-col bg-app-bg">
+        <TopNavigation projects={projects} selectedProjectId={selectedProjectId} activeItem="project" loading />
+        <main className="mx-auto w-full max-w-[1400px] flex-1 px-3 py-4 sm:px-8 sm:py-6">
           <ProjectSkeleton />
         </main>
       </div>
@@ -447,8 +458,8 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
   if (projects.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
-        <Sidebar projects={[]} selectedProjectId={null} activeItem="project" />
+      <div className="flex min-h-screen flex-col bg-app-bg">
+        <TopNavigation projects={[]} selectedProjectId={null} activeItem="project" />
         <main className="flex flex-1 flex-col items-center overflow-hidden px-4 pb-0 pt-16 sm:pt-20">
           <div className="w-full max-w-lg text-center">
             <h1 className="text-2xl font-semibold text-ink">{t('dashboard.createFirst')}</h1>
@@ -458,14 +469,14 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             <div className="mt-7 flex items-center justify-center gap-3">
               <button
                 onClick={() => setCreateOpen(true)}
-                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
+                className="rounded-lg bg-[var(--accent)] px-6 py-3 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
               >
                 {t('sidebar.newProject')}
               </button>
               <button
                 onClick={handleCreateDemo}
                 disabled={creatingDemo}
-                className="rounded-full border border-line bg-white px-6 py-3 text-sm font-medium text-ink-secondary transition hover:border-line-strong hover:text-ink disabled:opacity-50"
+                className="rounded-lg border border-line bg-white px-6 py-3 text-sm font-medium text-ink-secondary transition-colors enabled:hover:border-transparent enabled:hover:bg-fill disabled:opacity-50"
               >
                 {creatingDemo ? t('dashboard.preparingSample') : t('dashboard.seeExample')}
               </button>
@@ -569,16 +580,6 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   const displayDates = expanded ? sortedDates : sortedDates.slice(0, 2);
   const hiddenCount = state.whatChanged.length - displayDates.reduce((sum, d) => sum + groupedEvents[d].length, 0);
   const selectedProject = projects.find(p => p.id === selectedProjectId);
-  // Sources = connected integrations + sources that actually produced events.
-  // Seed/demo data has events but no integration rows — pills must reflect both.
-  const activeSources = [...new Set([
-    ...integrations
-      .filter((i: any) => i.project_id === selectedProjectId && i.status === 'active')
-      .map((i: any) => i.source),
-    ...(state.recentEvents || []).map((e: any) => e.source).filter(Boolean),
-    ...(state.whatChanged || []).map((e: any) => e.source).filter(Boolean),
-    ...(state.history || []).map((h: any) => h.source).filter(Boolean),
-  ])] as string[];
 
   const selectedFact = selectedFactId ? state.currentState.find((f: any) => f.id === selectedFactId) : null;
   const selectedHistory = selectedFact
@@ -587,8 +588,9 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         .sort((a: any, b: any) => new Date(b.decided_at || b.created_at).getTime() - new Date(a.decided_at || a.created_at).getTime())
     : [];
   const selectedMeta = selectedFact ? (FACT_META[selectedFact.current_state?.toLowerCase()] || DEFAULT_FACT_META) : null;
+  const selectedStatus = selectedFact ? (factStatus.get(selectedFact.id) || 'needsDecision') : 'needsDecision';
   const selectedStateLabel = selectedFact
-    ? `${t(`status.${factStatus.get(selectedFact.id) || 'needsDecision'}`)}${selectedFact.current_value?.scope ? ` · ${selectedFact.current_value.scope}` : ''}`
+    ? statusWithScope(selectedStatus, selectedFact.current_value?.scope)
     : null;
 
   const groupedWhy = selectedFact
@@ -604,8 +606,8 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     : [];
 
   return (
-    <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
-      <Sidebar
+    <div className="flex min-h-screen flex-col bg-app-bg">
+      <TopNavigation
         projects={projects}
         selectedProjectId={selectedProjectId}
         activeItem="project"
@@ -613,53 +615,57 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         loading={loading}
       />
 
-      <main className="relative w-full flex-1 px-3 py-4 sm:px-8 sm:py-6">
-        {loading && (
-          <div className="absolute left-0 right-0 top-0 z-50">
-            <div className="h-1 w-full overflow-hidden bg-fill">
-              <div
-                className="h-full bg-[#061C2F]"
-                style={{
-                  width: '40%',
-                  animation: 'klynt-progress 1.2s ease-in-out infinite',
-                }}
-              />
-            </div>
-            <style jsx>{`
-              @keyframes klynt-progress {
-                0% { transform: translateX(-100%); }
-                50% { transform: translateX(250%); }
-                100% { transform: translateX(250%); }
-              }
-            `}</style>
+      {loading && (
+        <div className="pointer-events-none fixed left-0 right-0 top-0 z-[60]">
+          <div className="h-0.5 w-full overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[linear-gradient(90deg,var(--accent)_0%,#2FA37A_55%,#4FB3A0_100%)]"
+              style={{
+                width: '40%',
+                animation: 'klynt-progress 1.2s ease-in-out infinite',
+              }}
+            />
           </div>
-        )}
-        <div className="mb-8">
+          <style jsx>{`
+            @keyframes klynt-progress {
+              0% { transform: translateX(-100%); }
+              50% { transform: translateX(250%); }
+              100% { transform: translateX(250%); }
+            }
+          `}</style>
+        </div>
+      )}
+
+      <main className="relative mx-auto w-full max-w-[1400px] flex-1 px-3 py-4 sm:px-8 sm:py-6">
+        <div className={`grid grid-cols-1 gap-x-10 gap-y-8 transition-opacity lg:grid-cols-12 ${loading ? 'opacity-50' : ''}`}>
+          <header className="order-1 lg:col-span-8 lg:col-start-1">
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
             <div className="flex items-center gap-3">
-              <h1 className="text-[26px] font-bold tracking-tight text-ink">{selectedProject?.name || 'Project'}</h1>
-              {(selectedProject?.is_demo || selectedProject?.name?.startsWith('Sample ·')) && (
-                <span className="rounded-full bg-fill px-2.5 py-1 text-[11px] font-medium text-ink-faint">
-                  Sample
+              <h1 className="text-[26px] font-bold tracking-tight text-ink">
+                {selectedProject?.name || 'Project'}
+                {(selectedProject?.is_demo || selectedProject?.name?.startsWith('Sample ·')) && (
+                  <sup className="relative -top-2.5 ml-2.5 text-[11px] font-medium tracking-normal text-ink-faint">Sample</sup>
+                )}
+              </h1>
+            </div>
+          </div>
+          {(selectedProject?.description || lastUpdated) && (
+            <div className="mt-1 flex items-baseline justify-between gap-4">
+              {selectedProject?.description && (
+                <p className="min-w-0 text-[15px] text-ink-secondary">{selectedProject.description}</p>
+              )}
+              {lastUpdated && (
+                <span
+                  className="ml-auto flex-shrink-0 text-xs text-ink-faint"
+                  title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                >
+                  {t('dashboard.updated')} {formatRelative(lastUpdated)}
+                  {changesSinceVisit > 0 && (
+                    <span className="ml-1.5 text-[var(--accent-link)]">· {changesSinceVisit} {t('dashboard.sinceLastVisit')}</span>
+                  )}
                 </span>
               )}
             </div>
-            {activeSources.length > 0 && (
-              <div className="flex items-center gap-3">
-                {activeSources.map((s: string) => (
-                  <span
-                    key={s}
-                    className="inline-flex items-center gap-1.5 text-xs text-ink-faint"
-                  >
-                    {s === 'figma' ? <FigmaIcon size={12} /> : s === 'slack' ? <SlackIcon size={12} /> : s === 'linear' ? <LinearIcon size={12} /> : s === 'telegram' ? <TelegramIcon size={12} /> : <RiFileTextLine size={12} className="text-green-600" />}
-                    {s === 'gdocs' ? 'Google Docs' : capitalize(s)}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          {selectedProject?.description && (
-            <p className="mt-1 text-[15px] text-ink-secondary">{selectedProject.description}</p>
           )}
           {state.currentState.length > 0 && (() => {
             const stats = [
@@ -669,28 +675,18 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               ['disputed', t('status.disputed')],
               ['outOfScope', t('status.outOfScope')],
             ] as const;
+            const filterPill = (active: boolean) =>
+              `inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition-colors ${active ? 'bg-fill font-medium text-ink' : 'text-ink-secondary hover:bg-fill-soft'}`;
             return (
-            <div className="mt-4">
-              <div className="flex items-baseline justify-between gap-4">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-ink-faint">
-                  {t('dashboard.overview')} · {state.currentState.length} {tp(state.currentState.length, 'plural.area')}
-                  {changesSinceVisit > 0 && (
-                    <span className="ml-1.5 normal-case tracking-normal text-[var(--accent-link)]">
-                      · {changesSinceVisit} {t('dashboard.sinceLastVisit')}
-                    </span>
-                  )}
-                </p>
-                {lastUpdated && (
-                  <span
-                    className="flex-shrink-0 text-xs text-ink-faint"
-                    title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                  >
-                    {t('dashboard.updated')} {formatRelative(lastUpdated)}
-                  </span>
-                )}
-              </div>
-              <div className="mt-3 flex flex-wrap items-end gap-x-7 gap-y-2" role="group"
-                aria-label={t('dashboard.filterByState')}>
+            <div className="mt-4 flex flex-wrap items-center gap-0.5" role="group" aria-label={t('dashboard.filterByState')}>
+                <button
+                  type="button"
+                  aria-pressed={!stateFilter}
+                  onClick={() => setStateFilter(null)}
+                  className={filterPill(!stateFilter)}
+                >
+                  {t('dashboard.allAreas')} {state.currentState.length}
+                </button>
                 {stats.map(([k, label]) =>
                   stateCounts[k] > 0 && (
                     <button
@@ -698,52 +694,20 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       type="button"
                       aria-pressed={stateFilter === k}
                       onClick={() => setStateFilter(f => (f === k ? null : k))}
-                      className={`text-left transition-opacity ${stateFilter && stateFilter !== k ? 'opacity-35 hover:opacity-70' : 'hover:opacity-75'}`}
+                      className={filterPill(stateFilter === k)}
                     >
-                      <span className={`block text-[28px] font-semibold leading-none ${STATUS_COLORS[k].num}`}>
-                        {String(stateCounts[k]).padStart(2, '0')}
-                      </span>
-                      <span className={`mt-1 block text-xs capitalize ${stateFilter === k ? 'font-medium text-ink' : 'text-ink-muted'}`}>
-                        {label}
-                      </span>
+                      <span className={`h-1.5 w-1.5 rounded-full ${STATUS_COLORS[k].bar}`} />
+                      {label} {stateCounts[k]}
                     </button>
                   ),
                 )}
-                {stateFilter && (
-                  <button
-                    type="button"
-                    onClick={() => setStateFilter(null)}
-                    className="pb-0.5 text-xs font-medium text-[var(--accent-link)] hover:underline"
-                  >
-                    {t('dashboard.showAll')}
-                  </button>
-                )}
               </div>
-              {/* Thin proportion bar stays below the numbers — it is context,
-                  not the primary read of project state */}
-              <div className="mt-3 flex h-1 gap-[2px] overflow-hidden rounded-full bg-white" role="img"
-                aria-label={stats.map(([k, label]) => `${stateCounts[k]} ${label}`).join(', ')}>
-                {stats.map(([k, label]) =>
-                  stateCounts[k] > 0 && (
-                    <div
-                      key={k}
-                      title={`${stateCounts[k]} ${label}`}
-                      className={STATUS_COLORS[k].bar}
-                      style={{ width: `${(stateCounts[k] / state.currentState.length) * 100}%` }}
-                    />
-                  ),
-                )}
-              </div>
-            </div>
           );
           })()}
-        </div>
+          </header>
 
-
-
-        <div className={`grid grid-cols-1 gap-10 transition-opacity lg:grid-cols-12 ${loading ? 'opacity-50' : ''}`}>
           {/* Latest */}
-          <section className="order-3 lg:col-span-8">
+          <section className="order-4 lg:col-span-8 lg:col-start-1">
               <SectionHeader title={baseline ? t('dashboard.newSinceVisit') : t('dashboard.latest')} />
               {state.whatChanged.length > 0 ? (
                 newSinceVisit.length === 0 ? (
@@ -793,7 +757,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             </section>
 
             {/* Current state — aggregate meta lives in the project header */}
-            <section className="order-1 lg:col-span-8">
+            <section className="order-2 lg:order-3 lg:col-span-8 lg:col-start-1">
               {state.currentState.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-white p-8 text-center">
                   <RiLinksLine size={40} className="text-line" />
@@ -808,9 +772,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               ) : (
                 <div className="-mx-3 flex snap-x snap-mandatory scroll-px-3 gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:scroll-px-0 sm:px-0 sm:pb-0">
                   {(stateFilter ? state.currentState.filter(f => factStatus.get(f.id) === stateFilter) : state.currentState).slice().sort((a: any, b: any) => {
-                    const priority: Record<string, number> = { removed: 0, modify: 1, modified: 1, added: 2, approved: 3 };
-                    const pa = priority[a.current_state?.toLowerCase()] ?? 4;
-                    const pb = priority[b.current_state?.toLowerCase()] ?? 4;
+                    // Sort by the displayed status — attention first; raw states
+                    // (added/modify) would push approved cards to the top.
+                    const priority: Record<string, number> = { disputed: 0, needsDecision: 1, inProgress: 2, approved: 3, outOfScope: 4 };
+                    const pa = priority[factStatus.get(a.id) || 'needsDecision'] ?? 5;
+                    const pb = priority[factStatus.get(b.id) || 'needsDecision'] ?? 5;
                     if (pa !== pb) return pa - pb;
                     return (a.subject || '').toLowerCase().localeCompare((b.subject || '').toLowerCase());
                   }).map((fact: any) => {
@@ -822,7 +788,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       ? displayStatus(fact, false, prevSettledFor(fact))
                       : status;
                     const baseStatusLabel = `${t(`status.${baseStatus}`)}${fact.current_value?.scope ? ` · ${fact.current_value.scope}` : ''}`;
-                    const statusLabel = `${t(`status.${status}`)}${fact.current_value?.scope ? ` · ${fact.current_value.scope}` : ''}`;
+                    const statusLabel = statusWithScope(status, fact.current_value?.scope);
                     const isApproved = status === 'approved';
                     const factHistory = state.history
                       .filter((h: any) => h.fact_id === fact.id && h.new_state && h.previous_state?.toLowerCase() !== h.new_state?.toLowerCase() && h.reason !== 'test')
@@ -843,7 +809,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       <div
                         key={fact.id}
                         onClick={hasHistory ? () => setSelectedFactId(fact.id) : undefined}
-                        className={`group relative flex w-[74%] max-w-[300px] flex-shrink-0 snap-start flex-col rounded-xl border border-line bg-white px-4 py-3 transition sm:w-auto sm:max-w-none ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''} ${isApproved ? 'opacity-75 hover:opacity-100' : ''}`}
+                        className={`group relative flex w-[74%] max-w-[300px] flex-shrink-0 snap-start flex-col rounded-xl border border-line bg-white px-4 py-3 transition sm:w-auto sm:max-w-none ${hasHistory ? 'cursor-pointer hover:border-line-strong' : ''}`}
                       >
                         <p className="text-[15px] font-semibold leading-snug text-ink">{capitalize(fact.subject)}</p>
                         {relatedConflict ? (
@@ -851,22 +817,31 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             <span className="relative mt-1.5 inline-flex w-fit items-center rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-medium text-rose-800">
                               {t('status.disputed')}
                             </span>
-                            <p className="mt-1 text-[13px] leading-[1.55] text-ink-muted">
-                              {baseStatusLabel}
-                              {relatedConflict.proposedEvent?.action && (
-                                <span className="text-ink">
-                                  {' → '}
-                                  {PROPOSED_LABELS[relatedConflict.proposedEvent.action] || capitalize(relatedConflict.proposedEvent.action)}
+                            {/* One line, end-truncated — the full phrase lives in the drawer
+                                and on the attention card; the grid card stays a summary. */}
+                            <p className="mt-1 flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-[1.55] text-ink-muted">
+                              {['approved', 'inProgress', 'outOfScope'].includes(baseStatus) && (
+                                <span className="inline-flex shrink-0 items-center gap-1">
+                                  {baseStatusLabel}
+                                  <RiArrowRightLine size={12} aria-hidden="true" className="shrink-0" />
+                                  <span className="sr-only"> → </span>
                                 </span>
                               )}
+                              <span className="min-w-0 truncate text-ink">
+                                {relatedConflict.proposedEvent?.action
+                                  ? (PROPOSED_LABELS[relatedConflict.proposedEvent.action] || capitalize(relatedConflict.proposedEvent.action))
+                                  : t('event.changed')}
+                              </span>
                             </p>
                           </>
                         ) : (
-                          <p className={`mt-1 text-[13px] leading-[1.55] ${STATUS_COLORS[status].text}`}>
-                            {isApproved && <RiCheckLine size={12} className="mr-0.5 inline -mt-0.5 text-emerald-600" />}
-                            {statusLabel}
-                            {event && status !== 'disputed' && (
-                              <span className="text-ink-faint"> · {t(`event.${event}`)}</span>
+                          <p className="mt-1.5 flex flex-wrap items-baseline gap-x-2">
+                            <span className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_COLORS[status].pill}`}>
+                              {isApproved && <RiCheckLine size={11} className="mr-0.5 -mt-px text-emerald-600" />}
+                              {statusLabel}
+                            </span>
+                            {event && (
+                              <span className="text-[11px] text-ink-faint">{t(`event.${event}`)}</span>
                             )}
                           </p>
                         )}
@@ -875,7 +850,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                             <span className="flex min-w-0 items-center gap-1">
                               {lastSource === 'figma' ? <FigmaIcon size={12} /> : lastSource === 'slack' ? <SlackIcon size={12} /> : lastSource === 'linear' ? <LinearIcon size={12} /> : lastSource === 'telegram' ? <TelegramIcon size={12} /> : lastSource ? <RiFileTextLine size={11} className="text-green-600" /> : null}
                               <span className="truncate">
-                                {[lastSource ? capitalize(lastSource) : null, lastActor && !isRawExternalId(lastActor) ? lastActor : null].filter(Boolean).join(' · ')}
+                                {lastSource && capitalize(lastSource)}
+                                {/* "Approved by X" is provenance; other authors are
+                                    just "last writer" — the drawer carries them. */}
+                                {lastSource && isApproved && lastActor && !isRawExternalId(lastActor) && <span className="mx-1.5" aria-hidden="true">·</span>}
+                                {isApproved && lastActor && !isRawExternalId(lastActor) && lastActor}
                               </span>
                             </span>
                             {showUpdated && <span className="ml-auto flex-shrink-0">{formatRelative(fact.last_updated_at!)}</span>}
@@ -889,7 +868,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
             </section>
 
             {/* Activity */}
-            <section className="order-4 lg:col-span-8">
+            <section className="order-5 lg:col-span-8 lg:col-start-1">
               <SectionHeader
                 title={t('dashboard.activity')}
                 right={
@@ -1023,8 +1002,9 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 </div>
               )}
             </section>
-          {/* Right column — on mobile sits between Current state and Latest */}
-          <div className="order-2 lg:col-span-4 lg:row-span-3">
+          {/* Right column — desktop: top row next to the project header;
+              mobile: right after the overview, before the entity grid */}
+          <div className="order-3 lg:order-2 lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-4">
             <section>
               <SectionHeader
                 title={unresolvedCount > 0
@@ -1040,53 +1020,78 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                 <div className="space-y-3">
                   {state.conflicts.filter((c: any) => c.status !== 'resolved').map((conflict: any) => {
                     const relatedFact = state.currentState.find((f: any) => f.subject === conflict.subject);
-                    const conflictSource = conflict.proposedEvent?.source;
+                    const actions = conflictActions(conflict.currentState, conflict.proposedEvent?.action, conflict.conflict_type);
                     return (
                       <div
                         key={conflict.id}
                         onClick={relatedFact ? () => setSelectedFactId(relatedFact.id) : undefined}
-                        className={`group rounded-xl border border-line bg-white p-3.5 transition-colors ${relatedFact ? 'cursor-pointer hover:border-line-strong' : ''}`}
+                        className={`group relative rounded-xl border border-line bg-white p-3.5 transition-colors ${relatedFact ? 'cursor-pointer hover:border-line-strong' : ''}`}
                       >
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-semibold text-ink">{capitalize(conflict.subject)}</p>
-                          {relatedFact && <RiArrowRightSLine size={14} className="text-ink-faint opacity-0 transition-opacity group-hover:opacity-100" />}
-                          <span className="ml-auto inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
-                            {conflictTypeLabel(conflict.conflict_type) || t('dashboard.needsDecision')}
+                        {actions.keepKey && (
+                          <span className="absolute -top-2.5 right-3 rounded-full border border-line bg-white px-2 py-0.5 text-[11px] font-medium text-ink-secondary">
+                            {t(actions.currentKey)}
                           </span>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <p className="text-[15px] font-semibold leading-snug text-ink">{capitalize(conflict.subject)}</p>
+                          {relatedFact && <RiArrowRightSLine size={14} className="text-ink-faint opacity-0 transition-opacity group-hover:opacity-100" />}
                         </div>
                         <p className="mt-1.5 text-[13px] leading-[1.55] text-ink-secondary">
                           {conflict.description}
                         </p>
-                        {(conflictSource || conflict.detected_at) && (
-                          <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink-faint">
-                            {conflictSource === 'figma' ? <FigmaIcon size={12} /> : conflictSource === 'slack' ? <SlackIcon size={12} /> : conflictSource === 'linear' ? <LinearIcon size={12} /> : conflictSource === 'telegram' ? <TelegramIcon size={12} /> : null}
-                            {t('dashboard.flaggedAgo', { time: formatRelative(conflict.detected_at || conflict.created_at) })}
-                          </p>
-                        )}
-                        <div className="mt-3 flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                          {conflict.proposedEvent?.action && conflict.proposedEvent.action !== conflict.currentState && (
+                        <div className="mt-3 flex flex-wrap items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                          {actions.acceptKey && relatedFact ? (
                             <button
                               onClick={() => resolveConflict(conflict.id, 'accept_new', conflict.proposedEvent.action)}
                               disabled={resolving === conflict.id}
-                              className="whitespace-nowrap rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
+                              className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg border border-transparent bg-[var(--accent)] px-3.5 py-2 text-sm font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
                             >
-                              {t('dashboard.accept')}
+                              {t(actions.acceptKey, { subject: conflict.subject })}
+                            </button>
+                          ) : relatedFact && (
+                            <button onClick={() => setSelectedFactId(relatedFact.id)}
+                              className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg bg-[var(--accent)] px-3.5 py-2 text-sm font-medium text-[var(--accent-fg)] hover:bg-[var(--accent-hover)]">
+                              {t('decisionAction.review')}
                             </button>
                           )}
-                          <button
+                          {actions.keepKey && relatedFact && <button
                             onClick={() => resolveConflict(conflict.id, 'keep_current')}
                             disabled={resolving === conflict.id}
-                            className="whitespace-nowrap rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-line-strong hover:bg-fill-soft disabled:opacity-50"
+                            className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg border border-line px-3.5 py-2 text-sm font-medium text-ink-secondary transition-colors enabled:hover:border-transparent enabled:hover:bg-fill disabled:opacity-50"
                           >
-                            {t('dashboard.keepAsIs')}
-                          </button>
-                          <button
-                            onClick={() => resolveConflict(conflict.id, 'unclear')}
-                            disabled={resolving === conflict.id}
-                            className="whitespace-nowrap px-2 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink-secondary disabled:opacity-50"
-                          >
-                            {t('dashboard.notSure')}
-                          </button>
+                            {t(actions.keepKey, { subject: conflict.subject })}
+                          </button>}
+                        </div>
+                        <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1" onClick={(e) => e.stopPropagation()}>
+                          {relatedFact && actions.acceptKey && (
+                            <button onClick={() => setSelectedFactId(relatedFact.id)}
+                              className="text-[13px] font-medium text-ink-faint underline-offset-2 transition-colors hover:text-ink-secondary hover:underline">
+                              {t('decisionAction.viewEvidence')}
+                            </button>
+                          )}
+                          {conflict.resolution === 'needs_clarification' ? (
+                            <>
+                              <span className="inline-flex items-center gap-1 text-[13px] font-medium text-amber-700">
+                                <RiTimeLine size={13} aria-hidden="true" />{t('decisionAction.awaitingClarification')}
+                              </span>
+                              <button onClick={() => resolveConflict(conflict.id, 'reopen')}
+                                disabled={resolving === conflict.id}
+                                className="text-[13px] font-medium text-ink-faint underline-offset-2 transition-colors hover:text-ink-secondary hover:underline disabled:opacity-50">
+                                {t('dashboard.undo')}
+                              </button>
+                            </>
+                          ) : (
+                            <span className="inline-flex items-center">
+                              <button
+                                onClick={() => resolveConflict(conflict.id, 'clarify')}
+                                disabled={resolving === conflict.id}
+                                className="text-[13px] font-medium text-ink-faint underline-offset-2 transition-colors hover:text-ink-secondary hover:underline disabled:opacity-50"
+                              >
+                                {t('dashboard.notSure')}
+                              </button>
+                              <ClarificationHint id={`clarification-${conflict.id}`} />
+                            </span>
+                          )}
                         </div>
                       </div>
                     );
@@ -1118,7 +1123,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
         {/* Clip container keeps the off-canvas sheet from extending page scroll */}
         <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
         <div
-          className={`pointer-events-auto absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white p-6 shadow-2xl transition-transform duration-300 ease-out lg:inset-y-0 lg:left-auto lg:right-0 lg:max-h-none lg:w-full lg:max-w-md lg:rounded-none ${
+          className={`pointer-events-auto absolute inset-x-2 bottom-2 max-h-[85vh] overflow-y-auto overscroll-y-none rounded-2xl bg-white p-6 shadow-2xl transition-transform duration-300 ease-out lg:left-auto lg:top-2 lg:right-2 lg:bottom-2 lg:max-h-none lg:w-full lg:max-w-md ${
             selectedFact ? 'translate-y-0 lg:translate-x-0' : 'translate-y-full lg:translate-x-full lg:translate-y-0'
           }`}
           aria-hidden={!selectedFact}
@@ -1126,10 +1131,45 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
           <div className="mx-auto -mt-2 mb-3 h-1 w-10 rounded-full bg-line-strong lg:hidden" />
           {selectedFact && selectedMeta && (
             <>
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-ink">{capitalize(selectedFact.subject)}</h2>
-                <button onClick={() => setSelectedFactId(null)} className="text-ink-muted hover:text-ink-secondary">
-                  <RiCloseLine size={24} />
+              <div className="mb-6 flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="text-lg font-semibold text-ink">{capitalize(selectedFact.subject)}</h2>
+                  <div className="mt-2">
+                    <span className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_COLORS[selectedStatus].pill}`}>
+                      {selectedStatus === 'approved' && <RiCheckLine size={11} className="mr-0.5 -mt-px text-emerald-600" />}
+                      {selectedStateLabel}
+                    </span>
+                  </div>
+                  {(selectedHistory[0]?.previous_state || selectedHistory.length > 0) && (
+                    <p className="mt-2 flex flex-wrap items-center text-xs text-ink-faint">
+                      {selectedHistory[0]?.previous_state && (
+                        <span>
+                          {t('dashboard.previousState')}: {t(`status.${settledStatus(selectedHistory[0].previous_state?.toLowerCase())}`)}
+                        </span>
+                      )}
+                      {selectedHistory[0]?.previous_state && selectedHistory.length > 0 && (
+                        <span className="mx-1.5" aria-hidden="true">·</span>
+                      )}
+                      {selectedHistory.length > 0 && (
+                        <span>
+                          {selectedHistory.length} {tp(selectedHistory.length, 'plural.change')}
+                          {(() => {
+                            const people = new Set(selectedHistory.map((h: any) => h.author).filter(Boolean)).size;
+                            return people > 1 ? (
+                              <>
+                                <span className="mx-1.5" aria-hidden="true">·</span>
+                                {people} {tp(people, 'plural.person')}
+                              </>
+                            ) : null;
+                          })()}
+                        </span>
+                      )}
+                    </p>
+                  )}
+                </div>
+                <button onClick={() => setSelectedFactId(null)} aria-label={t('auth.close')}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-ink-faint transition hover:bg-fill hover:text-ink-secondary">
+                  <RiCloseLine size={20} />
                 </button>
               </div>
               <div className="space-y-5 border-t border-line-soft pt-4">
@@ -1139,30 +1179,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-ink-muted">{t('dashboard.current')}</span>
-                    <span className={`text-sm font-semibold ${selectedMeta.text}`}>{selectedStateLabel}</span>
-                  </div>
-                  {selectedHistory[0]?.previous_state && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-ink-muted">{t('dashboard.previousState')}</span>
-                      <span className="text-sm text-ink-secondary">{getStateLabel(selectedHistory[0].previous_state?.toLowerCase()) || capitalize(selectedHistory[0].previous_state)}</span>
-                    </div>
-                  )}
-                  {selectedHistory.length > 0 && (
-                    <p className="text-xs text-ink-faint">
-                      {selectedHistory.length} {tp(selectedHistory.length, 'plural.change')}
-                      {(() => {
-                        const people = new Set(selectedHistory.map((h: any) => h.author).filter(Boolean)).size;
-                        return people > 1 ? ` · ${people} ${tp(people, 'plural.person')}` : null;
-                      })()}
-                    </p>
-                  )}
-                </div>
-
                 <div>
-                  <p className="mb-3 text-sm font-medium text-ink">{t('dashboard.whyCurrentState')}</p>
                   <div className="relative ml-1 space-y-4 border-l border-line pl-4">
                     {groupedWhy.map((group: any) => (
                       <div key={group.id} className="relative">
@@ -1204,6 +1221,90 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                     ))}
                   </div>
                 </div>
+
+                {state.conflicts.filter((c: any) => c.subject === selectedFact.subject && c.status === 'unresolved').map((c: any) => {
+                  const actions = conflictActions(c.currentState, c.proposedEvent?.action, c.conflict_type);
+                  const source = c.proposedEvent?.raw?.source;
+                  const author = c.proposedEvent?.raw?.metadata?.author?.name || c.proposedEvent?.raw?.author_id;
+                  const drawerBase = displayStatus(selectedFact, false, prevSettledFor(selectedFact));
+                  const proposalText = c.proposedEvent?.action
+                    ? (PROPOSED_LABELS[c.proposedEvent.action] || capitalize(c.proposedEvent.action))
+                    : t('event.changed');
+                  return (
+                    <div key={c.id} className="rounded-xl border border-line bg-fill-soft p-4">
+                      <p className="text-xs font-medium text-ink-muted">{t('dashboard.openQuestion')}</p>
+                      {/* Same "settled → proposed" line as on the grid card — the quote below
+                          grounds it, the buttons resolve it. */}
+                      <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[13px] leading-[1.55] text-ink-muted">
+                        {['approved', 'inProgress', 'outOfScope'].includes(drawerBase) && (
+                          <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                            {t(`status.${drawerBase}`)}{selectedFact.current_value?.scope ? ` · ${selectedFact.current_value.scope}` : ''}
+                            <RiArrowRightLine size={12} aria-hidden="true" className="shrink-0" />
+                            <span className="sr-only"> → </span>
+                          </span>
+                        )}
+                        <span className="text-ink">{proposalText}</span>
+                      </p>
+                      <blockquote className="mt-2 text-sm leading-relaxed text-ink-secondary">{c.proposedEvent?.raw?.content || c.description}</blockquote>
+                      {(source || author) && (
+                        <p className="mt-2 flex flex-wrap items-center text-xs text-ink-muted">
+                          {source && capitalize(source)}
+                          {source && author && !isRawExternalId(author) && <span className="mx-1.5" aria-hidden="true">·</span>}
+                          {author && !isRawExternalId(author) && author}
+                        </p>
+                      )}
+                      {(actions.acceptKey || actions.keepKey) && (
+                        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                          {actions.acceptKey && (
+                            <button
+                              onClick={() => resolveConflict(c.id, 'accept_new', c.proposedEvent?.action)}
+                              disabled={resolving === c.id}
+                              className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg border border-transparent bg-[var(--accent)] px-3.5 py-2 text-sm font-medium text-[var(--accent-fg)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
+                            >
+                              {t(actions.acceptKey, { subject: c.subject })}
+                            </button>
+                          )}
+                          {actions.keepKey && (
+                            <button
+                              onClick={() => resolveConflict(c.id, 'keep_current')}
+                              disabled={resolving === c.id}
+                              className="inline-flex min-h-9 max-w-full items-center justify-center rounded-lg border border-line px-3.5 py-2 text-sm font-medium text-ink-secondary transition-colors enabled:hover:border-transparent enabled:hover:bg-fill disabled:opacity-50"
+                            >
+                              {t(actions.keepKey, { subject: c.subject })}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1">
+                        {c.resolution === 'needs_clarification' ? (
+                          <>
+                            <span className="inline-flex items-center gap-1 text-[13px] font-medium text-amber-700">
+                              <RiTimeLine size={13} aria-hidden="true" />{t('decisionAction.awaitingClarification')}
+                            </span>
+                            <button
+                              onClick={() => resolveConflict(c.id, 'reopen')}
+                              disabled={resolving === c.id}
+                              className="text-[13px] font-medium text-ink-faint underline-offset-2 transition-colors hover:text-ink-secondary hover:underline disabled:opacity-50"
+                            >
+                              {t('dashboard.undo')}
+                            </button>
+                          </>
+                        ) : (
+                          <span className="inline-flex items-center">
+                            <button
+                              onClick={() => resolveConflict(c.id, 'clarify')}
+                              disabled={resolving === c.id}
+                              className="text-[13px] font-medium text-ink-faint underline-offset-2 transition-colors hover:text-ink-secondary hover:underline disabled:opacity-50"
+                            >
+                              {t('dashboard.notSure')}
+                            </button>
+                            <ClarificationHint id={`clarification-drawer-${c.id}`} align="left" />
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
 
                 {process.env.NEXT_PUBLIC_IMPACT_ANALYSIS_ENABLED === 'true' && (
                   <DecisionsToRevisit

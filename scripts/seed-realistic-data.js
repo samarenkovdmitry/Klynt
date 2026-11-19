@@ -18,7 +18,7 @@ const dayAgo = (n) => new Date(now.getTime() - n * 24 * 60 * 60 * 1000);
 const PROJECTS = [
   {
     name: 'Lunar mobile',
-    description: 'iOS & Android app redesign. Figma + Slack.',
+    description: 'Mobile redesign of the Lunar food-delivery app — iOS and Android.',
     fileKey: 'mock_lunar_file',
     members: [
       { external_user_id: 'anna', external_source: 'figma', name: 'Anna', role: 'designer', avatar_url: '' },

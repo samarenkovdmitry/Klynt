@@ -33,6 +33,21 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return NextResponse.json({ error: 'Conflict not found' }, { status: 404 });
     }
 
+    // "Needs clarification" is not a resolution — the conflict stays open
+    // and keeps counting toward attention. The mark lives in `resolution`
+    // so a later real decision simply overwrites it.
+    if (decision === 'clarify' || decision === 'reopen') {
+      const { data, error } = await supabase
+        .from('conflicts')
+        .update({ resolution: decision === 'clarify' ? 'needs_clarification' : null })
+        .eq('id', id)
+        .eq('status', 'unresolved')
+        .select()
+        .single();
+      if (error) throw error;
+      return NextResponse.json({ success: true, conflict: data });
+    }
+
     // Find the related project fact by subject
     const { data: fact } = await supabase
       .from('project_facts')
@@ -44,14 +59,24 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     let finalState = fact?.current_state;
     let finalResolution = resolution;
 
+    // Event actions are not decision states: accepting or keeping them
+    // must settle the fact on a real decision state, otherwise the card
+    // keeps showing "needs decision" after the conflict is resolved.
+    const DECISION_STATE: Record<string, string> = {
+      add: 'approved', added: 'approved',
+      approve: 'approved', confirmed: 'approved',
+      modify: 'approved', modified: 'approved', change: 'approved',
+      remove: 'out_of_scope', removed: 'out_of_scope',
+      reject: 'out_of_scope', rejected: 'out_of_scope',
+      in_progress: 'in_progress',
+    };
+
     if (fact) {
       if (decision === 'accept_new' && newState) {
-        finalState = newState;
-        finalResolution = resolution || `Accepted: ${newState}`;
-      } else if (decision === 'unclear') {
-        finalState = 'unclear';
-        finalResolution = resolution || 'Marked as unclear';
+        finalState = DECISION_STATE[newState] || newState;
+        finalResolution = resolution || `Accepted: ${finalState}`;
       } else if (decision === 'keep_current') {
+        finalState = DECISION_STATE[fact.current_state] || fact.current_state;
         finalResolution = resolution || `Kept current state: ${finalState}`;
       }
 

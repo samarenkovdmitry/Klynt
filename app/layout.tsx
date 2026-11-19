@@ -6,6 +6,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
 import { getLocale } from "@/lib/market";
+import RouteProgress from "@/components/RouteProgress";
 
 export const metadata = rootMetadata();
 
@@ -39,6 +40,7 @@ export default function RootLayout({
       className={`${isRu ? inter.variable + " " + inter.className : instrument.variable + " " + instrument.className} ${GeistMono.variable} antialiased bg-white`}
     >
       <body className="flex min-h-screen flex-col bg-white">
+        <RouteProgress />
         <div className="flex flex-1 flex-col">{children}</div>
         <Analytics />
         <SpeedInsights />

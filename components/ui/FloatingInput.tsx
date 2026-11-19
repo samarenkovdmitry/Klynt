@@ -55,7 +55,7 @@ export function FloatingInput({
         required={required}
         autoComplete={autoComplete}
         placeholder=" "
-        className={`w-full rounded-2xl border border-line bg-field px-5 pt-7 pb-2 text-ink transition placeholder:text-transparent outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white ${
+        className={`w-full rounded-lg border border-line bg-field px-5 pt-7 pb-2 text-ink transition placeholder:text-transparent outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white ${
           size === 'lg' ? 'text-lg' : 'text-base'
         }`}
       />

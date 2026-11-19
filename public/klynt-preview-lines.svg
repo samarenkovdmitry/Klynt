@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="680" viewBox="0 0 1440 680" fill="none">
+  <defs>
+    <pattern id="dense" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0 0H4V4H0ZM4 4H8V8H4Z" fill="#39765F"/>
+    </pattern>
+    <pattern id="sparse" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M0 0H3V3H0ZM8 8H10V10H8Z" fill="#39765F"/>
+    </pattern>
+    <pattern id="deep" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0 0H4V4H0ZM4 4H8V8H4Z" fill="#134430"/>
+    </pattern>
+    <pattern id="stone" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="2" height="2" fill="#A9A596"/>
+    </pattern>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="680" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity="0"/>
+      <stop offset=".18" stop-color="white"/>
+      <stop offset=".72" stop-color="white"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="edges"><rect width="1440" height="680" fill="url(#fade)"/></mask>
+  </defs>
+  <g mask="url(#edges)">
+    <g stroke="#C9C5BA" stroke-opacity=".6">
+      <path d="M96 0V188Q96 220 64 220H32Q0 220 0 252V400Q0 432 32 432H108Q140 432 140 464V680"/>
+      <path d="M1344 0V280Q1344 312 1376 312H1408Q1440 312 1440 344V440Q1440 472 1408 472H1332Q1300 472 1300 504V680"/>
+    </g>
+    <path d="M0 188H48V220H80V284H48V316H0Z" fill="url(#stone)" opacity=".6"/>
+    <path d="M48 220H112V252H144V284H112V348H80V316H48Z" fill="url(#deep)" opacity=".35"/>
+    <path d="M112 284H176V348H144V380H80V348H112Z" fill="url(#sparse)" opacity=".4"/>
+    <rect x="80" y="236" width="16" height="16" fill="#39765F" opacity=".45"/>
+    <path d="M0 432H48V464H80V528H48V560H0Z" fill="url(#sparse)" opacity=".35"/>
+    <path d="M1440 348H1392V380H1360V444H1392V476H1440Z" fill="#CED7C9" opacity=".35"/>
+    <path d="M1392 380H1328V412H1296V444H1328V508H1360V476H1392Z" fill="url(#deep)" opacity=".4"/>
+    <path d="M1328 444H1264V508H1296V540H1360V508H1328Z" fill="url(#sparse)" opacity=".4"/>
+    <rect x="1376" y="396" width="16" height="16" fill="#39765F" opacity=".5"/>
+    <rect x="1392" y="396" width="8" height="16" fill="#CDD780" opacity=".6"/>
+    <path d="M1440 540H1376V572H1344V636H1440Z" fill="url(#stone)" opacity=".5"/>
+    <circle cx="96" cy="136" r="3" fill="#F7F5F0" stroke="#B8BAAE" stroke-opacity=".7"/>
+    <path d="M1344 236L1348 240L1344 244L1340 240Z" fill="#39765F" opacity=".6"/>
+  </g>
+</svg>

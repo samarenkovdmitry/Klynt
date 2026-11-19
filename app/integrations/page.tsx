@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
+import TopNavigation from '@/components/TopNavigation';
+import ProjectSettingsNav from '@/components/ProjectSettingsNav';
 import { siNotion, siLinear, siGoogledocs, siTelegram } from 'simple-icons';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
-import { RiArrowDownSLine, RiArrowRightUpLine, RiCheckboxCircleLine, RiDeleteBinLine, RiErrorWarningLine, RiEyeLine, RiForbidLine } from '@remixicon/react';
+import { RiArrowRightUpLine, RiCheckboxCircleLine, RiCloseLine, RiDeleteBinLine, RiErrorWarningLine, RiEyeLine, RiForbidLine } from '@remixicon/react';
 import { track } from '@vercel/analytics';
 import { getEnabledConnectors, getLocale } from '@/lib/market';
 import { t } from '@/lib/i18n';
@@ -45,12 +46,13 @@ function TrustList({ source }: { source: string }) {
 }
 
 // Keyword denylist — matching messages are dropped at ingestion, never stored.
-function PrivacyPanel({ projectId, integration, onChanged }: {
+function PrivacyPanel({ projectId, integration, onChanged, defaultOpen = false }: {
   projectId: string;
   integration: Integration;
   onChanged: () => Promise<void>;
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [busy, setBusy] = useState(false);
   const keywords: string[] = integration.config?.excluded_keywords || [];
   const [value, setValue] = useState(keywords.join(', '));
@@ -258,35 +260,33 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
   integration: Integration;
   onChanged: () => Promise<void>;
 }) {
-  const [open, setOpen] = useState(false);
   const [channels, setChannels] = useState<{ id: string; name: string; is_private: boolean }[]>([]);
   const [selected, setSelected] = useState<string[]>(integration.config?.channel_ids || []);
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadErr, setLoadErr] = useState<string | null>(null);
 
-  const names = integration.config?.channel_names || {};
-  const selectedNames = selected.map((id) => names[id] || id).slice(0, 3);
-
-  // First connect: no channels picked yet — open the picker so the user
-  // starts with one channel instead of silently tracking everything.
-  useEffect(() => {
-    if (integration.config?.channel_ids === undefined) load();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   const load = async () => {
-    setBusy(true);
-    setLoadErr(null);
     const res = await fetch(`/api/integrations/slack/channels?project_id=${projectId}`);
     const data = await res.json();
     if (res.ok) {
       setChannels(data.channels);
       setSelected(data.selected);
-      setOpen(true);
     } else {
       setLoadErr(data.error || t('integrations.loadChannelsFailed'));
     }
-    setBusy(false);
+    setLoading(false);
   };
+
+  const retry = () => {
+    setLoading(true);
+    setLoadErr(null);
+    load();
+  };
+
+  useEffect(() => {
+    Promise.resolve().then(load);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const save = async () => {
     setBusy(true);
@@ -297,7 +297,6 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
     });
     track('slack_channels_saved', { count: selected.length });
     await onChanged();
-    setOpen(false);
     setBusy(false);
   };
 
@@ -305,21 +304,20 @@ function SlackChannelsPanel({ projectId, integration, onChanged }: {
     setSelected((s) => (s.includes(id) ? s.filter((c) => c !== id) : [...s, id]));
 
   return (
-    <div className="mt-3 rounded-xl bg-fill-soft px-4 py-3">
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-ink-muted">
-          {selected.length > 0
-            ? `${t(selected.length === 1 ? 'integrations.slack.channelTracked' : 'integrations.slack.channelsTracked', { count: selected.length })}${selectedNames.length ? ` — ${selectedNames.join(', ')}${selected.length > 3 ? '…' : ''}` : ''}`
-            : t('integrations.slack.allChannels')}
-        </p>
-        <button onClick={open ? () => setOpen(false) : load} disabled={busy} className="text-xs font-medium text-ink-secondary hover:text-ink disabled:opacity-50">
-          {open ? t('integrations.slack.close') : t('integrations.slack.pickChannels')}
-        </button>
-      </div>
-      {loadErr && <p className="mt-2 text-xs text-red-500">{loadErr}</p>}
-      {open && (
+    <div className="rounded-xl bg-fill-soft px-4 py-3">
+      <p className="text-xs font-medium text-ink-secondary">{t('integrations.slack.channelsTitle')}</p>
+      {loading && <p className="mt-2 text-xs text-ink-faint">{t('integrations.loading')}</p>}
+      {loadErr && (
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <p className="text-xs text-red-500">{loadErr}</p>
+          <button onClick={retry} className="shrink-0 text-xs font-medium text-ink-secondary hover:text-ink">
+            {t('integrations.retry')}
+          </button>
+        </div>
+      )}
+      {!loading && !loadErr && (
         <>
-          <p className="mt-3 text-[11px] text-ink-faint">
+          <p className="mt-2 text-[11px] text-ink-faint">
             {t('integrations.slack.firstHint')}
           </p>
           <div className="mt-1.5 max-h-48 space-y-1 overflow-y-auto">
@@ -359,29 +357,33 @@ function LinearTeamsPanel({ projectId, integration, onChanged }: {
   integration: Integration;
   onChanged: () => Promise<void>;
 }) {
-  const [open, setOpen] = useState(false);
   const [teams, setTeams] = useState<{ id: string; name: string; key: string }[]>([]);
   const [selected, setSelected] = useState<string[]>(integration.config?.team_ids || []);
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadErr, setLoadErr] = useState<string | null>(null);
 
-  const names = integration.config?.team_names || {};
-  const selectedNames = selected.map((id) => names[id] || id).slice(0, 3);
-
   const load = async () => {
-    setBusy(true);
-    setLoadErr(null);
     const res = await fetch(`/api/integrations/linear/teams?project_id=${projectId}`);
     const data = await res.json();
     if (res.ok) {
       setTeams(data.teams);
       setSelected(data.selected);
-      setOpen(true);
     } else {
       setLoadErr(data.error || t('integrations.loadTeamsFailed'));
     }
-    setBusy(false);
+    setLoading(false);
   };
+
+  const retry = () => {
+    setLoading(true);
+    setLoadErr(null);
+    load();
+  };
+
+  useEffect(() => {
+    Promise.resolve().then(load);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const save = async () => {
     setBusy(true);
@@ -394,7 +396,6 @@ function LinearTeamsPanel({ projectId, integration, onChanged }: {
       body: JSON.stringify({ projectId, teamIds: selected, teamNames }),
     });
     await onChanged();
-    setOpen(false);
     setBusy(false);
   };
 
@@ -402,29 +403,25 @@ function LinearTeamsPanel({ projectId, integration, onChanged }: {
     setSelected((s) => (s.includes(id) ? s.filter((t) => t !== id) : [...s, id]));
 
   return (
-    <div className="mt-3 rounded-xl bg-fill-soft px-4 py-3">
+    <div className="rounded-xl bg-fill-soft px-4 py-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-ink-muted">
-          {integration.config?.organization_name && (
-            <span className="mr-2 font-medium text-ink">{integration.config.organization_name}</span>
-          )}
-          {selected.length > 0
-            ? `${t(selected.length === 1 ? 'integrations.linear.teamTracked' : 'integrations.linear.teamsTracked', { count: selected.length })}${selectedNames.length ? ` — ${selectedNames.join(', ')}${selected.length > 3 ? '…' : ''}` : ''}`
-            : t('integrations.linear.allTeams')}
-        </p>
-        <div className="flex items-center gap-2">
-          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${integration.config?.webhook_id ? 'border-green-300 bg-white text-green-700' : 'border-amber-300 bg-white text-amber-700'}`}>
-            {integration.config?.webhook_id ? t('integrations.linear.live') : t('integrations.linear.noWebhook')}
-          </span>
-          <button onClick={open ? () => setOpen(false) : load} disabled={busy} className="text-xs font-medium text-ink-secondary hover:text-ink disabled:opacity-50">
-            {open ? t('integrations.linear.close') : t('integrations.linear.pickTeams')}
+        <p className="text-xs font-medium text-ink-secondary">{t('integrations.linear.teamsTitle')}</p>
+        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${integration.config?.webhook_id ? 'border-green-300 bg-white text-green-700' : 'border-amber-300 bg-white text-amber-700'}`}>
+          {integration.config?.webhook_id ? t('integrations.linear.live') : t('integrations.linear.noWebhook')}
+        </span>
+      </div>
+      {loading && <p className="mt-2 text-xs text-ink-faint">{t('integrations.loading')}</p>}
+      {loadErr && (
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <p className="text-xs text-red-500">{loadErr}</p>
+          <button onClick={retry} className="shrink-0 text-xs font-medium text-ink-secondary hover:text-ink">
+            {t('integrations.retry')}
           </button>
         </div>
-      </div>
-      {loadErr && <p className="mt-2 text-xs text-red-500">{loadErr}</p>}
-      {open && (
+      )}
+      {!loading && !loadErr && (
         <>
-          <div className="mt-3 max-h-48 space-y-1 overflow-y-auto">
+          <div className="mt-2 max-h-48 space-y-1 overflow-y-auto">
             {teams.map((t) => (
               <label key={t.id} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-ink hover:bg-white/60">
                 <input
@@ -580,6 +577,7 @@ export default function IntegrationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
+  const [settingsSource, setSettingsSource] = useState<string | null>(null);
 
   const refreshIntegrations = async () => {
     const res = await fetch('/api/integrations');
@@ -628,11 +626,28 @@ export default function IntegrationsPage() {
       });
   }, []);
 
+  useEffect(() => {
+    if (!settingsSource) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSettingsSource(null);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [settingsSource]);
+
+  useEffect(() => {
+    if (!settingsSource) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [settingsSource]);
+
   const disconnect = async (source: string) => {
     if (!selectedProjectId) return;
     if (!window.confirm(t('integrations.disconnectConfirm', { source }))) return;
     const res = await fetch(`/api/integrations?project_id=${selectedProjectId}&source=${source}`, { method: 'DELETE' });
     if (res.ok) {
+      setSettingsSource(null);
       await refreshIntegrations();
       setNotice({ kind: 'success', text: t('integrations.disconnectedNotice', { name: source.charAt(0).toUpperCase() + source.slice(1) }) });
     } else {
@@ -656,17 +671,64 @@ export default function IntegrationsPage() {
     return d.toLocaleDateString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric' });
   };
 
+  // One-line summary of what the source currently tracks — shown on the card,
+  // full controls live in the settings drawer.
+  const scopeText = (source: string, integration: Integration): string => {
+    const cfg = integration.config || {};
+    if (source === 'figma') return cfg.file_name || t('integrations.figma.noFile');
+    if (source === 'slack') {
+      const n = (cfg.channel_ids || []).length;
+      return n
+        ? t(n === 1 ? 'integrations.slack.channelTracked' : 'integrations.slack.channelsTracked', { count: n })
+        : t('integrations.slack.allChannels');
+    }
+    if (source === 'linear') {
+      const n = (cfg.team_ids || []).length;
+      return n
+        ? t(n === 1 ? 'integrations.linear.teamTracked' : 'integrations.linear.teamsTracked', { count: n })
+        : t('integrations.linear.allTeams');
+    }
+    if (source === 'telegram') {
+      return cfg.chat_id
+        ? t('integrations.telegram.tracking', { chat: cfg.chat_title || 'chat' })
+        : t('integrations.telegram.waiting');
+    }
+    return '';
+  };
+
+  const statusParts = (source: string, integration: Integration): string[] => [
+    integration.status === 'active' ? t('integrations.connected') : integration.status,
+    scopeText(source, integration),
+    `${t('integrations.lastSync')} ${formatDate(integration.last_sync_at)}`,
+    integration.event_count ? t('integrations.imported', { count: integration.event_count }) : '',
+  ].filter(Boolean);
+
+  const renderMeta = (parts: string[]) => parts.map((part, i) => (
+    <span key={i}>
+      {i > 0 && <span className="mx-1.5" aria-hidden="true">·</span>}
+      {part}
+    </span>
+  ));
+
+  const drawerService = AVAILABLE.find((s) => s.source === settingsSource);
+  const drawerIntegration = settingsSource
+    ? integrations.find((i) => i.source === settingsSource && i.project_id === selectedProjectId)
+    : undefined;
+
   return (
-    <div className="flex min-h-screen flex-col bg-app-bg lg:flex-row">
-      <Sidebar
+    <div className="flex min-h-screen flex-col bg-app-bg">
+      <TopNavigation
         projects={projects}
         selectedProjectId={selectedProjectId}
         activeItem="integrations"
+        onProjectChange={handleProjectChange}
+        integrations={loading ? undefined : integrations}
         loading={loading}
       />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-3 py-6 sm:px-8 sm:py-8">
-        <h1 className="text-2xl font-semibold text-ink">{t('integrations.title')}</h1>
+        <h1 className="text-2xl font-semibold text-ink">{t('nav.projectSettings')}</h1>
+        <ProjectSettingsNav projectId={selectedProjectId} active="sources" />
         <p className="mt-1 text-sm text-ink-muted">{t('integrations.subtitle')}</p>
         <a href="/security" target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[var(--accent-link)] hover:underline">
           {t('integrations.securityLink')}
@@ -687,123 +749,78 @@ export default function IntegrationsPage() {
           </div>
         )}
 
-        {projects.length > 1 && (
-          <div className="mt-6">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('integrations.project')}</p>
-            <div className="relative max-w-xs">
-              <select
-                value={selectedProjectId || ''}
-                onChange={(e) => handleProjectChange(e.target.value)}
-                className="w-full appearance-none rounded-xl border border-line bg-field pl-4 pr-9 py-2.5 text-sm text-ink transition outline-none focus:border-[var(--accent-link)] focus:shadow-[inset_0_0_0_1px_var(--accent-link)] focus:bg-white"
-              >
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-ink-muted">
-                <RiArrowDownSLine size={16} />
-              </div>
-            </div>
-          </div>
-        )}
-
         {loading && <p className="mt-6 text-sm text-ink-muted">{t('integrations.loading')}</p>}
         {error && <p className="mt-6 text-sm text-red-500">{error}</p>}
 
         {!loading && !error && (
           <>
             <div className="mt-8 space-y-3">
-              {AVAILABLE.map((service) => {
+              {AVAILABLE.filter((s) => s.implemented).map((service) => {
                 const integration = integrations.find(
                   i => i.source === service.source && i.project_id === selectedProjectId,
                 );
+                const chatBound = service.source !== 'telegram' || Boolean(integration?.config?.chat_id);
+                // First Slack connect: no channels picked yet — surface the
+                // picker as the primary action instead of a neutral "Configure".
+                const needsSetup = service.source === 'slack' && integration?.config?.channel_ids === undefined;
                 return (
                   <div
                     key={service.source}
                     className="rounded-2xl border border-line bg-white p-4"
                   >
                     <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fill-soft">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-fill-soft">
                         <BrandIcon source={service.source} size={22} className="h-[22px] w-[22px]" />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p className="font-medium text-ink">{service.name}</p>
-                        <p className="text-xs text-ink-muted">
+                        <p className="truncate text-xs text-ink-muted">
                           {integration
-                            ? `${integration.status === 'active' ? t('integrations.connected') : integration.status} · ${t('integrations.lastSync')} ${formatDate(integration.last_sync_at)}${integration.event_count ? ` · ${t('integrations.imported', { count: integration.event_count })}` : ''}`
+                            ? renderMeta(statusParts(service.source, integration))
                             : t(`integrations.${service.source}.desc`)}
                         </p>
                       </div>
                     </div>
-                    {integration ? (
-                      <div className="flex items-center gap-3">
-                        <span className={`h-2 w-2 rounded-full ${integration.status === 'active' ? 'bg-green-500' : 'bg-line-strong'}`} />
-                        {service.source !== 'telegram' && (
+                    {integration && chatBound ? (
+                      <div className="flex shrink-0 items-center gap-3">
+                        {integration.status !== 'active' && service.source !== 'telegram' && (
                           <a
                             href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
                             onClick={() => track('integration_connect_clicked', { source: service.source })}
-                            className="rounded-full bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill disabled:cursor-not-allowed disabled:opacity-50"
+                            className="rounded-lg bg-fill px-5 py-2.5 text-sm font-medium text-ink-secondary transition duration-200 active:scale-[0.98] hover:bg-fill"
                           >
                             {t('integrations.reconnect')}
                           </a>
                         )}
+                        <span className={`h-2 w-2 rounded-full ${integration.status === 'active' ? 'bg-green-500' : 'bg-amber-500'}`} />
                         <button
-                          onClick={() => disconnect(service.source)}
-                          className="text-xs font-medium text-ink-faint transition hover:text-red-600"
+                          onClick={() => setSettingsSource(service.source)}
+                          className={`rounded-lg px-5 py-2.5 text-sm font-medium transition duration-200 active:scale-[0.98] ${
+                            needsSetup
+                              ? 'bg-[var(--accent)] text-[var(--accent-fg)] hover:bg-[var(--accent-hover)]'
+                              : 'bg-fill text-ink-secondary hover:bg-fill'
+                          }`}
                         >
-                          {t('integrations.disconnect')}
+                          {needsSetup ? t('integrations.slack.pickChannels') : t('integrations.configure')}
                         </button>
                       </div>
-                    ) : service.implemented ? (
-                      service.source === 'telegram' ? null : (
-                        <a
-                          href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
-                          onClick={() => track('integration_connect_clicked', { source: service.source })}
-                          className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {t('integrations.connect')}
-                        </a>
-                      )
-                    ) : (
-                      <button
-                        disabled
-                        className="px-2 py-2.5 text-sm font-medium text-ink-faint"
+                    ) : !integration && service.source !== 'telegram' ? (
+                      <a
+                        href={`/api/integrations/${service.source}/connect?project_id=${selectedProjectId}`}
+                        onClick={() => track('integration_connect_clicked', { source: service.source })}
+                        className="shrink-0 rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition duration-200 active:scale-[0.98] hover:bg-[var(--accent-hover)]"
                       >
-                        {t('integrations.comingSoon')}
-                      </button>
-                    )}
+                        {t('integrations.connect')}
+                      </a>
+                    ) : integration ? (
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-amber-500" />
+                    ) : null}
                     </div>
-                    {!integration && service.implemented && <TrustList source={service.source} />}
-                    {integration && ['slack', 'telegram'].includes(service.source) && selectedProjectId && (
-                      <PrivacyPanel
-                        projectId={selectedProjectId}
-                        integration={integration}
-                        onChanged={refreshIntegrations}
-                      />
-                    )}
-                    {integration && service.source === 'figma' && selectedProjectId && (
-                      <FigmaWatchPanel
-                        projectId={selectedProjectId}
-                        integration={integration}
-                        onChanged={refreshIntegrations}
-                      />
-                    )}
-                    {integration && service.source === 'slack' && selectedProjectId && (
-                      <SlackChannelsPanel
-                        projectId={selectedProjectId}
-                        integration={integration}
-                        onChanged={refreshIntegrations}
-                      />
-                    )}
-                    {integration && service.source === 'linear' && selectedProjectId && (
-                      <LinearTeamsPanel
-                        projectId={selectedProjectId}
-                        integration={integration}
-                        onChanged={refreshIntegrations}
-                      />
-                    )}
-                    {service.source === 'telegram' && selectedProjectId && (
+                    {!integration && <TrustList source={service.source} />}
+                    {/* Telegram binding is an active flow — stays on the card
+                        until the chat is linked; afterwards it moves to the drawer */}
+                    {service.source === 'telegram' && selectedProjectId && !chatBound && (
                       <TelegramConnectPanel
                         projectId={selectedProjectId}
                         integration={integration}
@@ -814,10 +831,133 @@ export default function IntegrationsPage() {
                   </div>
                 );
               })}
+
+              {AVAILABLE.some((s) => !s.implemented) && (
+                <div className="rounded-2xl border border-line bg-white p-4">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-faint">
+                    {t('integrations.comingSoon')}
+                  </p>
+                  <div className="divide-y divide-line-soft">
+                    {AVAILABLE.filter((s) => !s.implemented).map((service) => (
+                      <div key={service.source} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-fill-soft">
+                          <BrandIcon source={service.source} size={22} className="h-[22px] w-[22px]" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-ink">{service.name}</p>
+                          <p className="truncate text-xs text-ink-muted">{t(`integrations.${service.source}.desc`)}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
       </main>
+
+      {settingsSource && drawerIntegration && selectedProjectId && (
+        <div className="fixed inset-0 z-40 bg-black/20" onClick={() => setSettingsSource(null)} />
+      )}
+      {/* Clip container keeps the off-canvas sheet from extending page scroll */}
+      <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+        <div
+          className={`pointer-events-auto absolute inset-x-2 bottom-2 max-h-[85vh] overflow-y-auto overscroll-y-none rounded-2xl bg-white p-6 shadow-2xl transition-transform duration-300 ease-out lg:left-auto lg:top-2 lg:right-2 lg:bottom-2 lg:max-h-none lg:w-full lg:max-w-md ${
+            settingsSource && drawerIntegration
+              ? 'translate-y-0 lg:translate-x-0'
+              : 'translate-y-full lg:translate-x-full lg:translate-y-0'
+          }`}
+          aria-hidden={!(settingsSource && drawerIntegration)}
+        >
+          <div className="mx-auto -mt-2 mb-3 h-1 w-10 rounded-full bg-line-strong lg:hidden" />
+          {settingsSource && drawerService && drawerIntegration && selectedProjectId && (
+            <>
+              <div className="flex items-start justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-fill-soft">
+                    <BrandIcon source={settingsSource} size={22} className="h-[22px] w-[22px]" />
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="font-semibold text-ink">{drawerService.name}</h2>
+                    <p className="truncate text-xs text-ink-muted">{renderMeta(statusParts(settingsSource, drawerIntegration))}</p>
+                  </div>
+                </div>
+                <button onClick={() => setSettingsSource(null)} aria-label={t('auth.close')}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-ink-faint transition hover:bg-fill hover:text-ink-secondary">
+                  <RiCloseLine size={20} />
+                </button>
+              </div>
+
+              <div className="mt-5 space-y-3 border-t border-line-soft pt-4">
+                {settingsSource === 'figma' && (
+                  <FigmaWatchPanel
+                    projectId={selectedProjectId}
+                    integration={drawerIntegration}
+                    onChanged={refreshIntegrations}
+                  />
+                )}
+                {settingsSource === 'slack' && (
+                  <SlackChannelsPanel
+                    projectId={selectedProjectId}
+                    integration={drawerIntegration}
+                    onChanged={refreshIntegrations}
+                  />
+                )}
+                {settingsSource === 'linear' && (
+                  <LinearTeamsPanel
+                    projectId={selectedProjectId}
+                    integration={drawerIntegration}
+                    onChanged={refreshIntegrations}
+                  />
+                )}
+                {settingsSource === 'telegram' && (
+                  <TelegramConnectPanel
+                    projectId={selectedProjectId}
+                    integration={drawerIntegration}
+                    onChanged={refreshIntegrations}
+                    onNotice={setNotice}
+                  />
+                )}
+                {['slack', 'telegram'].includes(settingsSource) && (
+                  <PrivacyPanel
+                    projectId={selectedProjectId}
+                    integration={drawerIntegration}
+                    onChanged={refreshIntegrations}
+                    defaultOpen
+                  />
+                )}
+                {settingsSource === 'figma' && (
+                  <div>
+                    <p className="mb-2 text-xs font-medium text-ink-secondary">{t('integrations.accessData')}</p>
+                    <TrustList source="figma" />
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 flex items-center justify-between border-t border-line-soft pt-4">
+                {settingsSource !== 'telegram' ? (
+                  <a
+                    href={`/api/integrations/${settingsSource}/connect?project_id=${selectedProjectId}`}
+                    onClick={() => track('integration_connect_clicked', { source: settingsSource })}
+                    className="text-xs font-medium text-ink-secondary hover:text-ink"
+                  >
+                    {t('integrations.reconnect')}
+                  </a>
+                ) : (
+                  <span />
+                )}
+                <button
+                  onClick={() => disconnect(settingsSource)}
+                  className="text-xs font-medium text-ink-faint transition hover:text-red-600"
+                >
+                  {t('integrations.disconnect')}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
