@@ -12,7 +12,7 @@ const OG_IMAGE = {
   url: "/opengraph-image.png",
   width: 1200,
   height: 630,
-  alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
+  alt: `${SITE_NAME} | ${SITE_TAGLINE}`,
 };
 
 type PageSeoOptions = {
@@ -63,7 +63,7 @@ export function rootMetadata(): Metadata {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+      default: `${SITE_NAME} | ${SITE_TAGLINE}`,
       template: `%s | ${SITE_NAME}`,
     },
     description: DEFAULT_DESCRIPTION,
@@ -75,13 +75,13 @@ export function rootMetadata(): Metadata {
       locale: "en_US",
       url: siteUrl,
       siteName: SITE_NAME,
-      title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+      title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description: DEFAULT_DESCRIPTION,
       images: [OG_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+      title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description: DEFAULT_DESCRIPTION,
       images: [OG_IMAGE.url],
     },

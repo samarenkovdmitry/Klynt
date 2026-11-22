@@ -3,7 +3,7 @@ export const SITE_NAME = "Klynt";
 export const SITE_TAGLINE = "Project truth layer";
 
 export const DEFAULT_DESCRIPTION =
-  "Klynt keeps track of what's actually true in your project. It collects meaningful changes from Figma, Slack and docs, and turns them into a current state you can read in 30 seconds.";
+  "Klynt keeps track of project decisions across your team's tools and flags changes that could put those decisions in question.";
 
 /** Production canonical origin (no trailing slash). */
 export function getSiteUrl(): string {
