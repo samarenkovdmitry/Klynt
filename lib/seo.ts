@@ -9,9 +9,9 @@ import {
 } from "./site";
 
 const OG_IMAGE = {
-  url: "/opengraph-image.jpg",
-  width: 1733,
-  height: 907,
+  url: "/opengraph-image.png",
+  width: 1200,
+  height: 630,
   alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
 };
 
