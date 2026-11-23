@@ -4,7 +4,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "You're invited",
-  description: "You've been invited to a project on Klynt — the project truth layer.",
+  description: "You've been invited to a project on Klynt, the project truth layer.",
   path: "/invite",
   index: false,
 });

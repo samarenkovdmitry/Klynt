@@ -19,9 +19,9 @@ function buildBetaAccessContent(accessUrl: string) {
     : {
         greeting: "Hey,",
         ready: "Your Klynt workspace is ready.",
-        body: "We set up a sample project so you can see how Klynt reads a project's current state — what changed, what's approved, and what's still unresolved.",
+        body: "We set up a sample project so you can see how Klynt tracks decisions: what changed, what's approved, and what still needs attention.",
         button: "Open Klynt",
-        note: "This link signs you in instantly — no password needed.",
+        note: "This link signs you in instantly. No password needed.",
         sign: "— Dmitry",
       };
 
