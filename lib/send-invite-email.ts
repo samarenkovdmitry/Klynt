@@ -24,7 +24,7 @@ function buildInviteContent(projectName: string, inviterName: string | null, acc
     : {
         greeting: "Hey,",
         inviter: inviterName ? `${escapeHtml(inviterName)} invited you` : "You've been invited",
-        body: "Klynt keeps track of what is actually true in a project — what changed, what's approved, and what needs attention — from Figma, Slack and Linear.",
+        body: "Klynt keeps track of project decisions across tools like Figma, Slack and Linear, and flags changes that could put them in question.",
         button: "Accept invite",
         fallback: "Or paste this link:",
         sign: "— Klynt",

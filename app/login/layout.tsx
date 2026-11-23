@@ -4,7 +4,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Log in",
-  description: "Log in to Klynt to see what's actually true in your projects.",
+  description: "Log in to Klynt to see what's agreed and what's changed in your projects.",
   path: "/login",
   index: false,
 });
