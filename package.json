@@ -12,6 +12,7 @@
     "test:impact": "tsx scripts/test-impact-mock.ts",
     "test:impact:integration": "tsx --env-file=.env.local scripts/test-impact-integration.ts",
     "eval:impact": "tsx --env-file=.env.local scripts/eval-impact.ts",
+    "eval:interpret": "tsx --env-file=.env.local scripts/eval-interpret.ts",
     "create:test-project": "node scripts/create-test-project-simple.js",
     "check:integration": "node scripts/check-integration.js",
     "seed:mock-events": "node scripts/seed-mock-events.js",
