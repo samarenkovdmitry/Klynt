@@ -1,6 +1,6 @@
 // Real-LLM evaluation of impact analysis verdicts on labelled scenarios.
 // Run: tsx --env-file=.env.local scripts/eval-impact.ts  (uses ANTHROPIC_API_KEY)
-import { impactPrompt, validateImpact, type ImpactInput, type ImpactDecision } from '../lib/ai/impact-analysis';
+import { analyzeImpact, type ImpactInput, type ImpactDecision } from '../lib/ai/impact-analysis';
 import { getLLM, extractJson } from '../lib/ai/llm';
 
 const ev = (content: string) => ({ id: 'e1', source: 'slack', timestamp: '2025-03-01T00:00:00Z', content });
@@ -100,6 +100,12 @@ const CASES: { name: string; event: string; locale?: 'en' | 'ru'; decisions: [Im
   { name: 'noise: empty figma version', event: 'Saved a new version of the file.',
     decisions: [[dec('d29', 'Checkout flow', 'Checkout approved: we confirm payment instantly and show the success state right away.'),
       ['unrelated', 'insufficient_evidence']]] },
+  { name: 'event implements the approved constraint', event: 'Agreed with John: loyalty rewards move to post-launch. Remove the stamp-card entry from MVP navigation; do not reserve an empty screen for it.',
+    decisions: [[dec('d30', 'Bottom navigation', 'Approved: Home, Orders, Account. Please keep the text labels visible; the icon-only version was harder to use in the sessions.'),
+      ['unrelated', 'already_addressed']]] },
+  { name: 'laterEvidence cannot create a dependency', event: 'Address entry is approved provided customers can enter an address manually when postcode lookup fails. Flat number must remain optional.',
+    decisions: [[dec('d31', 'Dark mode', 'Dark mode is approved for the mobile launch only. The restaurant portal stays light. Follow the device setting rather than adding a separate switch.',
+      ['Contrast fixes on dark mode checkout are still failing review.']), ['unrelated', 'insufficient_evidence']]] },
 ];
 
 async function main() {
@@ -109,25 +115,33 @@ async function main() {
     const decisions = c.decisions.map(([d]) => d);
     const input: ImpactInput = { sourceFactId: 'f-src', event: ev(c.event), decisions, asOf: '2025-03-02T00:00:00Z', locale: c.locale || 'en' };
     try {
-      const raw = await llm.complete(impactPrompt(input));
+      // Run the full pipeline (generator + grounding + critic) and capture the
+      // generator's raw output for the verdict display.
+      let raw = '';
+      const result = await analyzeImpact(input, async req => {
+        const r = await llm.complete(req);
+        if (!raw) raw = r;
+        return r;
+      });
       const parsed = JSON.parse(extractJson(raw));
-      for (const a of parsed.assessments || []) {
-        const expected = c.decisions.find(([d]) => d.id === a.decisionId)?.[1] || [];
-        const hit = expected.includes(a.verdict);
-        if (a.verdict === 'revisit' && expected.includes('revisit')) tp++;
-        else if (a.verdict === 'revisit') fp++;
-        else if (expected.includes('revisit')) fn++;
-        if (hit) ok++;
+      const suggested = new Set(result.suggestions.map(s => s.decisionId));
+      for (const [d, expected] of c.decisions) {
+        const wantsRevisit = expected.includes('revisit');
+        const gotRevisit = suggested.has(d.id);
+        if (gotRevisit && wantsRevisit) tp++;
+        else if (gotRevisit) fp++;
+        else if (wantsRevisit) fn++;
+        if (gotRevisit === wantsRevisit) ok++;
       }
-      try { validateImpact(parsed, input); }
-      catch { groundingFails++; }
-      const verdicts = (parsed.assessments || []).map((a: any) => `${a.decisionId}:${a.verdict}`).join(' ');
-      console.log(`${verdicts.padEnd(40)} ${c.name}`);
+      const verdicts = (parsed.assessments || [])
+        .map((a: any) => `${a.decisionId}:${a.verdict}${suggested.has(a.decisionId) ? '' : a.verdict === 'revisit' ? '→dropped' : ''}`)
+        .join(' ');
+      console.log(`${verdicts.padEnd(46)} ${c.name}`);
     } catch (e: any) {
       console.log(`ERROR ${c.name}: ${e.message}`); process.exitCode = 1;
     }
   }
   const total = CASES.reduce((n, c) => n + c.decisions.length, 0);
-  console.log(`\nverdicts correct: ${ok}/${total} · revisit precision: ${tp}/${tp + fp} · recall: ${tp}/${tp + fn} · grounding failures: ${groundingFails}`);
+  console.log(`\nverdicts correct: ${ok}/${total} · revisit precision: ${tp}/${tp + fp} · recall: ${tp}/${tp + fn}`);
 }
 main();

@@ -74,15 +74,26 @@ await check('fabricated decisionId → rejected', async () => {
     /Invalid impact decision reference/);
 });
 
-await check('quote absent from source → rejected', async () => {
-  await assert.rejects(
-    analyzeImpact(input, llm([{ ...revisit, assumptionQuote: 'a fabricated quote never said' }, unrelated('d2')])),
-    /lacks grounded evidence/);
+await check('quote absent from source → suggestion dropped, not thrown', async () => {
+  const r = await analyzeImpact(input, llm([{ ...revisit, assumptionQuote: 'a fabricated quote never said' }, unrelated('d2')]));
+  assert.equal(r.suggestions.length, 0);
 });
 
-await check('incomplete assessments → rejected', async () => {
-  await assert.rejects(
-    analyzeImpact(input, llm([revisit])), /Incomplete impact assessment/);
+await check('critic drop → suggestion removed', async () => {
+  let calls = 0;
+  const r = await analyzeImpact(input, () => {
+    calls++;
+    return Promise.resolve(calls === 1
+      ? JSON.stringify({ assessments: [revisit, unrelated('d2')] })
+      : JSON.stringify({ verdicts: [{ suggestionId: 's1', verdict: 'drop' }] }));
+  });
+  assert.equal(calls, 2);
+  assert.equal(r.suggestions.length, 0);
+});
+
+await check('incomplete assessments → unassessed decisions skipped', async () => {
+  const r = await analyzeImpact(input, llm([unrelated('d1')]));
+  assert.equal(r.suggestions.length, 0);
 });
 
 await check('malformed JSON → rejected', async () => {

@@ -21,9 +21,21 @@ export function extractJson(text: string): string {
     t = t.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
   }
   const start = t.indexOf('{');
-  const end = t.lastIndexOf('}');
-  if (start === -1 || end === -1 || end <= start) return t;
-  return t.slice(start, end + 1);
+  if (start === -1) return t;
+  // Take the first balanced object only — weaker models append prose or a
+  // duplicate block, and slicing to the last '}' would corrupt the parse.
+  let depth = 0, inStr = false, esc = false;
+  for (let i = start; i < t.length; i++) {
+    const ch = t[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === '\\') esc = true;
+      else if (ch === '"') inStr = false;
+    } else if (ch === '"') inStr = true;
+    else if (ch === '{') depth++;
+    else if (ch === '}' && --depth === 0) return t.slice(start, i + 1);
+  }
+  return t.slice(start);
 }
 
 export function getLLM(): LLMProvider {
