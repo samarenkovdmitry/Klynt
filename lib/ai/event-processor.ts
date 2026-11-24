@@ -138,6 +138,23 @@ function buildPrompt(rawEvent: EventInput, context?: any, locale: 'en' | 'ru' = 
   return prompt;
 }
 
+// Actions and stored states drift apart in spelling ("approve" vs "approved",
+// "remove" vs "out of scope", "in_progress" vs "in progress") — compare
+// canonical groups, not surface forms.
+const STATE_GROUPS: Record<string, string> = {
+  approve: 'approved', approved: 'approved', confirm: 'approved', confirmed: 'approved',
+  done: 'approved', completed: 'approved',
+  remove: 'removed', removed: 'removed', 'out of scope': 'removed',
+  reject: 'removed', rejected: 'removed', revert: 'removed', cancel: 'removed', cancelled: 'removed',
+  modify: 'modified', modified: 'modified', change: 'modified', changed: 'modified',
+  add: 'added', added: 'added',
+};
+
+export function canonicalState(s: string): string {
+  const n = s.toLowerCase().replace(/_/g, ' ').trim();
+  return STATE_GROUPS[n] || n;
+}
+
 export async function detectConflicts(
   newEvent: ConflictEventInput,
   existingFact: any
@@ -152,32 +169,32 @@ export async function detectConflicts(
     return conflicts;
   }
 
-  // States arrive in mixed shapes ("in_progress", "In Progress") — normalize
-  // to lowercase space-separated form before any comparison.
-  const norm = (s: string) => s.toLowerCase().replace(/_/g, ' ').trim();
-  const newAction = norm(newEvent.action || newEvent.event_type);
-  const currentState = norm(existingFact.current_state);
-
   // If state is the same, no conflict
-  if (newAction === currentState) return conflicts;
+  if (canonicalState(newEvent.action || newEvent.event_type) === canonicalState(existingFact.current_state)) return conflicts;
 
-  // Define normal state flows that are not conflicts
+  const newAction = canonicalState(newEvent.action || newEvent.event_type);
+  const currentState = canonicalState(existingFact.current_state);
+
+  // Define normal state flows that are not conflicts. An approved state is
+  // precious: only an established event (decision/approval/change) transitions
+  // it quietly — a request or idea stays a flagged proposal.
   const nonConflictingFlows: Record<string, string[]> = {
-    'modify': ['approve', 'review', 'in progress'],
-    'in progress': ['approve', 'review', 'modify'],
-    'undecided': ['modify', 'remove', 'add', 'approve', 'in progress'],
-    'add': ['modify', 'approve', 'review', 'in progress'],
-    'remove': ['add', 'revert'],
+    'modified': ['approved', 'review', 'in progress'],
+    'in progress': ['approved', 'review', 'modified'],
+    'undecided': ['modified', 'removed', 'added', 'approved', 'in progress'],
+    'added': ['modified', 'approved', 'review', 'in progress'],
+    'removed': ['added'],
+    'approved': ['in progress', 'modified'],
   };
 
-  // If the new action is a natural progression from current state, no conflict
-  if (nonConflictingFlows[currentState]?.includes(newAction)) {
+  const established = !['request', 'idea', 'question', 'discussion'].includes(newEvent.event_type);
+  if (nonConflictingFlows[currentState]?.includes(newAction) &&
+      (currentState !== 'approved' || established)) {
     return conflicts;
   }
 
   // Strong conflicts: removing or rejecting something already approved/confirmed
-  const strongConflictingStates = ['approve', 'approved', 'confirmed', 'done', 'completed'];
-  if (strongConflictingStates.includes(currentState) && ['remove', 'reject', 'revert', 'cancel'].includes(newAction)) {
+  if (currentState === 'approved' && newAction === 'removed') {
     conflicts.push({
       subject: newEvent.subject,
       conflict_type: 'contradiction',

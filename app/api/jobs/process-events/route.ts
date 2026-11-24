@@ -12,7 +12,7 @@ import {
   createFactHistory,
   getProject,
 } from '@/lib/db/queries';
-import { interpretEvent, detectConflicts } from '@/lib/ai/event-processor';
+import { interpretEvent, detectConflicts, canonicalState } from '@/lib/ai/event-processor';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { supabase } from '@/lib/db/supabase';
 
@@ -26,11 +26,52 @@ const CONFIDENCE_THRESHOLD = 0.65;
 // many attempts instead of looping forever.
 const MAX_PROCESSING_ATTEMPTS = 5;
 
+// A confirmed event that establishes a decisive state answers a pending
+// dispute by itself — the evidence already contains the resolution.
+const DECISIVE_STATES = new Set(['approved', 'removed']);
+
+async function autoResolveOpenConflicts(
+  projectId: string,
+  factId: string,
+  eventId: string,
+  action: string,
+  flowed: boolean,
+  reason: string,
+) {
+  const { data: open } = await supabase
+    .from('conflicts')
+    .select('id, new_event_id')
+    .eq('project_id', projectId)
+    .eq('previous_fact_id', factId)
+    .eq('status', 'unresolved');
+  if (!open?.length) return 0;
+  const { data: candidates } = await supabase
+    .from('candidate_events')
+    .select('id, action')
+    .in('id', open.map(c => c.new_event_id).filter(Boolean));
+  const proposed = new Map((candidates || []).map(c => [c.id, canonicalState(c.action || '')]));
+  const eventAction = canonicalState(action);
+  const ids = open
+    .filter(c => c.new_event_id !== eventId &&
+               (proposed.get(c.new_event_id) === eventAction ||
+                (flowed && DECISIVE_STATES.has(eventAction))))
+    .map(c => c.id);
+  if (!ids.length) return 0;
+  await supabase.from('conflicts')
+    .update({
+      status: 'resolved',
+      resolution: `Resolved by new evidence: ${reason}`,
+      resolved_at: new Date().toISOString(),
+    })
+    .in('id', ids);
+  return ids.length;
+}
+
 async function processProjectEvents(projectId: string) {
   const events = await getUnprocessedEvents(projectId, 50);
   const projectFacts = await listProjectFacts(projectId);
 
-  const result = { processed: 0, factsCreated: 0, factsUpdated: 0, conflictsDetected: 0 };
+  const result = { processed: 0, factsCreated: 0, factsUpdated: 0, conflictsDetected: 0, conflictsResolved: 0 };
   if (events.length === 0) return result;
 
   console.log(`Processing ${events.length} unprocessed events for project ${projectId}`);
@@ -39,6 +80,7 @@ async function processProjectEvents(projectId: string) {
   let factsCreated = 0;
   let factsUpdated = 0;
   let conflictsDetected = 0;
+  let conflictsResolved = 0;
 
     for (const [i, event] of events.entries()) {
       try {
@@ -133,6 +175,17 @@ async function processProjectEvents(projectId: string) {
               }
               // else: a conflicting proposal does not overwrite the confirmed
               // state — it waits in conflicts for human resolution.
+
+              // A newer confirmed event can itself answer a pending dispute:
+              // close open conflicts whose proposed action it now establishes,
+              // and — when it settled the subject without new conflicts — any
+              // dispute it resolves decisively.
+              conflictsResolved += await autoResolveOpenConflicts(
+                projectId, existingFact.id, candidateEvent.id,
+                interpretation.action || interpretation.event_type,
+                conflicts.length === 0,
+                interpretation.reason,
+              );
             }
           } else {
             // Create new fact
@@ -194,6 +247,7 @@ async function processProjectEvents(projectId: string) {
     result.factsCreated = factsCreated;
     result.factsUpdated = factsUpdated;
     result.conflictsDetected = conflictsDetected;
+    result.conflictsResolved = conflictsResolved;
     return result;
 }
 
@@ -230,13 +284,14 @@ export async function POST(request: NextRequest) {
       projectIds = [projectId];
     }
 
-    const totals = { processed: 0, factsCreated: 0, factsUpdated: 0, conflictsDetected: 0 };
+    const totals = { processed: 0, factsCreated: 0, factsUpdated: 0, conflictsDetected: 0, conflictsResolved: 0 };
     for (const projectId of projectIds) {
       const r = await processProjectEvents(projectId);
       totals.processed += r.processed;
       totals.factsCreated += r.factsCreated;
       totals.factsUpdated += r.factsUpdated;
       totals.conflictsDetected += r.conflictsDetected;
+      totals.conflictsResolved += r.conflictsResolved;
     }
 
     return NextResponse.json({ message: 'Events processed successfully', ...totals });
