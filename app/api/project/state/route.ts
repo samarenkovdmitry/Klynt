@@ -64,6 +64,7 @@ export async function GET(request: NextRequest) {
       { count: eventsCount },
       { count: conflictsCount },
       { count: integrationsCount },
+      { count: deadLetteredCount },
       facts,
       conflicts,
       { data: history, error: historyError },
@@ -74,6 +75,11 @@ export async function GET(request: NextRequest) {
       supabase.from('candidate_events').select('*', { count: 'exact', head: true }).eq('project_id', projectId),
       supabase.from('conflicts').select('*', { count: 'exact', head: true }).eq('project_id', projectId).eq('status', 'unresolved'),
       supabase.from('integrations').select('*', { count: 'exact', head: true }).eq('project_id', projectId).eq('status', 'active'),
+      // Dead-lettered: marked processed after MAX attempts, never produced a candidate.
+      supabase.from('raw_events').select('*', { count: 'exact', head: true })
+        .eq('project_id', projectId)
+        .not('processed_at', 'is', null)
+        .filter('metadata->>processing_attempts', 'gte', '5'),
       listProjectFacts(projectId),
       getProjectConflicts(projectId),
       supabase
@@ -101,6 +107,7 @@ export async function GET(request: NextRequest) {
 
     // Phase 2: dependent queries in parallel
     const conflictSubjects = [...new Set((conflicts || []).map(c => c.subject).filter(Boolean))];
+    const conflictEventIds = [...new Set((conflicts || []).map(c => c.new_event_id).filter(Boolean))];
     const candidateEventIds = [...new Set((history || []).map((h: any) => h.event_id).filter(Boolean))];
     const rawIds = (rawEventsInPeriod || []).map(r => r.id);
     const recentRawIds = (allRawEvents || []).map(r => r.id);
@@ -108,6 +115,7 @@ export async function GET(request: NextRequest) {
 
     const [
       { data: conflictingEvents, error: conflictingError },
+      { data: referencedEvents, error: referencedError },
       { data: candidateLinks, error: candError },
       { data: periodCandidates, error: periodCandError },
       { data: recentCandidates, error: recentCandError },
@@ -119,6 +127,13 @@ export async function GET(request: NextRequest) {
             .eq('project_id', projectId)
             .in('subject', conflictSubjects)
             .order('created_at', { ascending: false })
+        : Promise.resolve({ data: [] as any[], error: null }),
+      // Explicit references reach events whose subject drifted from the conflict's.
+      conflictEventIds.length > 0
+        ? supabase
+            .from('candidate_events')
+            .select('*, raw:raw_events(source, author_id, content, timestamp, metadata)')
+            .in('id', conflictEventIds)
         : Promise.resolve({ data: [] as any[], error: null }),
       supabase
         .from('candidate_events')
@@ -134,28 +149,41 @@ export async function GET(request: NextRequest) {
 
     if (candError) throw candError;
     if (conflictingError) throw conflictingError;
+    if (referencedError) throw referencedError;
     if (periodCandError) throw periodCandError;
     if (recentCandError) throw recentCandError;
 
+    const allConflictEvents = [...(conflictingEvents || []), ...(referencedEvents || [])]
+      .filter((e, i, arr) => arr.findIndex(x => x.id === e.id) === i);
+
+    // Subjects are LLM-generated and drift in casing between events — match
+    // normalized, and prefer the explicit previous_fact_id link where present.
+    const normSubject = (s: string) => (s || '').toLowerCase().trim();
     const latestEventBySubject = new Map<string, any>();
-    for (const ev of (conflictingEvents || [])) {
-      if (['change', 'decision', 'approval'].includes(ev.event_type) && !latestEventBySubject.has(ev.subject)) {
-        latestEventBySubject.set(ev.subject, ev);
+    for (const ev of allConflictEvents) {
+      const key = normSubject(ev.subject);
+      if (['change', 'decision', 'approval'].includes(ev.event_type) && key && !latestEventBySubject.has(key)) {
+        latestEventBySubject.set(key, ev);
       }
     }
 
-    const factBySubject = new Map((facts || []).map(f => [f.subject, f]));
-    const conflictEventById = new Map((conflictingEvents || []).map(e => [e.id, e]));
+    const factById = new Map((facts || []).map(f => [f.id, f]));
+    const factBySubject = new Map((facts || []).map(f => [normSubject(f.subject), f]));
+    const conflictEventById = new Map(allConflictEvents.map(e => [e.id, e]));
 
-    const enrichedConflicts = (conflicts || []).map(c => ({
-      ...c,
-      currentState: factBySubject.get(c.subject)?.current_state || null,
-      // An explicit conflict reference wins over a newer, unrelated message.
-      // Legacy conflicts without a reference retain their existing fallback.
-      proposedEvent: c.new_event_id
-        ? conflictEventById.get(c.new_event_id) || null
-        : latestEventBySubject.get(c.subject) || null,
-    }));
+    const enrichedConflicts = (conflicts || []).map(c => {
+      const linkedFact = (c.previous_fact_id && factById.get(c.previous_fact_id))
+        || factBySubject.get(normSubject(c.subject));
+      return {
+        ...c,
+        currentState: linkedFact?.current_state || null,
+        // An explicit conflict reference wins over a newer, unrelated message.
+        // Legacy conflicts without a reference retain their existing fallback.
+        proposedEvent: c.new_event_id
+          ? conflictEventById.get(c.new_event_id) || null
+          : latestEventBySubject.get(normSubject(c.subject)) || null,
+      };
+    });
 
     const rawTimestamps = new Map((rawEventsInPeriod || []).map(r => [r.id, r.timestamp]));
     const rawSources = new Map((rawEventsInPeriod || []).map(r => {
@@ -263,6 +291,7 @@ export async function GET(request: NextRequest) {
         events: eventsCount ?? 0,
         openConflicts: conflictsCount ?? 0,
         activeIntegrations: integrationsCount ?? 0,
+        deadLettered: deadLetteredCount ?? 0,
       },
       currentState: facts,
       history: enrichedHistory,

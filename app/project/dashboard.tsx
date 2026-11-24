@@ -53,6 +53,7 @@ interface ProjectState {
     events: number;
     openConflicts: number;
     activeIntegrations: number;
+    deadLettered?: number;
   };
   currentState: any[];
   history: any[];
@@ -538,7 +539,12 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     .filter((f: any) => f.last_updated_at)
     .sort((a: any, b: any) => new Date(b.last_updated_at).getTime() - new Date(a.last_updated_at).getTime())[0]?.last_updated_at;
 
-  const openConflictSubjects = new Set(state.conflicts.filter((c: any) => c.status !== 'resolved').map((c: any) => c.subject));
+  // Match conflicts to facts by the explicit fact link first; subjects are
+  // LLM-generated and drift in casing/spelling between events.
+  const normSubject = (s: string) => (s || '').toLowerCase().trim();
+  const openConflicts = state.conflicts.filter((c: any) => c.status !== 'resolved');
+  const conflictForFact = (f: any) => openConflicts.find((c: any) =>
+    c.previous_fact_id === f.id || normSubject(c.subject) === normSubject(f.subject));
   const factStatus = new Map<string, StatusKey>();
   const prevSettledFor = (fact: any) => {
     const h = state.history
@@ -547,7 +553,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     return h ? settledStatus(h.previous_state?.toLowerCase()) : null;
   };
   for (const f of state.currentState) {
-    factStatus.set(f.id, displayStatus(f, openConflictSubjects.has(f.subject), prevSettledFor(f)));
+    factStatus.set(f.id, displayStatus(f, !!conflictForFact(f), prevSettledFor(f)));
   }
   const stateCounts: Record<StatusKey, number> = { approved: 0, inProgress: 0, needsDecision: 0, disputed: 0, outOfScope: 0 };
   for (const f of state.currentState) stateCounts[factStatus.get(f.id)!]++;
@@ -726,6 +732,9 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                           <p className="truncate text-sm font-medium text-ink">{capitalize(emojify(event.reason || ''))}</p>
                           <p className="mt-0.5 truncate text-xs text-ink-muted">
                             {capitalize(event.subject)} · {event.action}
+                            {event.status === 'pending' && (
+                              <span className="text-ink-faint"> · {t('event.unconfirmed')}</span>
+                            )}
                           </p>
                         </div>
                         <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
@@ -794,7 +803,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                       .filter((h: any) => h.fact_id === fact.id && h.new_state && h.previous_state?.toLowerCase() !== h.new_state?.toLowerCase() && h.reason !== 'test')
                       .sort((a: any, b: any) => new Date(b.decided_at || b.created_at).getTime() - new Date(a.decided_at || a.created_at).getTime());
                     const hasHistory = factHistory.length > 0;
-                    const relatedConflict = state.conflicts.find((c: any) => c.status !== 'resolved' && c.subject === fact.subject);
+                    const relatedConflict = conflictForFact(fact);
                     const approvalEntry = isApproved
                       ? state.history
                           .filter((h: any) => h.fact_id === fact.id && h.new_state?.toLowerCase() === 'approved')
@@ -1012,6 +1021,11 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   : t('dashboard.needsAttention')}
                 caps={false}
               />
+              {(state.stats.deadLettered || 0) > 0 && (
+                <p className="mb-3 text-xs text-ink-faint">
+                  {t('dashboard.failedEvents', { count: state.stats.deadLettered || 0 })}
+                </p>
+              )}
               {state.conflicts.length === 0 ? (
                 <div className="rounded-2xl border border-line bg-white p-4">
                   <p className="text-sm text-ink-muted">{t('dashboard.noIssues')}</p>
@@ -1019,7 +1033,8 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               ) : (
                 <div className="space-y-3">
                   {state.conflicts.filter((c: any) => c.status !== 'resolved').map((conflict: any) => {
-                    const relatedFact = state.currentState.find((f: any) => f.subject === conflict.subject);
+                    const relatedFact = state.currentState.find((f: any) =>
+                      f.id === conflict.previous_fact_id || normSubject(f.subject) === normSubject(conflict.subject));
                     const actions = conflictActions(conflict.currentState, conflict.proposedEvent?.action, conflict.conflict_type);
                     return (
                       <div
@@ -1222,7 +1237,8 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                   </div>
                 </div>
 
-                {state.conflicts.filter((c: any) => c.subject === selectedFact.subject && c.status === 'unresolved').map((c: any) => {
+                {state.conflicts.filter((c: any) => c.status === 'unresolved' &&
+                  (c.previous_fact_id === selectedFact.id || normSubject(c.subject) === normSubject(selectedFact.subject))).map((c: any) => {
                   const actions = conflictActions(c.currentState, c.proposedEvent?.action, c.conflict_type);
                   const source = c.proposedEvent?.raw?.source;
                   const author = c.proposedEvent?.raw?.metadata?.author?.name || c.proposedEvent?.raw?.author_id;

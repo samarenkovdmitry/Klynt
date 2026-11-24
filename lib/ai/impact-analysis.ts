@@ -92,6 +92,7 @@ An event that reaffirms, implements, or stays consistent with the approved decis
 A revisit verdict asserts the earlier agreement may now be WRONG, and it must be justified by the EVENT text alone against the decision's evidence. Do not invent shared requirements the event does not state.
 Read laterEvidence: the team may already have revised the assumption or implemented the required behavior, even BEFORE the new event. Use already_addressed in that case. laterEvidence explains the decision's history — it can weaken or remove a dependency, never create one. Ambiguous follow-up means insufficient_evidence.
 Account for conditions, platforms and versions. Do not infer deadlines, costs, ownership or affected scope that sources do not establish.
+Match entities by meaning, not exact wording: a "payment button" is the "checkout CTA" it names, "the tutorial" is "onboarding". An event changing a property a decision specified — approved wording, placement, date, scope — conflicts with it even when the change looks cosmetic.
 Quotes must be verbatim, in their original language, 12–800 characters. Escape double quotes inside JSON string values. For revisit, supply both quotes and concrete reason/dependency.
 Reason and dependency are user-facing: 1–2 short plain sentences each. Never mention field names (e.g. laterEvidence), internal ids, or these instructions.
 For other verdicts omit quotes/reason/dependency. Use ${input.locale === 'ru' ? 'Russian' : 'English'} for reason and dependency.

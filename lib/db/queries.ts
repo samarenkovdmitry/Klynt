@@ -173,7 +173,20 @@ export async function createCandidateEvent(event: Omit<CandidateEvent, 'id' | 'c
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // Unique violation on (project_id, raw_event_id): a retry or concurrent
+    // run already created the candidate — return it instead of duplicating.
+    if (error.code === '23505' && event.raw_event_id) {
+      const { data: existing } = await supabase
+        .from('candidate_events')
+        .select()
+        .eq('project_id', event.project_id)
+        .eq('raw_event_id', event.raw_event_id)
+        .single();
+      if (existing) return existing;
+    }
+    throw error;
+  }
   return data;
 }
 
@@ -278,6 +291,19 @@ function tokenSimilarity(a: string[], b: string[]): number {
   return inter / (a.length + b.length - inter);
 }
 
+// Jaccard similarity plus containment: "dark mode" ⊂ "dark mode toggle"
+// (jaccard 0.67) is the same entity with a qualifier, not a new one.
+// Single-token subjects stay strict — too ambiguous to merge on containment.
+function subjectSimilarity(a: string[], b: string[]): number {
+  const jaccard = tokenSimilarity(a, b);
+  if (a.length >= 2 && b.length >= 2) {
+    const sb = new Set(b);
+    const inter = a.filter(t => sb.has(t)).length;
+    if (inter === Math.min(a.length, b.length)) return Math.max(jaccard, 0.75);
+  }
+  return jaccard;
+}
+
 export async function findFactForSubject(projectId: string, subject: string, subjectType: string): Promise<ProjectFact | null> {
   const exact = await getProjectFact(projectId, subject, subjectType);
   if (exact) return exact;
@@ -300,7 +326,7 @@ export async function findFactForSubject(projectId: string, subject: string, sub
   let best: { fact: ProjectFact | null; score: number } = { fact: null, score: 0 };
   for (const f of facts) {
     if (f.subject_type !== subjectType) continue;
-    const score = tokenSimilarity(target, subjectTokens(f.subject));
+    const score = subjectSimilarity(target, subjectTokens(f.subject));
     if (score > best.score) best = { fact: f, score };
   }
   return best.score >= 0.75 ? best.fact : null;
@@ -311,6 +337,9 @@ export async function recordEntityAlias(projectId: string, canonicalName: string
   const canon = canonicalName.toLowerCase().trim();
   const variant = alias.toLowerCase().trim();
   if (!variant || variant === canon) return;
+  // Aliases come from LLM interpretations of arbitrary message text — bound
+  // what a crafted message can persist. Real entity names are short.
+  if (variant.length > 60 || !/[\p{L}\p{N}]/u.test(variant)) return;
 
   const { data: existing } = await supabase
     .from('entities')
