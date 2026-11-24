@@ -57,6 +57,20 @@ export async function POST(request: NextRequest, { params }: { params: { token: 
     return NextResponse.json({ error: 'Invite expired' }, { status: 410 });
   }
 
+  // Claim the invite atomically before adding a member — a bearer link
+  // opened in two sessions (or shared) must grant access exactly once.
+  const { data: claimed } = await supabase
+    .from('project_invites')
+    .update({ accepted_at: new Date().toISOString() })
+    .eq('id', invite.id)
+    .is('accepted_at', null)
+    .select('id')
+    .maybeSingle();
+
+  if (!claimed) {
+    return NextResponse.json({ error: 'Invite already accepted' }, { status: 410 });
+  }
+
   const { error: memberError } = await supabase
     .from('project_users')
     .upsert(
@@ -67,14 +81,11 @@ export async function POST(request: NextRequest, { params }: { params: { token: 
     );
 
   if (memberError) {
+    // Release the claim so the link can be retried.
+    await supabase.from('project_invites').update({ accepted_at: null }).eq('id', invite.id);
     console.error('Failed to add project member:', memberError);
     return NextResponse.json({ error: 'Failed to accept invite' }, { status: 500 });
   }
-
-  await supabase
-    .from('project_invites')
-    .update({ accepted_at: new Date().toISOString() })
-    .eq('id', invite.id);
 
   const { data: project } = await supabase
     .from('projects')

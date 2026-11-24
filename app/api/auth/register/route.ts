@@ -41,9 +41,15 @@ export async function POST(request: NextRequest) {
     });
     if (createError) {
       if (createError.message?.toLowerCase().includes('already')) {
-        // Unconfirmed account → treat a repeat signup as "resend the link"
-        const { data: { users } } = await supabase.auth.admin.listUsers();
-        const existing = users.find((u) => u.email?.toLowerCase() === email);
+        // Unconfirmed account → treat a repeat signup as "resend the link".
+        // listUsers is paged — a single call sees only the first ~50 users.
+        let existing = undefined as { email_confirmed_at?: string | null } | undefined;
+        for (let page = 1; page <= 20 && !existing; page++) {
+          const { data } = await supabase.auth.admin.listUsers({ page, perPage: 200 });
+          const users = data?.users || [];
+          existing = users.find((u) => u.email?.toLowerCase() === email);
+          if (users.length < 200) break;
+        }
         if (!existing || existing.email_confirmed_at) {
           return NextResponse.json({ error: t('auth.alreadyRegistered') }, { status: 409 });
         }
