@@ -134,7 +134,17 @@ export async function applyCandidateToFacts(
       // Detect conflicts
       const conflicts = await detectConflicts(candidateEvent as any, existingFact);
 
+      // A retry after a mid-run crash can reach this point again for the
+      // same candidate — don't duplicate an already-open dispute.
+      const { data: alreadyOpen } = await supabase
+        .from('conflicts')
+        .select('previous_fact_id, conflict_type')
+        .eq('new_event_id', candidateEvent.id)
+        .eq('status', 'unresolved');
+      const have = new Set((alreadyOpen || []).map(c => `${c.previous_fact_id}:${c.conflict_type}`));
+
       for (const conflict of conflicts) {
+        if (have.has(`${conflict.previous_fact_id}:${conflict.conflict_type}`)) continue;
         await createConflict({
           project_id: projectId,
           ...conflict,
