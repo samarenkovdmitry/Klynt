@@ -5,6 +5,7 @@ import {
 } from '@/lib/supabase-server'
 import { supabase } from '@/lib/db/supabase'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { findAuthUserByEmail } from '@/lib/admin-users'
 import { sendBetaAccessEmail } from '@/lib/send-waitlist-email'
 import { createDemoProject } from '@/lib/demo-project'
 import { getSiteUrl } from '@/lib/site'
@@ -25,9 +26,7 @@ async function findOrCreateUser(email: string): Promise<string> {
     throw error || new Error('Failed to create user')
   }
 
-  const { data: { users }, error: listError } = await supabase.auth.admin.listUsers()
-  if (listError) throw listError
-  const existing = users.find(u => u.email?.toLowerCase() === email)
+  const existing = await findAuthUserByEmail(email)
   if (!existing) throw new Error('User exists but could not be found')
   return existing.id
 }

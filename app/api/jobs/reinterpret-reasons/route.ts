@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
 import { getSessionUser } from '@/lib/api-auth';
 import { listOwnedProjectIds } from '@/lib/db/queries';
-import { interpretEvent } from '@/lib/ai/event-processor';
+import { interpretEventBatch, type EventInput } from '@/lib/ai/event-processor';
 
 // 'cron' = full scan; string[] = project ids the session user may touch
 async function scopeFor(request: NextRequest): Promise<'cron' | string[] | null> {
@@ -31,13 +31,15 @@ function needsRewrite(reason: string | null): boolean {
   return META_REASON_PATTERNS.some(p => lower.includes(p));
 }
 
-// Verbatim copy of the raw message — not an interpretation
+// Verbatim copy of the raw message — not an interpretation. The substring
+// test needs a meaningful length, or every short title ("approved") that
+// happens to appear in the message is flagged as a copy.
 function isVerbatimCopy(reason: string | null, content: string | null): boolean {
   if (!reason || !content) return false;
   const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9а-яё]+/giu, ' ').replace(/\s+/g, ' ').trim();
   const nr = norm(reason);
   const nc = norm(content);
-  return nr === nc || nc.includes(nr);
+  return nr === nc || (nr.length >= 15 && nc.includes(nr));
 }
 
 export async function POST(request: NextRequest) {
@@ -67,24 +69,34 @@ export async function POST(request: NextRequest) {
     let updated = 0;
     const errors: string[] = [];
 
-    for (const candidate of stale) {
-      const { data: raw } = await supabase
-        .from('raw_events')
-        .select('*')
-        .eq('id', candidate.raw_event_id)
-        .maybeSingle();
+    const { data: raws } = await supabase
+      .from('raw_events')
+      .select('*')
+      .in('id', stale.map(c => c.raw_event_id).filter(Boolean));
+    const rawById = new Map((raws || []).map(r => [r.id, r]));
 
-      if (!raw) continue;
+    const workItems = stale
+      .map(candidate => ({ candidate, raw: rawById.get(candidate.raw_event_id) }))
+      .filter((w): w is { candidate: (typeof stale)[number]; raw: NonNullable<typeof w.raw> } => !!w.raw);
 
-      const interpretation = await interpretEvent({
-        source: raw.source,
-        event_type: raw.event_type,
-        timestamp: raw.timestamp,
-        content: raw.content,
-        author_id: raw.author_id,
-        metadata: raw.metadata,
-      });
+    // Batch the LLM calls — one interpretation per stale row was the whole
+    // token budget of this job.
+    const interpretations = await interpretEventBatch(
+      workItems.map(w => ({
+        source: w.raw.source,
+        event_type: w.raw.event_type,
+        timestamp: w.raw.timestamp,
+        content: w.raw.content,
+        author_id: w.raw.author_id,
+        metadata: w.raw.metadata,
+      } satisfies EventInput)),
+      workItems.map(() => ({})),
+      undefined,
+    );
 
+    for (const [i, { candidate }] of workItems.entries()) {
+      const interpretation = interpretations[i];
+      if (interpretation instanceof Error) continue;
       if (!interpretation.reason || interpretation.reason === 'AI interpretation failed') {
         continue;
       }

@@ -3,6 +3,7 @@ import { supabase } from '@/lib/db/supabase';
 import { sendConfirmEmail } from '@/lib/send-confirm-email';
 
 import { checkRateLimit } from '@/lib/rate-limit';
+import { findAuthUserByEmail } from '@/lib/admin-users';
 import { t } from '@/lib/i18n';
 
 function isValidEmail(value: string) {
@@ -41,15 +42,8 @@ export async function POST(request: NextRequest) {
     });
     if (createError) {
       if (createError.message?.toLowerCase().includes('already')) {
-        // Unconfirmed account → treat a repeat signup as "resend the link".
-        // listUsers is paged — a single call sees only the first ~50 users.
-        let existing = undefined as { email_confirmed_at?: string | null } | undefined;
-        for (let page = 1; page <= 20 && !existing; page++) {
-          const { data } = await supabase.auth.admin.listUsers({ page, perPage: 200 });
-          const users = data?.users || [];
-          existing = users.find((u) => u.email?.toLowerCase() === email);
-          if (users.length < 200) break;
-        }
+        // Unconfirmed account → treat a repeat signup as "resend the link"
+        const existing = await findAuthUserByEmail(email);
         if (!existing || existing.email_confirmed_at) {
           return NextResponse.json({ error: t('auth.alreadyRegistered') }, { status: 409 });
         }

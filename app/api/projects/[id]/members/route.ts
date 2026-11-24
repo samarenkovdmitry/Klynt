@@ -69,6 +69,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     if (!name || !email || !role) {
       return NextResponse.json({ error: 'Name, email, and role are required' }, { status: 400 });
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim())) {
+      return NextResponse.json({ error: 'Valid email required' }, { status: 400 });
+    }
 
     const { data, error } = await supabase
       .from('project_members')
