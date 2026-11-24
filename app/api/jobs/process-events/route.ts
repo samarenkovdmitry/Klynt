@@ -33,18 +33,24 @@ const DECISIVE_STATES = new Set(['approved', 'removed']);
 async function autoResolveOpenConflicts(
   projectId: string,
   factId: string,
+  factSubject: string,
   eventId: string,
   action: string,
   flowed: boolean,
   reason: string,
 ) {
-  const { data: open } = await supabase
+  // Fetch conflicts linked to the fact plus legacy unlinked ones; the latter
+  // are matched by normalized subject, which drifts in casing between events.
+  const { data: rows } = await supabase
     .from('conflicts')
-    .select('id, new_event_id')
+    .select('id, new_event_id, previous_fact_id, subject')
     .eq('project_id', projectId)
-    .eq('previous_fact_id', factId)
-    .eq('status', 'unresolved');
-  if (!open?.length) return 0;
+    .eq('status', 'unresolved')
+    .or(`previous_fact_id.eq.${factId},previous_fact_id.is.null`);
+  const norm = (s: string) => (s || '').toLowerCase().trim();
+  const open = (rows || []).filter(c =>
+    c.previous_fact_id === factId || norm(c.subject) === norm(factSubject));
+  if (!open.length) return 0;
   const { data: candidates } = await supabase
     .from('candidate_events')
     .select('id, action')
@@ -181,7 +187,7 @@ async function processProjectEvents(projectId: string) {
               // and — when it settled the subject without new conflicts — any
               // dispute it resolves decisively.
               conflictsResolved += await autoResolveOpenConflicts(
-                projectId, existingFact.id, candidateEvent.id,
+                projectId, existingFact.id, existingFact.subject, candidateEvent.id,
                 interpretation.action || interpretation.event_type,
                 conflicts.length === 0,
                 interpretation.reason,
