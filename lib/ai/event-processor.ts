@@ -1,6 +1,6 @@
 import { CandidateEventType, Importance } from '@/lib/types/events';
 import { getLLM, extractJson } from '@/lib/ai/llm';
-import { interpretSystemPrompt, eventUserLabels } from '@/lib/ai/prompts';
+import { interpretSystemPrompt, interpretBatchSystemPrompt, eventUserLabels } from '@/lib/ai/prompts';
 import { getLocale } from '@/lib/market';
 
 // Minimal shape the processor needs — callers pass DB rows whose
@@ -35,13 +35,35 @@ export interface AIInterpretation {
   potential_impacts: string[];
 }
 
+export interface EventContext {
+  previousEvents?: EventInput[];
+  projectFacts?: any[];
+  threadContext?: EventInput[];
+}
+
+// One LLM interpretation payload → normalized domain shape. Throws on a
+// malformed response so callers can fall back instead of storing garbage.
+function normalizeInterpretation(raw: any): AIInterpretation {
+  if (typeof raw?.confidence !== 'number' || Number.isNaN(raw.confidence)) {
+    throw new Error('AI returned an invalid interpretation (missing confidence)');
+  }
+  return {
+    event_type: raw.event_type || 'discussion',
+    subject: raw.subject || 'unknown',
+    action: raw.action,
+    display_state: raw.display_state,
+    scope: raw.scope,
+    confidence: Math.min(Math.max(raw.confidence, 0), 1),
+    importance: raw.importance || 'medium',
+    reason: raw.reason || '',
+    related_entities: raw.related_entities || [],
+    potential_impacts: raw.potential_impacts || [],
+  };
+}
+
 export async function interpretEvent(
   rawEvent: EventInput,
-  context?: {
-    previousEvents?: EventInput[];
-    projectFacts?: any[];
-    threadContext?: EventInput[];
-  }
+  context?: EventContext
 ): Promise<AIInterpretation> {
   const locale = getLocale();
   const systemPrompt = interpretSystemPrompt(locale);
@@ -56,23 +78,7 @@ export async function interpretEvent(
     });
 
     const interpretation = JSON.parse(extractJson(text)) as AIInterpretation;
-    if (typeof interpretation.confidence !== 'number' || Number.isNaN(interpretation.confidence)) {
-      throw new Error('AI returned an invalid interpretation (missing confidence)');
-    }
-
-    // Validate and normalize the interpretation
-    return {
-      event_type: interpretation.event_type || 'discussion',
-      subject: interpretation.subject || 'unknown',
-      action: interpretation.action,
-      display_state: interpretation.display_state,
-      scope: interpretation.scope,
-      confidence: Math.min(Math.max(interpretation.confidence, 0), 1),
-      importance: interpretation.importance || 'medium',
-      reason: interpretation.reason || '',
-      related_entities: interpretation.related_entities || [],
-      potential_impacts: interpretation.potential_impacts || [],
-    };
+    return normalizeInterpretation(interpretation);
   } catch (error) {
     console.error('Error interpreting event:', error);
     // Do not fake an interpretation — the caller leaves the event
@@ -81,50 +87,136 @@ export async function interpretEvent(
   }
 }
 
-function buildPrompt(rawEvent: EventInput, context?: any, locale: 'en' | 'ru' = 'en'): string {
-  const L = eventUserLabels(locale);
+// Events per LLM call. Larger batches dilute per-event attention; smaller
+// ones don't amortize the system prompt.
+const INTERPRET_BATCH_SIZE = 6;
 
-  // Convert timestamp string to Date if needed
+// Interpret a chronological run of events in one LLM call per chunk instead
+// of one call per event — the system prompt and project-facts context are
+// shared, so fixed prompt cost is amortized ~BATCH_SIZE×.
+// Every slot resolves to an interpretation or an Error: a chunk that fails
+// wholesale (or returns malformed/missing entries) falls back to per-event
+// calls, and per-event failures are reported in their own slot.
+export async function interpretEventBatch(
+  events: EventInput[],
+  contexts: EventContext[],
+  projectFacts?: any[],
+): Promise<(AIInterpretation | Error)[]> {
+  const out: (AIInterpretation | Error)[] = new Array(events.length);
+  const locale = getLocale();
+
+  for (let start = 0; start < events.length; start += INTERPRET_BATCH_SIZE) {
+    const chunk = events.slice(start, start + INTERPRET_BATCH_SIZE);
+    const ctxs = contexts.slice(start, start + INTERPRET_BATCH_SIZE);
+
+    const fallback = async (k: number) => {
+      try {
+        out[start + k] = await interpretEvent(chunk[k], ctxs[k]);
+      } catch (e) {
+        out[start + k] = e instanceof Error ? e : new Error(String(e));
+      }
+    };
+
+    try {
+      const text = await getLLM().complete({
+        system: interpretBatchSystemPrompt(locale),
+        user: buildBatchPrompt(chunk, ctxs, projectFacts, locale),
+        maxTokens: 4096,
+        temperature: 0.3,
+      });
+      const parsed = JSON.parse(extractJson(text));
+      const arr: any[] = Array.isArray(parsed) ? parsed : [parsed];
+      // Slot interpretations by their "event" index; position as a fallback
+      // when the model omits the field.
+      const byIndex = new Map<number, any>();
+      arr.forEach((item, k) => {
+        byIndex.set(typeof item?.event === 'number' ? item.event : k + 1, item);
+      });
+      for (let k = 0; k < chunk.length; k++) {
+        const item = byIndex.get(k + 1);
+        try {
+          if (!item) throw new Error(`batch response missing event ${k + 1}`);
+          out[start + k] = normalizeInterpretation(item);
+        } catch {
+          await fallback(k);
+        }
+      }
+    } catch {
+      for (let k = 0; k < chunk.length; k++) await fallback(k);
+    }
+  }
+  return out;
+}
+
+function buildEventBlock(rawEvent: EventInput, L: ReturnType<typeof eventUserLabels>, threadContext?: EventInput[]): string {
   const timestamp = typeof rawEvent.timestamp === 'string'
     ? new Date(rawEvent.timestamp)
     : rawEvent.timestamp;
 
+  let block = `${L.source}: ${rawEvent.source}\n`;
+  block += `${L.type}: ${rawEvent.event_type}\n`;
+  block += `${L.timestamp}: ${timestamp.toISOString()}\n`;
+  if (rawEvent.content) block += `${L.content}: "${rawEvent.content}"\n`;
+  if (rawEvent.author_id) block += `${L.author}: ${rawEvent.author_id}\n`;
+  if (rawEvent.metadata?.file_name) block += `${L.fileName}: ${rawEvent.metadata.file_name}\n`;
+  if (rawEvent.metadata?.description) block += `${L.details}: ${rawEvent.metadata.description}\n`;
+  if (rawEvent.metadata?.channel) block += `${L.channel}: ${rawEvent.metadata.channel}\n`;
+  if (threadContext && threadContext.length > 0) {
+    block += `${L.threadContext}\n`;
+    threadContext.forEach((event, i) => {
+      block += `${i + 1}. ${event.content || L.noContent}\n`;
+    });
+  }
+  return block;
+}
+
+// Batch prompt: shared project context once, then one numbered block per
+// event carrying its own metadata and thread context.
+function buildBatchPrompt(
+  events: EventInput[],
+  contexts: EventContext[],
+  projectFacts: any[] | undefined,
+  locale: 'en' | 'ru',
+): string {
+  const L = eventUserLabels(locale);
   let prompt = `${L.analyze}\n\n`;
-  prompt += `${L.source}: ${rawEvent.source}\n`;
-  prompt += `${L.type}: ${rawEvent.event_type}\n`;
-  prompt += `${L.timestamp}: ${timestamp.toISOString()}\n`;
 
-  if (rawEvent.content) {
-    prompt += `${L.content}: "${rawEvent.content}"\n`;
+  // The events before this batch are the conversation so far.
+  const prior = contexts[0]?.previousEvents;
+  if (prior && prior.length > 0) {
+    prompt += `${L.recentEvents}\n`;
+    prior.slice(-5).forEach((event, i) => {
+      prompt += `${i + 1}. ${event.source} - ${event.content || L.noContent}\n`;
+    });
+    prompt += '\n';
   }
 
-  if (rawEvent.author_id) {
-    prompt += `${L.author}: ${rawEvent.author_id}\n`;
+  if (projectFacts && projectFacts.length > 0) {
+    prompt += `${L.currentFacts}\n`;
+    projectFacts.slice(0, 10).forEach((fact: any) => {
+      prompt += `- ${fact.subject}: ${fact.current_state}\n`;
+    });
   }
 
-  // Include Figma/Slack metadata to improve subject/state extraction
-  if (rawEvent.metadata?.file_name) {
-    prompt += `${L.fileName}: ${rawEvent.metadata.file_name}\n`;
-  }
-  if (rawEvent.metadata?.description) {
-    prompt += `${L.details}: ${rawEvent.metadata.description}\n`;
-  }
-  if (rawEvent.metadata?.channel) {
-    prompt += `${L.channel}: ${rawEvent.metadata.channel}\n`;
-  }
+  events.forEach((event, i) => {
+    prompt += `\n--- Event ${i + 1} ---\n`;
+    prompt += buildEventBlock(event, L, contexts[i]?.threadContext);
+  });
+
+  return prompt;
+}
+
+function buildPrompt(rawEvent: EventInput, context?: any, locale: 'en' | 'ru' = 'en'): string {
+  const L = eventUserLabels(locale);
+
+  let prompt = `${L.analyze}\n\n`;
+  prompt += buildEventBlock(rawEvent, L, context?.threadContext);
 
   // Add context if available
   if (context?.previousEvents && context.previousEvents.length > 0) {
     prompt += `\n${L.recentEvents}\n`;
     context.previousEvents.slice(-5).forEach((event: EventInput, i: number) => {
       prompt += `${i + 1}. ${event.source} - ${event.content || L.noContent}\n`;
-    });
-  }
-
-  if (context?.threadContext && context.threadContext.length > 0) {
-    prompt += `\n${L.threadContext}\n`;
-    context.threadContext.forEach((event: EventInput, i: number) => {
-      prompt += `${i + 1}. ${event.content || L.noContent}\n`;
     });
   }
 

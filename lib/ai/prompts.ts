@@ -146,8 +146,19 @@ const SUMMARY_SYSTEM: Record<Locale, string> = {
   ru: 'Ты — лаконичный проектный ассистент. Отвечай строго валидным JSON. Без markdown, без пояснений.',
 };
 
+// Appended to the interpret system prompt when several events are sent in
+// one call — the model must return a JSON array keyed by event number.
+const INTERPRET_BATCH_SUFFIX: Record<Locale, string> = {
+  en: `\n\nYou will receive several events in one request, separated by "--- Event N ---" markers. Interpret EACH event independently — apply the same rules to every one of them. Return a JSON array with exactly one interpretation object per event, in the same order, and include a field "event" with the 1-based event number in each object.`,
+  ru: `\n\nВ одном запросе придёт несколько событий, разделённых метками "--- Event N ---". Интерпретируй КАЖДОЕ событие независимо — применяй те же правила к каждому. Верни JSON-массив ровно с одним объектом интерпретации на событие в том же порядке, включив в каждый объект поле "event" с номером события (начиная с 1).`,
+};
+
 export function interpretSystemPrompt(locale: Locale = getLocale()): string {
   return INTERPRET_SYSTEM[locale];
+}
+
+export function interpretBatchSystemPrompt(locale: Locale = getLocale()): string {
+  return INTERPRET_SYSTEM[locale] + INTERPRET_BATCH_SUFFIX[locale];
 }
 
 export function eventUserLabels(locale: Locale = getLocale()) {
