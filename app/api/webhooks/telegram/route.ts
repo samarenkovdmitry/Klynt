@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
     const update = (await request.json()) as TgUpdate;
 
     if (process.env.TELEGRAM_WEBHOOK_SECRET && secret === process.env.TELEGRAM_WEBHOOK_SECRET) {
-      await processSharedBotUpdate(update);
-      triggerEventProcessing(undefined, request);
+      const projectId = await processSharedBotUpdate(update);
+      triggerEventProcessing(projectId, request);
       return NextResponse.json({ received: true });
     }
 

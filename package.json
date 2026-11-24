@@ -25,7 +25,8 @@
     "import:figma-versions": "node scripts/import-figma-versions.js",
     "seed:demo-projects": "node scripts/seed-demo-projects.js",
     "figma:refresh": "node scripts/refresh-figma-token.js",
-    "dev:ru": "node scripts/dev-ru.js"
+    "dev:ru": "node scripts/dev-ru.js",
+    "test:scenarios": "tsx --env-file=.env.local scripts/scenario-pipeline.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.106.0",

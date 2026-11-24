@@ -1,4 +1,5 @@
 import { supabase, type CandidateEvent, type FactHistory, type ProjectFact, type RawEvent } from './supabase';
+import { subjectsMatch } from './queries';
 import { IMPACT_VERSION, type ImpactDecision, type ImpactEvidence, type ImpactRecord, type ImpactSuggestion } from '../ai/impact-analysis';
 
 const LIMIT = 500;
@@ -74,14 +75,16 @@ export async function loadImpactContext(projectId: string, factId: string) {
   const rawById = new Map(rawEvents.map(r => [r.id, r]));
   const eventById = new Map(candidates.map(c => [c.id, c]));
   function eventsFor(target: ProjectFact) {
-    const names = new Set([normalized(target.subject)]);
+    const names = [normalized(target.subject)];
     for (const e of entities) {
       if (normalized(e.canonical_name) === normalized(target.subject)) {
-        for (const alias of e.aliases || []) names.add(normalized(alias));
+        for (const alias of e.aliases || []) names.push(normalized(alias));
       }
     }
     const eventIds = new Set(history.filter(h => h.fact_id === target.id).map(h => h.event_id));
-    return candidates.filter(c => eventIds.has(c.id) || names.has(normalized(c.subject)));
+    // Same matcher as entity resolution — a drifted or qualified subject
+    // ("dark mode toggle" vs "dark mode") is still this fact's signal.
+    return candidates.filter(c => eventIds.has(c.id) || names.some(n => subjectsMatch(n, c.subject)));
   }
   function revision(target: ProjectFact) {
     return JSON.stringify([target.updated_at, target.primary_event_id, ...eventsFor(target).map(c => c.id).sort()]);

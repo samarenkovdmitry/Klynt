@@ -48,13 +48,28 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return NextResponse.json({ success: true, conflict: data });
     }
 
-    // Find the related project fact by subject
-    const { data: fact } = await supabase
-      .from('project_facts')
-      .select()
-      .eq('project_id', conflict.project_id)
-      .eq('subject', conflict.subject)
-      .single();
+    // Find the related fact via the explicit link first; the subject string
+    // drifts in casing/spelling between events, so it is only a fallback.
+    let fact = null;
+    if (conflict.previous_fact_id) {
+      const { data } = await supabase
+        .from('project_facts')
+        .select()
+        .eq('id', conflict.previous_fact_id)
+        .maybeSingle();
+      fact = data;
+    }
+    if (!fact) {
+      const { data } = await supabase
+        .from('project_facts')
+        .select()
+        .eq('project_id', conflict.project_id)
+        .ilike('subject', conflict.subject.replace(/[%_]/g, ''))
+        .order('last_updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      fact = data;
+    }
 
     let finalState = fact?.current_state;
     let finalResolution = resolution;
@@ -91,10 +106,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           .from('candidate_events')
           .select('id')
           .eq('project_id', conflict.project_id)
-          .eq('subject', conflict.subject)
+          .ilike('subject', conflict.subject.replace(/[%_]/g, ''))
           .order('created_at', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
         eventId = candidate?.id;
       }
 
