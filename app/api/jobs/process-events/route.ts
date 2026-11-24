@@ -12,7 +12,7 @@ import {
   createFactHistory,
   getProject,
 } from '@/lib/db/queries';
-import { interpretEvent, detectConflicts, canonicalState, type AIInterpretation } from '@/lib/ai/event-processor';
+import { interpretEvent, interpretEventBatch, detectConflicts, canonicalState, type AIInterpretation } from '@/lib/ai/event-processor';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { supabase } from '@/lib/db/supabase';
 
@@ -246,13 +246,34 @@ export async function processProjectEvents(projectId: string, interpret = interp
   let conflictsDetected = 0;
   let conflictsResolved = 0;
 
+  // Thread context lookups are independent — prefetch them in parallel
+  // before interpretation.
+  const contexts = await Promise.all(events.map(async (event, i) => ({
+    previousEvents: events.slice(Math.max(0, i - 5), i),
+    projectFacts,
+    threadContext: await threadContextFor(projectId, event),
+  })));
+
+  // The real interpreter batches several events per LLM call. An injected
+  // interpreter (tests) keeps the simple per-event contract — either way
+  // every slot below is an interpretation or an Error.
+  let interpretations: (AIInterpretation | Error)[];
+  if (interpret === interpretEvent) {
+    interpretations = await interpretEventBatch(events, contexts, projectFacts);
+  } else {
+    interpretations = await Promise.all(events.map(async (event, i) => {
+      try {
+        return await interpret(event, contexts[i]);
+      } catch (e) {
+        return e instanceof Error ? e : new Error(String(e));
+      }
+    }));
+  }
+
     for (const [i, event] of events.entries()) {
       try {
-        const interpretation = await interpret(event, {
-          previousEvents: events.slice(Math.max(0, i - 5), i),
-          projectFacts,
-          threadContext: await threadContextFor(projectId, event),
-        });
+        const interpretation = interpretations[i];
+        if (interpretation instanceof Error) throw interpretation;
 
         console.log(`AI interpretation for event ${event.id}:`, {
           event_type: interpretation.event_type,

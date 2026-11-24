@@ -108,12 +108,24 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
   if (error) throw error;
 
-  // If they already accepted, remove their membership too
-  await supabase
-    .from('project_users')
-    .delete()
+  // Remove the membership only when this email actually came in through an
+  // accepted invite — a mistyped address must not silently evict a member
+  // who joined some other way.
+  const { data: accepted } = await supabase
+    .from('project_invites')
+    .select('id')
     .eq('project_id', id)
-    .eq('email', email.toLowerCase());
+    .eq('email', email.toLowerCase())
+    .not('accepted_at', 'is', null)
+    .limit(1);
+
+  if (accepted?.length) {
+    await supabase
+      .from('project_users')
+      .delete()
+      .eq('project_id', id)
+      .eq('email', email.toLowerCase());
+  }
 
   return NextResponse.json({ deleted: true });
 }

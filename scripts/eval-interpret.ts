@@ -1,6 +1,7 @@
 // Real-LLM evaluation of event interpretation on labelled raw events.
 // Run: tsx --env-file=.env.local scripts/eval-interpret.ts  (uses ANTHROPIC_API_KEY)
-import { interpretEvent, type EventInput } from '../lib/ai/event-processor';
+//      --batch  run the same cases through interpretEventBatch (batched path)
+import { interpretEvent, interpretEventBatch, type AIInterpretation, type EventInput } from '../lib/ai/event-processor';
 
 const ev = (content: string, extra: Partial<EventInput> = {}): EventInput => ({
   source: 'slack', event_type: 'message',
@@ -52,22 +53,57 @@ const CASES: {
     type: ['approval', 'decision'], action: ['approve'], subject: 'Checkout flow' },
 ];
 
+type Case = (typeof CASES)[number];
+
+function score(c: Case, r: AIInterpretation): string[] {
+  const fails: string[] = [];
+  if (c.type && !c.type.includes(r.event_type)) fails.push(`type=${r.event_type}`);
+  if (c.action && !c.action.includes(r.action || '')) fails.push(`action=${r.action}`);
+  if (c.scope && !r.scope) fails.push('no scope');
+  if (c.maxConfidence != null && r.confidence > c.maxConfidence) fails.push(`conf=${r.confidence}`);
+  if (c.subject && r.subject !== c.subject) fails.push(`subject="${r.subject}"`);
+  return fails;
+}
+
+function report(c: Case, r: AIInterpretation): boolean {
+  const fails = score(c, r);
+  const verdict = fails.length ? `FAIL ${fails.join(' ')}` : 'ok';
+  console.log(`${verdict.padEnd(52)} ${c.name} | ${r.event_type}/${r.action || '-'} s="${r.subject}" c=${r.confidence}`);
+  return !fails.length;
+}
+
 async function main() {
+  const batchMode = process.argv.includes('--batch');
   let pass = 0;
-  for (const c of CASES) {
-    try {
-      const r = await interpretEvent(c.event, { projectFacts: c.facts });
-      const fails: string[] = [];
-      if (c.type && !c.type.includes(r.event_type)) fails.push(`type=${r.event_type}`);
-      if (c.action && !c.action.includes(r.action || '')) fails.push(`action=${r.action}`);
-      if (c.scope && !r.scope) fails.push('no scope');
-      if (c.maxConfidence != null && r.confidence > c.maxConfidence) fails.push(`conf=${r.confidence}`);
-      if (c.subject && r.subject !== c.subject) fails.push(`subject="${r.subject}"`);
-      const verdict = fails.length ? `FAIL ${fails.join(' ')}` : 'ok';
-      console.log(`${verdict.padEnd(52)} ${c.name} | ${r.event_type}/${r.action || '-'} s="${r.subject}" c=${r.confidence}`);
-      if (!fails.length) pass++;
-    } catch (e: any) {
-      console.log(`ERROR ${c.name}: ${e.message}`); process.exitCode = 1;
+
+  if (batchMode) {
+    // One batch call per chunk over cases without per-case facts; cases that
+    // need their own projectFacts still go through the per-event path.
+    const batched = CASES.filter(c => !c.facts);
+    const solo = CASES.filter(c => c.facts);
+    const results = await interpretEventBatch(
+      batched.map(c => c.event),
+      batched.map(() => ({})),
+      undefined,
+    );
+    const byName = new Map(batched.map((c, i) => [c.name, results[i]]));
+    for (const c of CASES) {
+      try {
+        const r = byName.get(c.name) ?? await interpretEvent(c.event, { projectFacts: c.facts });
+        if (r instanceof Error) throw r;
+        if (report(c, r)) pass++;
+      } catch (e: any) {
+        console.log(`ERROR ${c.name}: ${e.message}`); process.exitCode = 1;
+      }
+    }
+  } else {
+    for (const c of CASES) {
+      try {
+        const r = await interpretEvent(c.event, { projectFacts: c.facts });
+        if (report(c, r)) pass++;
+      } catch (e: any) {
+        console.log(`ERROR ${c.name}: ${e.message}`); process.exitCode = 1;
+      }
     }
   }
   console.log(`\npassed: ${pass}/${CASES.length}`);
