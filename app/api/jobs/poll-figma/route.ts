@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db/supabase';
-import { createRawEvent, getRawEvent, listOwnedProjectIds, updateIntegrationLastSync } from '@/lib/db/queries';
+import { createRawEvent, listOwnedProjectIds, updateIntegrationLastSync } from '@/lib/db/queries';
 import { getSessionUser } from '@/lib/api-auth';
 import { decryptToken } from '@/lib/crypto';
+import { triggerEventProcessing } from '@/lib/trigger-processing';
 
 const MAX_NEW_PER_RUN = 25; // cap inserts per file per run
 
@@ -24,13 +25,13 @@ async function pollFileVersions(integration: any, fileKey: string, fileName: str
 
   const { versions = [] } = await res.json();
   let inserted = 0;
+  const runStart = Date.now();
 
   for (const v of versions.slice(0, MAX_NEW_PER_RUN)) {
     const sourceEventId = `version_${v.id}`;
-    const existing = await getRawEvent(integration.project_id, 'figma', sourceEventId);
-    if (existing) continue;
-
-    await createRawEvent({
+    // No pre-check: the (project_id, source, source_event_id) unique index
+    // makes the insert idempotent — createRawEvent returns the existing row.
+    const raw = await createRawEvent({
       project_id: integration.project_id,
       source: 'figma',
       source_event_id: sourceEventId,
@@ -48,7 +49,7 @@ async function pollFileVersions(integration: any, fileKey: string, fileName: str
         via: 'polling',
       },
     });
-    inserted++;
+    if (new Date(raw.created_at).getTime() >= runStart) inserted++;
   }
   return { inserted };
 }
@@ -62,13 +63,11 @@ async function pollFileComments(integration: any, fileKey: string, fileName: str
 
   const { comments = [] } = await res.json();
   let inserted = 0;
+  const runStart = Date.now();
 
   for (const c of comments.slice(0, MAX_NEW_PER_RUN)) {
     const sourceEventId = `comment_${c.id}`;
-    const existing = await getRawEvent(integration.project_id, 'figma', sourceEventId);
-    if (existing) continue;
-
-    await createRawEvent({
+    const raw = await createRawEvent({
       project_id: integration.project_id,
       source: 'figma',
       source_event_id: sourceEventId,
@@ -90,7 +89,7 @@ async function pollFileComments(integration: any, fileKey: string, fileName: str
         via: 'polling',
       },
     });
-    inserted++;
+    if (new Date(raw.created_at).getTime() >= runStart) inserted++;
   }
   return { inserted };
 }
@@ -124,6 +123,11 @@ async function run(request: NextRequest) {
 
       const versions = await pollFileVersions(integration, fileKey, cfg.file_name || fileKey);
       const comments = await pollFileComments(integration, fileKey, cfg.file_name || fileKey);
+      // Polled events must not wait for the next daily cron — a manual poll
+      // otherwise leaves them unprocessed for up to a day.
+      if ((versions.inserted || 0) + (comments.inserted || 0) > 0) {
+        triggerEventProcessing(integration.project_id, request);
+      }
 
       await updateIntegrationLastSync(integration.id);
       await supabase

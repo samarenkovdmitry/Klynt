@@ -34,15 +34,30 @@ async function getRecipients(projectId: string, ownerId?: string): Promise<strin
   return [...emails];
 }
 
-async function sendProjectDigest(project: { id: string; name: string; slug?: string; owner_id?: string }, sinceIso: string, now: string) {
-  // Activity in the window
-  const { data: recentEvents } = await supabase
+// Candidate rows in the window, keyed by the SOURCE event timestamp — a
+// reimported backlog has fresh created_at but old timestamps and must not
+// count as new activity.
+async function candidatesInWindow(projectId: string, sinceIso: string) {
+  const { data: raws } = await supabase
+    .from('raw_events')
+    .select('id')
+    .eq('project_id', projectId)
+    .gte('timestamp', sinceIso);
+  const rawIds = (raws || []).map(r => r.id);
+  if (!rawIds.length) return [];
+  const { data } = await supabase
     .from('candidate_events')
     .select('subject, action, event_type, reason, created_at')
-    .eq('project_id', project.id)
-    .gte('created_at', sinceIso)
+    .eq('project_id', projectId)
+    .in('raw_event_id', rawIds)
     .order('created_at', { ascending: false })
     .limit(20);
+  return data || [];
+}
+
+async function sendProjectDigest(project: { id: string; name: string; slug?: string; owner_id?: string }, sinceIso: string, now: string) {
+  // Activity in the window
+  const recentEvents = await candidatesInWindow(project.id, sinceIso);
 
   if (!recentEvents || recentEvents.length === 0) {
     return { skipped: 'no activity' };
@@ -130,13 +145,12 @@ export async function POST(request: NextRequest) {
         const lastDigest = project.last_digest_at || project.created_at;
         const sinceIso = lastDigest > capIso ? lastDigest : capIso;
 
-        const { count } = await supabase
-          .from('candidate_events')
-          .select('id', { count: 'exact', head: true })
+        const { data: raws } = await supabase
+          .from('raw_events')
+          .select('id')
           .eq('project_id', project.id)
-          .gte('created_at', sinceIso);
-
-        const n = count || 0;
+          .gte('timestamp', sinceIso);
+        const n = raws?.length || 0;
         if (n === 0) {
           results[project.id] = { skipped: 'no activity' };
           continue;

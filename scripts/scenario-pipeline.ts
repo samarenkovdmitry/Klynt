@@ -5,7 +5,7 @@
 // Run: tsx --env-file=.env.local scripts/scenario-pipeline.ts
 import { supabase } from '../lib/db/supabase';
 import { createProject, createRawEvent } from '../lib/db/queries';
-import { processProjectEvents } from '../app/api/jobs/process-events/route';
+import { processProjectEvents, applyCandidateToFacts } from '../app/api/jobs/process-events/route';
 import { resolveSlackMessageEvent } from '../lib/slack-events';
 import type { AIInterpretation, EventInput } from '../lib/ai/event-processor';
 
@@ -177,6 +177,27 @@ async function main() {
     check(plain.kind === 'message' && plain.text === 'hello', 'plain message passes through');
     const empty = resolveSlackMessageEvent({ type: 'message', ts: '6' });
     check(empty.kind === 'skip', 'content-free event skipped');
+  }
+
+  // ── 7. Pending → human confirm → fact via the same pipeline
+  console.log('7) pending candidate promoted by confirmation');
+  await wipe(projectId);
+  await emit(projectId, { id: 's7a', ts: '2026-03-01T10:00Z', content: 'We might go with the compact sidebar after all.' });
+  await processProjectEvents(projectId, interp([
+    ['compact sidebar', { event_type: 'decision', subject: 'Sidebar', action: 'approve', confidence: 0.5 }],
+  ]));
+  {
+    let d = await db(projectId);
+    check(d.candidates[0]?.status === 'pending' && d.facts.length === 0, 'weak decision stays pending');
+    const cand = d.candidates[0];
+    const raw = d.raws[0];
+    await applyCandidateToFacts(projectId, raw, cand, I({
+      event_type: cand.event_type, subject: cand.subject, action: cand.action,
+      confidence: cand.confidence,
+    }), []);
+    d = await db(projectId);
+    check(d.facts.length === 1 && d.facts[0].subject === 'Sidebar', 'confirmed candidate creates the fact');
+    check(d.history.length === 1, 'history records the confirmed event');
   }
 
   console.log(failures ? `\n${failures} check(s) FAILED` : '\nAll scenario checks passed');
