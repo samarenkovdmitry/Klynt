@@ -12,12 +12,12 @@ import {
   createFactHistory,
   getProject,
 } from '@/lib/db/queries';
-import { interpretEvent, detectConflicts, canonicalState } from '@/lib/ai/event-processor';
+import { interpretEvent, detectConflicts, canonicalState, type AIInterpretation } from '@/lib/ai/event-processor';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { supabase } from '@/lib/db/supabase';
 
 // Events that should update project state
-const STATE_CHANGING_EVENTS = ['decision', 'approval', 'change', 'scope_change', 'commitment', 'request'];
+export const STATE_CHANGING_EVENTS = ['decision', 'approval', 'change', 'scope_change', 'commitment', 'request'];
 
 // Minimum confidence to auto-confirm and update state
 const CONFIDENCE_THRESHOLD = 0.65;
@@ -90,6 +90,125 @@ async function threadContextFor(projectId: string, event: any) {
   return data?.length ? data : undefined;
 }
 
+// Apply one confirmed candidate event to project facts: detect conflicts,
+// update or create the fact, write history, auto-resolve open disputes.
+// Shared by the batch loop and the manual "confirm pending" path — a human
+// confirmation must land on exactly the same rules.
+export async function applyCandidateToFacts(
+  projectId: string,
+  rawEvent: { id: string; timestamp: any },
+  candidateEvent: { id: string; subject: string; action?: string; event_type: string; confidence: number },
+  interpretation: AIInterpretation,
+  projectFacts: any[],
+): Promise<{ factsCreated: number; factsUpdated: number; conflictsDetected: number; conflictsResolved: number }> {
+  const out = { factsCreated: 0, factsUpdated: 0, conflictsDetected: 0, conflictsResolved: 0 };
+  const newState = interpretation.action || interpretation.event_type;
+  const displayState = interpretation.display_state;
+  const scope = interpretation.scope;
+  const eventTimestamp = new Date(rawEvent.timestamp).toISOString();
+
+  const existingFact = await findFactForSubject(projectId, interpretation.subject, 'design_component', projectFacts);
+  if (existingFact) {
+    await recordEntityAlias(projectId, existingFact.subject, interpretation.subject).catch(() => {});
+  }
+
+  if (existingFact) {
+    // Don't overwrite with older events
+    const existingTimestamp = existingFact.last_updated_at ? new Date(existingFact.last_updated_at).toISOString() : null;
+
+    if (existingTimestamp && new Date(eventTimestamp) <= new Date(existingTimestamp)) {
+      console.log(`Skipping older event for ${interpretation.subject}: ${eventTimestamp} <= ${existingTimestamp}`);
+    } else {
+      // Detect conflicts
+      const conflicts = await detectConflicts(candidateEvent as any, existingFact);
+
+      for (const conflict of conflicts) {
+        await createConflict({
+          project_id: projectId,
+          ...conflict,
+        });
+        out.conflictsDetected++;
+      }
+
+      if (conflicts.length === 0) {
+        // Record history before updating
+        await createFactHistory({
+          fact_id: existingFact.id,
+          project_id: projectId,
+          previous_state: existingFact.current_state,
+          new_state: newState,
+          previous_value: existingFact.current_value,
+          event_id: candidateEvent.id,
+          decided_at: eventTimestamp,
+          confidence: interpretation.confidence,
+          reason: interpretation.reason,
+          evidence: [rawEvent.id],
+        });
+
+        // Update existing fact with source event timestamp
+        await updateProjectFact(existingFact.id, {
+          current_state: newState,
+          current_value: { ...(existingFact.current_value || {}), ...(displayState ? { display_state: displayState } : {}), ...(scope ? { scope } : {}) },
+          confidence: interpretation.confidence,
+          importance: interpretation.importance,
+          evidence_summary: interpretation.reason,
+          primary_event_id: candidateEvent.id,
+          last_updated_at: eventTimestamp,
+        });
+
+        out.factsUpdated++;
+        const idx = projectFacts.findIndex((f: any) => f.id === existingFact.id);
+        const refreshed = { ...existingFact, current_state: newState, evidence_summary: interpretation.reason };
+        if (idx >= 0) projectFacts[idx] = refreshed; else projectFacts.push(refreshed);
+      }
+      // else: a conflicting proposal does not overwrite the confirmed
+      // state — it waits in conflicts for human resolution.
+
+      // A newer confirmed event can itself answer a pending dispute:
+      // close open conflicts whose proposed action it now establishes,
+      // and — when it settled the subject without new conflicts — any
+      // dispute it resolves decisively.
+      out.conflictsResolved += await autoResolveOpenConflicts(
+        projectId, existingFact.id, existingFact.subject, candidateEvent.id,
+        interpretation.action || interpretation.event_type,
+        conflicts.length === 0,
+        interpretation.reason,
+      );
+    }
+  } else {
+    // Create new fact
+    const newFact = await createProjectFact({
+      project_id: projectId,
+      subject: interpretation.subject,
+      subject_type: 'design_component',
+      fact_type: interpretation.event_type === 'decision' ? 'decision' : 'state',
+      current_state: newState,
+      current_value: { ...(displayState ? { display_state: displayState } : {}), ...(scope ? { scope } : {}) },
+      confidence: interpretation.confidence,
+      importance: interpretation.importance,
+      evidence_summary: interpretation.reason,
+      primary_event_id: candidateEvent.id,
+      last_updated_at: eventTimestamp,
+    });
+
+    // Record initial history
+    await createFactHistory({
+      fact_id: newFact.id,
+      project_id: projectId,
+      new_state: newState,
+      event_id: candidateEvent.id,
+      decided_at: eventTimestamp,
+      confidence: interpretation.confidence,
+      reason: interpretation.reason,
+      evidence: [rawEvent.id],
+    });
+
+    out.factsCreated++;
+    projectFacts.push(newFact);
+  }
+  return out;
+}
+
 export async function processProjectEvents(projectId: string, interpret = interpretEvent) {
   const events = await getUnprocessedEvents(projectId, 50);
   const projectFacts = await listProjectFacts(projectId);
@@ -138,110 +257,11 @@ export async function processProjectEvents(projectId: string, interpret = interp
 
         // Only high-confidence, state-changing events update project facts
         if (interpretation.confidence > CONFIDENCE_THRESHOLD && STATE_CHANGING_EVENTS.includes(interpretation.event_type)) {
-          const newState = interpretation.action || interpretation.event_type;
-          const displayState = interpretation.display_state;
-          const scope = interpretation.scope;
-          const eventTimestamp = new Date(event.timestamp).toISOString();
-
-          const existingFact = await findFactForSubject(projectId, interpretation.subject, 'design_component', projectFacts);
-          if (existingFact) {
-            await recordEntityAlias(projectId, existingFact.subject, interpretation.subject).catch(() => {});
-          }
-
-          if (existingFact) {
-            // Don't overwrite with older events
-            const existingTimestamp = existingFact.last_updated_at ? new Date(existingFact.last_updated_at).toISOString() : null;
-
-            if (existingTimestamp && new Date(eventTimestamp) <= new Date(existingTimestamp)) {
-              console.log(`Skipping older event for ${interpretation.subject}: ${eventTimestamp} <= ${existingTimestamp}`);
-            } else {
-              // Detect conflicts
-              const conflicts = await detectConflicts(candidateEvent, existingFact);
-
-              for (const conflict of conflicts) {
-                await createConflict({
-                  project_id: projectId,
-                  ...conflict,
-                });
-                conflictsDetected++;
-              }
-
-              if (conflicts.length === 0) {
-                // Record history before updating
-                await createFactHistory({
-                  fact_id: existingFact.id,
-                  project_id: projectId,
-                  previous_state: existingFact.current_state,
-                  new_state: newState,
-                  previous_value: existingFact.current_value,
-                  event_id: candidateEvent.id,
-                  decided_at: eventTimestamp,
-                  confidence: interpretation.confidence,
-                  reason: interpretation.reason,
-                  evidence: [event.id],
-                });
-
-                // Update existing fact with source event timestamp
-                await updateProjectFact(existingFact.id, {
-                  current_state: newState,
-                  current_value: { ...(existingFact.current_value || {}), ...(displayState ? { display_state: displayState } : {}), ...(scope ? { scope } : {}) },
-                  confidence: interpretation.confidence,
-                  importance: interpretation.importance,
-                  evidence_summary: interpretation.reason,
-                  primary_event_id: candidateEvent.id,
-                  last_updated_at: eventTimestamp,
-                });
-
-                factsUpdated++;
-                const idx = projectFacts.findIndex((f: any) => f.id === existingFact.id);
-                const refreshed = { ...existingFact, current_state: newState, evidence_summary: interpretation.reason };
-                if (idx >= 0) projectFacts[idx] = refreshed; else projectFacts.push(refreshed);
-              }
-              // else: a conflicting proposal does not overwrite the confirmed
-              // state — it waits in conflicts for human resolution.
-
-              // A newer confirmed event can itself answer a pending dispute:
-              // close open conflicts whose proposed action it now establishes,
-              // and — when it settled the subject without new conflicts — any
-              // dispute it resolves decisively.
-              conflictsResolved += await autoResolveOpenConflicts(
-                projectId, existingFact.id, existingFact.subject, candidateEvent.id,
-                interpretation.action || interpretation.event_type,
-                conflicts.length === 0,
-                interpretation.reason,
-              );
-            }
-          } else {
-            // Create new fact
-            const newFact = await createProjectFact({
-              project_id: projectId,
-              subject: interpretation.subject,
-              subject_type: 'design_component',
-              fact_type: interpretation.event_type === 'decision' ? 'decision' : 'state',
-              current_state: newState,
-              current_value: { ...(displayState ? { display_state: displayState } : {}), ...(scope ? { scope } : {}) },
-              confidence: interpretation.confidence,
-              importance: interpretation.importance,
-              evidence_summary: interpretation.reason,
-              primary_event_id: candidateEvent.id,
-              last_updated_at: eventTimestamp,
-            });
-
-            // Record initial history
-            await createFactHistory({
-              fact_id: newFact.id,
-              project_id: projectId,
-              new_state: newState,
-              event_id: candidateEvent.id,
-              decided_at: eventTimestamp,
-              confidence: interpretation.confidence,
-              reason: interpretation.reason,
-              evidence: [event.id],
-            });
-
-            factsCreated++;
-            projectFacts.push(newFact);
-          }
+          const applied = await applyCandidateToFacts(projectId, event, candidateEvent, interpretation, projectFacts);
+          factsCreated += applied.factsCreated;
+          factsUpdated += applied.factsUpdated;
+          conflictsDetected += applied.conflictsDetected;
+          conflictsResolved += applied.conflictsResolved;
         }
 
         await markEventProcessed(event.id);

@@ -419,6 +419,23 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
     }
   };
 
+  const confirmCandidate = async (eventId: string) => {
+    setResolving(eventId);
+    try {
+      const res = await fetch(`/api/candidates/${eventId}/confirm`, { method: 'POST' });
+      if (res.ok) {
+        if (selectedProjectId) fetchData(period, selectedProjectId);
+      } else {
+        const data = await res.json();
+        setError(data.error || t('dashboard.resolveFailed'));
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setResolving(null);
+    }
+  };
+
   const unresolveConflict = async (conflictId: string) => {
     setResolving(conflictId);
     try {
@@ -738,6 +755,16 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
                           </p>
                         </div>
                         <span className="flex flex-shrink-0 items-center gap-2 text-xs text-ink-faint">
+                          {event.status === 'pending' && (
+                            <button
+                              type="button"
+                              disabled={resolving === event.id}
+                              onClick={() => confirmCandidate(event.id)}
+                              className="rounded-full border border-line px-2 py-0.5 text-[11px] font-medium text-ink-secondary transition-colors hover:border-line-strong hover:text-ink disabled:opacity-50"
+                            >
+                              {t('event.confirm')}
+                            </button>
+                          )}
                           {event.author && !isRawExternalId(event.author) && (
                             <span className="max-w-[84px] truncate">{event.author}</span>
                           )}
