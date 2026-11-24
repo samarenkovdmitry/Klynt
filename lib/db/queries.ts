@@ -304,8 +304,29 @@ function subjectSimilarity(a: string[], b: string[]): number {
   return jaccard;
 }
 
-export async function findFactForSubject(projectId: string, subject: string, subjectType: string): Promise<ProjectFact | null> {
-  const exact = await getProjectFact(projectId, subject, subjectType);
+// Do two subject spellings refer to the same entity? Shared by entity
+// resolution and impact-signal matching so drift is handled identically.
+export function subjectsMatch(a: string, b: string): boolean {
+  if ((a || '').toLowerCase().trim() === (b || '').toLowerCase().trim()) return true;
+  return subjectSimilarity(subjectTokens(a), subjectTokens(b)) >= 0.75;
+}
+
+export async function findFactForSubject(
+  projectId: string,
+  subject: string,
+  subjectType: string,
+  preloadedFacts?: ProjectFact[],
+): Promise<ProjectFact | null> {
+  // A caller that already holds the project's facts (the event loop does)
+  // skips the per-event full scan.
+  const byUpdatedDesc = (a: ProjectFact, b: ProjectFact) =>
+    new Date(b.last_updated_at || 0).getTime() - new Date(a.last_updated_at || 0).getTime();
+  const exact = preloadedFacts
+    ? preloadedFacts
+        .filter(f => f.subject_type === subjectType &&
+          f.subject.toLowerCase().trim() === subject.toLowerCase().trim())
+        .sort(byUpdatedDesc)[0] || null
+    : await getProjectFact(projectId, subject, subjectType);
   if (exact) return exact;
 
   // 2. Alias lookup — an entity already maps this variant to a canonical name
@@ -315,13 +336,18 @@ export async function findFactForSubject(projectId: string, subject: string, sub
     .eq('project_id', projectId)
     .contains('aliases', [subject.toLowerCase().trim()]);
   for (const hit of aliasHits || []) {
-    const fact = await getProjectFact(projectId, hit.canonical_name, subjectType);
-    if (fact) return fact;
+    const aliased = preloadedFacts
+      ? preloadedFacts
+          .filter(f => f.subject_type === subjectType &&
+            f.subject.toLowerCase().trim() === hit.canonical_name.toLowerCase().trim())
+          .sort(byUpdatedDesc)[0]
+      : await getProjectFact(projectId, hit.canonical_name, subjectType);
+    if (aliased) return aliased;
   }
 
   // 3. Token-set similarity over all facts — catches "pricing block" vs
   // "pricing widget". High threshold: we accept duplicates over wrong merges.
-  const facts = await listProjectFacts(projectId);
+  const facts = preloadedFacts ?? await listProjectFacts(projectId);
   const target = subjectTokens(subject);
   let best: { fact: ProjectFact | null; score: number } = { fact: null, score: 0 };
   for (const f of facts) {

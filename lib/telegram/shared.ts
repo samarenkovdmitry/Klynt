@@ -22,7 +22,9 @@ async function findByChatId(chatId: number) {
   return data;
 }
 
-export async function processSharedBotUpdate(update: TgUpdate): Promise<void> {
+// Returns the project that received a new raw event, if any, so the caller
+// can trigger processing for it specifically rather than for all projects.
+export async function processSharedBotUpdate(update: TgUpdate): Promise<string | undefined> {
   const token = sharedBotToken();
   if (!token) return;
 
@@ -102,5 +104,6 @@ export async function processSharedBotUpdate(update: TgUpdate): Promise<void> {
   const integration = await findByChatId(message.chat.id);
   if (integration) {
     await recordTelegramMessage(integration, message);
+    return integration.project_id;
   }
 }

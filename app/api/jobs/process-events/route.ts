@@ -73,7 +73,24 @@ async function autoResolveOpenConflicts(
   return ids.length;
 }
 
-async function processProjectEvents(projectId: string) {
+// A threaded reply ("yes, let's do that") is meaningless without its parent.
+// Pull earlier messages from the same thread into the interpretation context.
+async function threadContextFor(projectId: string, event: any) {
+  const threadTs = event.metadata?.thread_ts;
+  if (!threadTs || event.source !== 'slack') return undefined;
+  const { data } = await supabase
+    .from('raw_events')
+    .select('content, author_id, timestamp, source, event_type, metadata')
+    .eq('project_id', projectId)
+    .eq('source', 'slack')
+    .or(`source_event_id.eq.${threadTs},metadata->>thread_ts.eq.${threadTs}`)
+    .lt('timestamp', event.timestamp)
+    .order('timestamp', { ascending: true })
+    .limit(5);
+  return data?.length ? data : undefined;
+}
+
+export async function processProjectEvents(projectId: string, interpret = interpretEvent) {
   const events = await getUnprocessedEvents(projectId, 50);
   const projectFacts = await listProjectFacts(projectId);
 
@@ -90,9 +107,10 @@ async function processProjectEvents(projectId: string) {
 
     for (const [i, event] of events.entries()) {
       try {
-        const interpretation = await interpretEvent(event, {
+        const interpretation = await interpret(event, {
           previousEvents: events.slice(Math.max(0, i - 5), i),
           projectFacts,
+          threadContext: await threadContextFor(projectId, event),
         });
 
         console.log(`AI interpretation for event ${event.id}:`, {
@@ -125,7 +143,7 @@ async function processProjectEvents(projectId: string) {
           const scope = interpretation.scope;
           const eventTimestamp = new Date(event.timestamp).toISOString();
 
-          const existingFact = await findFactForSubject(projectId, interpretation.subject, 'design_component');
+          const existingFact = await findFactForSubject(projectId, interpretation.subject, 'design_component', projectFacts);
           if (existingFact) {
             await recordEntityAlias(projectId, existingFact.subject, interpretation.subject).catch(() => {});
           }

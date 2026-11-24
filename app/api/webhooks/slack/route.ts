@@ -4,6 +4,7 @@ import { SlackWebhookEvent } from '@/lib/types/events';
 import { createRawEvent, getIntegrationsByTeamId } from '@/lib/db/queries';
 import { decryptToken } from '@/lib/crypto';
 import { isContentExcluded } from '@/lib/filters';
+import { resolveSlackMessageEvent } from '@/lib/slack-events';
 import { triggerEventProcessing } from '@/lib/trigger-processing';
 
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
@@ -61,10 +62,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    // Skip bot messages and messages with subtypes we don't care about
-    if (slackEvent.subtype === 'bot_message' || slackEvent.subtype === 'message_changed') {
+    // Route system noise, edits and plain messages — see resolveSlackMessageEvent.
+    const resolved = resolveSlackMessageEvent(slackEvent, (body as any).event_ts);
+    if (resolved.kind === 'skip') {
       return NextResponse.json({ received: true });
     }
+    const eventText = resolved.text;
+    const sourceEventId = resolved.kind === 'edit'
+      ? `${resolved.editedTs}:edit:${resolved.ts}`
+      : resolved.ts;
+    const eventUser = resolved.user;
+    const eventTs = resolved.ts;
+    const threadTs = resolved.threadTs;
 
     // One Slack workspace can serve several projects — fan the event out to
     // every integration that explicitly selected this channel.
@@ -77,7 +86,7 @@ export async function POST(request: NextRequest) {
     const eligible = integrations.filter((integration: any) => {
       const channelIds: string[] | undefined = integration.config?.channel_ids;
       if (!channelIds?.length || !channelIds.includes(slackEvent.channel)) return false;
-      return !isContentExcluded(slackEvent.text, integration.config);
+      return !isContentExcluded(eventText, integration.config);
     });
     if (!eligible.length) {
       return NextResponse.json({ received: true });
@@ -85,16 +94,16 @@ export async function POST(request: NextRequest) {
 
     // Resolve the author's profile so the UI can show a name, not a U-id
     let author: { id: string; name: string; avatar_url?: string } | undefined;
-    if (slackEvent.user) {
+    if (eventUser) {
       const info = await fetch(
-        `https://slack.com/api/users.info?user=${slackEvent.user}`,
+        `https://slack.com/api/users.info?user=${eventUser}`,
         { headers: { Authorization: `Bearer ${decryptToken(eligible[0].access_token_encrypted)}` } },
       ).then(r => r.json()).catch(() => null);
       if (info?.ok && info.user) {
         const profile = info.user.profile || {};
         author = {
-          id: slackEvent.user,
-          name: profile.display_name || profile.real_name || info.user.real_name || slackEvent.user,
+          id: eventUser,
+          name: profile.display_name || profile.real_name || info.user.real_name || eventUser,
           avatar_url: profile.image_48 || profile.image_32,
         };
       }
@@ -106,18 +115,19 @@ export async function POST(request: NextRequest) {
       const rawEvent = await createRawEvent({
         project_id: integration.project_id,
         source: 'slack' as const,
-        source_event_id: slackEvent.ts,
+        source_event_id: sourceEventId,
         event_type: 'message' as const,
-        author_id: slackEvent.user,
-        timestamp: new Date(parseFloat(slackEvent.ts) * 1000).toISOString(),
-        content: slackEvent.text,
+        author_id: eventUser,
+        timestamp: new Date(parseFloat(eventTs) * 1000).toISOString(),
+        content: eventText,
         metadata: {
           channel: slackEvent.channel,
-          thread_ts: slackEvent.thread_ts,
+          thread_ts: threadTs,
           parent_user_id: slackEvent.parent_user_id,
           subtype: slackEvent.subtype,
           team_id: body.team_id,
           event_id: body.event_id,
+          ...(resolved.kind === 'edit' ? { edited_message_ts: resolved.editedTs } : {}),
           ...(author ? { author } : {}),
         },
       });
