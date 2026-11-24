@@ -76,6 +76,18 @@ async function autoResolveOpenConflicts(
 // A threaded reply ("yes, let's do that") is meaningless without its parent.
 // Pull earlier messages from the same thread into the interpretation context.
 async function threadContextFor(projectId: string, event: any) {
+  if (event.source === 'telegram') {
+    const replyTo = event.metadata?.reply_to_message_id;
+    if (!replyTo) return undefined;
+    const { data } = await supabase
+      .from('raw_events')
+      .select('content, author_id, timestamp, source, event_type, metadata')
+      .eq('project_id', projectId)
+      .eq('source', 'telegram')
+      .eq('source_event_id', String(replyTo))
+      .limit(1);
+    return data?.length ? data : undefined;
+  }
   const threadTs = event.metadata?.thread_ts;
   if (!threadTs || event.source !== 'slack') return undefined;
   const { data } = await supabase

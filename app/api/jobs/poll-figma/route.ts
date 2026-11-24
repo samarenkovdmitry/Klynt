@@ -4,6 +4,7 @@ import { createRawEvent, listOwnedProjectIds, updateIntegrationLastSync } from '
 import { getSessionUser } from '@/lib/api-auth';
 import { decryptToken } from '@/lib/crypto';
 import { triggerEventProcessing } from '@/lib/trigger-processing';
+import { isContentExcluded } from '@/lib/filters';
 
 const MAX_NEW_PER_RUN = 25; // cap inserts per file per run
 
@@ -31,6 +32,10 @@ async function pollFileVersions(integration: any, fileKey: string, fileName: str
     const sourceEventId = `version_${v.id}`;
     // No pre-check: the (project_id, source, source_event_id) unique index
     // makes the insert idempotent — createRawEvent returns the existing row.
+    const content = v.label
+      ? `New version in ${fileName}: ${v.label}`
+      : `New version saved in ${fileName}${v.description ? `: ${v.description}` : ''}`;
+    if (isContentExcluded(content, integration.config)) continue;
     const raw = await createRawEvent({
       project_id: integration.project_id,
       source: 'figma',
@@ -38,9 +43,7 @@ async function pollFileVersions(integration: any, fileKey: string, fileName: str
       event_type: 'file_version',
       author_id: v.user?.id,
       timestamp: v.created_at,
-      content: v.label
-        ? `New version in ${fileName}: ${v.label}`
-        : `New version saved in ${fileName}${v.description ? `: ${v.description}` : ''}`,
+      content,
       metadata: {
         file_key: fileKey,
         file_name: fileName,
@@ -67,6 +70,7 @@ async function pollFileComments(integration: any, fileKey: string, fileName: str
 
   for (const c of comments.slice(0, MAX_NEW_PER_RUN)) {
     const sourceEventId = `comment_${c.id}`;
+    if (isContentExcluded(c.message, integration.config)) continue;
     const raw = await createRawEvent({
       project_id: integration.project_id,
       source: 'figma',
