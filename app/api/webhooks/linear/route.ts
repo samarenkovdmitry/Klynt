@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { createRawEvent, getIntegrationsByLinearOrg, updateIntegrationLastSync } from '@/lib/db/queries';
 import { triggerEventProcessing } from '@/lib/trigger-processing';
 import { decryptToken } from '@/lib/crypto';
+import { isContentExcluded } from '@/lib/filters';
 
 // Linear-Signature: hex HMAC-SHA256 of the raw body with the webhook secret
 // generated when the webhook was created.
@@ -163,6 +164,7 @@ export async function POST(request: NextRequest) {
 
     const eventIds: string[] = [];
     for (const integration of eligible) {
+      if (isContentExcluded(content, integration.config)) continue;
       const rawEvent = await createRawEvent({
         project_id: integration.project_id,
         source: 'linear' as const,

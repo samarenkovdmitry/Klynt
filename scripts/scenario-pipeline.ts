@@ -200,6 +200,24 @@ async function main() {
     check(d.history.length === 1, 'history records the confirmed event');
   }
 
+  // ── 8. Telegram reply context: reply_to_message_id links to the parent
+  console.log('8) telegram reply reaches the interpreter with parent context');
+  await wipe(projectId);
+  await emit(projectId, { id: '501', ts: '2026-03-01T10:00Z', source: 'telegram', content: 'Proposal: switch to the compact sidebar', meta: { chat_id: 1 } });
+  await emit(projectId, { id: '502', ts: '2026-03-01T10:05Z', source: 'telegram', content: 'agreed', meta: { chat_id: 1, reply_to_message_id: 501 } });
+  {
+    let seen: Ctx | undefined;
+    await processProjectEvents(projectId, async (ev, ctx) => {
+      if (ev.content === 'agreed') seen = ctx;
+      return I(ev.content === 'agreed'
+        ? { event_type: 'approval', subject: 'Sidebar', action: 'approve' }
+        : { event_type: 'request', subject: 'Sidebar', action: 'modify' });
+    });
+    check(!!seen?.threadContext?.length, 'telegram reply received threadContext');
+    check((seen?.threadContext || []).some(e => (e.content || '').includes('compact sidebar')),
+      'parent message included for telegram reply');
+  }
+
   console.log(failures ? `\n${failures} check(s) FAILED` : '\nAll scenario checks passed');
   process.exitCode = failures ? 1 : 0;
 }

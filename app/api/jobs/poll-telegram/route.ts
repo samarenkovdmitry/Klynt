@@ -6,6 +6,7 @@ import { telegramApi, type TgUpdate } from '@/lib/telegram/client';
 import { processTelegramUpdate } from '@/lib/telegram/process-update';
 import { processSharedBotUpdate } from '@/lib/telegram/shared';
 import { decryptToken } from '@/lib/crypto';
+import { triggerEventProcessing } from '@/lib/trigger-processing';
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -61,15 +62,18 @@ export async function POST(request: NextRequest) {
       });
 
       let maxId = offset;
+      const touched = new Set<string>();
       for (const update of updates) {
         try {
-          await processSharedBotUpdate(update);
+          const pid = await processSharedBotUpdate(update);
+          if (pid) touched.add(pid);
         } catch (e) {
           console.error('Shared Telegram update failed:', e);
         }
         maxId = Math.max(maxId, update.update_id);
       }
       if (maxId !== offset) await writeSharedOffset(maxId);
+      for (const pid of touched) triggerEventProcessing(pid, request);
 
       return NextResponse.json({ results: [{ shared_bot: true, fetched: updates.length }] });
     }
@@ -111,6 +115,7 @@ export async function POST(request: NextRequest) {
             .eq('id', integration.id);
         }
 
+        if (processed > 0) triggerEventProcessing(integration.project_id, request);
         results.push({ integration_id: integration.id, fetched: updates.length, processed });
       } catch (e) {
         console.error(`Telegram poll failed for integration ${integration.id}:`, e);

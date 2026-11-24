@@ -72,6 +72,7 @@ export async function recordTelegramMessage(integration: any, message: TgMessage
       channel: integration.config?.chat_title || String(chatId),
       chat_id: chatId,
       message_thread_id: message.message_thread_id,
+      reply_to_message_id: message.reply_to_message?.message_id,
       telegram_username: message.from?.username,
       ...(authorName ? { author: { id: String(message.from!.id), name: authorName } } : {}),
     },

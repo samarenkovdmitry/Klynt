@@ -41,6 +41,7 @@ export interface TgMessage {
   from?: TgUser;
   text?: string;
   message_thread_id?: number;
+  reply_to_message?: TgMessage;
   sender_chat?: TgChat;
 }
 
