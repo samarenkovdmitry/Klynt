@@ -24,7 +24,9 @@ export async function POST(request: NextRequest) {
 
     if (process.env.TELEGRAM_WEBHOOK_SECRET && secret === process.env.TELEGRAM_WEBHOOK_SECRET) {
       const projectId = await processSharedBotUpdate(update);
-      triggerEventProcessing(projectId, request);
+      // Bind/unbind updates produce no raw event — triggering with no
+      // projectId would launch a sweep over every project's backlog.
+      if (projectId) triggerEventProcessing(projectId, request);
       return NextResponse.json({ received: true });
     }
 

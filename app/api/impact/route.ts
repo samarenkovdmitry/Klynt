@@ -29,39 +29,48 @@ async function autoAnalyze(context: Context, userId: string): Promise<boolean> {
   ]);
   const done = new Set((marks.data || []).map(r => r.key));
   const recEvents = new Set((recs.data || []).map(r => r.source_event_id));
-  const pending = context.signals.find(s =>
-    !done.has(analyzedKey(context.projectId, s.candidateId)) && !recEvents.has(s.candidateId));
-  if (!pending) return false;
+  // Up to a few per visit — one-at-a-time left a long backlog dependent on
+  // how often someone reopened the drawer.
+  const pending = context.signals.filter(s =>
+    !done.has(analyzedKey(context.projectId, s.candidateId)) && !recEvents.has(s.candidateId))
+    .slice(0, 3);
+  if (!pending.length) return false;
 
-  const key = analyzedKey(context.projectId, pending.candidateId);
-  // Claim the signal first so concurrent GETs don't run the same analysis twice.
-  const claim = await supabase.from('rate_limit_hits').insert({ key });
-  if (claim.error) return false;
-  try {
-    if (!(await checkRateLimit(`impact:${context.projectId}:${userId}`, 5, 60 * 60 * 1000))) {
-      throw new ImpactError('rate_limited', 429);
+  let analyzed = false;
+  for (const signal of pending) {
+    const key = analyzedKey(context.projectId, signal.candidateId);
+    // Claim the signal first so concurrent GETs don't run the same analysis twice.
+    const claim = await supabase.from('rate_limit_hits').insert({ key });
+    if (claim.error) continue;
+    try {
+      if (!(await checkRateLimit(`impact:${context.projectId}:${userId}`, 5, 60 * 60 * 1000))) {
+        throw new ImpactError('rate_limited', 429);
+      }
+      const result = await analyzeImpact({
+        sourceFactId: context.fact.id, event: signal,
+        decisions: context.decisionsFor(signal.timestamp),
+        asOf: new Date().toISOString(), locale: getLocale(),
+      });
+      // A decision may have changed during the LLM call. Do not save a stale suggestion.
+      const fresh = await loadImpactContext(context.projectId, context.fact.id);
+      const suggestions = result.suggestions.filter(s => {
+        const target = fresh.facts.find(f => f.id === s.targetFactId);
+        return target && fresh.revision(target) === s.revision;
+      });
+      await saveImpact(fresh, signal.candidateId, suggestions);
+      analyzed = true;
+    } catch (error) {
+      // Release the claim so a later visit can retry — except on rate limit,
+      // where retrying soon would just burn through the hourly budget.
+      if (!(error instanceof ImpactError && error.code === 'rate_limited')) {
+        await supabase.from('rate_limit_hits').delete().eq('key', key);
+      } else {
+        break;
+      }
+      throw error;
     }
-    const result = await analyzeImpact({
-      sourceFactId: context.fact.id, event: pending,
-      decisions: context.decisionsFor(pending.timestamp),
-      asOf: new Date().toISOString(), locale: getLocale(),
-    });
-    // A decision may have changed during the LLM call. Do not save a stale suggestion.
-    const fresh = await loadImpactContext(context.projectId, context.fact.id);
-    const suggestions = result.suggestions.filter(s => {
-      const target = fresh.facts.find(f => f.id === s.targetFactId);
-      return target && fresh.revision(target) === s.revision;
-    });
-    await saveImpact(fresh, pending.candidateId, suggestions);
-    return true;
-  } catch (error) {
-    // Release the claim so a later visit can retry — except on rate limit,
-    // where retrying soon would just burn through the hourly budget.
-    if (!(error instanceof ImpactError && error.code === 'rate_limited')) {
-      await supabase.from('rate_limit_hits').delete().eq('key', key);
-    }
-    throw error;
   }
+  return analyzed;
 }
 
 async function handle(request: NextRequest) {
