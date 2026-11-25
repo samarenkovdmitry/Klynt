@@ -5,7 +5,7 @@
 // Run: tsx --env-file=.env.local scripts/scenario-pipeline.ts
 import { supabase } from '../lib/db/supabase';
 import { createProject, createRawEvent } from '../lib/db/queries';
-import { processProjectEvents, applyCandidateToFacts } from '../app/api/jobs/process-events/route';
+import { processProjectEvents, applyCandidateToFacts } from '../lib/pipeline';
 import { resolveSlackMessageEvent } from '../lib/slack-events';
 import type { AIInterpretation, EventInput } from '../lib/ai/event-processor';
 

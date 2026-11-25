@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser, unauthorizedResponse } from '@/lib/api-auth';
 import { getProject, getCandidateEvent, updateCandidateEventStatus, listProjectFacts } from '@/lib/db/queries';
 import { supabase } from '@/lib/db/supabase';
-import { applyCandidateToFacts, STATE_CHANGING_EVENTS } from '@/app/api/jobs/process-events/route';
+import { applyCandidateToFacts, STATE_CHANGING_EVENTS } from '@/lib/pipeline';
 
 // POST /api/candidates/[id]/confirm — a human vouches for a low-confidence
 // interpretation. The candidate is applied through the same fact pipeline as
