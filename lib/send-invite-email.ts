@@ -1,6 +1,5 @@
 import { buildEmailLogoHtml } from "@/lib/email-brand";
 import { getSiteUrl } from "@/lib/site";
-import { getLocale } from "@/lib/market";
 
 function escapeHtml(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -10,29 +9,16 @@ function buildInviteContent(projectName: string, inviterName: string | null, acc
   const siteUrl = getSiteUrl();
   const logoHtml = buildEmailLogoHtml(siteUrl);
   const safeName = escapeHtml(projectName);
-  const ru = getLocale() === "ru";
-
-  const lines = ru
-    ? {
-        greeting: "Здравствуйте!",
-        inviter: inviterName ? `${escapeHtml(inviterName)} приглашает вас` : "Вас пригласили",
-        body: "Klynt следит за тем, что действительно актуально в проекте: что изменилось, что согласовано и что требует внимания.",
-        button: "Принять приглашение",
-        fallback: "Или откройте ссылку:",
-        sign: "— Klynt",
-      }
-    : {
+  const lines = {
         greeting: "Hey,",
         inviter: inviterName ? `${escapeHtml(inviterName)} invited you` : "You've been invited",
-        body: "Klynt keeps track of project decisions across tools like Figma, Slack and Linear, and flags changes that could put them in question.",
+        body: "Klynt keeps track of project decisions across tools like Figma, Slack, Telegram and Linear, and flags changes that could put them in question.",
         button: "Accept invite",
         fallback: "Or paste this link:",
         sign: "— Klynt",
       };
 
-  const joinText = ru
-    ? `${inviterName ? inviterName + " приглашает вас" : "Вас пригласили"} в проект «${projectName}» в Klynt.`
-    : `${inviterName ? inviterName + " invited you" : "You've been invited"} to join "${projectName}" on Klynt.`;
+  const joinText = `${inviterName ? inviterName + " invited you" : "You've been invited"} to join "${projectName}" on Klynt.`;
 
   const text = [
     lines.greeting,
@@ -47,7 +33,7 @@ function buildInviteContent(projectName: string, inviterName: string | null, acc
   ].join("\n");
 
   const html = `<!DOCTYPE html>
-<html lang="${ru ? "ru" : "en"}">
+<html lang="en">
   <body style="margin:0;padding:0;background:#F5F4EF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1C1B17;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F5F4EF;padding:32px 16px;">
       <tr>
@@ -61,7 +47,7 @@ function buildInviteContent(projectName: string, inviterName: string | null, acc
             <tr>
               <td style="font-size:16px;line-height:1.7;color:#1C1B17;">
                 <p style="margin:0 0 16px;">${lines.greeting}</p>
-                <p style="margin:0 0 16px;">${lines.inviter} ${ru ? "в проект" : "to join"} <strong>${safeName}</strong> ${ru ? "в Klynt" : "on Klynt"}.</p>
+                <p style="margin:0 0 16px;">${lines.inviter} to join <strong>${safeName}</strong> on Klynt.</p>
                 <p style="margin:0 0 24px;">${lines.body}</p>
                 <p style="margin:0 0 24px;">
                   <a href="${acceptUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#0F3D2E;color:#FFE79A;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:999px;">${lines.button}</a>
@@ -105,7 +91,7 @@ export async function sendProjectInviteEmail(
     body: JSON.stringify({
       from,
       to: [email],
-      subject: getLocale() === "ru" ? `Приглашение в проект «${projectName}» — Klynt` : `You're invited to ${projectName} on Klynt`,
+      subject: `You're invited to ${projectName} on Klynt`,
       text,
       html,
     }),

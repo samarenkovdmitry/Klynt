@@ -5,7 +5,6 @@ import { supabase } from '@/lib/db/supabase';
 import { ImpactError, loadImpactContext, listImpact, saveImpact, reviewImpact } from '@/lib/db/impact';
 import { analyzeImpact } from '@/lib/ai/impact-analysis';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { getLocale } from '@/lib/market';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -49,7 +48,7 @@ async function autoAnalyze(context: Context, userId: string): Promise<boolean> {
       const result = await analyzeImpact({
         sourceFactId: context.fact.id, event: signal,
         decisions: context.decisionsFor(signal.timestamp),
-        asOf: new Date().toISOString(), locale: getLocale(),
+        asOf: new Date().toISOString(),
       });
       // A decision may have changed during the LLM call. Do not save a stale suggestion.
       const fresh = await loadImpactContext(context.projectId, context.fact.id);
@@ -117,7 +116,7 @@ async function handle(request: NextRequest) {
       const eligible = decisions.length;
       const result = await analyzeImpact({
         sourceFactId: factId, event: signal, decisions,
-        asOf: new Date().toISOString(), locale: getLocale(),
+        asOf: new Date().toISOString(),
       });
       const checked = result.checked;
       const fresh = await loadImpactContext(projectId, factId);

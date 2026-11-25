@@ -1,7 +1,6 @@
 import { CandidateEventType, Importance } from '@/lib/types/events';
 import { getLLM, extractJson } from '@/lib/ai/llm';
 import { interpretSystemPrompt, interpretBatchSystemPrompt, eventUserLabels } from '@/lib/ai/prompts';
-import { getLocale } from '@/lib/market';
 
 // Minimal shape the processor needs — callers pass DB rows whose
 // enums/timestamps are looser than the domain types in lib/types/events.
@@ -65,9 +64,8 @@ export async function interpretEvent(
   rawEvent: EventInput,
   context?: EventContext
 ): Promise<AIInterpretation> {
-  const locale = getLocale();
-  const systemPrompt = interpretSystemPrompt(locale);
-  const userPrompt = buildPrompt(rawEvent, context, locale);
+  const systemPrompt = interpretSystemPrompt();
+  const userPrompt = buildPrompt(rawEvent, context);
 
   try {
     const text = await getLLM().complete({
@@ -103,7 +101,6 @@ export async function interpretEventBatch(
   projectFacts?: any[],
 ): Promise<(AIInterpretation | Error)[]> {
   const out: (AIInterpretation | Error)[] = new Array(events.length);
-  const locale = getLocale();
 
   for (let start = 0; start < events.length; start += INTERPRET_BATCH_SIZE) {
     const chunk = events.slice(start, start + INTERPRET_BATCH_SIZE);
@@ -119,8 +116,8 @@ export async function interpretEventBatch(
 
     try {
       const text = await getLLM().complete({
-        system: interpretBatchSystemPrompt(locale),
-        user: buildBatchPrompt(chunk, ctxs, projectFacts, locale),
+        system: interpretBatchSystemPrompt(),
+        user: buildBatchPrompt(chunk, ctxs, projectFacts),
         maxTokens: 4096,
         temperature: 0.3,
       });
@@ -176,9 +173,8 @@ function buildBatchPrompt(
   events: EventInput[],
   contexts: EventContext[],
   projectFacts: any[] | undefined,
-  locale: 'en' | 'ru',
 ): string {
-  const L = eventUserLabels(locale);
+  const L = eventUserLabels();
   let prompt = `${L.analyze}\n\n`;
 
   // The events before this batch are the conversation so far.
@@ -206,8 +202,8 @@ function buildBatchPrompt(
   return prompt;
 }
 
-function buildPrompt(rawEvent: EventInput, context?: any, locale: 'en' | 'ru' = 'en'): string {
-  const L = eventUserLabels(locale);
+function buildPrompt(rawEvent: EventInput, context?: any): string {
+  const L = eventUserLabels();
 
   let prompt = `${L.analyze}\n\n`;
   prompt += buildEventBlock(rawEvent, L, context?.threadContext);
@@ -252,7 +248,6 @@ export async function detectConflicts(
   existingFact: any
 ): Promise<any[]> {
   const conflicts: any[] = [];
-  const ru = getLocale() === 'ru';
 
   if (!existingFact) return conflicts;
 
@@ -292,9 +287,7 @@ export async function detectConflicts(
       conflict_type: 'contradiction',
       previous_fact_id: existingFact.id,
       new_event_id: newEvent.id,
-      description: ru
-        ? `Раньше было «${existingFact.current_state}», теперь «${newAction}» — противоречит более раннему решению.`
-        : `Previously "${existingFact.current_state}" but now "${newAction}". This contradicts an earlier decision.`,
+      description: `Previously "${existingFact.current_state}" but now "${newAction}". This contradicts an earlier decision.`,
     });
     return conflicts;
   }
@@ -306,9 +299,7 @@ export async function detectConflicts(
       conflict_type: 'state_change',
       previous_fact_id: existingFact.id,
       new_event_id: newEvent.id,
-      description: ru
-        ? `Новое событие предлагает «${newAction}», а текущее состояние — «${existingFact.current_state}»`
-        : `New event suggests "${newAction}" but current state is "${existingFact.current_state}"`,
+      description: `New event suggests "${newAction}" but current state is "${existingFact.current_state}"`,
     });
   }
 

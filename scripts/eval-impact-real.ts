@@ -35,7 +35,7 @@ async function main() {
         analyses++;
         try {
           const prepared = await analyzeImpact({
-            sourceFactId: f.id, event: signal, decisions, asOf, locale: 'en',
+            sourceFactId: f.id, event: signal, decisions, asOf,
           }, req => llm.complete(req));
           const verdicts = prepared.suggestions;
           if (verdicts.length) {

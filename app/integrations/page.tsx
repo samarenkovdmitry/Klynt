@@ -8,7 +8,7 @@ import { siNotion, siLinear, siGoogledocs, siTelegram } from 'simple-icons';
 import { FigmaIcon, SlackIcon } from '@/components/icons/BrandIcons';
 import { RiArrowRightUpLine, RiCheckboxCircleLine, RiCloseLine, RiDeleteBinLine, RiErrorWarningLine, RiEyeLine, RiForbidLine } from '@remixicon/react';
 import { track } from '@vercel/analytics';
-import { getEnabledConnectors, getLocale } from '@/lib/market';
+import { getEnabledConnectors } from '@/lib/market';
 import { t } from '@/lib/i18n';
 
 interface Integration {
@@ -668,7 +668,7 @@ export default function IntegrationsPage() {
     if (diff < 1) return t('integrations.justNow');
     if (diff < 60) return `${diff}m ago`;
     if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
-    return d.toLocaleDateString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric' });
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   // One-line summary of what the source currently tracks — shown on the card,

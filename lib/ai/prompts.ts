@@ -1,11 +1,7 @@
-import { getLocale, type Locale } from '@/lib/market';
+// English-only prompts. display_state, reason and subject are generated in
+// the UI language, so examples are written to produce English output.
 
-// Prompts are per-locale, not translated strings: display_state, reason and
-// subject must be generated in the UI language, so each locale has its own
-// instruction set with native-language examples.
-
-const INTERPRET_SYSTEM: Record<Locale, string> = {
-  en: `You are an AI assistant that interprets project communication events from tools like Figma and Slack. Your goal is to extract meaningful project information from raw events.
+const INTERPRET_SYSTEM = `You are an AI assistant that interprets project communication events from tools like Figma, Slack, Telegram and Linear. Your goal is to extract meaningful project information from raw events.
 
 Analyze the event and determine:
 1. event_type: One of: decision, request, discussion, approval, change, question, commitment, blocker, scope_change, idea
@@ -65,63 +61,9 @@ Consider the context of who is speaking (if available):
 
 For Figma version updates, use the file name from metadata as the subject and treat the action as 'modify' unless it is the very first version of a new file.
 
-Return ONLY valid JSON with no additional text.`,
+Return ONLY valid JSON with no additional text.`;
 
-  ru: `Ты — AI-ассистент, который интерпретирует события проектной коммуникации из инструментов вроде Telegram и таск-трекеров. Твоя задача — извлекать значимую информацию о проекте из сырых событий.
-
-Проанализируй событие и определи:
-1. event_type: Одно из: decision, request, discussion, approval, change, question, commitment, blocker, scope_change, idea
-2. subject: Сущность, о которой идёт речь (например, "блок цен", "главный экран", "мобильная навигация") — на русском
-3. action: Машинное состояние, которое представляет событие. Одно из: add, remove, modify, approve, reject, in_progress, undecided. Коротко и стабильно — только на английском, это служебное поле.
-4. display_state: Короткий человекочитаемый статус, отвечающий на вопрос «что с этим сейчас?» (2-5 слов), на русском. Примеры: «Подтверждено», «Нужен мобильный ревью», «Решение не принято», «Ждём ревью юристов», «Новое», «Удалено»
-5. confidence: Насколько ты уверен в интерпретации (0.00 до 1.00)
-6. importance: Насколько событие влияет на проект: "low", "medium" или "high"
-7. reason: Короткий заголовок события (максимум 12 слов) на русском — пересказывает, что произошло или предложено. Показывается как однострочный заголовок в интерфейсе.
-8. related_entities: Массив связанных сущностей проекта (например, ["главная", "мобильная версия", "цены"])
-9. potential_impacts: На какие части проекта это может повлиять
-
-Правила для display_state:
-- Описывает текущую ситуацию, а не действие.
-- Конкретный простой язык.
-- Если подтверждено — «Подтверждено».
-- Если решение не принято — «Решение не принято».
-- Если заблокировано конкретным ревью — «Ждём ревью ...».
-- Если что-то меняется или требует работы — «Нужен ... ревью».
-
-Правила для event_type:
-- "decision": Принятое решение или явная договорённость
-- "request": Просьба что-то сделать
-- "discussion": Обсуждение без явного решения
-- "approval": Явное подтверждение или согласование
-- "change": Что-то изменяется
-- "question": Вопрос, требующий ответа
-- "commitment": Обещание сделать к сроку
-- "blocker": Что-то блокирует прогресс
-- "scope_change": Добавление/удаление, влияющее на объём проекта
-- "idea": Предложение без решения
-
-Правила для reason:
-- Пиши декларативный заголовок, никогда не копируй сообщение дословно. Переформулируй в утверждение:
-  «А нам нужна тёмная тема для лендинга?» → «Вопрос о тёмной теме лендинга»
-  «Можете глянуть хиро?» → «Запрошен ревью хиро-блока»
-- Заголовок описывает что произошло, а не что было сказано — оригинал сообщения показывается отдельно.
-- Описывай содержание, а не свою неуверенность. НЕ пиши мета-комментарии вроде «неоднозначное сообщение», «не хватает контекста», «низкая уверенность».
-- Не длиннее 12 слов — это заголовок, а не абзац.
-
-Учитывай контекст говорящего (если доступен):
-- Сообщения клиента важнее для решений и согласований
-- Сообщения дизайнера обычно про изменения дизайна
-- Сообщения разработчика — про реализацию
-
-Верни ТОЛЬКО валидный JSON без дополнительного текста.`,
-};
-
-const EVENT_USER_LABELS: Record<Locale, {
-  analyze: string; source: string; type: string; timestamp: string; content: string;
-  author: string; fileName: string; details: string; channel: string;
-  recentEvents: string; threadContext: string; currentFacts: string; noContent: string;
-}> = {
-  en: {
+const EVENT_USER_LABELS = {
     analyze: 'Analyze this project event:',
     source: 'Source', type: 'Type', timestamp: 'Timestamp', content: 'Content',
     author: 'Author', fileName: 'File name', details: 'Details', channel: 'Channel',
@@ -129,96 +71,51 @@ const EVENT_USER_LABELS: Record<Locale, {
     threadContext: 'Thread context:',
     currentFacts: 'Current project facts:',
     noContent: '(no content)',
-  },
-  ru: {
-    analyze: 'Проанализируй это событие проекта:',
-    source: 'Источник', type: 'Тип', timestamp: 'Время', content: 'Текст',
-    author: 'Автор', fileName: 'Файл', details: 'Детали', channel: 'Чат',
-    recentEvents: 'Недавние события в проекте:',
-    threadContext: 'Контекст треда:',
-    currentFacts: 'Текущие факты о проекте:',
-    noContent: '(нет текста)',
-  },
-};
+  };
 
-const SUMMARY_SYSTEM: Record<Locale, string> = {
-  en: 'You are a concise project assistant. Output strictly valid JSON. No markdown, no explanations.',
-  ru: 'Ты — лаконичный проектный ассистент. Отвечай строго валидным JSON. Без markdown, без пояснений.',
-};
+const SUMMARY_SYSTEM = 'You are a concise project assistant. Output strictly valid JSON. No markdown, no explanations.';
 
 // Appended to the interpret system prompt when several events are sent in
 // one call — the model must return a JSON array keyed by event number.
-const INTERPRET_BATCH_SUFFIX: Record<Locale, string> = {
-  en: `\n\nYou will receive several events in one request, separated by "--- Event N ---" markers. Interpret EACH event independently — apply the same rules to every one of them. Return a JSON array with exactly one interpretation object per event, in the same order, and include a field "event" with the 1-based event number in each object.`,
-  ru: `\n\nВ одном запросе придёт несколько событий, разделённых метками "--- Event N ---". Интерпретируй КАЖДОЕ событие независимо — применяй те же правила к каждому. Верни JSON-массив ровно с одним объектом интерпретации на событие в том же порядке, включив в каждый объект поле "event" с номером события (начиная с 1).`,
-};
+const INTERPRET_BATCH_SUFFIX = `\n\nYou will receive several events in one request, separated by "--- Event N ---" markers. Interpret EACH event independently — apply the same rules to every one of them. Return a JSON array with exactly one interpretation object per event, in the same order, and include a field "event" with the 1-based event number in each object.`;
 
-export function interpretSystemPrompt(locale: Locale = getLocale()): string {
-  return INTERPRET_SYSTEM[locale];
+export function interpretSystemPrompt(): string {
+  return INTERPRET_SYSTEM;
 }
 
-export function interpretBatchSystemPrompt(locale: Locale = getLocale()): string {
-  return INTERPRET_SYSTEM[locale] + INTERPRET_BATCH_SUFFIX[locale];
+export function interpretBatchSystemPrompt(): string {
+  return INTERPRET_SYSTEM + INTERPRET_BATCH_SUFFIX;
 }
 
-export function eventUserLabels(locale: Locale = getLocale()) {
-  return EVENT_USER_LABELS[locale];
+export function eventUserLabels() {
+  return EVENT_USER_LABELS;
 }
 
-export function summarySystemPrompt(locale: Locale = getLocale()): string {
-  return SUMMARY_SYSTEM[locale];
+export function summarySystemPrompt(): string {
+  return SUMMARY_SYSTEM;
 }
 
 export function summaryUserPrompt(input: {
   currentState: any[];
   recentEvents: any[];
   conflicts: any[];
-  locale?: Locale;
 }): string {
-  const locale = input.locale || getLocale();
   const { currentState, recentEvents, conflicts } = input;
-  const dateLocale = locale === 'ru' ? 'ru-RU' : 'en-US';
 
   const currentStateText = currentState.length === 0
-    ? (locale === 'ru' ? 'Нет текущих фактов.' : 'No current facts.')
+    ? 'No current facts.'
     : currentState.map(f => `- ${f.subject}: ${f.current_state} (${Math.round(f.confidence * 100)}%)`).join('\n');
 
   const recentEventsText = recentEvents.length === 0
-    ? (locale === 'ru' ? 'Нет недавних событий.' : 'No recent events.')
+    ? 'No recent events.'
     : recentEvents.slice(0, 15).map(e => {
-        const date = new Date(e.created_at).toLocaleString(dateLocale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const date = new Date(e.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
         return `- [${date}] ${e.subject}: ${e.action || e.event_type} — ${e.reason}`;
       }).join('\n');
 
   const conflictsText = conflicts.length === 0
-    ? (locale === 'ru' ? 'Нет конфликтов.' : 'No conflicts.')
+    ? 'No conflicts.'
     : conflicts.map(c => `- ${c.subject}: ${c.description}`).join('\n');
-
-  if (locale === 'ru') {
-    return `Сгенерируй краткую сводку «Что изменилось» по проекту. Пользователь хочет понять состояние проекта за 30 секунд.
-
-Текущее состояние проекта:
-${currentStateText}
-
-Недавние события:
-${recentEventsText}
-
-Конфликты / требуют внимания:
-${conflictsText}
-
-Верни JSON-объект:
-{
-  "headline": "Одно предложение — самое важное",
-  "bullets": ["3-5 пунктов о том, что изменилось, решено или требует действий"],
-  "needsAttention": ["0-3 пункта, реально требующих внимания"]
-}
-
-Правила:
-- headline: максимум 20 слов, одна главная мысль — на русском
-- bullets: максимум 15 слов каждый, про решения и изменения состояния — на русском
-- needsAttention: только реальные конфликты и открытые вопросы
-- Только JSON, без markdown`;
-  }
 
   return `Generate a concise "What Changed" summary for a project. The user wants to understand the project in 30 seconds.
 

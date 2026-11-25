@@ -84,7 +84,7 @@ async function main() {
     const analysis = await analyzeImpact({
       sourceFactId: facts.pay, event: ctx.signals[0],
       decisions: ctx.decisionsFor(ctx.signals[0].timestamp),
-      asOf: new Date().toISOString(), locale: 'en',
+      asOf: new Date().toISOString(),
     }, () => Promise.resolve(JSON.stringify({ assessments: [
       { decisionId: ctx.decisionsFor(ctx.signals[0].timestamp).find(d => d.factId === facts.co)!.id,
         verdict: 'revisit', assumptionQuote: 'we confirm payment instantly',

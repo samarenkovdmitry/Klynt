@@ -10,7 +10,7 @@ import { signalRouteStart } from '@/components/RouteProgress';
 import ClarificationHint from '@/components/ClarificationHint';
 import { FigmaIcon, SlackIcon, LinearIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import { emojify } from 'node-emoji';
-import { t, getLocale, tp } from '@/lib/i18n';
+import { t, tp } from '@/lib/i18n';
 import { conflictActions } from '@/lib/conflict-actions';
 import {
   RiArrowRightLine,
@@ -516,14 +516,14 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   if (!state) return null;
 
   const formatTime = (date: string) => {
-    return new Date(date).toLocaleTimeString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', {
+    return new Date(date).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
   };
 
   const formatDateFull = (date: string) => {
-    return new Date(date).toLocaleDateString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', {
+    return new Date(date).toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -542,7 +542,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
   };
 
   const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', {
+    return new Date(date).toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -680,7 +680,7 @@ export function ProjectDashboard({ slug }: { slug?: string }) {
               {lastUpdated && (
                 <span
                   className="ml-auto flex-shrink-0 text-xs text-ink-faint"
-                  title={new Date(lastUpdated).toLocaleString(getLocale() === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  title={new Date(lastUpdated).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 >
                   {t('dashboard.updated')} {formatRelative(lastUpdated)}
                   {changesSinceVisit > 0 && (
