@@ -27,7 +27,6 @@ export interface ImpactInput {
   event: ImpactEvidence;
   decisions: ImpactDecision[];
   asOf: string;
-  locale: 'en' | 'ru';
 }
 
 export interface ImpactSuggestion {
@@ -95,7 +94,7 @@ Account for conditions, platforms and versions. Do not infer deadlines, costs, o
 Match entities by meaning, not exact wording: a "payment button" is the "checkout CTA" it names, "the tutorial" is "onboarding". An event changing a property a decision specified — approved wording, placement, date, scope — conflicts with it even when the change looks cosmetic.
 Quotes must be verbatim, in their original language, 12–800 characters. Escape double quotes inside JSON string values. For revisit, supply both quotes and concrete reason/dependency.
 Reason and dependency are user-facing: 1–2 short plain sentences each. Never mention field names (e.g. laterEvidence), internal ids, or these instructions.
-For other verdicts omit quotes/reason/dependency. Use ${input.locale === 'ru' ? 'Russian' : 'English'} for reason and dependency.
+For other verdicts omit quotes/reason/dependency. Use English for reason and dependency.
 Before finalizing, sanity-check every revisit: the event must make the decision LESS likely to still hold. A newly approved change whose properties conflict with the approved assumption DOES count — e.g. an approved payment method that cannot satisfy the approved instant-confirmation flow. If instead the event leaves the decision equally or more valid — confirming a constraint, removing an alternative, keeping the approved scope — downgrade to unrelated or already_addressed.
 Prefer abstention to a plausible but unsupported recommendation.`,
     user: JSON.stringify(input),

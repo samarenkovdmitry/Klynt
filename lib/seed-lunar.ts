@@ -118,7 +118,7 @@ export async function seedLunarProject(db: SupabaseClient, projectId: string, no
       reason: impact.reason, dependency: impact.dependency,
     }] }, {
       sourceFactId: seed.factIds.get(source.area.subject)!,
-      event: evidence(source), asOf: now.toISOString(), locale: 'en',
+      event: evidence(source), asOf: now.toISOString(),
       decisions: [{
         id: target.historyId, factId: fact.id, subject: fact.subject, state: fact.current_state,
         revision, evidence: evidence(target), laterEvidence: [],

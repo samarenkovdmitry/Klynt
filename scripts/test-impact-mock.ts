@@ -31,7 +31,7 @@ const event = ev('e1', 'Client approved adding bank transfer as a new payment me
 
 const input: ImpactInput = {
   sourceFactId: 'f-payment', event,
-  decisions: [checkout, icon], asOf: '2025-03-02T00:00:00Z', locale: 'en',
+  decisions: [checkout, icon], asOf: '2025-03-02T00:00:00Z',
 };
 
 function llm(assessments: unknown) {

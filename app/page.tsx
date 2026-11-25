@@ -6,7 +6,7 @@ import AuthModal from '@/components/AuthModal'
 import type { AuthMode } from '@/components/AuthForm'
 import LandingPreview from '@/components/LandingPreview'
 import { FigmaIcon, LinearIcon, SlackIcon, TelegramIcon } from '@/components/icons/BrandIcons'
-import { t, getLocale } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 import { logoSrc } from '@/lib/market'
 import { RiArrowRightUpLine } from '@remixicon/react'
 
@@ -198,15 +198,12 @@ export default function LandingPage() {
 
             <div className="mt-4 flex items-center justify-center gap-2.5 text-xs leading-snug text-ink-faint">
               <span className="flex shrink-0 items-center gap-2">
-                {getLocale() === 'ru' ? (
+                <>
+                  <FigmaIcon size={15} />
+                  <SlackIcon size={15} />
                   <TelegramIcon size={15} />
-                ) : (
-                  <>
-                    <FigmaIcon size={15} />
-                    <SlackIcon size={15} />
-                    <LinearIcon size={15} />
-                  </>
-                )}
+                  <LinearIcon size={15} />
+                </>
               </span>
               <span>
                 {t('landing.trustLine')}{' '}

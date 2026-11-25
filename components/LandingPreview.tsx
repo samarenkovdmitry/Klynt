@@ -7,9 +7,9 @@ import {
   RiInformationLine,
 } from '@remixicon/react';
 
-import { FigmaIcon, SlackIcon, TelegramIcon } from '@/components/icons/BrandIcons';
+import { FigmaIcon, LinearIcon, SlackIcon, TelegramIcon } from '@/components/icons/BrandIcons';
 import Avatar from '@/components/Avatar';
-import { t, getLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n';
 import { logoSrc } from '@/lib/market';
 
 type SourceIcon = 'figma' | 'slack' | 'telegram';
@@ -132,7 +132,7 @@ const STATUS_COLORS: Record<string, { bar: string; pill: string }> = {
 };
 
 export default function LandingPreview() {
-  const msgSource: SourceIcon = getLocale() === 'ru' ? 'telegram' : 'slack';
+  const msgSource: SourceIcon = 'slack';
   return (
     <div className="pointer-events-none select-none overflow-hidden rounded-xl border border-line bg-white">
       <div className="flex h-[640px] flex-col bg-app-bg">
@@ -145,7 +145,9 @@ export default function LandingPreview() {
           <div className="ml-auto flex items-center gap-5">
             <span className="flex items-center gap-2.5">
               <FigmaIcon size={14} />
-              {msgSource === 'telegram' ? <TelegramIcon size={14} /> : <SlackIcon size={14} />}
+              <SlackIcon size={14} />
+              <TelegramIcon size={14} />
+              <LinearIcon size={14} />
             </span>
             <span className="flex items-center gap-2 text-sm text-ink-secondary">
               <RiSettings3Line size={15} className="text-ink-faint" />

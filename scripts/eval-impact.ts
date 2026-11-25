@@ -113,7 +113,7 @@ async function main() {
   let tp = 0, fp = 0, fn = 0, ok = 0, groundingFails = 0;
   for (const c of CASES) {
     const decisions = c.decisions.map(([d]) => d);
-    const input: ImpactInput = { sourceFactId: 'f-src', event: ev(c.event), decisions, asOf: '2025-03-02T00:00:00Z', locale: c.locale || 'en' };
+    const input: ImpactInput = { sourceFactId: 'f-src', event: ev(c.event), decisions, asOf: '2025-03-02T00:00:00Z' };
     try {
       // Run the full pipeline (generator + grounding + critic) and capture the
       // generator's raw output for the verdict display.

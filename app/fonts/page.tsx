@@ -66,7 +66,7 @@ function Specimen() {
           Know what your project actually decided.
         </h1>
         <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-secondary">
-          Klynt watches Figma, Slack and docs, then tells you what changed, what's approved and what still needs a decision.
+          Klynt watches Figma, Slack, Telegram and docs, then tells you what changed, what's approved and what still needs a decision.
         </p>
         <div className="mt-6 flex max-w-md items-center gap-2">
           <div className="flex-1 rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink-faint">

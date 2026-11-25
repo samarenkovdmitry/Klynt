@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { RiArrowRightUpLine } from '@remixicon/react';
-import { getLocale } from '@/lib/i18n';
 import type { ImpactEvidence, ImpactRecord } from '@/lib/ai/impact-analysis';
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -22,25 +21,12 @@ const copy = {
     outdated: 'This recommendation changed. Reload it before making a decision.',
     reviewed: 'Reviewed suggestions',
   },
-  ru: {
-    title: 'Решения для пересмотра', intro: 'Недавнее изменение могло затронуть прежние договорённости в других областях.',
-    target: 'Открыть область', previous: 'Прежнее решение', newSignal: 'Новое событие', why: 'Почему стоит перепроверить', sources: 'Основания и связь',
-    event: 'Новое событие', connection: 'Зависимость', reconsider: 'Пересмотреть', unrelated: 'Не связано',
-    marked: 'Отмечено для проверки', dismissed: 'Отклонено для этого изменения', saving: 'Сохраняем…',
-    advisory: 'Это рекомендации. Действующие согласования не меняются.',
-    loadError: 'Не удалось загрузить рекомендации. Попробуйте ещё раз.', retry: 'Повторить',
-    error: 'Не удалось завершить проверку. Попробуйте ещё раз.',
-    history_limit: 'История проекта превышает текущий лимит пилота. Частичный анализ не выполнялся.',
-    rate_limited: 'Лимит проверок достигнут. Попробуйте через час.',
-    outdated: 'Рекомендация изменилась. Загрузите её заново перед решением.',
-    reviewed: 'Рассмотренные рекомендации',
-  },
 };
 
 type Data = { recommendations: ImpactRecord[] };
 
 const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString(getLocale() === 'ru' ? 'ru-RU' : 'en-US',
+  new Date(iso).toLocaleDateString('en-US',
     { day: 'numeric', month: 'short', year: 'numeric' });
 
 function Evidence({ evidence, quote }: { evidence: ImpactEvidence; quote: string }) {
@@ -63,7 +49,7 @@ function Evidence({ evidence, quote }: { evidence: ImpactEvidence; quote: string
 export default function DecisionsToRevisit({
   projectId, factId, onOpenFact,
 }: { projectId: string; factId: string; onOpenFact: (id: string) => void }) {
-  const C = copy[getLocale()];
+  const C = copy.en;
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<string | null>(null);

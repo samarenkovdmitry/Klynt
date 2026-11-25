@@ -1,22 +1,10 @@
 import { buildEmailLogoHtml } from "@/lib/email-brand";
 import { getSiteUrl } from "@/lib/site";
-import { getLocale } from "@/lib/market";
 
 function buildConfirmContent(confirmUrl: string) {
   const siteUrl = getSiteUrl();
   const logoHtml = buildEmailLogoHtml(siteUrl);
-  const ru = getLocale() === "ru";
-
-  const lines = ru
-    ? {
-        greeting: "Здравствуйте!",
-        body: "Подтвердите адрес, чтобы завершить регистрацию в Klynt.",
-        button: "Подтвердить почту",
-        note: "Ссылка одноразовая.",
-        fallback: "Или откройте ссылку:",
-        sign: "— Klynt",
-      }
-    : {
+  const lines = {
         greeting: "Hey,",
         body: "Confirm your email to finish signing up for Klynt.",
         button: "Confirm email",
@@ -36,7 +24,7 @@ function buildConfirmContent(confirmUrl: string) {
   ].join("\n");
 
   const html = `<!DOCTYPE html>
-<html lang="${ru ? "ru" : "en"}">
+<html lang="en">
   <body style="margin:0;padding:0;background:#F5F4EF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1C1B17;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F5F4EF;padding:32px 16px;">
       <tr>
@@ -79,7 +67,6 @@ export async function sendConfirmEmail(email: string, confirmUrl: string) {
     "Klynt <onboarding@resend.dev>";
 
   const { text, html } = buildConfirmContent(confirmUrl);
-  const ru = getLocale() === "ru";
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -90,7 +77,7 @@ export async function sendConfirmEmail(email: string, confirmUrl: string) {
     body: JSON.stringify({
       from,
       to: [email],
-      subject: ru ? "Подтвердите почту — Klynt" : "Confirm your email — Klynt",
+      subject: "Confirm your email — Klynt",
       text,
       html,
     }),

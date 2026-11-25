@@ -1,22 +1,10 @@
 import { buildEmailLogoHtml } from "@/lib/email-brand";
 import { getSiteUrl } from "@/lib/site";
-import { getLocale } from "@/lib/market";
 
 function buildBetaAccessContent(accessUrl: string) {
   const siteUrl = getSiteUrl();
   const logoHtml = buildEmailLogoHtml(siteUrl);
-  const ru = getLocale() === "ru";
-
-  const lines = ru
-    ? {
-        greeting: "Здравствуйте!",
-        ready: "Ваше пространство Klynt готово.",
-        body: "Мы подготовили демо-проект, чтобы показать, как Klynt собирает текущее состояние проекта: что изменилось, что согласовано и что ещё не решено.",
-        button: "Открыть Klynt",
-        note: "Ссылка входит сразу — пароль не нужен.",
-        sign: "— Команда Klynt",
-      }
-    : {
+  const lines = {
         greeting: "Hey,",
         ready: "Your Klynt workspace is ready.",
         body: "We set up a sample project so you can see how Klynt tracks decisions: what changed, what's approved, and what still needs attention.",
@@ -38,7 +26,7 @@ function buildBetaAccessContent(accessUrl: string) {
   ].join("\n");
 
   const html = `<!DOCTYPE html>
-<html lang="${ru ? "ru" : "en"}">
+<html lang="en">
   <body style="margin:0;padding:0;background:#F5F4EF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1C1B17;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F5F4EF;padding:32px 16px;">
       <tr>
@@ -94,7 +82,7 @@ export async function sendBetaAccessEmail(email: string, accessUrl: string) {
     body: JSON.stringify({
       from,
       to: [email],
-      subject: getLocale() === "ru" ? "Ваше пространство Klynt готово" : "Your Klynt workspace is ready",
+      subject: "Your Klynt workspace is ready",
       text,
       html,
     }),
